@@ -1,0 +1,26 @@
+# AgentInspect — Cursor guardrails
+
+## Source of truth
+
+- **Product, architecture, MVP scope, public API, data model, JSONL schema:** `docs/AGENT_INSPECT_PRD_FINAL.md`
+- **Step-by-step implementation sequence:** `docs/CURSOR_IMPLEMENTATION_GUIDE.md`
+
+## MVP drift (do not implement unless the PRD explicitly promotes it)
+
+- No SQLite
+- No replay
+- No token counting
+- No cost calculation
+- No framework adapters
+- No browser dashboard
+- No OpenTelemetry
+- No plugin system
+- No general-purpose logger API
+
+AgentInspect must not become a logger library. The core concept is an **execution tree of steps**.
+
+## Engineering requirements
+
+- **TypeScript:** strict mode; match repo `tsconfig` settings.
+- **Tests:** add or update tests when implementation behavior changes.
+- **Instrumentation safety:** tracing, stepping, or observation must never throw into user code in a way that breaks the agent; failures degrade gracefully (see PRD).

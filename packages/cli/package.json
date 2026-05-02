@@ -1,0 +1,19 @@
+{
+  "name": "@agent-inspect/cli",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "agent-inspect": "./dist/index.cjs"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/core": "workspace:*",
+    "commander": "^12.1.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@agent-inspect/core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "nanoid": "^5.0.9"
+  }
+}

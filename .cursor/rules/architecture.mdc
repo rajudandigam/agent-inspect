@@ -1,0 +1,8 @@
+---
+description: AgentInspect architecture and product context
+alwaysApply: true
+---
+
+# AgentInspect
+
+AgentInspect is a **local-first execution-tree debugger for TypeScript AI agents** (MVP package name `agent-inspect`). Before implementing or reviewing features, read **`docs/AGENT_INSPECT_PRD_FINAL.md`** (product and architecture source of truth) and **`docs/CURSOR_IMPLEMENTATION_GUIDE.md`** (implementation sequence).
