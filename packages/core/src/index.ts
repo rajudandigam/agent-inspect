@@ -22,3 +22,20 @@ export type {
 } from "./types.js";
 
 export { isTraceEvent, isStepType, isStepStatus } from "./types.js";
+
+export {
+  createRunId,
+  createStepId,
+  formatDuration,
+  formatTimestamp,
+  getDefaultTraceDir,
+  getTraceFilePath,
+  ensureTraceDir,
+  formatError,
+  truncateName,
+  warn,
+  DEFAULT_TRACE_DIR_NAME,
+  RUNS_DIR_NAME,
+  FALLBACK_TRACE_DIR,
+  MAX_NAME_LENGTH,
+} from "./utils.js";
