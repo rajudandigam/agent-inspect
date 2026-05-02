@@ -1,10 +1,24 @@
-import chalk from "chalk";
-import { nanoid } from "nanoid";
+export type {
+  StepType,
+  StepStatus,
+  RunStatus,
+  ErrorInfo,
+  TokenMetadata,
+  StepMetadata,
+  Run,
+  Step,
+  TraceSchemaVersion,
+  TraceEventBase,
+  RunStartedEvent,
+  RunCompletedEvent,
+  StepStartedEvent,
+  StepCompletedEvent,
+  TraceEvent,
+  InspectRunOptions,
+  StepOptions,
+  ObserveOptions,
+  ExecutionContext,
+  ActiveStepContext,
+} from "./types.js";
 
-/**
- * Toolchain-only placeholder. The public API (`inspectRun`, `step`, `observe`)
- * will ship in a later implementation phase per the PRD.
- */
-export function scaffoldPing(): string {
-  return chalk.green(`agent-inspect:${nanoid(8)}`);
-}
+export { isTraceEvent, isStepType, isStepStatus } from "./types.js";

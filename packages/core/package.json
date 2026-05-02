@@ -18,9 +18,5 @@
   "scripts": {
     "build": "pnpm --workspace-root exec tsup",
     "test": "vitest run -c ../../vitest.config.ts"
-  },
-  "dependencies": {
-    "chalk": "^5.3.0",
-    "nanoid": "^5.0.9"
   }
 }
