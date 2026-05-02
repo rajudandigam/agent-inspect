@@ -39,3 +39,17 @@ export {
   FALLBACK_TRACE_DIR,
   MAX_NAME_LENGTH,
 } from "./utils.js";
+
+export {
+  getCurrentContext,
+  getCurrentRunId,
+  getCurrentRunName,
+  getCurrentStepId,
+  getParentStepId,
+  getCurrentDepth,
+  getTraceDirFromContext,
+  isSilentContext,
+  hasActiveContext,
+  runWithContext,
+  runWithStepContext,
+} from "./context.js";
