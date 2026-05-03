@@ -53,3 +53,14 @@ export {
   runWithContext,
   runWithStepContext,
 } from "./context.js";
+
+export {
+  serializeEvent,
+  validateEvent,
+  initializeTraceFile,
+  writeTraceEvent,
+  readTraceFile,
+  readTraceEvents,
+  listTraceFiles,
+  getRunIdFromTraceFileName,
+} from "./storage.js";
