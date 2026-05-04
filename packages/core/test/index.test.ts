@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { inspectRun, observe, step } from "../src/index.js";
+import { inspectRun, step, observe } from "../src/index.js";
 
 describe("package exports", () => {
   it("exposes inspectRun, step, and observe from the barrel", () => {

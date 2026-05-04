@@ -28,9 +28,6 @@ export default defineConfig([
     treeshake: true,
     platform: "node",
     target: "es2022",
-    banner: {
-      js: "#!/usr/bin/env node",
-    },
     external: ["@agent-inspect/core"],
   },
 ]);
