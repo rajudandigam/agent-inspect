@@ -1,6 +1,6 @@
 /**
- * Hotel booking: the smallest useful `inspectRun()` + `step()` flow.
- * Each `step()` becomes a node in the execution tree.
+ * Hotel booking: the smallest useful inspectRun() + step() flow.
+ * Each step() becomes a node in the execution tree.
  */
 import { inspectRun, step } from "agent-inspect";
 

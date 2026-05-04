@@ -1,6 +1,6 @@
 /**
- * Travel context: three `step.tool()` calls in `Promise.all` share the same
- * parent step ID in the trace, then `merge-context` runs after they finish.
+ * Travel context: three step.tool() calls in Promise.all share the same
+ * parent step ID in the trace, then merge-context runs after they finish.
  */
 import { inspectRun, step } from "agent-inspect";
 

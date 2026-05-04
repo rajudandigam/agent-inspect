@@ -1,6 +1,6 @@
 /**
- * Customer support: `observe()` traces the top-level `run()` call.
- * Manual `step()` calls inside the agent add execution-tree detail.
+ * Customer support: observe() traces each top-level run(); internal step
+ * calls add execution-tree detail under that run.
  */
 import { observe, step } from "agent-inspect";
 

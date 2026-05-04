@@ -88,10 +88,10 @@ describe("MVP examples (static checks)", () => {
         "utf-8",
       );
 
-      for (const bannedText of banned) {
+      for (const token of banned) {
         expect(
-          src.includes(bannedText),
-          `${name} should not contain ${bannedText}`,
+          src.includes(token),
+          `${name} should not contain ${token}`,
         ).toBe(false);
       }
     }

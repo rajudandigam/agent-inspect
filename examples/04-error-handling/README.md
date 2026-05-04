@@ -8,19 +8,25 @@ This example shows failed step tracking and original error propagation. A pricin
 
 From the repo root:
 
-    pnpm build
-    cd examples/04-error-handling
-    pnpm install
-    pnpm start
+```bash
+pnpm build
+cd examples/04-error-handling
+pnpm install
+pnpm start
+```
 
 ## Inspect traces
 
-    node ../../packages/cli/dist/index.cjs list
-    node ../../packages/cli/dist/index.cjs view run_abc123
+```bash
+node ../../packages/cli/dist/index.cjs list
+node ../../packages/cli/dist/index.cjs view run_abc123
+```
 
 ## Quiet mode
 
-    AGENT_INSPECT_SILENT=true pnpm start
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
 
 ## Note
 

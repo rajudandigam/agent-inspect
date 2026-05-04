@@ -1,6 +1,6 @@
 /**
- * Trip planner: nested LLM + parse under `plan-trip`, then tool + finalize
- * as root-level sibling steps so hierarchy is easy to understand.
+ * Trip planner: nested LLM + parse under plan-trip, then tool + finalize
+ * as root-level sibling steps so parent/child vs siblings is obvious.
  */
 import { inspectRun, step } from "agent-inspect";
 
