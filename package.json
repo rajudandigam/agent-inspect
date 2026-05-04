@@ -2,18 +2,56 @@
   "name": "agent-inspect",
   "version": "0.1.0",
   "private": true,
+  "description": "Local-first execution-tree debugger for TypeScript AI agents",
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@9.15.0",
+  "main": "./packages/core/dist/index.cjs",
+  "module": "./packages/core/dist/index.mjs",
+  "types": "./packages/core/dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./packages/core/dist/index.d.ts",
+      "import": "./packages/core/dist/index.mjs",
+      "require": "./packages/core/dist/index.cjs"
+    }
+  },
+  "bin": {
+    "agent-inspect": "./packages/cli/dist/index.cjs"
+  },
+  "files": [
+    "packages/core/dist",
+    "packages/cli/dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "agents",
+    "debugging",
+    "typescript",
+    "llm",
+    "observability",
+    "devtools",
+    "jsonl",
+    "cli"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "nanoid": "^5.0.9"
+  },
   "scripts": {
     "clean": "pnpm -r exec -- rm -rf dist",
-    "build": "tsup",
+    "build": "pnpm exec tsup --config tsup.core.config.ts && pnpm exec tsup --config tsup.cli.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "size": "size-limit --config size-limit.config.mjs",
     "test:all": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size",
+    "examples:check": "pnpm install && pnpm --filter agent-inspect-example-01-basic run start",
     "changeset": "changeset",
     "release": "changeset publish"
   },

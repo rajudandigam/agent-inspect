@@ -7,6 +7,7 @@ describe("@agent-inspect/cli", () => {
     const program = createCliProgram();
     expect(program.name()).toBe("agent-inspect");
     expect(program.description()).toContain("Local-first");
+    expect(program.description()).toContain("execution-tree");
   });
 
   it("registers list and view commands", () => {
@@ -14,5 +15,13 @@ describe("@agent-inspect/cli", () => {
     const names = program.commands.map((c) => c.name());
     expect(names).toContain("list");
     expect(names).toContain("view");
+  });
+
+  it("help output mentions agent-inspect, list, and view", () => {
+    const program = createCliProgram();
+    const help = program.helpInformation();
+    expect(help).toContain("agent-inspect");
+    expect(help).toContain("list");
+    expect(help).toContain("view");
   });
 });

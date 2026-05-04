@@ -17,6 +17,11 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["node"]
   },
-  "include": ["packages/**/*.ts", "tsup.config.ts", "vitest.config.ts"],
+  "include": [
+    "packages/**/*.ts",
+    "tsup.core.config.ts",
+    "tsup.cli.config.ts",
+    "vitest.config.ts"
+  ],
   "exclude": ["**/dist/**", "**/node_modules/**"]
 }

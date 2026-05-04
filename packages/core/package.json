@@ -16,7 +16,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "pnpm --workspace-root exec tsup",
+    "build": "pnpm --workspace-root exec tsup --config tsup.core.config.ts",
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "dependencies": {

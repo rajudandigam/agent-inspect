@@ -13,6 +13,7 @@ export default defineConfig({
         "**/*.config.ts",
         "**/*.config.mjs",
         "**/test/**",
+        "examples/**",
       ],
     },
   },
