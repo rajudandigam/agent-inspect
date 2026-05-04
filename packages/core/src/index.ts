@@ -69,6 +69,8 @@ export {
   TERMINAL_INDENT,
   MAX_TERMINAL_NAME_LENGTH,
   MAX_TERMINAL_DEPTH,
+  getIndent,
+  formatTerminalName,
   printRunStart,
   printStepStart,
   printStepComplete,
@@ -79,3 +81,5 @@ export {
   renderErrorLine,
   renderRunSummary,
 } from "./terminal.js";
+
+export { inspectRun } from "./inspect-run.js";
