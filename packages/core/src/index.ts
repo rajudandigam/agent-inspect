@@ -64,3 +64,18 @@ export {
   listTraceFiles,
   getRunIdFromTraceFileName,
 } from "./storage.js";
+
+export {
+  TERMINAL_INDENT,
+  MAX_TERMINAL_NAME_LENGTH,
+  MAX_TERMINAL_DEPTH,
+  printRunStart,
+  printStepStart,
+  printStepComplete,
+  printRunComplete,
+  printError,
+  printFailedAt,
+  renderStepLine,
+  renderErrorLine,
+  renderRunSummary,
+} from "./terminal.js";

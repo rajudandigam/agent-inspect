@@ -125,6 +125,45 @@ describe("validateEvent", () => {
     expect(validateEvent(err)).toBe(true);
   });
 
+  it("accepts run_completed error with string stack", () => {
+    const ev: TraceEvent = {
+      schemaVersion: "0.1",
+      event: "run_completed",
+      timestamp: ts,
+      runId: "run_x",
+      status: "error",
+      endTime: ts + 1,
+      durationMs: 1,
+      error: { message: "m", stack: "at line" },
+    };
+    expect(validateEvent(ev)).toBe(true);
+  });
+
+  it("rejects run_completed error with non-string stack", () => {
+    expect(
+      validateEvent({
+        schemaVersion: "0.1",
+        event: "run_completed",
+        timestamp: ts,
+        runId: "run_x",
+        status: "error",
+        endTime: ts + 1,
+        durationMs: 1,
+        error: { message: "m", stack: 404 },
+      }),
+    ).toBe(false);
+  });
+
+  it("accepts run_started with metadata object", () => {
+    expect(validateEvent({ ...runStarted(), metadata: { k: 1 } })).toBe(true);
+  });
+
+  it("rejects run_started with metadata array", () => {
+    expect(
+      validateEvent({ ...runStarted(), metadata: [] } as unknown),
+    ).toBe(false);
+  });
+
   it("rejects invalid payloads", () => {
     expect(validateEvent({ event: "run_started" })).toBe(false);
     expect(validateEvent({ ...runStarted(), schemaVersion: "0.2" })).toBe(false);

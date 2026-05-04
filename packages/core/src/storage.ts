@@ -25,7 +25,11 @@ function finiteNumber(value: unknown): value is number {
 function optionalErrorInfo(value: unknown): boolean {
   if (value === undefined) return true;
   if (!isRecord(value)) return false;
-  return typeof value.message === "string";
+  if (typeof value.message !== "string") return false;
+  if ("stack" in value && value.stack !== undefined) {
+    if (typeof value.stack !== "string") return false;
+  }
+  return true;
 }
 
 /**
@@ -39,11 +43,17 @@ export function validateEvent(event: unknown): event is TraceEvent {
 
   switch (event.event) {
     case "run_started": {
-      return (
-        nonEmptyString(event.runId) &&
-        nonEmptyString(event.name) &&
-        finiteNumber(event.startTime)
-      );
+      if (
+        !nonEmptyString(event.runId) ||
+        !nonEmptyString(event.name) ||
+        !finiteNumber(event.startTime)
+      ) {
+        return false;
+      }
+      if (event.metadata !== undefined && !isRecord(event.metadata)) {
+        return false;
+      }
+      return true;
     }
     case "run_completed": {
       return (
