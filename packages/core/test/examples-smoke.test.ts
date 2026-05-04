@@ -1,7 +1,6 @@
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { describe, expect, it } from "vitest";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -17,16 +16,17 @@ const MVP_EXAMPLES = [
 ] as const;
 
 describe("MVP examples (static checks)", () => {
-  it("each example has index.ts, package.json, README.md", () => {
+  it("each example has index.ts, package.json, and README.md", () => {
     for (const name of MVP_EXAMPLES) {
       const dir = path.join(examplesRoot, name);
+
       expect(existsSync(path.join(dir, "index.ts"))).toBe(true);
       expect(existsSync(path.join(dir, "package.json"))).toBe(true);
       expect(existsSync(path.join(dir, "README.md"))).toBe(true);
     }
   });
 
-  it('each package.json depends on agent-inspect via file:../..', () => {
+  it("each package.json depends on agent-inspect via file:../..", () => {
     const expectedNames: Record<(typeof MVP_EXAMPLES)[number], string> = {
       "01-basic": "agent-inspect-example-01-basic",
       "02-nested-steps": "agent-inspect-example-02-nested-steps",
@@ -40,6 +40,7 @@ describe("MVP examples (static checks)", () => {
         path.join(examplesRoot, name, "package.json"),
         "utf-8",
       );
+
       const pkg = JSON.parse(raw) as {
         name?: string;
         private?: boolean;
@@ -66,7 +67,7 @@ describe("MVP examples (static checks)", () => {
     }
   });
 
-  it("examples avoid banned secrets / SDK hints", () => {
+  it("examples avoid banned secrets and SDK hints", () => {
     const banned = [
       "OPENAI_API_KEY",
       'from "openai"',
@@ -87,38 +88,38 @@ describe("MVP examples (static checks)", () => {
         "utf-8",
       );
 
-      for (const token of banned) {
+      for (const bannedText of banned) {
         expect(
-          src.includes(token),
-          `${name} should not contain ${token}`,
+          src.includes(bannedText),
+          `${name} should not contain ${bannedText}`,
         ).toBe(false);
       }
     }
   });
 
-  it("examples do not hardcode silent: true; use AGENT_INSPECT_SILENT", () => {
+  it("examples do not hardcode silent: true and use AGENT_INSPECT_SILENT", () => {
     for (const name of MVP_EXAMPLES) {
       const src = readFileSync(
         path.join(examplesRoot, name, "index.ts"),
         "utf-8",
       );
 
-      expect(
-        /silent:\s*true/.test(src),
-        `${name} must not use silent: true`,
-      ).toBe(false);
+      expect(/silent:\s*true/.test(src), `${name} must not use silent: true`).toBe(
+        false,
+      );
       expect(src).toContain("AGENT_INSPECT_SILENT");
       expect(src).toContain("{ silent }");
     }
   });
 
-  it("examples root README lists MVP table", () => {
-    const readme = readFileSync(
-      path.join(examplesRoot, "README.md"),
-      "utf-8",
-    );
+  it("examples root README lists the MVP examples", () => {
+    const readme = readFileSync(path.join(examplesRoot, "README.md"), "utf-8");
 
     expect(readme).toContain("01-basic");
+    expect(readme).toContain("02-nested-steps");
+    expect(readme).toContain("03-parallel-steps");
+    expect(readme).toContain("04-error-handling");
+    expect(readme).toContain("05-observe-wrapper");
     expect(readme).toContain("EXAMPLES_ROADMAP");
   });
 
@@ -135,21 +136,24 @@ describe("MVP examples (static checks)", () => {
   });
 
   it("case study doc exists", () => {
-    const caseStudyPath = path.join(
-      repoRoot,
-      "docs",
-      "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
-    );
-
-    expect(existsSync(caseStudyPath)).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          repoRoot,
+          "docs",
+          "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
+        ),
+      ),
+    ).toBe(true);
   });
 
-  it("examples/ contains exactly the five MVP example dirs", () => {
+  it("examples/ contains exactly the five MVP example directories", () => {
     const entries = readdirSync(examplesRoot, { withFileTypes: true });
+
     const dirs = entries
-      .filter((e) => e.isDirectory())
-      .map((e) => e.name)
-      .filter((n) => /^\d{2}-/.test(n));
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((name) => /^\d{2}-/.test(name));
 
     expect(dirs.sort()).toEqual([...MVP_EXAMPLES].sort());
   });

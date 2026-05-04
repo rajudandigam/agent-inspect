@@ -1,24 +1,27 @@
-# Example 02 — Nested execution tree
+# 02-nested-steps
 
 ## What it demonstrates
 
-`plan-trip` nests `mock-gpt` and `parse-plan`. `searchHotels` and `finalize` are root-level siblings under the run so parent/child vs siblings is easy to read in the trace.
+This example shows parent-child execution tree hierarchy. The `plan-trip` step contains an LLM-shaped step and a parse step, while hotel search and finalization are root-level sibling steps.
 
 ## Run
 
-```bash
-pnpm build
-cd examples/02-nested-steps
-pnpm install
-pnpm start
+From the repo root:
 
-Inspect traces
-node ../../packages/cli/dist/index.cjs list
-node ../../packages/cli/dist/index.cjs view <run-id>
-Quiet mode
-AGENT_INSPECT_SILENT=true pnpm start
-```
+    pnpm build
+    cd examples/02-nested-steps
+    pnpm install
+    pnpm start
+
+## Inspect traces
+
+    node ../../packages/cli/dist/index.cjs list
+    node ../../packages/cli/dist/index.cjs view run_abc123
+
+## Quiet mode
+
+    AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-Parent–child execution tree under `plan-trip`, then root-level sibling steps.
+Use this example to understand how nested steps become parent-child relationships in the JSONL trace.

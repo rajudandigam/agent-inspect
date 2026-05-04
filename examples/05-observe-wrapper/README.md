@@ -1,24 +1,27 @@
-# Example 05 — `observe()` wrapper
+# 05-observe-wrapper
 
 ## What it demonstrates
 
-`observe()` wraps top-level `run()`. Triage (`step`), retrieval (`step.tool`), and reply (`step.llm`) add internal execution-tree detail under that run.
+This example shows the `observe()` wrapper for agent-like objects. `observe()` tracks the top-level `run()` call, while manual `step()`, `step.tool()`, and `step.llm()` calls provide internal execution-tree detail.
 
 ## Run
 
-```bash
-pnpm build
-cd examples/05-observe-wrapper
-pnpm install
-pnpm start
+From the repo root:
 
-Inspect traces
-node ../../packages/cli/dist/index.cjs list
-node ../../packages/cli/dist/index.cjs view <run-id>
-Quiet mode
-AGENT_INSPECT_SILENT=true pnpm start
-```
+    pnpm build
+    cd examples/05-observe-wrapper
+    pnpm install
+    pnpm start
+
+## Inspect traces
+
+    node ../../packages/cli/dist/index.cjs list
+    node ../../packages/cli/dist/index.cjs view run_abc123
+
+## Quiet mode
+
+    AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-`observe` is top-level in MVP; internal detail uses `step()`, `step.tool()`, and `step.llm()`.
+In MVP, `observe()` only wraps top-level `run`, `execute`, and `invoke` methods. Add manual steps inside the agent for nested visibility.

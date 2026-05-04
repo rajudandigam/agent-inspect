@@ -1,3 +1,7 @@
+/**
+ * Pricing flow: one step throws.
+ * AgentInspect records the failed step and rethrows the original error.
+ */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -20,7 +24,10 @@ try {
         throw new Error("Pricing API timeout");
       });
 
-      await step("apply-discount", async () => "never");
+      await step("apply-discount", async () => {
+        await delay(5);
+        return "this step should not run";
+      });
     },
     { silent },
   );
@@ -31,5 +38,5 @@ try {
   );
   console.log("\nNext:");
   console.log("  agent-inspect list");
-  console.log("  agent-inspect view <run-id>");
+  console.log("  agent-inspect view run_abc123");
 }

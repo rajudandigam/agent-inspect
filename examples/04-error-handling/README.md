@@ -1,24 +1,27 @@
-# Example 04 — Failed step and error trace
+# 04-error-handling
 
 ## What it demonstrates
 
-A failing step records error status in the trace; `apply-discount` never runs; the original error still leaves `inspectRun` (the outer `catch` is only for demo output).
+This example shows failed step tracking and original error propagation. A pricing step throws, AgentInspect records the failed step, and the original error still bubbles out of `inspectRun()`.
 
 ## Run
 
-```bash
-pnpm build
-cd examples/04-error-handling
-pnpm install
-pnpm start
+From the repo root:
 
-Inspect traces
-node ../../packages/cli/dist/index.cjs list
-node ../../packages/cli/dist/index.cjs view <run-id>
-Quiet mode
-AGENT_INSPECT_SILENT=true pnpm start
-```
+    pnpm build
+    cd examples/04-error-handling
+    pnpm install
+    pnpm start
+
+## Inspect traces
+
+    node ../../packages/cli/dist/index.cjs list
+    node ../../packages/cli/dist/index.cjs view run_abc123
+
+## Quiet mode
+
+    AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-Failed step plus original error propagation; inspect the trace for the failed `fetch-dynamic-pricing` step.
+The trace should contain both a failed `step_completed` event and a failed `run_completed` event.

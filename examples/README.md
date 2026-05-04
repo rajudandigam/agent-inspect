@@ -1,9 +1,9 @@
 # AgentInspect Examples
 
-These are runnable **MVP** examples. They use fake async functions, **no API keys**, **no external LLM SDKs**, and **no network calls**.
+These are runnable MVP examples. They use fake async functions, no API keys, no external LLM SDKs, and no network calls.
 
 | Example | Demonstrates |
-| --- | --- |
+|---|---|
 | [01-basic](01-basic) | `inspectRun()` + `step()` |
 | [02-nested-steps](02-nested-steps) | Execution tree hierarchy |
 | [03-parallel-steps](03-parallel-steps) | `Promise.all` sibling isolation |
@@ -14,31 +14,25 @@ These are runnable **MVP** examples. They use fake async functions, **no API key
 
 Build the library from the repo root:
 
-```bash
-pnpm build
-```
+    pnpm build
 
 Run an example:
 
-```bash
-cd examples/01-basic
-pnpm install
-pnpm start
-```
+    cd examples/01-basic
+    pnpm install
+    pnpm start
 
 Inspect traces:
 
-```bash
-node ../../packages/cli/dist/index.cjs list
-node ../../packages/cli/dist/index.cjs view <run-id>
-```
+    node ../../packages/cli/dist/index.cjs list
+    node ../../packages/cli/dist/index.cjs view run_abc123
 
-Quiet mode:
+## Quiet mode
 
-```bash
-AGENT_INSPECT_SILENT=true pnpm start
-```
+    AGENT_INSPECT_SILENT=true pnpm start
 
 ## What is not included
 
 Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are intentionally post-MVP.
+
+They are docs-only for v0.1 and should not add dependencies to the MVP package.

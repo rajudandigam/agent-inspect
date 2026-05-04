@@ -1,3 +1,7 @@
+/**
+ * Hotel booking: the smallest useful `inspectRun()` + `step()` flow.
+ * Each `step()` becomes a node in the execution tree.
+ */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -43,4 +47,4 @@ const confirmation = await inspectRun(
 console.log("\nBooking result:", confirmation);
 console.log("\nNext:");
 console.log("  agent-inspect list");
-console.log("  agent-inspect view <run-id>");
+console.log("  agent-inspect view run_abc123");

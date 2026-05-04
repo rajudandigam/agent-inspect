@@ -1,3 +1,7 @@
+/**
+ * Customer support: `observe()` traces the top-level `run()` call.
+ * Manual `step()` calls inside the agent add execution-tree detail.
+ */
 import { observe, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -25,7 +29,7 @@ class CustomerSupportAgent {
 
     return step.llm("mock-support-model", async () => {
       await delay(15);
-      return `Category: ${category}. ${articles[0]}`;
+      return `Category: ${category}. ${articles[0] ?? ""}`;
     });
   }
 }
@@ -39,4 +43,4 @@ const reply = await observed.run("How do I reset my password?");
 console.log("\nSupport reply:", reply);
 console.log("\nNext:");
 console.log("  agent-inspect list");
-console.log("  agent-inspect view <run-id>");
+console.log("  agent-inspect view run_abc123");

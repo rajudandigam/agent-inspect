@@ -1,3 +1,7 @@
+/**
+ * Trip planner: nested LLM + parse under `plan-trip`, then tool + finalize
+ * as root-level sibling steps so hierarchy is easy to understand.
+ */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -40,4 +44,4 @@ const result = await inspectRun(
 console.log("\nTrip plan:", result);
 console.log("\nNext:");
 console.log("  agent-inspect list");
-console.log("  agent-inspect view <run-id>");
+console.log("  agent-inspect view run_abc123");

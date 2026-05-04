@@ -1,24 +1,27 @@
-# Example 01 — Basic `inspectRun` + `step`
+# 01-basic
 
 ## What it demonstrates
 
-A single named run with three steps: the smallest useful execution tree, plus the printed booking confirmation from `inspectRun`.
+This example shows the smallest useful `inspectRun()` + `step()` workflow. It models a simple hotel booking flow with search, availability, and finalize steps.
 
 ## Run
 
-```bash
-pnpm build
-cd examples/01-basic
-pnpm install
-pnpm start
+From the repo root:
 
-Inspect traces
-node ../../packages/cli/dist/index.cjs list
-node ../../packages/cli/dist/index.cjs view <run-id>
-Quiet mode
-AGENT_INSPECT_SILENT=true pnpm start
-```
+    pnpm build
+    cd examples/01-basic
+    pnpm install
+    pnpm start
+
+## Inspect traces
+
+    node ../../packages/cli/dist/index.cjs list
+    node ../../packages/cli/dist/index.cjs view run_abc123
+
+## Quiet mode
+
+    AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-Basic run plus three sequential steps (`search-hotels` → `check-availability` → `finalize-booking`).
+This example demonstrates a basic run with sequential steps.
