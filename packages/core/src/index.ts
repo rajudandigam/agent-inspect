@@ -85,3 +85,5 @@ export {
 } from "./terminal.js";
 
 export { step } from "./step.js";
+
+export { observe } from "./observe.js";
