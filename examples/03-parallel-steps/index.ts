@@ -1,21 +1,19 @@
 /**
- * Travel context: three `step.tool` calls in `Promise.all` share the same parent step id
- * in the trace (siblings), then `merge-context` runs sequentially after they finish.
+ * Travel context: three parallel `step.tool` calls share the same parent step in the trace,
+ * then `merge-context` runs after `Promise.all` settles.
  */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
 
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-await inspectRun(
+const summary = await inspectRun(
   "travel-context",
   async () => {
-    await step("collect-context", async () => {
+    return step("collect-context", async () => {
       await Promise.all([
         step.tool("fetchWeather", async () => {
           await delay(18);
@@ -30,7 +28,8 @@ await inspectRun(
           return [{ night: 120 }];
         }),
       ]);
-      await step("merge-context", async () => {
+
+      return step("merge-context", async () => {
         await delay(5);
         return "merged";
       });
@@ -39,6 +38,7 @@ await inspectRun(
   { silent },
 );
 
+console.log("\nResult:", summary);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");

@@ -1,6 +1,10 @@
 # Examples roadmap
 
-Curated **future** examples and integrations. This document is **planning only**: it does not expand the v0.1 MVP scope or add dependencies to the published package.
+Curated **future** examples and integrations. This document is **planning only**.
+
+- **Advanced examples (06+) must not expand the MVP scope** for v0.1.
+- **They must not add dependencies** to the published `agent-inspect` package.
+- **They are not runnable in this repo** until explicitly scheduled post-MVP.
 
 ## 1. MVP examples (included now)
 

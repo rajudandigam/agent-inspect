@@ -27,18 +27,31 @@ describe("MVP examples (static checks)", () => {
   });
 
   it('each package.json depends on agent-inspect via file:../..', () => {
+    const expectedNames: Record<(typeof MVP_EXAMPLES)[number], string> = {
+      "01-basic": "agent-inspect-example-01-basic",
+      "02-nested-steps": "agent-inspect-example-02-nested-steps",
+      "03-parallel-steps": "agent-inspect-example-03-parallel-steps",
+      "04-error-handling": "agent-inspect-example-04-error-handling",
+      "05-observe-wrapper": "agent-inspect-example-05-observe-wrapper",
+    };
     for (const name of MVP_EXAMPLES) {
       const raw = readFileSync(
         path.join(examplesRoot, name, "package.json"),
         "utf-8",
       );
-      const pkg = JSON.parse(raw) as { dependencies?: Record<string, string> };
+      const pkg = JSON.parse(raw) as {
+        name?: string;
+        private?: boolean;
+        dependencies?: Record<string, string>;
+      };
+      expect(pkg.name).toBe(expectedNames[name]);
+      expect(pkg.private).toBe(true);
       expect(pkg.dependencies?.["agent-inspect"]).toBe("file:../..");
       expect(pkg.dependencies?.tsx).toMatch(/^\^/);
     }
   });
 
-  it('each index.ts imports from "agent-inspect" and not @agent-inspect/core', () => {
+  it('each index.ts imports from "agent-inspect" and not workspace packages', () => {
     for (const name of MVP_EXAMPLES) {
       const src = readFileSync(
         path.join(examplesRoot, name, "index.ts"),
@@ -46,6 +59,7 @@ describe("MVP examples (static checks)", () => {
       );
       expect(src).toMatch(/from\s+["']agent-inspect["']/);
       expect(src).not.toContain("@agent-inspect/core");
+      expect(src).not.toContain("@agent-inspect/cli");
     }
   });
 
@@ -57,6 +71,11 @@ describe("MVP examples (static checks)", () => {
       "@langchain",
       "langchain/",
       "@ai-sdk",
+      "from \"express\"",
+      "from 'express'",
+      "from \"bullmq\"",
+      "from 'bullmq'",
+      "@vercel",
     ];
     for (const name of MVP_EXAMPLES) {
       const src = readFileSync(
@@ -99,6 +118,8 @@ describe("MVP examples (static checks)", () => {
     );
     expect(roadmap).toContain("06-rag-pipeline");
     expect(roadmap).toContain("post-MVP");
+    expect(roadmap).toMatch(/must not expand|MVP scope/i);
+    expect(roadmap).toMatch(/must not add dependencies|dependencies/i);
   });
 
   it("case study doc exists", () => {

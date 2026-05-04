@@ -1,15 +1,13 @@
 /**
- * Pricing flow: a step throws; the trace records `step_completed` + `run_completed` as error.
- * The original `Error` still propagates — we only catch outside `inspectRun` for the demo message.
+ * Pricing flow: a step throws; the trace records errors; the original `Error` still propagates.
+ * The outer `try/catch` is only for readable demo output.
  */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
 
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 try {
@@ -31,6 +29,6 @@ try {
 } catch {
   console.log("Pricing flow failed as expected.");
   console.log(
-    "Run agent-inspect list and agent-inspect view <run-id> to inspect the trace.",
+    "Run `agent-inspect list` and `agent-inspect view <run-id>` to inspect the trace.",
   );
 }

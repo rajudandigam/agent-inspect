@@ -1,30 +1,26 @@
 # Example 05 — `observe()` wrapper
 
-## What `observe()` does (MVP)
+## What it demonstrates
 
-Wraps **`run`**, **`execute`**, and **`invoke`** on an object or class instance so each call is traced as its own run (via `inspectRun` under the hood).
+- **`observe()`** wraps the agent so each **`run()`** is traced as a top-level run (MVP: only `run` / `execute` / `invoke` are auto-wrapped).
+- **`step()`**, **`step.tool()`**, and **`step.llm()`** inside **`run()`** add internal nodes under that run.
 
-## What it does *not* do in MVP
-
-It does **not** auto-instrument internal methods, private helpers, or framework hooks. You only get the **top-level** entry call as a run boundary.
-
-## Why `step()` is still useful
-
-Add **`step()`** inside your agent (as in `triage-question` here) to record substeps, LLM-shaped work, tools, etc., under that run.
-
-## Run
+## How to run
 
 ```bash
-pnpm build   # from repo root
+pnpm build
+cd examples/05-observe-wrapper
 pnpm install
 pnpm start
 ```
 
-Quiet: `AGENT_INSPECT_SILENT=true pnpm start`
-
-## Inspect
+## How to inspect
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
+
+## Note
+
+Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet output.

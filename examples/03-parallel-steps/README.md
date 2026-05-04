@@ -2,24 +2,24 @@
 
 ## What it demonstrates
 
-Under **`collect-context`**, three tool steps run concurrently. In the trace they should share the **same `parentId`** (the `collect-context` step) and have **different** `stepId` values—no crossed wires thanks to scoped step context.
+Under **`collect-context`**, `fetchWeather`, `fetchEvents`, and `fetchHotelPrices` run in parallel. In the JSONL trace they share the **same `parentId`** (the `collect-context` step). **`merge-context`** runs only after all three finish.
 
-**`merge-context`** runs only after all parallel steps finish.
-
-## Run
-
-Repo root: `pnpm build`, then:
+## How to run
 
 ```bash
+pnpm build
+cd examples/03-parallel-steps
 pnpm install
 pnpm start
 ```
 
-Quiet: `AGENT_INSPECT_SILENT=true pnpm start`
-
-## Inspect
+## How to inspect
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
+
+## Note
+
+Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet output.

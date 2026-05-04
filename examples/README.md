@@ -1,6 +1,6 @@
 # AgentInspect examples
 
-Runnable **MVP** samples (local-only, no API keys, no external LLM SDKs).
+These are runnable **MVP** examples. They use fake async delays only: **no API keys**, **no external LLM SDKs**, and **no network calls**.
 
 | Example | Demonstrates |
 |--------|----------------|
@@ -10,9 +10,7 @@ Runnable **MVP** samples (local-only, no API keys, no external LLM SDKs).
 | [04-error-handling](04-error-handling) | Failed steps and error traces |
 | [05-observe-wrapper](05-observe-wrapper) | Proxy wrapper for agent-like objects |
 
-Post-MVP and integration ideas are listed in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) (docs only — not implemented here).
-
-## How to run
+## Run instructions
 
 ### 1. Build the library (repo root)
 
@@ -20,7 +18,7 @@ Post-MVP and integration ideas are listed in [docs/EXAMPLES_ROADMAP.md](../docs/
 pnpm build
 ```
 
-### 2. Run one example
+### 2. Run an example
 
 ```bash
 cd examples/01-basic
@@ -30,8 +28,6 @@ pnpm start
 
 ### 3. Inspect traces
 
-From the example directory:
-
 ```bash
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
@@ -39,12 +35,14 @@ node ../../packages/cli/dist/index.cjs view <run-id>
 
 ## Terminal output
 
-By default, examples show AgentInspect **terminal** output (runs and steps). For CI or quiet runs:
+Examples show AgentInspect **terminal** output by default (runs and steps).
+
+For quiet runs:
 
 ```bash
 AGENT_INSPECT_SILENT=true pnpm start
 ```
 
-## Workspace note
+## Advanced / post-MVP
 
-These folders are part of the pnpm workspace. From the repo root, `pnpm install` links `agent-inspect` and example dependencies (including `tsx`).
+Curated **docs-only** ideas (no runnable packages 06+ in v0.1): [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md). Those items are intentionally **post-MVP** and must not expand the v0.1 dependency surface.

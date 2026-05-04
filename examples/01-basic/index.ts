@@ -1,15 +1,12 @@
 /**
- * Hotel booking: each `step()` is a node in the execution tree (timings + hierarchy),
- * not a wall of unrelated console.log lines.
+ * Hotel booking: the smallest useful `inspectRun` + `step` flow (each step is a trace node).
  */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
 
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function searchHotels(city: string): Promise<string[]> {
@@ -32,18 +29,19 @@ async function finalizeBooking(room: {
   return `confirmed:${room.hotelId}`;
 }
 
-await inspectRun(
+const confirmation = await inspectRun(
   "hotel-booking",
   async () => {
     const hotels = await step("search-hotels", () => searchHotels("Tokyo"));
     const room = await step("check-availability", () =>
-      checkAvailability(hotels[0]!),
+      checkAvailability(hotels[0] ?? "unknown-hotel"),
     );
     return step("finalize-booking", () => finalizeBooking(room));
   },
   { silent },
 );
 
+console.log("\nBooking result:", confirmation);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");
