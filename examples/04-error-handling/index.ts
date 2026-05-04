@@ -1,7 +1,3 @@
-/**
- * Pricing flow: a step throws; the trace records the failure; the original error still
- * propagates. The outer `try/catch` is only for readable demo output.
- */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";

@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-`plan-trip` nests `mock-gpt` and `parse-plan`; `searchHotels` and `finalize` are separate root-level steps so parent/child vs siblings is clear in the trace.
+`plan-trip` nests `mock-gpt` and `parse-plan`. `searchHotels` and `finalize` are root-level siblings under the run so parent/child vs siblings is easy to read in the trace.
 
 ## Run
 
@@ -11,21 +11,14 @@ pnpm build
 cd examples/02-nested-steps
 pnpm install
 pnpm start
-```
 
-## Inspect traces
-
-```bash
+Inspect traces
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
-```
-
-## Quiet mode
-
-```bash
+Quiet mode
 AGENT_INSPECT_SILENT=true pnpm start
 ```
 
 ## Note
 
-Parent–child execution tree: nested steps under `plan-trip`, then siblings at the run root.
+Parent–child execution tree under `plan-trip`, then root-level sibling steps.

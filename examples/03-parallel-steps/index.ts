@@ -1,7 +1,3 @@
-/**
- * Travel context: three tools run in parallel under one parent, then a merge step
- * runs in the same parent after `Promise.all` completes.
- */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -35,7 +31,8 @@ const merged = await inspectRun(
         await delay(5);
         return {
           status: "merged",
-          note: "See trace: three tool siblings share parentId, merge is a later child.",
+          note:
+            "See trace: three tool siblings share parentId; merge runs after Promise.all.",
         };
       });
     });

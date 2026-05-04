@@ -1,7 +1,3 @@
-/**
- * Customer support: `observe()` traces each top-level `run()`; internal `step` calls
- * add execution-tree detail under that run.
- */
 import { observe, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -29,7 +25,7 @@ class CustomerSupportAgent {
 
     return step.llm("mock-support-model", async () => {
       await delay(15);
-      return `Category: ${category}. ${articles[0] ?? ""}`;
+      return `Category: ${category}. ${articles[0]}`;
     });
   }
 }

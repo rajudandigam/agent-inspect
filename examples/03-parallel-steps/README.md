@@ -11,21 +11,14 @@ pnpm build
 cd examples/03-parallel-steps
 pnpm install
 pnpm start
-```
 
-## Inspect traces
-
-```bash
+Inspect traces
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
-```
-
-## Quiet mode
-
-```bash
+Quiet mode
 AGENT_INSPECT_SILENT=true pnpm start
 ```
 
 ## Note
 
-`Promise.all` sibling isolation: parallel tools share one parent; merge runs after they complete.
+`Promise.all` sibling `parentId` isolation: parallel tools share one parent; merge runs after they complete.

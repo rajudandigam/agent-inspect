@@ -34,6 +34,7 @@ describe("MVP examples (static checks)", () => {
       "04-error-handling": "agent-inspect-example-04-error-handling",
       "05-observe-wrapper": "agent-inspect-example-05-observe-wrapper",
     };
+
     for (const name of MVP_EXAMPLES) {
       const raw = readFileSync(
         path.join(examplesRoot, name, "package.json"),
@@ -44,6 +45,7 @@ describe("MVP examples (static checks)", () => {
         private?: boolean;
         dependencies?: Record<string, string>;
       };
+
       expect(pkg.name).toBe(expectedNames[name]);
       expect(pkg.private).toBe(true);
       expect(pkg.dependencies?.["agent-inspect"]).toBe("file:../..");
@@ -57,6 +59,7 @@ describe("MVP examples (static checks)", () => {
         path.join(examplesRoot, name, "index.ts"),
         "utf-8",
       );
+
       expect(src).toMatch(/from\s+["']agent-inspect["']/);
       expect(src).not.toContain("@agent-inspect/core");
       expect(src).not.toContain("@agent-inspect/cli");
@@ -66,24 +69,29 @@ describe("MVP examples (static checks)", () => {
   it("examples avoid banned secrets / SDK hints", () => {
     const banned = [
       "OPENAI_API_KEY",
-      "from \"openai\"",
+      'from "openai"',
       "from 'openai'",
       "@langchain",
       "langchain/",
       "@ai-sdk",
-      "from \"express\"",
+      'from "express"',
       "from 'express'",
-      "from \"bullmq\"",
+      'from "bullmq"',
       "from 'bullmq'",
       "@vercel",
     ];
+
     for (const name of MVP_EXAMPLES) {
       const src = readFileSync(
         path.join(examplesRoot, name, "index.ts"),
         "utf-8",
       );
-      for (const b of banned) {
-        expect(src.includes(b), `${name} should not contain ${b}`).toBe(false);
+
+      for (const token of banned) {
+        expect(
+          src.includes(token),
+          `${name} should not contain ${token}`,
+        ).toBe(false);
       }
     }
   });
@@ -94,9 +102,11 @@ describe("MVP examples (static checks)", () => {
         path.join(examplesRoot, name, "index.ts"),
         "utf-8",
       );
-      expect(/silent:\s*true/.test(src), `${name} must not use silent: true`).toBe(
-        false,
-      );
+
+      expect(
+        /silent:\s*true/.test(src),
+        `${name} must not use silent: true`,
+      ).toBe(false);
       expect(src).toContain("AGENT_INSPECT_SILENT");
       expect(src).toContain("{ silent }");
     }
@@ -107,6 +117,7 @@ describe("MVP examples (static checks)", () => {
       path.join(examplesRoot, "README.md"),
       "utf-8",
     );
+
     expect(readme).toContain("01-basic");
     expect(readme).toContain("EXAMPLES_ROADMAP");
   });
@@ -116,6 +127,7 @@ describe("MVP examples (static checks)", () => {
       path.join(repoRoot, "docs", "EXAMPLES_ROADMAP.md"),
       "utf-8",
     );
+
     expect(roadmap).toContain("06-rag-pipeline");
     expect(roadmap).toContain("post-MVP");
     expect(roadmap).toMatch(/must not expand|MVP scope/i);
@@ -123,11 +135,13 @@ describe("MVP examples (static checks)", () => {
   });
 
   it("case study doc exists", () => {
-    expect(
-      existsSync(
-        path.join(repoRoot, "docs", "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md"),
-      ),
-    ).toBe(true);
+    const caseStudyPath = path.join(
+      repoRoot,
+      "docs",
+      "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
+    );
+
+    expect(existsSync(caseStudyPath)).toBe(true);
   });
 
   it("examples/ contains exactly the five MVP example dirs", () => {
@@ -136,6 +150,7 @@ describe("MVP examples (static checks)", () => {
       .filter((e) => e.isDirectory())
       .map((e) => e.name)
       .filter((n) => /^\d{2}-/.test(n));
+
     expect(dirs.sort()).toEqual([...MVP_EXAMPLES].sort());
   });
 });

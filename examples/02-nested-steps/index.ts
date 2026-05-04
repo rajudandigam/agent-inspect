@@ -1,7 +1,3 @@
-/**
- * Trip planner: nested LLM + parse under `plan-trip`, then tool + finalize as root-level
- * steps so parent/child vs siblings is obvious in the trace.
- */
 import { inspectRun, step } from "agent-inspect";
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
@@ -35,8 +31,7 @@ const result = await inspectRun(
 
     return step("finalize", async () => {
       await delay(6);
-      const hotel = hotels[0] ?? { id: "none", city: "unknown" };
-      return { plan, hotel };
+      return { plan, hotel: hotels[0] ?? null };
     });
   },
   { silent },

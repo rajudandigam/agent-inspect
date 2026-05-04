@@ -1,9 +1,9 @@
-# AgentInspect examples
+# AgentInspect Examples
 
 These are runnable **MVP** examples. They use fake async functions, **no API keys**, **no external LLM SDKs**, and **no network calls**.
 
 | Example | Demonstrates |
-|--------|----------------|
+| --- | --- |
 | [01-basic](01-basic) | `inspectRun()` + `step()` |
 | [02-nested-steps](02-nested-steps) | Execution tree hierarchy |
 | [03-parallel-steps](03-parallel-steps) | `Promise.all` sibling isolation |
@@ -41,4 +41,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## What is not included
 
-Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are **intentionally post-MVP** (docs only; not runnable in this repo for v0.1).
+Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are intentionally post-MVP.

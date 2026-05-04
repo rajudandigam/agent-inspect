@@ -28,20 +28,15 @@ await inspectRun("my-agent-run", async () => {
 ## LLM and tool helpers
 
 ```typescript
-await step.llm("mock-gpt", async () => {
-  /* your planner / LLM-shaped work */
-});
-
-await step.tool("searchHotels", async () => {
-  /* your tool-shaped work */
-});
+await step.llm("mock-gpt", () => planner.run());
+await step.tool("searchHotels", () => searchHotels());
 ```
 
-Helpers only **label** steps in the trace; they do not import or call vendor SDKs for you.
+These helpers only label steps in the trace. They do not bundle vendor SDKs.
 
 ## `observe()`
 
-`observe()` wraps top-level **`run`**, **`execute`**, and **`invoke`**. For internal detail, add manual **`step()`** (and helpers) inside the agent.
+`observe()` wraps top-level `run`, `execute`, and `invoke`. For internal detail, add manual `step()` calls inside the agent.
 
 ```typescript
 import { observe } from "agent-inspect";
@@ -55,8 +50,6 @@ class MyAgent {
 const agent = observe(new MyAgent());
 await agent.run("hello");
 ```
-
-See [examples/05-observe-wrapper](examples/05-observe-wrapper) for triage + tool + LLM steps under one `run()`.
 
 ## CLI
 
@@ -74,7 +67,7 @@ node packages/cli/dist/index.cjs view <run-id>
 
 ## Examples
 
-See **[examples/README.md](examples/README.md)** for how to run and inspect.
+See [examples/README.md](examples/README.md).
 
 - [01-basic](examples/01-basic)
 - [02-nested-steps](examples/02-nested-steps)
@@ -108,4 +101,8 @@ pnpm test
 pnpm test:all
 ```
 
-More context: [docs/EXAMPLES_ROADMAP.md](docs/EXAMPLES_ROADMAP.md), [docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md), [docs/AGENT_INSPECT_PRD_FINAL.md](docs/AGENT_INSPECT_PRD_FINAL.md).
+More context:
+
+- [docs/EXAMPLES_ROADMAP.md](docs/EXAMPLES_ROADMAP.md)
+- [docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md)
+- [docs/AGENT_INSPECT_PRD_FINAL.md](docs/AGENT_INSPECT_PRD_FINAL.md)

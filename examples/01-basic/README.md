@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-A single named run with three steps so you see the smallest useful execution tree and printed booking outcome.
+A single named run with three steps: the smallest useful execution tree, plus the printed booking confirmation from `inspectRun`.
 
 ## Run
 
@@ -11,18 +11,11 @@ pnpm build
 cd examples/01-basic
 pnpm install
 pnpm start
-```
 
-## Inspect traces
-
-```bash
+Inspect traces
 node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
-```
-
-## Quiet mode
-
-```bash
+Quiet mode
 AGENT_INSPECT_SILENT=true pnpm start
 ```
 
