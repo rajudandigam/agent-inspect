@@ -1,6 +1,5 @@
 /**
- * observe() tracks the top-level run()/execute()/invoke() call.
- * Manual step() calls inside the agent provide internal execution-tree detail.
+ * Customer support agent: combine top-level tracing with internal steps.
  */
 import { observe, step } from "agent-inspect";
 
@@ -12,26 +11,30 @@ function delay(ms: number): Promise<void> {
 
 class CustomerSupportAgent {
   async run(question: string): Promise<string> {
-    await step("triage-question", async () => {
-      await delay(8);
-      return question.length > 10 ? "complex" : "simple";
-    });
-
-    await step.tool("retrieveArticles", async () => {
+    const category = await step("triage-question", async () => {
       await delay(10);
-      return [{ id: "kb-42", title: "Password reset" }];
+      return question.toLowerCase().includes("password")
+        ? "account-access"
+        : "general";
     });
 
-    await step.llm("mock-support-model", async () => {
+    const articles = await step.tool("retrieveArticles", async () => {
       await delay(12);
-      return "Use Settings → Security → Reset password.";
+      return [
+        "Reset your password from the login page.",
+        "Use account recovery if you no longer have email access.",
+      ];
     });
 
-    await delay(6);
-    return `Answer for: ${question.slice(0, 40)}`;
+    return step.llm("mock-support-model", async () => {
+      await delay(15);
+      return `Category: ${category}. ${articles[0]!}`;
+    });
   }
 }
 
+// observe() tracks the top-level run()/execute()/invoke() call.
+// Manual step() calls inside the agent provide internal execution-tree detail.
 const observed = observe(new CustomerSupportAgent(), { silent });
 const reply = await observed.run("How do I reset my password?");
 

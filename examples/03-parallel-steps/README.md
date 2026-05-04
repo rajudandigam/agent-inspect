@@ -2,9 +2,9 @@
 
 ## What it demonstrates
 
-Under **`collect-context`**, `fetchWeather`, `fetchEvents`, and `fetchHotelPrices` run in parallel. In the JSONL trace they share the **same `parentId`** (the `collect-context` step). **`merge-context`** runs only after all three finish.
+Inside `collect-context`, three tool steps run in parallel and share the same parent in the trace; `merge-context` runs after they finish as another child of the same parent—so you see parallel siblings plus one sequential follow-up under one subtree.
 
-## How to run
+## Run
 
 ```bash
 pnpm build
@@ -13,7 +13,7 @@ pnpm install
 pnpm start
 ```
 
-## How to inspect
+## Inspect traces
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
@@ -22,4 +22,4 @@ node ../../packages/cli/dist/index.cjs view <run-id>
 
 ## Note
 
-Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet output.
+Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.

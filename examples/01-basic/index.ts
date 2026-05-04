@@ -1,5 +1,5 @@
 /**
- * Hotel booking: the smallest useful `inspectRun` + `step` flow (each step is a trace node).
+ * Hotel booking: minimal `inspectRun` + `step` flow—each step is a node in the trace.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -33,9 +33,11 @@ const confirmation = await inspectRun(
   "hotel-booking",
   async () => {
     const hotels = await step("search-hotels", () => searchHotels("Tokyo"));
+
     const room = await step("check-availability", () =>
       checkAvailability(hotels[0] ?? "unknown-hotel"),
     );
+
     return step("finalize-booking", () => finalizeBooking(room));
   },
   { silent },

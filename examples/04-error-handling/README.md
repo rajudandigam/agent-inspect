@@ -2,12 +2,9 @@
 
 ## What it demonstrates
 
-- **`fetch-dynamic-pricing`** throws `new Error("Pricing API timeout")` (not caught inside the step).
-- The trace records **`step_completed`** with `status: "error"` for that step and **`run_completed`** with `status: "error"` for the run.
-- **`apply-discount`** never runs.
-- The error still propagates out of `inspectRun`; the outer `try/catch` only prints a short message for the demo.
+A failing step records `step_completed` / `run_completed` as error, `apply-discount` never runs, and the original error still escapes `inspectRun`—the `try/catch` here is only to print a friendly hint after the fact.
 
-## How to run
+## Run
 
 ```bash
 pnpm build
@@ -16,7 +13,7 @@ pnpm install
 pnpm start
 ```
 
-## How to inspect
+## Inspect traces
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
@@ -25,4 +22,4 @@ node ../../packages/cli/dist/index.cjs view <run-id>
 
 ## Note
 
-Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet output.
+Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.

@@ -2,10 +2,9 @@
 
 ## What it demonstrates
 
-- **`observe()`** wraps the agent so each **`run()`** is traced as a top-level run (MVP: only `run` / `execute` / `invoke` are auto-wrapped).
-- **`step()`**, **`step.tool()`**, and **`step.llm()`** inside **`run()`** add internal nodes under that run.
+`observe()` adds a traced boundary around each top-level `run()`; internal `step`, `step.tool`, and `step.llm` calls add structure under that run so you still get an execution tree in MVP without framework adapters.
 
-## How to run
+## Run
 
 ```bash
 pnpm build
@@ -14,7 +13,7 @@ pnpm install
 pnpm start
 ```
 
-## How to inspect
+## Inspect traces
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
@@ -23,4 +22,4 @@ node ../../packages/cli/dist/index.cjs view <run-id>
 
 ## Note
 
-Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet output.
+Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.

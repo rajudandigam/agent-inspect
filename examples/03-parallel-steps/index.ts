@@ -1,6 +1,6 @@
 /**
- * Travel context: three parallel `step.tool` calls share the same parent step in the trace,
- * then `merge-context` runs after `Promise.all` settles.
+ * Travel context: under `collect-context`, three tools run in parallel (`Promise.all`),
+ * then `merge-context` runs as a sequential child—same parent as the parallel siblings.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -31,14 +31,17 @@ const summary = await inspectRun(
 
       return step("merge-context", async () => {
         await delay(5);
-        return "merged";
+        return {
+          status: "merged",
+          note: "Combined parallel tool results (see trace for each tool step).",
+        };
       });
     });
   },
   { silent },
 );
 
-console.log("\nResult:", summary);
+console.log("\nMerged context:", summary);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");

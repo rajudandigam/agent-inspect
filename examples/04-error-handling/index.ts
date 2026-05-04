@@ -1,6 +1,6 @@
 /**
- * Pricing flow: a step throws; the trace records errors; the original `Error` still propagates.
- * The outer `try/catch` is only for readable demo output.
+ * Pricing flow: a step throws; the trace records the failure; the original error still
+ * propagates. The outer `try/catch` is only for readable demo output.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -18,17 +18,22 @@ try {
         await delay(8);
         return ["sku-a", "sku-b"];
       });
+
       await step("fetch-dynamic-pricing", async () => {
         await delay(10);
         throw new Error("Pricing API timeout");
       });
+
       await step("apply-discount", async () => "never");
     },
     { silent },
   );
 } catch {
-  console.log("Pricing flow failed as expected.");
+  console.log("\nPricing flow failed as expected.");
   console.log(
-    "Run `agent-inspect list` and `agent-inspect view <run-id>` to inspect the trace.",
+    "The original error still propagated, and AgentInspect recorded the failed step.",
   );
+  console.log("\nNext:");
+  console.log("  agent-inspect list");
+  console.log("  agent-inspect view <run-id>");
 }

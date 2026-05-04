@@ -2,27 +2,18 @@
 
 ## What it demonstrates
 
-The smallest useful pattern: one named run and three steps (`search-hotels`, `check-availability`, `finalize-booking`). Each step appears in the JSONL trace with timing.
+One named run with three steps—search, availability check, finalize—so you see a minimal execution tree and timings in the trace.
 
-## How to run
-
-From the **repository root**:
+## Run
 
 ```bash
 pnpm build
-```
-
-Then:
-
-```bash
 cd examples/01-basic
 pnpm install
 pnpm start
 ```
 
-## How to inspect traces
-
-From this directory:
+## Inspect traces
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
@@ -31,8 +22,4 @@ node ../../packages/cli/dist/index.cjs view <run-id>
 
 ## Note
 
-Examples show AgentInspect **terminal** output by default. For quiet output:
-
-```bash
-AGENT_INSPECT_SILENT=true pnpm start
-```
+Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.

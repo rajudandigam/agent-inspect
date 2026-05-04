@@ -1,5 +1,6 @@
 /**
- * Trip planner: nested work under `plan-trip`, then tool + finalize at the run root.
+ * Trip planner: `plan-trip` nests LLM + parse steps; `searchHotels` and `finalize` are
+ * root-level siblings under the same run so the hierarchy is obvious in the trace.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -12,25 +13,29 @@ function delay(ms: number): Promise<void> {
 const outcome = await inspectRun(
   "trip-planner",
   async () => {
-    await step("plan-trip", async () => {
-      await step.llm("mock-gpt", async () => {
+    const plan = await step("plan-trip", async () => {
+      const draft = await step.llm("mock-gpt", async () => {
         await delay(12);
-        return "Plan: museum, dinner, walk.";
+        return "Plan: museum, dinner, evening walk.";
       });
-      await step("parse-plan", async () => {
+
+      return step("parse-plan", async () => {
         await delay(8);
-        return ["museum", "dinner", "walk"];
+        return draft
+          .replace("Plan: ", "")
+          .split(", ")
+          .map((item) => item.trim());
       });
     });
 
-    await step.tool("searchHotels", async () => {
+    const hotels = await step.tool("searchHotels", async () => {
       await delay(10);
       return [{ id: "h1", city: "Kyoto" }];
     });
 
     return step("finalize", async () => {
       await delay(6);
-      return "itinerary-ready";
+      return { plan, hotel: hotels[0]! };
     });
   },
   { silent },
