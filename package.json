@@ -32,15 +32,14 @@
     "debugging",
     "typescript",
     "llm",
-    "observability",
     "devtools",
     "jsonl",
     "cli"
   ],
   "dependencies": {
     "chalk": "^5.3.0",
-    "commander": "^12.1.0",
-    "nanoid": "^5.0.9"
+    "nanoid": "^5.0.9",
+    "commander": "^12.1.0"
   },
   "scripts": {
     "clean": "pnpm -r exec -- rm -rf dist",

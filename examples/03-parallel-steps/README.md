@@ -1,19 +1,25 @@
-# Example 03 — Parallel sibling steps (`Promise.all`)
+# Example 03 — `Promise.all` sibling steps
 
-From the repo root, run `pnpm build` once before `pnpm install` in this folder.
+## What it demonstrates
 
-Travel context collector runs three tool steps in parallel under one parent, then merges. The execution tree shows correct sibling isolation.
+Under **`collect-context`**, three tool steps run concurrently. In the trace they should share the **same `parentId`** (the `collect-context` step) and have **different** `stepId` values—no crossed wires thanks to scoped step context.
+
+**`merge-context`** runs only after all parallel steps finish.
 
 ## Run
+
+Repo root: `pnpm build`, then:
 
 ```bash
 pnpm install
 pnpm start
 ```
 
+Quiet: `AGENT_INSPECT_SILENT=true pnpm start`
+
 ## Inspect
 
 ```bash
-node packages/cli/dist/index.cjs list
-node packages/cli/dist/index.cjs view <run-id>
+node ../../packages/cli/dist/index.cjs list
+node ../../packages/cli/dist/index.cjs view <run-id>
 ```

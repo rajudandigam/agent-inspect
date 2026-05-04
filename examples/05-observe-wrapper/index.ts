@@ -1,14 +1,16 @@
 /**
- * `observe()` wraps top-level `run` / `execute` / `invoke` with `inspectRun` via a Proxy.
+ * observe() wraps top-level run()/execute()/invoke with inspectRun (Proxy).
  *
- * MVP limitation: observe() records the top-level `run()` call only. For internal steps
- * (LLM calls, tools, substeps), add manual `step()` calls inside the agent class.
+ * observe() tracks the top-level run()/execute()/invoke() call.
+ * Manual step() calls inside the agent provide internal execution-tree detail.
  */
 import { observe, step } from "agent-inspect";
 
+const silent = process.env.AGENT_INSPECT_SILENT === "true";
+
 function delay(ms: number): Promise<void> {
-  return new Promise((r) => {
-    setTimeout(r, ms);
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
 }
 
@@ -23,7 +25,10 @@ class CustomerSupportAgent {
   }
 }
 
-const observed = observe(new CustomerSupportAgent(), { silent: true });
+const observed = observe(new CustomerSupportAgent(), { silent });
 const reply = await observed.run("How do I reset my password?");
 console.log(reply);
-console.log("Inspect: agent-inspect list && agent-inspect view <run-id>");
+
+console.log("\nNext:");
+console.log("  agent-inspect list");
+console.log("  agent-inspect view <run-id>");

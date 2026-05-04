@@ -1,12 +1,14 @@
 /**
- * Nested execution tree: parent `plan-trip` wraps LLM-shaped and tool-shaped steps.
- * Open the trace to see hierarchy instead of flattening everything into logs.
+ * Trip planner: nested steps under `plan-trip`, then a root-level `persist-itinerary`
+ * so the trace shows both a subtree and a sibling at the run root.
  */
 import { inspectRun, step } from "agent-inspect";
 
+const silent = process.env.AGENT_INSPECT_SILENT === "true";
+
 function delay(ms: number): Promise<void> {
-  return new Promise((r) => {
-    setTimeout(r, ms);
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
 }
 
@@ -16,7 +18,7 @@ await inspectRun(
     await step("plan-trip", async () => {
       await step.llm("mock-gpt", async () => {
         await delay(12);
-        return "Plan: visit museum, dinner, walk.";
+        return "Plan: museum, dinner, walk.";
       });
       await step("parse-plan", async () => {
         await delay(8);
@@ -26,13 +28,21 @@ await inspectRun(
         await delay(10);
         return [{ id: "h1", city: "Kyoto" }];
       });
-      await step("finalize", async () => {
+      await step("finalize-inside-plan", async () => {
         await delay(6);
-        return "itinerary-saved";
+        return "draft-ready";
       });
     });
+
+    // Outside `plan-trip`: second root-level step under the same run
+    await step("persist-itinerary", async () => {
+      await delay(5);
+      return "saved";
+    });
   },
-  { silent: true },
+  { silent },
 );
 
-console.log("Done. Inspect: agent-inspect list && agent-inspect view <run-id>");
+console.log("\nNext:");
+console.log("  agent-inspect list");
+console.log("  agent-inspect view <run-id>");

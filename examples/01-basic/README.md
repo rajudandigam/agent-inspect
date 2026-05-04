@@ -1,34 +1,47 @@
 # Example 01 — Basic `inspectRun` + `step`
 
-From the **repository root**, run `pnpm build` once so `agent-inspect` resolves to built `dist/` files.
+## What it demonstrates
 
-Hotel booking flow: search hotels, check availability, finalize. Each `step()` is a durable node in the JSONL trace (better than scattered logs).
+The smallest useful pattern: one `inspectRun` names the overall run, and each `step()` becomes a child in the trace with timing. You get a tree you can reopen with the CLI instead of ephemeral logs.
 
 ## Run
+
+From the **repository root**, build once (so `agent-inspect` resolves to `dist/`):
+
+```bash
+pnpm build
+```
+
+Then in this folder:
 
 ```bash
 pnpm install
 pnpm start
 ```
 
+By default you will see **terminal** progress from AgentInspect (runs and steps). For a quiet run:
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Inspect traces
 
-From the **repository root** (after `pnpm build`):
+From the repo root:
 
 ```bash
 node packages/cli/dist/index.cjs list
 node packages/cli/dist/index.cjs view <run-id>
 ```
 
-Or with a linked / installed CLI:
+Or, with the CLI on your `PATH`:
 
 ```bash
-npx agent-inspect list
-npx agent-inspect view <run-id>
+agent-inspect list
+agent-inspect view <run-id>
 ```
 
-From the monorepo you can also use the workspace CLI:
+## Expected output shape
 
-```bash
-pnpm --filter @agent-inspect/cli exec agent-inspect list
-```
+- **Terminal:** run header, step lines with durations, trace path.
+- **JSONL:** `run_started` → `step_started` / `step_completed` pairs → `run_completed`, all with matching `runId`.

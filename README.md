@@ -10,7 +10,7 @@ Runs and steps are recorded as JSONL under your trace directory. Use the CLI to 
 npm install agent-inspect
 ```
 
-*(Repository stays `private: true` until you intentionally publish.)*
+*(The repo stays `private: true` until you intentionally publish.)*
 
 ## Quickstart (API)
 
@@ -49,7 +49,7 @@ node packages/cli/dist/index.cjs list
 node packages/cli/dist/index.cjs view <run-id>
 ```
 
-With the package on your `PATH`:
+With the CLI on your `PATH`:
 
 ```bash
 agent-inspect list
@@ -58,20 +58,28 @@ agent-inspect view <run-id>
 
 ## Examples
 
-| Example | Topic |
-|--------|--------|
-| [examples/01-basic](examples/01-basic) | `inspectRun` + `step` |
-| [examples/02-nested-steps](examples/02-nested-steps) | Nested tree, `step.llm`, `step.tool` |
-| [examples/03-parallel-steps](examples/03-parallel-steps) | `Promise.all` siblings |
-| [examples/04-error-handling](examples/04-error-handling) | Failed step + trace |
-| [examples/05-observe-wrapper](examples/05-observe-wrapper) | `observe()` class agent |
+See **[examples/README.md](examples/README.md)** for the full table and run instructions.
 
-In each example folder: `pnpm install` then `pnpm start`.
+- **Basic workflow** — [examples/01-basic](examples/01-basic)
+- **Nested steps** — [examples/02-nested-steps](examples/02-nested-steps)
+- **Parallel steps** — [examples/03-parallel-steps](examples/03-parallel-steps)
+- **Error handling** — [examples/04-error-handling](examples/04-error-handling)
+- **`observe()` wrapper** — [examples/05-observe-wrapper](examples/05-observe-wrapper)
 
-Smoke the first example from the repo root:
+### Quick verification
 
 ```bash
-pnpm run examples:check
+pnpm build
+cd examples/01-basic
+pnpm install
+pnpm start
+node ../../packages/cli/dist/index.cjs list
 ```
 
-Product scope and roadmap: `docs/AGENT_INSPECT_PRD_FINAL.md`.
+Examples show **terminal** output by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+
+From the repo root you can also run `pnpm run examples:check` (example 01 only).
+
+Future / post-MVP example ideas: [docs/EXAMPLES_ROADMAP.md](docs/EXAMPLES_ROADMAP.md). Short before/after narrative: [docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md).
+
+Product scope: `docs/AGENT_INSPECT_PRD_FINAL.md`.

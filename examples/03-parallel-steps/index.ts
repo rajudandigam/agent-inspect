@@ -1,12 +1,14 @@
 /**
- * Promise.all sibling steps share one parent; AsyncLocalStorage keeps parent ids correct
- * (see trace: parallel tools each have the same parentId, no crossed wires).
+ * Travel context: three `step.tool` calls in `Promise.all` share the same parent step id
+ * in the trace (siblings), then `merge-context` runs sequentially after they finish.
  */
 import { inspectRun, step } from "agent-inspect";
 
+const silent = process.env.AGENT_INSPECT_SILENT === "true";
+
 function delay(ms: number): Promise<void> {
-  return new Promise((r) => {
-    setTimeout(r, ms);
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
 }
 
@@ -34,7 +36,9 @@ await inspectRun(
       });
     });
   },
-  { silent: true },
+  { silent },
 );
 
-console.log("Done. Inspect: agent-inspect list && agent-inspect view <run-id>");
+console.log("\nNext:");
+console.log("  agent-inspect list");
+console.log("  agent-inspect view <run-id>");
