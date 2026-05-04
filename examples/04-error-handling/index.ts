@@ -16,16 +16,19 @@ try {
     async () => {
       await step("load-catalog", async () => {
         await delay(8);
+
         return ["sku-a", "sku-b"];
       });
 
       await step("fetch-dynamic-pricing", async () => {
         await delay(10);
+
         throw new Error("Pricing API timeout");
       });
 
       await step("apply-discount", async () => {
         await delay(5);
+
         return "this step should not run";
       });
     },

@@ -17,22 +17,26 @@ const context = await inspectRun(
       const [weather, events, hotelPrices] = await Promise.all([
         step.tool("fetchWeather", async () => {
           await delay(18);
+
           return { tempC: 22, condition: "sunny" };
         }),
 
         step.tool("fetchEvents", async () => {
           await delay(12);
+
           return [{ name: "Jazz night" }, { name: "Food market" }];
         }),
 
         step.tool("fetchHotelPrices", async () => {
           await delay(9);
+
           return [{ hotelId: "h1", nightlyRate: 120 }];
         }),
       ]);
 
       return step("merge-context", async () => {
         await delay(5);
+
         return { weather, events, hotelPrices };
       });
     });

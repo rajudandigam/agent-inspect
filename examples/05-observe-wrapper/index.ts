@@ -14,6 +14,7 @@ class CustomerSupportAgent {
   async run(question: string): Promise<string> {
     const category = await step("triage-question", async () => {
       await delay(10);
+
       return question.toLowerCase().includes("password")
         ? "account-access"
         : "general";
@@ -21,6 +22,7 @@ class CustomerSupportAgent {
 
     const articles = await step.tool("retrieveArticles", async () => {
       await delay(12);
+
       return [
         "Reset your password from the login page.",
         "Use account recovery if you no longer have email access.",
@@ -29,6 +31,7 @@ class CustomerSupportAgent {
 
     return step.llm("mock-support-model", async () => {
       await delay(15);
+
       return `Category: ${category}. ${articles[0] ?? ""}`;
     });
   }

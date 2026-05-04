@@ -16,11 +16,13 @@ const result = await inspectRun(
     const plan = await step("plan-trip", async () => {
       const draft = await step.llm("mock-gpt", async () => {
         await delay(12);
+
         return "Plan: museum, dinner, evening walk.";
       });
 
       return step("parse-plan", async () => {
         await delay(8);
+
         return draft
           .replace("Plan: ", "")
           .split(", ")
@@ -30,11 +32,13 @@ const result = await inspectRun(
 
     const hotels = await step.tool("searchHotels", async () => {
       await delay(10);
+
       return [{ id: "h1", city: "Kyoto" }];
     });
 
     return step("finalize", async () => {
       await delay(6);
+
       return { plan, hotel: hotels[0] ?? null };
     });
   },

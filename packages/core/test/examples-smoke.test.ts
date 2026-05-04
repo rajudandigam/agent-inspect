@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -121,6 +122,38 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("04-error-handling");
     expect(readme).toContain("05-observe-wrapper");
     expect(readme).toContain("EXAMPLES_ROADMAP");
+  });
+
+  it("documentation and examples are readable multi-line files", () => {
+    const filesWithMinimumLines: Array<[string, number]> = [
+      [path.join(repoRoot, "README.md"), 80],
+      [path.join(examplesRoot, "README.md"), 30],
+      [path.join(examplesRoot, "01-basic", "index.ts"), 35],
+      [path.join(examplesRoot, "02-nested-steps", "index.ts"), 35],
+      [path.join(examplesRoot, "03-parallel-steps", "index.ts"), 35],
+      [path.join(examplesRoot, "04-error-handling", "index.ts"), 30],
+      [path.join(examplesRoot, "05-observe-wrapper", "index.ts"), 35],
+      [
+        path.join(
+          repoRoot,
+          "packages",
+          "core",
+          "test",
+          "examples-smoke.test.ts",
+        ),
+        100,
+      ],
+    ];
+
+    for (const [filePath, minimumLines] of filesWithMinimumLines) {
+      const content = readFileSync(filePath, "utf-8");
+      const lineCount = content.split(/\r?\n/).length;
+
+      expect(
+        lineCount,
+        `${path.relative(repoRoot, filePath)} should be readable multi-line content`,
+      ).toBeGreaterThanOrEqual(minimumLines);
+    }
   });
 
   it("roadmap doc exists and marks post-MVP items as future", () => {

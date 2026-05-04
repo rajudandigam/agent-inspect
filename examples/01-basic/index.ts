@@ -12,6 +12,7 @@ function delay(ms: number): Promise<void> {
 
 async function searchHotels(city: string): Promise<string[]> {
   await delay(20);
+
   return [`${city}-Hotel-A`, `${city}-Hotel-B`];
 }
 
@@ -19,6 +20,7 @@ async function checkAvailability(
   hotelId: string,
 ): Promise<{ hotelId: string; rooms: number }> {
   await delay(15);
+
   return { hotelId, rooms: hotelId.includes("A") ? 2 : 0 };
 }
 
@@ -27,6 +29,7 @@ async function finalizeBooking(room: {
   rooms: number;
 }): Promise<string> {
   await delay(10);
+
   return `confirmed:${room.hotelId}`;
 }
 
