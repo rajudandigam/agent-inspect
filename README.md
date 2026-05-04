@@ -1,10 +1,10 @@
 # agent-inspect
 
-AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agents.
+AgentInspect is a local-first execution-tree debugger for TypeScript AI agents.
 
 ## Why
 
-AI agents are multi-step. `console.log` output is flat and easy to lose. AgentInspect records **runs** and **steps** as a **tree** in JSONL, with durations and a small CLI so you can reopen a run later instead of reconstructing intent from logs.
+AI agents are multi-step. Console logs are flat. AgentInspect turns runs into structured execution trees with JSONL traces and CLI inspection.
 
 ## Install
 
@@ -12,7 +12,7 @@ AI agents are multi-step. `console.log` output is flat and easy to lose. AgentIn
 npm install agent-inspect
 ```
 
-This repository stays **`private: true`** until you intentionally publish the npm package.
+This repository keeps `"private": true` until intentional npm publishing.
 
 ## Quickstart
 
@@ -28,18 +28,20 @@ await inspectRun("my-agent-run", async () => {
 ## LLM and tool helpers
 
 ```typescript
-await step.llm("gpt-4.1", async () => {
-  /* your call */
+await step.llm("mock-gpt", async () => {
+  /* your planner / LLM-shaped work */
 });
 
 await step.tool("searchHotels", async () => {
-  /* your call */
+  /* your tool-shaped work */
 });
 ```
 
-These only **label** steps for the trace; they do not call vendor SDKs for you.
+Helpers only **label** steps in the trace; they do not import or call vendor SDKs for you.
 
 ## `observe()`
+
+`observe()` wraps top-level **`run`**, **`execute`**, and **`invoke`**. For internal detail, add manual **`step()`** (and helpers) inside the agent.
 
 ```typescript
 import { observe } from "agent-inspect";
@@ -54,7 +56,7 @@ const agent = observe(new MyAgent());
 await agent.run("hello");
 ```
 
-**MVP:** `observe()` wraps **`run`**, **`execute`**, and **`invoke`** on an object. It does **not** auto-wrap internal methods—add **`step()`** inside the agent for nested detail (see [examples/05-observe-wrapper](examples/05-observe-wrapper)).
+See [examples/05-observe-wrapper](examples/05-observe-wrapper) for triage + tool + LLM steps under one `run()`.
 
 ## CLI
 
@@ -63,7 +65,7 @@ agent-inspect list
 agent-inspect view <run-id>
 ```
 
-From a local clone after `pnpm build`:
+For local repo development (after `pnpm build`):
 
 ```bash
 node packages/cli/dist/index.cjs list
@@ -72,27 +74,30 @@ node packages/cli/dist/index.cjs view <run-id>
 
 ## Examples
 
-See **[examples/README.md](examples/README.md)** for run and inspect instructions.
+See **[examples/README.md](examples/README.md)** for how to run and inspect.
 
-- [01-basic](examples/01-basic) — `inspectRun` + `step`
-- [02-nested-steps](examples/02-nested-steps) — hierarchy
-- [03-parallel-steps](examples/03-parallel-steps) — `Promise.all` siblings
-- [04-error-handling](examples/04-error-handling) — errors in the trace
-- [05-observe-wrapper](examples/05-observe-wrapper) — `observe()` + manual `step()`
+- [01-basic](examples/01-basic)
+- [02-nested-steps](examples/02-nested-steps)
+- [03-parallel-steps](examples/03-parallel-steps)
+- [04-error-handling](examples/04-error-handling)
+- [05-observe-wrapper](examples/05-observe-wrapper)
 
 ## MVP scope
 
 **Included**
 
-- `inspectRun`, `step`, `step.llm`, `step.tool`, `observe`
+- `inspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`
 - JSONL traces
-- CLI `list` / `view`
+- CLI `list` and `view`
 
-**Not included (v0.1)**
+**Not included**
 
-- Framework adapters (LangChain, Vercel AI SDK, etc.)
+- Framework adapters
 - Token or cost tracking
-- Replay, SQLite dashboards, OpenTelemetry
+- Replay
+- SQLite
+- Dashboards
+- OpenTelemetry
 
 ## Development
 
@@ -103,6 +108,4 @@ pnpm test
 pnpm test:all
 ```
 
-Roadmap (docs only): [docs/EXAMPLES_ROADMAP.md](docs/EXAMPLES_ROADMAP.md).  
-Narrative: [docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md).  
-Product definition: [docs/AGENT_INSPECT_PRD_FINAL.md](docs/AGENT_INSPECT_PRD_FINAL.md).
+More context: [docs/EXAMPLES_ROADMAP.md](docs/EXAMPLES_ROADMAP.md), [docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md), [docs/AGENT_INSPECT_PRD_FINAL.md](docs/AGENT_INSPECT_PRD_FINAL.md).

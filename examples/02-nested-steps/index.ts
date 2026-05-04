@@ -1,6 +1,6 @@
 /**
- * Trip planner: `plan-trip` nests LLM + parse steps; `searchHotels` and `finalize` are
- * root-level siblings under the same run so the hierarchy is obvious in the trace.
+ * Trip planner: nested LLM + parse under `plan-trip`, then tool + finalize as root-level
+ * steps so parent/child vs siblings is obvious in the trace.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -10,7 +10,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const outcome = await inspectRun(
+const result = await inspectRun(
   "trip-planner",
   async () => {
     const plan = await step("plan-trip", async () => {
@@ -35,13 +35,14 @@ const outcome = await inspectRun(
 
     return step("finalize", async () => {
       await delay(6);
-      return { plan, hotel: hotels[0]! };
+      const hotel = hotels[0] ?? { id: "none", city: "unknown" };
+      return { plan, hotel };
     });
   },
   { silent },
 );
 
-console.log("\nResult:", outcome);
+console.log("\nTrip plan:", result);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");

@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-`plan-trip` nests an LLM-shaped step and `parse-plan` under one parent; `searchHotels` and `finalize` run afterward as separate root-level steps, so the JSONL tree clearly separates “planning subtree” from “booking follow-up.”
+`plan-trip` nests `mock-gpt` and `parse-plan`; `searchHotels` and `finalize` are separate root-level steps so parent/child vs siblings is clear in the trace.
 
 ## Run
 
@@ -20,6 +20,12 @@ node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
 
+## Quiet mode
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Note
 
-Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+Parent–child execution tree: nested steps under `plan-trip`, then siblings at the run root.

@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-A failing step records `step_completed` / `run_completed` as error, `apply-discount` never runs, and the original error still escapes `inspectRun`—the `try/catch` here is only to print a friendly hint after the fact.
+A failing step records error status in the trace; `apply-discount` never runs; the original error still leaves `inspectRun` (the `catch` is only for demo messages).
 
 ## Run
 
@@ -20,6 +20,12 @@ node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
 
+## Quiet mode
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Note
 
-Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+Failed step plus original error propagation; inspect `step_completed` / `run_completed` in the trace.

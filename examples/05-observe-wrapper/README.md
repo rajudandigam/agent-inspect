@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-`observe()` adds a traced boundary around each top-level `run()`; internal `step`, `step.tool`, and `step.llm` calls add structure under that run so you still get an execution tree in MVP without framework adapters.
+`observe()` wraps top-level `run()`; triage, tool, and LLM-shaped steps inside the class add internal execution-tree detail under that run.
 
 ## Run
 
@@ -20,6 +20,12 @@ node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
 
+## Quiet mode
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Note
 
-Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+`observe` is top-level only in MVP; internal detail uses `step()`, `step.tool()`, and `step.llm()`.

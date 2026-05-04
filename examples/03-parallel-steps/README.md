@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-Inside `collect-context`, three tool steps run in parallel and share the same parent in the trace; `merge-context` runs after they finish as another child of the same parent—so you see parallel siblings plus one sequential follow-up under one subtree.
+Under `collect-context`, three tool steps run in parallel and share the same `parentId` in JSONL; `merge-context` runs afterward as another child of that parent.
 
 ## Run
 
@@ -20,6 +20,12 @@ node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
 
+## Quiet mode
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Note
 
-Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+`Promise.all` sibling isolation: parallel tools share one parent; merge runs after they complete.

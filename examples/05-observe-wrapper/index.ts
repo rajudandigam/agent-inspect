@@ -1,5 +1,6 @@
 /**
- * Customer support agent: combine top-level tracing with internal steps.
+ * Customer support: `observe()` traces each top-level `run()`; internal `step` calls
+ * add execution-tree detail under that run.
  */
 import { observe, step } from "agent-inspect";
 
@@ -28,7 +29,7 @@ class CustomerSupportAgent {
 
     return step.llm("mock-support-model", async () => {
       await delay(15);
-      return `Category: ${category}. ${articles[0]!}`;
+      return `Category: ${category}. ${articles[0] ?? ""}`;
     });
   }
 }
@@ -36,9 +37,10 @@ class CustomerSupportAgent {
 // observe() tracks the top-level run()/execute()/invoke() call.
 // Manual step() calls inside the agent provide internal execution-tree detail.
 const observed = observe(new CustomerSupportAgent(), { silent });
+
 const reply = await observed.run("How do I reset my password?");
 
-console.log("\nReply:", reply);
+console.log("\nSupport reply:", reply);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");

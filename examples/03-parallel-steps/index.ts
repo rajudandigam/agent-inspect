@@ -1,6 +1,6 @@
 /**
- * Travel context: under `collect-context`, three tools run in parallel (`Promise.all`),
- * then `merge-context` runs as a sequential child—same parent as the parallel siblings.
+ * Travel context: three tools run in parallel under one parent, then a merge step
+ * runs in the same parent after `Promise.all` completes.
  */
 import { inspectRun, step } from "agent-inspect";
 
@@ -10,7 +10,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const summary = await inspectRun(
+const merged = await inspectRun(
   "travel-context",
   async () => {
     return step("collect-context", async () => {
@@ -19,10 +19,12 @@ const summary = await inspectRun(
           await delay(18);
           return { tempC: 22 };
         }),
+
         step.tool("fetchEvents", async () => {
           await delay(12);
           return [{ name: "Jazz night" }];
         }),
+
         step.tool("fetchHotelPrices", async () => {
           await delay(9);
           return [{ night: 120 }];
@@ -33,7 +35,7 @@ const summary = await inspectRun(
         await delay(5);
         return {
           status: "merged",
-          note: "Combined parallel tool results (see trace for each tool step).",
+          note: "See trace: three tool siblings share parentId, merge is a later child.",
         };
       });
     });
@@ -41,7 +43,7 @@ const summary = await inspectRun(
   { silent },
 );
 
-console.log("\nMerged context:", summary);
+console.log("\nMerged context:", merged);
 console.log("\nNext:");
 console.log("  agent-inspect list");
 console.log("  agent-inspect view <run-id>");

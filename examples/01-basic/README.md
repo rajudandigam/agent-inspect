@@ -2,7 +2,7 @@
 
 ## What it demonstrates
 
-One named run with three steps—search, availability check, finalize—so you see a minimal execution tree and timings in the trace.
+A single named run with three steps so you see the smallest useful execution tree and printed booking outcome.
 
 ## Run
 
@@ -20,6 +20,12 @@ node ../../packages/cli/dist/index.cjs list
 node ../../packages/cli/dist/index.cjs view <run-id>
 ```
 
+## Quiet mode
+
+```bash
+AGENT_INSPECT_SILENT=true pnpm start
+```
+
 ## Note
 
-Terminal output is on by default. Use `AGENT_INSPECT_SILENT=true pnpm start` for quiet runs.
+Basic run plus three sequential steps (`search-hotels` → `check-availability` → `finalize-booking`).
