@@ -65,6 +65,8 @@ export {
   getRunIdFromTraceFileName,
 } from "./storage.js";
 
+export { inspectRun } from "./inspect-run.js";
+
 export {
   TERMINAL_INDENT,
   MAX_TERMINAL_NAME_LENGTH,
@@ -82,4 +84,4 @@ export {
   renderRunSummary,
 } from "./terminal.js";
 
-export { inspectRun } from "./inspect-run.js";
+export { step } from "./step.js";
