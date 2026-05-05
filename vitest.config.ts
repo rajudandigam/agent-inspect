@@ -1,6 +1,13 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // In-repo tests run before build; point workspace imports at source.
+      "@agent-inspect/core": new URL("./packages/core/src/index.ts", import.meta.url)
+        .pathname,
+    },
+  },
   test: {
     environment: "node",
     include: ["packages/**/*.test.ts"],
