@@ -6,7 +6,7 @@
   "description": "Local-first execution-tree debugger for TypeScript AI agents",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rajudandigam/agent-inspect.git"
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git"
   },
   "bugs": {
     "url": "https://github.com/rajudandigam/agent-inspect/issues"
@@ -24,7 +24,7 @@
     }
   },
   "bin": {
-    "agent-inspect": "./packages/cli/dist/index.cjs"
+    "agent-inspect": "packages/cli/dist/index.cjs"
   },
   "files": [
     "packages/core/dist",
@@ -43,6 +43,9 @@
     "jsonl",
     "cli"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "chalk": "^5.3.0",
     "nanoid": "^5.0.9",

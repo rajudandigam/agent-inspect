@@ -25,9 +25,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.14.0
           registry-url: https://registry.npmjs.org
           cache: pnpm
+
+      - name: Ensure npm supports Trusted Publishing
+        run: npm install -g npm@latest
 
       - run: pnpm install --frozen-lockfile
 
@@ -36,6 +39,11 @@ jobs:
 
       # Trusted Publishing (OIDC): on npmjs.com, set the GitHub trusted publisher workflow name to **publish.yml**
       # (this file), matching the repo path `.github/workflows/publish.yml`. No NPM_TOKEN secret.
+      #
+      # Configure on npmjs.com (after the package exists):
+      # - GitHub owner: rajudandigam
+      # - Repository: agent-inspect
+      # - Workflow filename: publish.yml
       - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:

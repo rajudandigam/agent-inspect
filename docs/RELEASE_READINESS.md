@@ -7,7 +7,7 @@
 - MVP examples complete (01–05).
 - Root and examples README complete; line-count smoke tests guard formatting.
 - Unit tests, coverage, and size gate passing locally and in CI.
-- Root package remains **`"private": true`** until the intentional first publish (safety).
+- Root package is ready for the first public publish of **`agent-inspect@0.1.0`**.
 
 ## 2. Local verification
 
@@ -148,3 +148,7 @@ To keep the temp dir and tarball for debugging:
 ```bash
 AGENT_INSPECT_KEEP_SMOKE_DIR=true pnpm pack:smoke
 ```
+
+## 10. Release playbook
+
+For the step-by-step publishing process (manual first publish + setting up npm Trusted Publishing for future releases), see `docs/RELEASE-PLAYBOOK.md`.
