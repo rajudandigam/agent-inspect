@@ -1,0 +1,116 @@
+/**
+ * Install the packed tarball into a temp dir and verify ESM import + local bin CLI.
+ * Uses only Node built-ins. Run from repo root: pnpm run pack:smoke
+ */
+import { execSync, spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const keep = process.env.AGENT_INSPECT_KEEP_SMOKE_DIR === "true";
+
+function assertHelp(label, stdout, stderr, status) {
+  const combined = `${stdout}\n${stderr}`;
+  if (status !== 0 && status != null) {
+    console.error(`[pack:smoke] ${label} exit ${status}\n${combined}`);
+    process.exit(1);
+  }
+  for (const needle of ["agent-inspect", "list", "view"]) {
+    if (!combined.includes(needle)) {
+      console.error(
+        `[pack:smoke] ${label}: expected stdout to contain "${needle}"\n${combined}`,
+      );
+      process.exit(1);
+    }
+  }
+}
+
+process.chdir(root);
+
+const packOut = execSync("npm pack --silent", { encoding: "utf8", cwd: root });
+const tgzName = packOut
+  .trim()
+  .split(/\r?\n/)
+  .map((l) => l.trim())
+  .filter(Boolean)
+  .at(-1);
+
+if (!tgzName || !tgzName.endsWith(".tgz")) {
+  console.error("[pack:smoke] could not parse .tgz name from npm pack:\n", packOut);
+  process.exit(1);
+}
+
+const tgzPath = path.join(root, tgzName);
+if (!existsSync(tgzPath)) {
+  console.error("[pack:smoke] tarball missing:", tgzPath);
+  process.exit(1);
+}
+
+const tmpRoot = path.join(
+  os.tmpdir(),
+  `agent-inspect-pack-smoke-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+);
+mkdirSync(tmpRoot, { recursive: true });
+
+try {
+  writeFileSync(
+    path.join(tmpRoot, "package.json"),
+    `${JSON.stringify({ name: "agent-inspect-smoke", private: true, type: "module" }, null, 2)}\n`,
+  );
+
+  execSync(`npm install "${tgzPath}"`, {
+    cwd: tmpRoot,
+    stdio: "inherit",
+    encoding: "utf8",
+  });
+
+  const esm = spawnSync(
+    process.execPath,
+    [
+      "-e",
+      "import('agent-inspect').then(m => { if (!m.inspectRun || !m.step || !m.observe) process.exit(1); })",
+    ],
+    { cwd: tmpRoot, encoding: "utf8" },
+  );
+  if (esm.status !== 0) {
+    console.error("[pack:smoke] ESM import check failed:\n", esm.stderr || esm.stdout);
+    process.exit(1);
+  }
+
+  const binPath = path.join(tmpRoot, "node_modules", ".bin", "agent-inspect");
+  if (!existsSync(binPath)) {
+    console.error("[pack:smoke] missing node_modules/.bin/agent-inspect");
+    process.exit(1);
+  }
+
+  const binHelp = spawnSync(binPath, ["--help"], {
+    cwd: tmpRoot,
+    encoding: "utf8",
+  });
+  assertHelp("./node_modules/.bin/agent-inspect --help", binHelp.stdout, binHelp.stderr, binHelp.status);
+
+  const npmExec = spawnSync("npm", ["exec", "--", "agent-inspect", "--help"], {
+    cwd: tmpRoot,
+    encoding: "utf8",
+    shell: true,
+  });
+  assertHelp("npm exec -- agent-inspect --help", npmExec.stdout, npmExec.stderr, npmExec.status);
+
+  const npxNoInstall = spawnSync("npx", ["--no-install", "agent-inspect", "--help"], {
+    cwd: tmpRoot,
+    encoding: "utf8",
+    shell: true,
+  });
+  assertHelp("npx --no-install agent-inspect --help", npxNoInstall.stdout, npxNoInstall.stderr, npxNoInstall.status);
+
+  console.log("[pack:smoke] OK: tarball install, ESM import, and local bin / npm exec / npx --no-install --help");
+} finally {
+  if (!keep) {
+    rmSync(tmpRoot, { recursive: true, force: true });
+    rmSync(tgzPath, { force: true });
+  } else {
+    console.log("[pack:smoke] kept:", tmpRoot, tgzPath);
+  }
+}

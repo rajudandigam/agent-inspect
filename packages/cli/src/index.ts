@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -66,7 +67,13 @@ function isPrimaryModule(): boolean {
   const entry = process.argv[1];
   if (!entry) return false;
   const selfPath = fileURLToPath(import.meta.url);
-  return path.resolve(entry) === path.resolve(selfPath);
+  try {
+    return (
+      realpathSync(path.resolve(entry)) === realpathSync(path.resolve(selfPath))
+    );
+  } catch {
+    return path.resolve(entry) === path.resolve(selfPath);
+  }
 }
 
 if (isPrimaryModule()) {

@@ -58,9 +58,11 @@
     "test:coverage": "vitest run --coverage",
     "size": "size-limit --config size-limit.config.mjs",
     "test:all": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size",
-    "prepublish:checks": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size",
+    "prepublish:checks": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size && pnpm run pack:smoke",
+    "prepublishOnly": "pnpm run prepublish:checks",
     "prepack": "pnpm run clean && pnpm run build",
     "pack:dry-run": "pnpm run build && npm pack --dry-run",
+    "pack:smoke": "pnpm run build && node scripts/package-smoke.mjs",
     "examples:check": "pnpm install && pnpm --filter agent-inspect-example-01-basic run start",
     "changeset": "changeset",
     "release": "changeset publish"
