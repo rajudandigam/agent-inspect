@@ -1,4 +1,4 @@
-# AgentInspect — Cursor guardrails
+# agent-inspect — Cursor guardrails
 
 ## Source of truth
 
@@ -17,7 +17,7 @@
 - No plugin system
 - No general-purpose logger API
 
-AgentInspect must not become a logger library. The core concept is an **execution tree of steps**.
+agent-inspect must not become a logger library. The core concept is an **execution tree of steps**.
 
 ## Engineering requirements
 

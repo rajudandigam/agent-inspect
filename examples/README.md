@@ -1,4 +1,4 @@
-# AgentInspect Examples
+# agent-inspect examples
 
 These are runnable MVP examples.
 

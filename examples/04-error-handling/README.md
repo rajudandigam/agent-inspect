@@ -6,7 +6,7 @@ This example shows failed step tracking and original error propagation.
 
 A pricing step throws.
 
-AgentInspect records the failed step.
+agent-inspect records the failed step.
 
 The original error still bubbles out of `inspectRun()`.
 

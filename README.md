@@ -1,14 +1,14 @@
 # agent-inspect
 
-AgentInspect is a local-first execution-tree debugger for TypeScript AI agents.
+agent-inspect is a local-first execution-tree debugger for TypeScript AI agents.
 
 ## Why
 
 AI agents are multi-step. Console logs are flat.
 
-AgentInspect turns runs into structured execution trees with JSONL traces and CLI inspection.
+agent-inspect turns runs into structured execution trees with JSONL traces and CLI inspection.
 
-AgentInspect is designed for inner-loop debugging, not as a replacement for production observability platforms.
+agent-inspect is designed for inner-loop debugging, not as a replacement for production observability platforms.
 
 ## What you get
 
@@ -186,7 +186,7 @@ try {
 }
 ```
 
-AgentInspect records the failed step, writes it to the trace file, and still rethrows the original error.
+agent-inspect records the failed step, writes it to the trace file, and still rethrows the original error.
 
 ### Example 4: `observe()` wrapper
 
@@ -249,7 +249,7 @@ node packages/cli/dist/index.cjs view run_abc123
 
 ## Local traces
 
-AgentInspect writes one JSONL file per run.
+agent-inspect writes one JSONL file per run.
 
 Default location:
 
