@@ -41,7 +41,8 @@ describe("package manifest (root agent-inspect)", () => {
     expect(files).toContain("packages/cli/dist");
 
     expect(pkg.sideEffects).toBe(false);
-    expect(pkg.private).toBe(true);
+    // Root ships to npm as the public `agent-inspect` package (not workspace-private).
+    expect(pkg.private).not.toBe(true);
   });
 });
 
