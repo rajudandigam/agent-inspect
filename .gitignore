@@ -10,4 +10,4 @@ coverage
 .vscode/*.log
 .cursorrules*
 .cursor/*
-.docs/*
+docs/*
