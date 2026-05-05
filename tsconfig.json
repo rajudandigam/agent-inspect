@@ -15,6 +15,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@agent-inspect/core": ["packages/core/src/index.ts"],
+      "@agent-inspect/core/*": ["packages/core/src/*"]
+    },
     "types": ["node"]
   },
   "include": [
