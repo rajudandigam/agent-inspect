@@ -12,11 +12,9 @@ export default defineConfig({
       "@agent-inspect/core": coreEntry,
     },
   },
-  server: {
-    deps: {
-      // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
-      inline: [/^@agent-inspect\/core$/],
-    },
+  ssr: {
+    // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
+    noExternal: ["@agent-inspect/core"],
   },
   test: {
     environment: "node",
