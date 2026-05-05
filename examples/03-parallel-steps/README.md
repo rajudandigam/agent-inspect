@@ -2,7 +2,11 @@
 
 ## What it demonstrates
 
-This example shows `Promise.all` sibling isolation. Three parallel tool steps run under the same parent step without corrupting each other's parent IDs.
+This example shows `Promise.all` sibling isolation.
+
+Three tool steps run in parallel under one parent.
+
+They share the same parent step id in the trace without corrupting each other.
 
 ## Run
 
@@ -30,4 +34,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-The three tool steps should share the same parent in the trace because they run inside `collect-context`.
+Compare sibling tool steps under `collect-context` with the later `merge-context` child.

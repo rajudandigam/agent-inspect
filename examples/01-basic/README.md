@@ -2,7 +2,9 @@
 
 ## What it demonstrates
 
-This example shows the smallest useful `inspectRun()` + `step()` workflow. It models a simple hotel booking flow with search, availability, and finalize steps.
+This example shows the smallest useful `inspectRun()` + `step()` workflow.
+
+It models a simple hotel booking flow with search, availability, and finalize steps.
 
 ## Run
 

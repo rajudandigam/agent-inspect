@@ -1,12 +1,8 @@
 # AgentInspect Examples
 
-These are runnable **MVP** examples.
+These are runnable MVP examples.
 
-They use fake async helpers only:
-
-- No API keys
-- No external LLM SDKs
-- No network calls
+They use fake async functions, no API keys, no external LLM SDKs, and no network calls.
 
 | Example | Demonstrates |
 | --- | --- |
@@ -16,10 +12,6 @@ They use fake async helpers only:
 | [04-error-handling](04-error-handling) | Failed steps and error traces |
 | [05-observe-wrapper](05-observe-wrapper) | Proxy wrapper for agent-like objects |
 
-## Prerequisites
-
-Build the library once from the repository root so `agent-inspect` resolves for each example package.
-
 ## How to run
 
 Build the library from the repo root:
@@ -28,7 +20,7 @@ Build the library from the repo root:
 pnpm build
 ```
 
-Run an example (pick any of the five folders under `examples/`):
+Run an example:
 
 ```bash
 cd examples/01-basic
@@ -38,21 +30,12 @@ pnpm start
 
 ## Inspect traces
 
-After a run finishes, list recent traces:
-
 ```bash
 node ../../packages/cli/dist/index.cjs list
-```
-
-Open a specific run (replace with a real id from `list` output; placeholder below):
-
-```bash
 node ../../packages/cli/dist/index.cjs view run_abc123
 ```
 
 ## Quiet mode
-
-Suppress terminal progress output while still writing JSONL:
 
 ```bash
 AGENT_INSPECT_SILENT=true pnpm start
@@ -60,6 +43,6 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## What is not included
 
-Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are intentionally **post-MVP**.
+Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are intentionally post-MVP.
 
 They are docs-only for v0.1 and should not add dependencies to the MVP package.

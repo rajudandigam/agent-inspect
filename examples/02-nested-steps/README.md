@@ -2,7 +2,11 @@
 
 ## What it demonstrates
 
-This example shows parent-child execution tree hierarchy. The `plan-trip` step contains an LLM-shaped step and a parse step, while hotel search and finalization are root-level sibling steps.
+This example shows parent-child execution tree hierarchy.
+
+The `plan-trip` step contains an LLM-shaped step and a parse step.
+
+Hotel search and finalization are root-level sibling steps.
 
 ## Run
 
@@ -30,4 +34,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-Use this example to understand how nested steps become parent-child relationships in the JSONL trace.
+Use this example to understand nested steps versus root-level siblings in the JSONL trace.

@@ -124,6 +124,30 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("EXAMPLES_ROADMAP");
   });
 
+  it("roadmap doc exists and marks post-MVP items as future", () => {
+    const roadmap = readFileSync(
+      path.join(repoRoot, "docs", "EXAMPLES_ROADMAP.md"),
+      "utf-8",
+    );
+
+    expect(roadmap).toContain("06-rag-pipeline");
+    expect(roadmap).toContain("post-MVP");
+    expect(roadmap).toMatch(/must not expand|MVP scope/i);
+    expect(roadmap).toMatch(/must not add dependencies|dependencies/i);
+  });
+
+  it("case study doc exists", () => {
+    expect(
+      existsSync(
+        path.join(
+          repoRoot,
+          "docs",
+          "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
+        ),
+      ),
+    ).toBe(true);
+  });
+
   it("documentation and examples are readable multi-line files", () => {
     const filesWithMinimumLines: Array<[string, number]> = [
       [path.join(repoRoot, "README.md"), 80],
@@ -154,30 +178,6 @@ describe("MVP examples (static checks)", () => {
         `${path.relative(repoRoot, filePath)} should be readable multi-line content`,
       ).toBeGreaterThanOrEqual(minimumLines);
     }
-  });
-
-  it("roadmap doc exists and marks post-MVP items as future", () => {
-    const roadmap = readFileSync(
-      path.join(repoRoot, "docs", "EXAMPLES_ROADMAP.md"),
-      "utf-8",
-    );
-
-    expect(roadmap).toContain("06-rag-pipeline");
-    expect(roadmap).toContain("post-MVP");
-    expect(roadmap).toMatch(/must not expand|MVP scope/i);
-    expect(roadmap).toMatch(/must not add dependencies|dependencies/i);
-  });
-
-  it("case study doc exists", () => {
-    expect(
-      existsSync(
-        path.join(
-          repoRoot,
-          "docs",
-          "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
-        ),
-      ),
-    ).toBe(true);
   });
 
   it("examples/ contains exactly the five MVP example directories", () => {

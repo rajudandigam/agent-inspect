@@ -2,7 +2,11 @@
 
 ## What it demonstrates
 
-This example shows the `observe()` wrapper for agent-like objects. `observe()` tracks the top-level `run()` call, while manual `step()`, `step.tool()`, and `step.llm()` calls provide internal execution-tree detail.
+This example shows the `observe()` top-level wrapper for agent-like objects.
+
+`observe()` tracks the top-level `run()` call.
+
+Manual `step()`, `step.tool()`, and `step.llm()` calls add internal execution-tree detail.
 
 ## Run
 
@@ -30,4 +34,6 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-In MVP, `observe()` only wraps top-level `run`, `execute`, and `invoke` methods. Add manual steps inside the agent for nested visibility.
+In MVP, `observe()` wraps top-level `run`, `execute`, and `invoke` only.
+
+Add manual steps inside the class for nested visibility.

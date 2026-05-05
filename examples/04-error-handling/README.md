@@ -2,7 +2,13 @@
 
 ## What it demonstrates
 
-This example shows failed step tracking and original error propagation. A pricing step throws, AgentInspect records the failed step, and the original error still bubbles out of `inspectRun()`.
+This example shows failed step tracking and original error propagation.
+
+A pricing step throws.
+
+AgentInspect records the failed step.
+
+The original error still bubbles out of `inspectRun()`.
 
 ## Run
 
@@ -30,4 +36,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## Note
 
-The trace should contain both a failed `step_completed` event and a failed `run_completed` event.
+The outer `catch` is only for readable demo output in the console.

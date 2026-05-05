@@ -4,7 +4,9 @@ AgentInspect is a local-first execution-tree debugger for TypeScript AI agents.
 
 ## Why
 
-AI agents are multi-step. Console logs are flat. AgentInspect turns runs into structured execution trees with JSONL traces and CLI inspection.
+AI agents are multi-step. Console logs are flat.
+
+AgentInspect turns runs into structured execution trees with JSONL traces and CLI inspection.
 
 ## Install
 
@@ -37,7 +39,9 @@ await step.tool("searchHotels", async () => {
 });
 ```
 
-Helpers only label steps in the trace. They do not import or call vendor SDKs.
+Helpers only label steps in the trace.
+
+They do not import or call vendor SDKs.
 
 ## observe()
 
