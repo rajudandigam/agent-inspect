@@ -2,8 +2,8 @@
 
 ## Source of truth
 
-- **Product, architecture, MVP scope, public API, data model, JSONL schema:** `docs/AGENT_INSPECT_PRD_FINAL.md`
-- **Step-by-step implementation sequence:** `docs/CURSOR_IMPLEMENTATION_GUIDE.md`
+- **Product, architecture, MVP scope, public API, data model, JSONL schema:** repo top-level docs (start with `README.md`)
+- **Step-by-step implementation sequence:** follow the repo’s implementation guide (if present) and existing patterns in `packages/`
 
 ## MVP drift (do not implement unless the PRD explicitly promotes it)
 

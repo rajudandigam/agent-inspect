@@ -331,9 +331,3 @@ pnpm build
 pnpm test
 pnpm test:all
 ```
-
-## More context
-
-- [Examples roadmap](docs/EXAMPLES_ROADMAP.md)
-- [Console log case study](docs/CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md)
-- [Product requirements](docs/AGENT_INSPECT_PRD_FINAL.md)

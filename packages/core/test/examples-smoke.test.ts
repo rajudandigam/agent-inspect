@@ -121,31 +121,6 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("03-parallel-steps");
     expect(readme).toContain("04-error-handling");
     expect(readme).toContain("05-observe-wrapper");
-    expect(readme).toContain("EXAMPLES_ROADMAP");
-  });
-
-  it("roadmap doc exists and marks post-MVP items as future", () => {
-    const roadmap = readFileSync(
-      path.join(repoRoot, "docs", "EXAMPLES_ROADMAP.md"),
-      "utf-8",
-    );
-
-    expect(roadmap).toContain("06-rag-pipeline");
-    expect(roadmap).toContain("post-MVP");
-    expect(roadmap).toMatch(/must not expand|MVP scope/i);
-    expect(roadmap).toMatch(/must not add dependencies|dependencies/i);
-  });
-
-  it("case study doc exists", () => {
-    expect(
-      existsSync(
-        path.join(
-          repoRoot,
-          "docs",
-          "CASE_STUDY_CONSOLE_LOG_TO_AGENT_INSPECT.md",
-        ),
-      ),
-    ).toBe(true);
   });
 
   it("documentation and examples are readable multi-line files", () => {

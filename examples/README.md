@@ -43,6 +43,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## What is not included
 
-Advanced examples are tracked in [docs/EXAMPLES_ROADMAP.md](../docs/EXAMPLES_ROADMAP.md) and are intentionally post-MVP.
-
-They are docs-only for v0.1 and should not add dependencies to the MVP package.
+Advanced examples are intentionally post-MVP for v0.1 and should not add dependencies to the MVP package.

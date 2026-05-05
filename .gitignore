@@ -8,3 +8,5 @@ coverage
 .pnpm-debug.log*
 .idea
 .vscode/*.log
+.cursorrules*
+.cursor/*
