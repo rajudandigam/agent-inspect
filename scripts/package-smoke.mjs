@@ -29,13 +29,44 @@ function assertHelp(label, stdout, stderr, status) {
 
 process.chdir(root);
 
-const packOut = execSync("npm pack --silent", { encoding: "utf8", cwd: root });
-const tgzName = packOut
-  .trim()
-  .split(/\r?\n/)
-  .map((l) => l.trim())
-  .filter(Boolean)
-  .at(-1);
+function parsePackedFilename(output) {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+
+  // Some environments set npm_config_json=true which makes npm commands emit JSON.
+  // Prefer parsing JSON when it looks like JSON.
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed[0]?.filename;
+      if (typeof parsed === "object" && parsed && "filename" in parsed) {
+        return parsed.filename;
+      }
+    } catch {
+      // Fall through to line parsing.
+    }
+  }
+
+  return trimmed
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .at(-1);
+}
+
+// Force non-JSON output so we can reliably read the .tgz filename even when
+// the environment sets npm_config_json=true (common in CI/release tooling).
+const packProc = spawnSync("npm", ["pack", "--silent", "--ignore-scripts"], {
+  cwd: root,
+  encoding: "utf8",
+  env: {
+    ...process.env,
+    npm_config_json: "false",
+    NPM_CONFIG_JSON: "false",
+  },
+});
+const packOut = `${packProc.stdout || ""}\n${packProc.stderr || ""}`.trim();
+const tgzName = parsePackedFilename(packOut);
 
 if (!tgzName || !tgzName.endsWith(".tgz")) {
   console.error("[pack:smoke] could not parse .tgz name from npm pack:\n", packOut);

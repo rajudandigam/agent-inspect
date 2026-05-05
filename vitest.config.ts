@@ -12,14 +12,16 @@ export default defineConfig({
       "@agent-inspect/core": coreEntry,
     },
   },
-  test: {
-    environment: "node",
-    include: ["packages/**/*.test.ts"],
-    exclude: ["**/dist/**", "**/node_modules/**", "docs/**", "examples/**"],
+  server: {
     deps: {
       // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
       inline: [/^@agent-inspect\/core$/],
     },
+  },
+  test: {
+    environment: "node",
+    include: ["packages/**/*.test.ts"],
+    exclude: ["**/dist/**", "**/node_modules/**", "docs/**", "examples/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
