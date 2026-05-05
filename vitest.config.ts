@@ -1,28 +1,25 @@
 import { defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
+const coreEntry = fileURLToPath(
+  new URL("./packages/core/src/index.ts", import.meta.url),
+);
+
 export default defineConfig({
   resolve: {
-    alias: [
-      // In-repo tests run before build; point workspace imports at source.
-      {
-        find: /^@agent-inspect\/core$/,
-        replacement: fileURLToPath(
-          new URL("./packages/core/src/index.ts", import.meta.url),
-        ),
-      },
-      {
-        find: /^@agent-inspect\/core\/(.*)$/,
-        replacement: fileURLToPath(
-          new URL("./packages/core/src/$1", import.meta.url),
-        ),
-      },
-    ],
+    // In-repo tests run before build; point workspace imports at source.
+    alias: {
+      "@agent-inspect/core": coreEntry,
+    },
   },
   test: {
     environment: "node",
     include: ["packages/**/*.test.ts"],
     exclude: ["**/dist/**", "**/node_modules/**", "docs/**", "examples/**"],
+    deps: {
+      // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
+      inline: [/^@agent-inspect\/core$/],
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
