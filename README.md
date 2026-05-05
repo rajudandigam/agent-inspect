@@ -8,6 +8,8 @@ AI agents are multi-step. Console logs are flat.
 
 AgentInspect turns runs into structured execution trees with JSONL traces and CLI inspection.
 
+AgentInspect is designed for inner-loop debugging, not as a replacement for production observability platforms.
+
 ## What you get
 
 - Execution-tree tracing for TypeScript agent workflows
@@ -27,10 +29,6 @@ npm install agent-inspect
 ## See your first trace
 
 Install, run a traced workflow, then inspect it with the CLI.
-
-```bash
-npm install agent-inspect
-```
 
 ```ts
 import { inspectRun, step } from "agent-inspect";
@@ -272,9 +270,7 @@ cat ~/.agent-inspect/runs/run_abc123.jsonl
 cat ~/.agent-inspect/runs/run_abc123.jsonl | jq
 ```
 
-## Examples
-
-### Runnable examples
+## Runnable examples
 
 The repo includes five runnable MVP examples:
 
@@ -305,12 +301,6 @@ Do not commit `node_modules`. Example dependencies are installed locally when yo
 Supporting material:
 
 - [examples/README.md](examples/README.md)
-
-- [01-basic](examples/01-basic)
-- [02-nested-steps](examples/02-nested-steps)
-- [03-parallel-steps](examples/03-parallel-steps)
-- [04-error-handling](examples/04-error-handling)
-- [05-observe-wrapper](examples/05-observe-wrapper)
 
 ## MVP scope
 
