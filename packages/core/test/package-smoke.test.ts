@@ -1,22 +1,78 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const coreMjs = path.join(here, "../../dist/index.mjs");
-const coreCjs = path.join(here, "../../dist/index.cjs");
-const cliCjs = path.join(here, "../../../packages/cli/dist/index.cjs");
+const testDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(testDir, "../../..");
+const coreDistDir = path.join(repoRoot, "packages", "core", "dist");
+const cliDistDir = path.join(repoRoot, "packages", "cli", "dist");
 
-const distPresent = existsSync(coreMjs);
+const coreMjs = path.join(coreDistDir, "index.mjs");
+const coreCjs = path.join(coreDistDir, "index.cjs");
+const coreDts = path.join(coreDistDir, "index.d.ts");
+const cliCjs = path.join(cliDistDir, "index.cjs");
 
-describe("package dist smoke", () => {
+const distPresent =
+  existsSync(coreMjs) &&
+  existsSync(coreCjs) &&
+  existsSync(coreDts) &&
+  existsSync(cliCjs);
+
+describe("package manifest (root agent-inspect)", () => {
+  it("has expected public package fields", () => {
+    const raw = readFileSync(path.join(repoRoot, "package.json"), "utf-8");
+    const pkg = JSON.parse(raw) as Record<string, unknown>;
+
+    expect(pkg.name).toBe("agent-inspect");
+    expect(typeof pkg.main).toBe("string");
+    expect(typeof pkg.module).toBe("string");
+    expect(typeof pkg.types).toBe("string");
+
+    const exportsField = pkg.exports as Record<string, unknown> | undefined;
+    expect(exportsField?.["."]).toBeDefined();
+
+    const bin = pkg.bin as Record<string, string> | undefined;
+    expect(bin?.["agent-inspect"]).toBeDefined();
+
+    const files = pkg.files as string[] | undefined;
+    expect(files).toContain("packages/core/dist");
+    expect(files).toContain("packages/cli/dist");
+
+    expect(pkg.sideEffects).toBe(false);
+    expect(pkg.private).toBe(true);
+  });
+});
+
+describe("package manifest (internal workspace packages)", () => {
+  it("keeps core and cli private (not published separately)", () => {
+    const coreRaw = readFileSync(
+      path.join(repoRoot, "packages", "core", "package.json"),
+      "utf-8",
+    );
+    const cliRaw = readFileSync(
+      path.join(repoRoot, "packages", "cli", "package.json"),
+      "utf-8",
+    );
+
+    const corePkg = JSON.parse(coreRaw) as { name?: string; private?: boolean };
+    const cliPkg = JSON.parse(cliRaw) as { name?: string; private?: boolean };
+
+    expect(corePkg.name).toBe("@agent-inspect/core");
+    expect(corePkg.private).toBe(true);
+    expect(cliPkg.name).toBe("@agent-inspect/cli");
+    expect(cliPkg.private).toBe(true);
+  });
+});
+
+describe("package dist outputs", () => {
   it.skipIf(!distPresent)(
-    "built core and CLI artifacts exist after pnpm build",
+    "built core and CLI artifacts exist (run pnpm build first)",
     () => {
       expect(existsSync(coreMjs)).toBe(true);
       expect(existsSync(coreCjs)).toBe(true);
+      expect(existsSync(coreDts)).toBe(true);
       expect(existsSync(cliCjs)).toBe(true);
     },
   );

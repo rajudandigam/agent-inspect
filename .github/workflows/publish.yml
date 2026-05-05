@@ -34,7 +34,8 @@ jobs:
       - name: Verify (typecheck, tests, build, size)
         run: pnpm run test:all
 
-      # Trusted Publishing (OIDC): configure the npm package + workflow name on npmjs.com before first publish.
+      # Trusted Publishing (OIDC): on npmjs.com, set the GitHub trusted publisher workflow name to **publish.yml**
+      # (this file), matching the repo path `.github/workflows/publish.yml`. No NPM_TOKEN secret.
       - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:

@@ -5,6 +5,14 @@
   "license": "MIT",
   "type": "module",
   "description": "Local-first execution-tree debugger for TypeScript AI agents",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rajudandigam/agent-inspect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
   "packageManager": "pnpm@9.15.0",
   "main": "./packages/core/dist/index.cjs",
   "module": "./packages/core/dist/index.mjs",
@@ -50,6 +58,9 @@
     "test:coverage": "vitest run --coverage",
     "size": "size-limit --config size-limit.config.mjs",
     "test:all": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size",
+    "prepublish:checks": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run size",
+    "prepack": "pnpm run clean && pnpm run build",
+    "pack:dry-run": "pnpm run build && npm pack --dry-run",
     "examples:check": "pnpm install && pnpm --filter agent-inspect-example-01-basic run start",
     "changeset": "changeset",
     "release": "changeset publish"

@@ -37,6 +37,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
       - run: pnpm run test:coverage
       - uses: actions/upload-artifact@v4
         if: always()
