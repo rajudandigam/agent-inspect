@@ -28,7 +28,7 @@ npm install agent-inspect
 
 ## See your first trace
 
-Install, run a traced workflow, then inspect it with the CLI.
+Run a traced workflow, then inspect it with the CLI.
 
 ```ts
 import { inspectRun, step } from "agent-inspect";
@@ -46,7 +46,7 @@ npx agent-inspect view run_abc123
 
 Replace `run_abc123` with the run id printed by `agent-inspect list`.
 
-## Quickstart
+## Minimal API
 
 ```ts
 import { inspectRun, step } from "agent-inspect";
