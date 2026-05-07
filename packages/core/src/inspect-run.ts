@@ -2,10 +2,10 @@ import { runWithContext } from "./context.js";
 import type { ExecutionContext, InspectRunOptions, TraceEvent } from "./types.js";
 import { initializeTraceFile, writeTraceEvent } from "./storage.js";
 import { printRunComplete, printRunStart } from "./terminal.js";
+import { resolveTraceDir } from "./trace-directory.js";
 import {
   createRunId,
   formatError,
-  getDefaultTraceDir,
   getTraceFilePath,
   truncateName,
   warn,
@@ -44,10 +44,7 @@ export async function inspectRun<T>(
 
   const runName = normalizeRunName(name);
   const runId = createRunId();
-  const traceDir =
-    typeof options?.traceDir === "string" && options.traceDir.trim() !== ""
-      ? options.traceDir.trim()
-      : getDefaultTraceDir();
+  const traceDir = resolveTraceDir({ dir: options?.traceDir });
 
   const context: ExecutionContext = {
     runId,

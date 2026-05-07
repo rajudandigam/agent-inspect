@@ -225,10 +225,31 @@ List recent runs:
 npx agent-inspect list
 ```
 
+Common filters:
+
+```bash
+npx agent-inspect list --status success
+npx agent-inspect list --status error
+npx agent-inspect list --status running
+npx agent-inspect list --status unknown
+npx agent-inspect list --name hotel
+npx agent-inspect list --since 24h
+npx agent-inspect list --json
+```
+
 View a run:
 
 ```bash
 npx agent-inspect view run_abc123
+```
+
+Alternate view modes:
+
+```bash
+npx agent-inspect view run_abc123 --summary
+npx agent-inspect view run_abc123 --metadata
+npx agent-inspect view run_abc123 --errors-only
+npx agent-inspect view run_abc123 --json --summary
 ```
 
 Use a custom trace directory:
@@ -239,6 +260,12 @@ npx agent-inspect view run_abc123 --dir ./traces
 ```
 
 By default, traces are stored under `~/.agent-inspect/runs`.
+
+You can also set a default trace directory with:
+
+```bash
+AGENT_INSPECT_TRACE_DIR=./traces npx agent-inspect list
+```
 
 For local repo development after `pnpm build`:
 

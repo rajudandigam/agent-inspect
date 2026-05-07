@@ -90,10 +90,12 @@ function stepCompleted(
 
 describe("view", () => {
   let traceDir: string;
+  const prevEnv = process.env.AGENT_INSPECT_TRACE_DIR;
 
   beforeEach(async () => {
     traceDir = path.join(os.tmpdir(), `agent-inspect-cli-view-${Date.now()}`);
     await mkdir(traceDir, { recursive: true });
+    delete process.env.AGENT_INSPECT_TRACE_DIR;
   });
 
   afterEach(async () => {
@@ -103,6 +105,11 @@ describe("view", () => {
       await rm(traceDir, { recursive: true, force: true });
     } catch {
       /* ignore */
+    }
+    if (prevEnv === undefined) {
+      delete process.env.AGENT_INSPECT_TRACE_DIR;
+    } else {
+      process.env.AGENT_INSPECT_TRACE_DIR = prevEnv;
     }
   });
 
@@ -192,6 +199,113 @@ describe("view", () => {
     expect(Array.isArray(parsed)).toBe(true);
     expect(parsed.length).toBe(2);
     logSpy.mockRestore();
+  });
+
+  it("--summary prints a run summary", async () => {
+    const runId = "run_summary";
+    const body = jsonl(
+      runStarted(runId, "s", 1, 1),
+      stepStarted(runId, "step_a", "a", 10),
+      stepCompleted(runId, "step_a", "success", 20, 10),
+      stepStarted(runId, "step_b", "b", 30),
+      stepCompleted(runId, "step_b", "error", 40, 10, { message: "bad" }),
+      runCompleted(runId, "error", 50, 49, { message: "run failed" }),
+    );
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, summary: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Run Summary");
+    expect(out).toContain("Total steps:");
+    expect(out).toContain("Error steps:");
+    expect(out).toContain("Max depth:");
+    logSpy.mockRestore();
+  });
+
+  it("--json --summary prints parseable JSON", async () => {
+    const runId = "run_summary_json";
+    const body = jsonl(runStarted(runId, "s", 1, 1), runCompleted(runId, "success", 2, 1));
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, summary: true, json: true });
+    const raw = String(logSpy.mock.calls[0]?.[0] ?? "");
+    const parsed = JSON.parse(raw) as unknown;
+    expect(parsed && typeof parsed === "object").toBe(true);
+    logSpy.mockRestore();
+  });
+
+  it("--metadata prints trace metadata", async () => {
+    const runId = "run_meta";
+    const body = jsonl(runStarted(runId, "m", 1, 1), runCompleted(runId, "success", 2, 1));
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, metadata: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Trace Metadata");
+    expect(out).toContain("File path:");
+    expect(out).toContain("Event count:");
+    logSpy.mockRestore();
+  });
+
+  it("--errors-only shows only error events", async () => {
+    const runId = "run_errors_only";
+    const body = jsonl(
+      runStarted(runId, "e", 1, 1),
+      stepStarted(runId, "step_ok", "ok", 10),
+      stepCompleted(runId, "step_ok", "success", 20, 10),
+      stepStarted(runId, "step_bad", "bad", 30),
+      stepCompleted(runId, "step_bad", "error", 40, 10, { message: "oops" }),
+      runCompleted(runId, "error", 50, 49, { message: "run failed" }),
+    );
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, errorsOnly: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Error events");
+    expect(out).toContain("step_completed");
+    expect(out).not.toContain("step_ok");
+    logSpy.mockRestore();
+  });
+
+  it("--errors-only prints helpful message when no errors", async () => {
+    const runId = "run_no_errors";
+    const body = jsonl(runStarted(runId, "ok", 1, 1), runCompleted(runId, "success", 2, 1));
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, errorsOnly: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("No errors found");
+    logSpy.mockRestore();
+  });
+
+  it("AGENT_INSPECT_TRACE_DIR is used when --dir missing", async () => {
+    process.env.AGENT_INSPECT_TRACE_DIR = traceDir;
+    const runId = "run_env_view";
+    const body = jsonl(runStarted(runId, "env", 1, 1), runCompleted(runId, "success", 2, 1));
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, {});
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("AgentInspect Run");
+    logSpy.mockRestore();
+  });
+
+  it("--dir overrides AGENT_INSPECT_TRACE_DIR", async () => {
+    const otherDir = path.join(os.tmpdir(), `agent-inspect-cli-view-other-${Date.now()}`);
+    await mkdir(otherDir, { recursive: true });
+    process.env.AGENT_INSPECT_TRACE_DIR = otherDir;
+
+    const runId = "run_dir_override";
+    const body = jsonl(runStarted(runId, "dir", 1, 1), runCompleted(runId, "success", 2, 1));
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("AgentInspect Run");
+    logSpy.mockRestore();
+
+    await rm(otherDir, { recursive: true, force: true });
   });
 
   it("shows no steps when trace has only run events", async () => {

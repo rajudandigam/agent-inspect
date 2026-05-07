@@ -8,14 +8,22 @@ export interface TraceDirectoryOptions {
   dir?: string;
 }
 
+export function resolveTraceDir(options: TraceDirectoryOptions = {}): string {
+  if (typeof options.dir === "string" && options.dir.trim() !== "") {
+    return options.dir.trim();
+  }
+  const envDir = process.env.AGENT_INSPECT_TRACE_DIR;
+  if (typeof envDir === "string" && envDir.trim() !== "") {
+    return envDir.trim();
+  }
+  return getDefaultTraceDir();
+}
+
 export class TraceDirectory {
   readonly #dir: string;
 
   constructor(options: TraceDirectoryOptions = {}) {
-    this.#dir =
-      typeof options.dir === "string" && options.dir.trim() !== ""
-        ? options.dir.trim()
-        : getDefaultTraceDir();
+    this.#dir = resolveTraceDir(options);
   }
 
   getPath(filename?: string): string {

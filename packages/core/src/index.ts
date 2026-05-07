@@ -69,7 +69,7 @@ export {
 } from "./storage.js";
 
 export type { TraceDirectoryOptions } from "./trace-directory.js";
-export { TraceDirectory } from "./trace-directory.js";
+export { TraceDirectory, resolveTraceDir } from "./trace-directory.js";
 
 export { extractMetadata, buildRunSummary } from "./trace-metadata.js";
 

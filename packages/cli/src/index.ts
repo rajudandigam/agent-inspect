@@ -7,6 +7,7 @@ import { Command, Option } from "commander";
 
 import type { ListOptions } from "./list.js";
 import { list } from "./list.js";
+import type { ViewOptions } from "./view.js";
 import { view } from "./view.js";
 
 export function runCommand(action: () => Promise<void>): void {
@@ -32,13 +33,23 @@ export function createCliProgram(): Command {
         "running",
         "success",
         "error",
+        "unknown",
       ]),
     )
+    .option("--name <query>", "filter by run name or id (substring match)")
+    .option(
+      "--since <duration>",
+      "only include runs since a duration (e.g. 30s, 5m, 2h, 7d)",
+    )
+    .option("--json", "print runs as JSON")
     .action(
       (opts: {
         dir?: string;
         limit?: string;
         status?: ListOptions["status"];
+        name?: string;
+        since?: string;
+        json?: boolean;
       }) => {
         runCommand(() => list(opts));
       },
@@ -49,12 +60,15 @@ export function createCliProgram(): Command {
     .description("View a single run trace")
     .argument("<run-id>", "run id (e.g. from list output)")
     .option("--dir <path>", "trace directory")
+    .option("--summary", "print a run summary (counts, duration, max depth)")
+    .option("--metadata", "print trace metadata (file path/size, timestamps)")
+    .option("--errors-only", "show only error events / failed steps")
     .option("--verbose", "show extra detail (types, metadata, error stacks)")
     .option("--json", "print raw trace events as JSON")
     .action(
       (
         runId: string,
-        opts: { dir?: string; verbose?: boolean; json?: boolean },
+        opts: ViewOptions,
       ) => {
         runCommand(() => view(runId, opts));
       },

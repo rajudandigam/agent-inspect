@@ -1,18 +1,22 @@
 import {
   formatDuration,
   formatTimestamp,
-  getDefaultTraceDir,
   getIndent,
   getTraceFilePath,
   readTraceEvents,
   renderErrorLine,
   renderStepLine,
+  buildRunSummary,
+  extractMetadata,
+  resolveTraceDir,
 } from "@agent-inspect/core";
 import type {
   ErrorInfo,
   RunCompletedEvent,
   RunStartedEvent,
   RunStatus,
+  RunSummary,
+  TraceMetadata,
   StepCompletedEvent,
   StepStartedEvent,
   StepMetadata,
@@ -23,6 +27,9 @@ import type {
 
 export interface ViewOptions {
   dir?: string;
+  summary?: boolean;
+  metadata?: boolean;
+  errorsOnly?: boolean;
   verbose?: boolean;
   json?: boolean;
 }
@@ -130,6 +137,70 @@ function printStepTree(
   }
 }
 
+function pickMode(options: ViewOptions): "summary" | "metadata" | "errors-only" | "tree" {
+  if (options.summary) return "summary";
+  if (options.metadata) return "metadata";
+  if (options.errorsOnly) return "errors-only";
+  return "tree";
+}
+
+function printSummary(summary: RunSummary): void {
+  console.log("Run Summary");
+  console.log(`ID: ${summary.runId}`);
+  console.log(`Name: ${summary.name ?? "unnamed"}`);
+  console.log(`Status: ${summary.status}`);
+  console.log(
+    `Duration: ${
+      summary.durationMs !== undefined ? formatDuration(summary.durationMs) : "-"
+    }`,
+  );
+  console.log(`Total steps: ${summary.totalSteps}`);
+  console.log(`LLM steps: ${summary.llmSteps}`);
+  console.log(`Tool steps: ${summary.toolSteps}`);
+  console.log(`Logic steps: ${summary.logicSteps}`);
+  console.log(`Error steps: ${summary.errorSteps}`);
+  console.log(`Max depth: ${summary.maxDepth}`);
+  if (summary.longestStep) {
+    console.log(
+      `Longest step: ${summary.longestStep.name} (${formatDuration(
+        summary.longestStep.durationMs,
+      )}, ${summary.longestStep.type})`,
+    );
+  }
+}
+
+function printMetadata(meta: TraceMetadata): void {
+  console.log("Trace Metadata");
+  console.log(`ID: ${meta.runId}`);
+  console.log(`Name: ${meta.name ?? "unnamed"}`);
+  console.log(`Status: ${meta.status}`);
+  console.log(
+    `Started: ${
+      meta.startedAt !== undefined ? formatTimestamp(meta.startedAt) : "-"
+    }`,
+  );
+  console.log(
+    `Ended: ${meta.endedAt !== undefined ? formatTimestamp(meta.endedAt) : "-"}`,
+  );
+  console.log(
+    `Duration: ${
+      meta.durationMs !== undefined ? formatDuration(meta.durationMs) : "-"
+    }`,
+  );
+  console.log(`Event count: ${meta.eventCount}`);
+  console.log(`File path: ${meta.filePath}`);
+  console.log(`File size: ${meta.fileSize}`);
+  console.log(`Created at: ${meta.createdAt.toISOString()}`);
+}
+
+function filterErrorEvents(events: TraceEvent[]): TraceEvent[] {
+  return events.filter((e) => {
+    if (e.event === "run_completed") return (e as RunCompletedEvent).status === "error";
+    if (e.event === "step_completed") return (e as StepCompletedEvent).status === "error";
+    return false;
+  });
+}
+
 /**
  * Prints a single run as a tree (or JSON). Missing runs and invalid traces set `process.exitCode`
  * without throwing from normal paths.
@@ -147,10 +218,7 @@ export async function view(
       return;
     }
 
-    const traceDir =
-      typeof options.dir === "string" && options.dir.trim() !== ""
-        ? options.dir.trim()
-        : getDefaultTraceDir();
+    const traceDir = resolveTraceDir({ dir: options.dir });
 
     const events = await readTraceEvents(id, traceDir);
     if (events.length === 0) {
@@ -160,7 +228,44 @@ export async function view(
       return;
     }
 
+    const mode = pickMode(options);
+    const filePath = getTraceFilePath(id, traceDir);
+
+    if (mode === "summary") {
+      const summary = buildRunSummary(events);
+      if (options.json) {
+        console.log(JSON.stringify(summary, null, 2));
+      } else {
+        printSummary(summary);
+      }
+      return;
+    }
+
+    if (mode === "metadata") {
+      const meta = await extractMetadata(filePath);
+      if (options.json) {
+        console.log(JSON.stringify(meta, null, 2));
+      } else {
+        printMetadata(meta);
+      }
+      return;
+    }
+
+    if (mode === "errors-only") {
+      const errEvents = filterErrorEvents(events);
+      if (options.json) {
+        console.log(JSON.stringify(errEvents, null, 2));
+      } else if (errEvents.length === 0) {
+        console.log("No errors found in trace");
+      } else {
+        console.log("Error events");
+        console.log(JSON.stringify(errEvents, null, 2));
+      }
+      return;
+    }
+
     if (options.json) {
+      // Preserve existing behavior: --json alone prints raw events.
       console.log(JSON.stringify(events, null, 2));
       return;
     }
@@ -205,7 +310,7 @@ export async function view(
     }
 
     console.log("");
-    console.log(`Trace file: ${getTraceFilePath(id, traceDir)}`);
+    console.log(`Trace file: ${filePath}`);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[AgentInspect] view failed: ${msg}`);

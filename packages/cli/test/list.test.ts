@@ -49,10 +49,12 @@ function runCompleted(
 
 describe("list", () => {
   let traceDir: string;
+  const prevEnv = process.env.AGENT_INSPECT_TRACE_DIR;
 
   beforeEach(async () => {
     traceDir = path.join(os.tmpdir(), `agent-inspect-cli-list-${Date.now()}`);
     await mkdir(traceDir, { recursive: true });
+    delete process.env.AGENT_INSPECT_TRACE_DIR;
   });
 
   afterEach(async () => {
@@ -63,6 +65,11 @@ describe("list", () => {
     } catch {
       /* ignore */
     }
+    if (prevEnv === undefined) {
+      delete process.env.AGENT_INSPECT_TRACE_DIR;
+    } else {
+      process.env.AGENT_INSPECT_TRACE_DIR = prevEnv;
+    }
   });
 
   it("prints empty state when no runs", async () => {
@@ -71,6 +78,13 @@ describe("list", () => {
     const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
     expect(out).toContain("No AgentInspect runs found");
     expect(out).toContain(traceDir);
+    logSpy.mockRestore();
+  });
+
+  it("--json prints [] when no runs", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, json: true });
+    expect(String(logSpy.mock.calls[0]?.[0] ?? "")).toBe("[]");
     logSpy.mockRestore();
   });
 
@@ -150,6 +164,130 @@ describe("list", () => {
     logSpy.mockRestore();
   });
 
+  it("filters by status unknown", async () => {
+    const unknown = "run_unknown";
+    // Missing run_started should yield unknown status in metadata.
+    await writeFile(
+      path.join(traceDir, `${unknown}.jsonl`),
+      jsonl(JSON.stringify({ schemaVersion: "0.1", event: "step_started", runId: unknown })),
+      "utf-8",
+    );
+    const ok = "run_ok_known";
+    await writeFile(
+      path.join(traceDir, `${ok}.jsonl`),
+      jsonl(runStarted(ok, "ok", 100, 100), runCompleted(ok, "success", 200, 100)),
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, status: "unknown" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain(unknown);
+    expect(out).not.toContain(ok);
+    logSpy.mockRestore();
+  });
+
+  it("filters by --name matching runId and name", async () => {
+    const runA = "run_hotel_1";
+    const runB = "run_other_1";
+    await writeFile(
+      path.join(traceDir, `${runA}.jsonl`),
+      jsonl(runStarted(runA, "hotel search", 100, 100), runCompleted(runA, "success", 200, 100)),
+      "utf-8",
+    );
+    await writeFile(
+      path.join(traceDir, `${runB}.jsonl`),
+      jsonl(runStarted(runB, "flights", 100, 100), runCompleted(runB, "success", 200, 100)),
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, name: "hotel" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain(runA);
+    expect(out).not.toContain(runB);
+    logSpy.mockRestore();
+  });
+
+  it("filters by --since using startedAt when present", async () => {
+    const oldRun = "run_old";
+    const newRun = "run_new";
+    const now = Date.now();
+    await writeFile(
+      path.join(traceDir, `${oldRun}.jsonl`),
+      jsonl(runStarted(oldRun, "old", now - 3 * 60 * 60 * 1000, now - 3 * 60 * 60 * 1000)),
+      "utf-8",
+    );
+    await writeFile(
+      path.join(traceDir, `${newRun}.jsonl`),
+      jsonl(runStarted(newRun, "new", now - 10 * 60 * 1000, now - 10 * 60 * 1000)),
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, since: "1h" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain(newRun);
+    expect(out).not.toContain(oldRun);
+    logSpy.mockRestore();
+  });
+
+  it("invalid --since sets non-zero exit code", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await list({ dir: traceDir, since: "nope" });
+    expect(process.exitCode).toBe(1);
+    expect(errSpy.mock.calls.some((c) => String(c[0]).includes("list failed"))).toBe(true);
+    errSpy.mockRestore();
+  });
+
+  it("--dir overrides AGENT_INSPECT_TRACE_DIR", async () => {
+    const otherDir = path.join(os.tmpdir(), `agent-inspect-cli-list-other-${Date.now()}`);
+    await mkdir(otherDir, { recursive: true });
+    process.env.AGENT_INSPECT_TRACE_DIR = otherDir;
+
+    const runId = "run_in_dir";
+    await writeFile(
+      path.join(traceDir, `${runId}.jsonl`),
+      jsonl(runStarted(runId, "dir", 1, 1)),
+      "utf-8",
+    );
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain(runId);
+    logSpy.mockRestore();
+
+    await rm(otherDir, { recursive: true, force: true });
+  });
+
+  it("AGENT_INSPECT_TRACE_DIR is used when --dir missing", async () => {
+    process.env.AGENT_INSPECT_TRACE_DIR = traceDir;
+    const runId = "run_env";
+    await writeFile(
+      path.join(traceDir, `${runId}.jsonl`),
+      jsonl(runStarted(runId, "env", 1, 1)),
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({});
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain(runId);
+    logSpy.mockRestore();
+  });
+
+  it("--json returns parseable array", async () => {
+    const runId = "run_json_list";
+    await writeFile(
+      path.join(traceDir, `${runId}.jsonl`),
+      jsonl(runStarted(runId, "j", 1, 1)),
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, json: true });
+    const raw = String(logSpy.mock.calls[0]?.[0] ?? "");
+    const parsed = JSON.parse(raw) as unknown[];
+    expect(Array.isArray(parsed)).toBe(true);
+    logSpy.mockRestore();
+  });
+
   it("respects limit", async () => {
     const ids = ["run_t3", "run_t2", "run_t1"];
     const times = [3000, 2000, 1000];
@@ -180,7 +318,9 @@ describe("list", () => {
 
   it("sets exit code when listTraceFiles fails unexpectedly", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.spyOn(core, "listTraceFiles").mockRejectedValueOnce(new Error("disk"));
+    vi.spyOn(core.TraceDirectory.prototype, "list").mockRejectedValueOnce(
+      new Error("disk"),
+    );
     await list({ dir: traceDir });
     expect(process.exitCode).toBe(1);
     expect(errSpy.mock.calls.some((c) => String(c[0]).includes("list failed"))).toBe(
