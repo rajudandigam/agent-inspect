@@ -16,6 +16,8 @@ const MVP_EXAMPLES = [
   "05-observe-wrapper",
 ] as const;
 
+const SPIKE_EXAMPLES = ["06-log-to-tree"] as const;
+
 describe("MVP examples (static checks)", () => {
   it("each example has index.ts, package.json, and README.md", () => {
     for (const name of MVP_EXAMPLES) {
@@ -123,6 +125,14 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("05-observe-wrapper");
   });
 
+  it("examples/ contains the MVP examples plus the v0.3 spike folder", () => {
+    const dirs = readdirSync(examplesRoot)
+      .filter((name) => /^\d{2}-/.test(name))
+      .sort();
+
+    expect(dirs).toEqual([...MVP_EXAMPLES, ...SPIKE_EXAMPLES].sort());
+  });
+
   it("documentation and examples are readable multi-line files", () => {
     const filesWithMinimumLines: Array<[string, number]> = [
       [path.join(repoRoot, "README.md"), 80],
@@ -155,7 +165,7 @@ describe("MVP examples (static checks)", () => {
     }
   });
 
-  it("examples/ contains exactly the five MVP example directories", () => {
+  it("examples/ contains the MVP examples plus the v0.3 spike folder", () => {
     const entries = readdirSync(examplesRoot, { withFileTypes: true });
 
     const dirs = entries
@@ -163,6 +173,21 @@ describe("MVP examples (static checks)", () => {
       .map((entry) => entry.name)
       .filter((name) => /^\d{2}-/.test(name));
 
-    expect(dirs.sort()).toEqual([...MVP_EXAMPLES].sort());
+    expect(dirs.sort()).toEqual([...MVP_EXAMPLES, ...SPIKE_EXAMPLES].sort());
+  });
+});
+
+describe("Spike examples (static checks)", () => {
+  it("log-to-tree spike has required files", () => {
+    for (const name of SPIKE_EXAMPLES) {
+      const dir = path.join(examplesRoot, name);
+
+      expect(existsSync(path.join(dir, "sample-json.log"))).toBe(true);
+      expect(existsSync(path.join(dir, "sample-log4js.log"))).toBe(true);
+      expect(existsSync(path.join(dir, "agent-inspect.logs.json"))).toBe(true);
+      expect(existsSync(path.join(dir, "expected-output.txt"))).toBe(true);
+      expect(existsSync(path.join(dir, "prototype-parser.mjs"))).toBe(true);
+      expect(existsSync(path.join(dir, "README.md"))).toBe(true);
+    }
   });
 });

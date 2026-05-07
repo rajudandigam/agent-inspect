@@ -1,0 +1,27 @@
+JSON log sample
+
+Run decision=01fe6bf1
+├─ job:started job=7a06467f user=f0769fd4…
+│  confidence: explicit
+├─ agent:started trips=1
+│  confidence: correlated (same decisionId)
+├─ tool:get_conversation_history trip=89e28415… msgs=19
+│  confidence: correlated (same decisionId)
+├─ llm:generate_message model=gemini-3.1-pro-preview ✔ 2.04s tokens=1200/356
+│  confidence: correlated (same decisionId + paired completion)
+└─ result:notification shouldNotify=true variant=destination_content
+   confidence: correlated (same decisionId)
+
+Summary:
+  Events: 6
+  Tools: 1
+  LLMs: 1
+  Confidence: 1 explicit, 5 correlated
+
+Note:
+  Flat timeline by default. Nesting only with explicit parentId.
+
+log4js log sample
+
+(same structure as above)
+

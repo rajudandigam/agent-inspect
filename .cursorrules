@@ -24,3 +24,7 @@ agent-inspect must not become a logger library. The core concept is an **executi
 - **TypeScript:** strict mode; match repo `tsconfig` settings.
 - **Tests:** add or update tests when implementation behavior changes.
 - **Instrumentation safety:** tracing, stepping, or observation must never throw into user code in a way that breaks the agent; failures degrade gracefully (see PRD).
+
+
+## General guidance
+Please ask questions and get clarify if you are not clear on any decisions or implementations. 
