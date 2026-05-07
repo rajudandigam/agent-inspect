@@ -122,6 +122,9 @@ describe("MVP examples (static checks)", () => {
   it("examples root README lists the MVP examples", () => {
     const readme = readFileSync(path.join(examplesRoot, "README.md"), "utf-8");
 
+    expect(readme).toContain("MVP manual tracing");
+    expect(readme).toContain("Structured log examples");
+    expect(readme).toContain("Adapter examples");
     expect(readme).toContain("01-basic");
     expect(readme).toContain("02-nested-steps");
     expect(readme).toContain("03-parallel-steps");
@@ -129,6 +132,7 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("05-observe-wrapper");
     expect(readme).toContain("06-log-to-tree");
     expect(readme).toContain("08-langchain-adapter");
+    expect(readme).toContain("docs/examples/EXAMPLES-ROADMAP.md");
   });
 
   it("examples/ contains MVP, spike, and adapter folders", () => {

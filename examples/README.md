@@ -1,12 +1,14 @@
 # agent-inspect examples
 
-Examples are grouped by theme:
+These examples are grouped by roadmap phase.
 
-- **MVP manual tracing (01–05):** `inspectRun()`, `step()`, `observe()`, JSONL traces — runnable with `file:../..` and no workspace membership required for copy-out installs.
-- **Structured logs (06-log-to-tree):** v0.3 log-to-tree spike — sample logs, config, and CLI `logs` / `tail` fixtures.
-- **LangChain adapter (08-langchain-adapter):** v0.5 callback adapter — depends on `workspace:*`; **install and run from the repo root** (see below).
+No example here requires API keys unless its own README says otherwise.
 
-They use fake async functions where applicable. MVP examples avoid API keys and external LLM SDKs.
+Further roadmap context: [docs/examples/EXAMPLES-ROADMAP.md](../docs/examples/EXAMPLES-ROADMAP.md).
+
+## MVP manual tracing examples
+
+Runnable from each folder after `pnpm build` at the repo root (they use `agent-inspect` via `file:../..`).
 
 | Example | Demonstrates |
 | --- | --- |
@@ -14,44 +16,37 @@ They use fake async functions where applicable. MVP examples avoid API keys and 
 | [02-nested-steps](02-nested-steps) | Execution tree hierarchy |
 | [03-parallel-steps](03-parallel-steps) | `Promise.all` sibling isolation |
 | [04-error-handling](04-error-handling) | Failed steps and error traces |
-| [05-observe-wrapper](05-observe-wrapper) | Proxy wrapper for agent-like objects |
-| [06-log-to-tree](06-log-to-tree) | Structured JSON / log4js samples + `agent-inspect logs` config |
-| [08-langchain-adapter](08-langchain-adapter) | LangChain `BaseCallbackHandler` → in-memory `InspectEvent` (v0.5); workspace package; **no API keys** |
-
-Further roadmap context: [docs/examples/EXAMPLES-ROADMAP.md](../docs/examples/EXAMPLES-ROADMAP.md).
-
-## How to run
-
-Build the library from the repo root:
+| [05-observe-wrapper](05-observe-wrapper) | `observe()` wrapper for agent-like objects |
 
 ```bash
 pnpm build
-```
-
-### MVP examples (01–05)
-
-```bash
 cd examples/01-basic
 pnpm install
 pnpm start
 ```
 
-### Structured log example (06)
+## Structured log examples
 
-See [06-log-to-tree/README.md](06-log-to-tree/README.md). Uses `node prototype-parser.mjs` and/or the CLI against the bundled sample logs.
+| Example | Demonstrates |
+| --- | --- |
+| [06-log-to-tree](06-log-to-tree) | Structured JSON / log4js logs into grouped execution timelines (`agent-inspect logs`, `tail`) |
 
-### LangChain adapter example (08)
+See [06-log-to-tree/README.md](06-log-to-tree/README.md). Uses `prototype-parser.mjs` and/or the CLI against bundled sample logs.
 
-This package uses `workspace:*` for `agent-inspect` and `@agent-inspect/langchain`. **Use the monorepo root:**
+## Adapter examples
+
+| Example | Demonstrates |
+| --- | --- |
+| [08-langchain-adapter](08-langchain-adapter) | LangChain `BaseCallbackHandler` → in-memory `InspectEvent` capture (v0.5) |
+
+Example **08** uses `workspace:*` for `agent-inspect` and `@agent-inspect/langchain`. **Install and run from the repository root** (not from the example folder alone):
 
 ```bash
 pnpm install
 pnpm --filter agent-inspect-example-08-langchain-adapter start
 ```
 
-Do not rely on `pnpm install` from **only** `examples/08-langchain-adapter` outside the workspace (workspace protocol will not resolve).
-
-## Inspect traces
+## Inspect traces (MVP flows)
 
 ```bash
 node ../../packages/cli/dist/index.cjs list
@@ -66,4 +61,4 @@ AGENT_INSPECT_SILENT=true pnpm start
 
 ## What is not included
 
-Advanced examples beyond these folders are intentionally phased post-v0.1 and should not add unnecessary dependencies to the core publish tarball.
+Examples beyond these numbered folders are intentionally phased; avoid pulling unnecessary runtime dependencies into the core publish tarball.

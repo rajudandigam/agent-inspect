@@ -248,7 +248,7 @@ Behavior:
 - **Preview** mode is opt-in (`capture: "preview"`) with truncation via `maxPreviewChars` (default `200`).
 - **Parent** links use LangChain `parentRunId`, surfaced as `parentId` on `InspectEvent` with `confidence: "explicit"`.
 - **No** cost calculation; token fields are informational only.
-- In this pass, events are collected **in memory** only (`getEvents()` / `clear()`). They are **not** written into v0.1 JSONL manual traces.
+- In this pass, events are collected **in memory** only (`getEvents()` / `clear()`). **No trace-file persistence** for adapter events yet; they are **not** written into v0.1 JSONL manual traces.
 
 The API is **experimental** before v1.0. See [examples/08-langchain-adapter](examples/08-langchain-adapter).
 
@@ -433,15 +433,17 @@ Current scope also includes:
 - CLI `clean` (safe deletion with verification)
 - CLI `logs` (structured log-to-tree)
 - CLI `tail` (live log tailing into grouped timelines)
+- LangChain callback adapter via `@agent-inspect/langchain`
 
 Not included:
 
-- Framework adapters beyond LangChain (available separately as `@agent-inspect/langchain`; additional adapters are not included yet)
-- Token or cost tracking
+- Additional framework adapters beyond LangChain
+- Vendor sinks
+- Token cost calculation
 - Replay
 - SQLite
 - Dashboards
-- OpenTelemetry
+- OpenTelemetry export
 
 ## Development
 
