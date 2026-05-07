@@ -15,6 +15,7 @@ describe("@agent-inspect/cli", () => {
     const names = program.commands.map((c) => c.name());
     expect(names).toContain("list");
     expect(names).toContain("view");
+    expect(names).toContain("clean");
   });
 
   it("help output mentions agent-inspect, list, and view", () => {
@@ -23,5 +24,6 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("agent-inspect");
     expect(help).toContain("list");
     expect(help).toContain("view");
+    expect(help).toContain("clean");
   });
 });

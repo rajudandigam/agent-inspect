@@ -252,6 +252,24 @@ npx agent-inspect view run_abc123 --errors-only
 npx agent-inspect view run_abc123 --json --summary
 ```
 
+Safely clean up old traces (recommended: start with `--dry-run`):
+
+```bash
+npx agent-inspect clean --older-than 7d --dry-run
+npx agent-inspect clean --older-than 7d
+npx agent-inspect clean --keep 100 --dry-run
+npx agent-inspect clean --keep 100 --yes
+npx agent-inspect clean --dir ./traces --older-than 7d --dry-run
+```
+
+Safety notes:
+
+- `clean` **verifies each file** as an AgentInspect trace before deleting.
+- Arbitrary JSONL files are **not deleted**.
+- Malformed JSONL files are **not deleted**.
+- Without `--dry-run`, `clean` requires confirmation unless `--yes` is provided.
+- In non-interactive terminals, deletion requires `--yes`.
+
 Use a custom trace directory:
 
 ```bash
@@ -299,13 +317,14 @@ cat ~/.agent-inspect/runs/run_abc123.jsonl | jq
 
 ## Runnable examples
 
-The repo includes five runnable MVP examples:
+The repo includes five runnable MVP examples plus one v0.3 log-to-tree spike example:
 
 - `examples/01-basic` — `inspectRun()` + `step()`
 - `examples/02-nested-steps` — nested execution tree hierarchy
 - `examples/03-parallel-steps` — `Promise.all` sibling isolation
 - `examples/04-error-handling` — failed steps and error traces
 - `examples/05-observe-wrapper` — `observe()` wrapper with internal steps
+- `examples/06-log-to-tree` — v0.3 spike/prototype for structured log-to-tree validation (not production CLI behavior)
 
 Run one locally:
 

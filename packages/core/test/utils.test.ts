@@ -89,7 +89,11 @@ describe("formatTimestamp", () => {
 
 describe("getDefaultTraceDir", () => {
   it("includes .agent-inspect and runs", () => {
+    const prev = process.env.AGENT_INSPECT_TRACE_DIR;
+    delete process.env.AGENT_INSPECT_TRACE_DIR;
     const dir = getDefaultTraceDir();
+    if (prev === undefined) delete process.env.AGENT_INSPECT_TRACE_DIR;
+    else process.env.AGENT_INSPECT_TRACE_DIR = prev;
     expect(dir).toContain(".agent-inspect");
     expect(dir).toContain("runs");
   });

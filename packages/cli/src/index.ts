@@ -7,6 +7,8 @@ import { Command, Option } from "commander";
 
 import type { ListOptions } from "./list.js";
 import { list } from "./list.js";
+import type { CleanOptions } from "./clean.js";
+import { clean } from "./clean.js";
 import type { ViewOptions } from "./view.js";
 import { view } from "./view.js";
 
@@ -71,6 +73,29 @@ export function createCliProgram(): Command {
         opts: ViewOptions,
       ) => {
         runCommand(() => view(runId, opts));
+      },
+    );
+
+  program
+    .command("clean")
+    .description("Safely delete old AgentInspect run traces")
+    .option("--dir <path>", "trace directory")
+    .option(
+      "--older-than <duration>",
+      "delete runs older than a duration (e.g. 30s, 5m, 2h, 7d)",
+    )
+    .option("--keep <count>", "keep N most recent runs (delete the rest)")
+    .option("--dry-run", "print what would be deleted (no changes)")
+    .option("--yes", "skip confirmation prompt")
+    .action(
+      (opts: {
+        dir?: string;
+        olderThan?: string;
+        keep?: string;
+        dryRun?: boolean;
+        yes?: boolean;
+      }) => {
+        runCommand(() => clean(opts satisfies CleanOptions));
       },
     );
 
