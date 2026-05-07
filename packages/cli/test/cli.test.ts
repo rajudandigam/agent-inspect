@@ -66,5 +66,6 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--once");
     expect(help).toContain("--json");
     expect(help).toContain("--warnings");
+    expect(help).toContain("--no-clear");
   });
 });

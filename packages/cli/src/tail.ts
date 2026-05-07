@@ -283,6 +283,8 @@ export async function tail(options: TailOptions = {}): Promise<void> {
       dirty = true;
     };
 
+    let endedNaturally = false;
+
     if (filePath) {
       // Fail clearly if file does not exist.
       try {
@@ -301,17 +303,29 @@ export async function tail(options: TailOptions = {}): Promise<void> {
         onLine,
         shouldStop,
       );
+      endedNaturally = options.once === true;
     } else {
+      let lineNumber = 0;
       for await (const line of readStdinLines()) {
-        onLine(line, acc.getEvents().length + acc.getWarnings().length + 1);
+        lineNumber += 1;
+        onLine(line, lineNumber);
         if (shouldStop()) break;
       }
+      endedNaturally = !shouldStop();
       stop = true;
     }
 
     // Final render on exit.
     dirty = true;
     renderNow();
+
+    if (endedNaturally && acc.getEvents().length === 0) {
+      if (!options.json) {
+        console.error("No valid events found.");
+      }
+      process.exitCode = 1;
+    }
+
     stop = true;
     await renderTask;
   } catch (e) {

@@ -124,20 +124,62 @@ describe("tail", () => {
     const badLog = path.join(tmpDir, "bad.jsonl");
     await writeFile(badLog, "{ not json\n", "utf-8");
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await tail({ file: badLog, once: true, format: "json", warnings: "none" });
     const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
     expect(out).not.toContain("Warnings:");
+    expect(process.exitCode).toBe(1);
+    expect(errSpy.mock.calls.some((c) => String(c[0]).includes("No valid events found"))).toBe(true);
     logSpy.mockRestore();
+    errSpy.mockRestore();
   });
 
   it("--warnings all prints warning details", async () => {
     const badLog = path.join(tmpDir, "bad.jsonl");
     await writeFile(badLog, "{ not json\n", "utf-8");
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await tail({ file: badLog, once: true, format: "json", warnings: "all" });
     const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
     expect(out).toContain("Warnings:");
     expect(out).toContain("MALFORMED_JSON");
+    expect(process.exitCode).toBe(1);
+    expect(errSpy.mock.calls.some((c) => String(c[0]).includes("No valid events found"))).toBe(true);
+    logSpy.mockRestore();
+    errSpy.mockRestore();
+  });
+
+  it("--json --once prints parseable JSON and exits non-zero when no valid events", async () => {
+    const badLog = path.join(tmpDir, "bad.jsonl");
+    await writeFile(badLog, "{ not json\n", "utf-8");
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .mockImplementation(() => true as any);
+    await tail({ file: badLog, once: true, format: "json", json: true, warnings: "all" });
+    const joined = writeSpy.mock.calls.map((c) => String(c[0])).join("");
+    const lines = joined.split("\n").filter((l) => l.trim() !== "");
+    const obj = JSON.parse(lines[lines.length - 1]!) as any;
+    expect(obj).toHaveProperty("events");
+    expect(obj).toHaveProperty("warnings");
+    expect(process.exitCode).toBe(1);
+    writeSpy.mockRestore();
+  });
+
+  it("one valid event keeps exit code 0 even with warnings", async () => {
+    const file = path.join(tmpDir, "mix.jsonl");
+    await writeFile(
+      file,
+      "{ not json\n" +
+        JSON.stringify({ event: "proactive.job.started", decisionId: "d1", timestamp: 1 }) +
+        "\n",
+      "utf-8",
+    );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await tail({ file, once: true, format: "json", warnings: "all" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Run d1");
+    expect(process.exitCode).toBe(0);
     logSpy.mockRestore();
   });
 
