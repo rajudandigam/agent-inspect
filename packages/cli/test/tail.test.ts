@@ -1,23 +1,17 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { tail } from "../src/tail.js";
 
-const sampleJson = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/sample-json.log",
-);
-const sampleLog4 = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/sample-log4js.log",
-);
-const sampleConfig = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/agent-inspect.logs.json",
-);
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+
+const sampleJson = path.join(repoRoot, "examples/06-log-to-tree/sample-json.log");
+const sampleLog4 = path.join(repoRoot, "examples/06-log-to-tree/sample-log4js.log");
+const sampleConfig = path.join(repoRoot, "examples/06-log-to-tree/agent-inspect.logs.json");
 
 describe("tail", () => {
   let tmpDir: string;

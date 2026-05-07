@@ -1,0 +1,15 @@
+{
+  "name": "agent-inspect-example-08-langchain-adapter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @agent-inspect/langchain run build",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/langchain": "workspace:*",
+    "@langchain/core": "^1.0.0",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

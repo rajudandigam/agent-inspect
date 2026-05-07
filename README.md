@@ -217,6 +217,41 @@ await agent.run("How do I reset my password?");
 
 `observe()` wraps top-level `run`, `execute`, and `invoke` methods. For internal detail, add manual `step()` calls inside the agent.
 
+## LangChain adapter (v0.5, experimental)
+
+Install:
+
+```bash
+pnpm add agent-inspect @agent-inspect/langchain @langchain/core
+```
+
+`@langchain/core` is a **peer dependency** of `@agent-inspect/langchain`. The adapter uses official LangChain.js **callbacks** only (extends `BaseCallbackHandler`): **no** monkey-patching, **no** `agent-inspect/auto`, **no** vendor observability sinks.
+
+```ts
+import { AgentInspectCallback } from "@agent-inspect/langchain";
+
+const callback = new AgentInspectCallback({
+  runName: "support-agent-eval",
+  capture: "metadata-only",
+});
+
+await agent.invoke(input, {
+  callbacks: [callback],
+});
+
+const events = callback.getEvents();
+```
+
+Behavior:
+
+- **Metadata-only** capture by default (model, tags, token usage when present, counts). **No** full prompt/output capture by default.
+- **Preview** mode is opt-in (`capture: "preview"`) with truncation via `maxPreviewChars` (default `200`).
+- **Parent** links use LangChain `parentRunId`, surfaced as `parentId` on `InspectEvent` with `confidence: "explicit"`.
+- **No** cost calculation; token fields are informational only.
+- In this pass, events are collected **in memory** only (`getEvents()` / `clear()`). They are **not** written into v0.1 JSONL manual traces.
+
+The API is **experimental** before v1.0. See [examples/08-langchain-adapter](examples/08-langchain-adapter).
+
 ## CLI
 
 List recent runs:

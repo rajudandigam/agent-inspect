@@ -155,7 +155,13 @@ These examples are the highest priority after the docs foundation.
 
 examples/
   06-log-to-tree/
+  08-langchain-adapter/
   07-proactive-agent-logs/
+08-langchain-adapter
+Purpose
+
+Demonstrate the v0.5 LangChain.js callback adapter (`AgentInspectCallback`) with in-memory `InspectEvent[]` and explicit `parentRunId` attribution. Provider-free: simulates handler calls only.
+
 06-log-to-tree
 Purpose
 

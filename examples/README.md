@@ -11,6 +11,9 @@ They use fake async functions, no API keys, no external LLM SDKs, and no network
 | [03-parallel-steps](03-parallel-steps) | `Promise.all` sibling isolation |
 | [04-error-handling](04-error-handling) | Failed steps and error traces |
 | [05-observe-wrapper](05-observe-wrapper) | Proxy wrapper for agent-like objects |
+| [08-langchain-adapter](08-langchain-adapter) | LangChain `BaseCallbackHandler` → in-memory `InspectEvent` capture (v0.5); **workspace** example (`pnpm-workspace.yaml`), no API keys |
+
+The v0.5 LangChain example depends on `@agent-inspect/langchain` and `@langchain/core` only; install from the repo root.
 
 ## How to run
 
@@ -26,6 +29,12 @@ Run an example:
 cd examples/01-basic
 pnpm install
 pnpm start
+```
+
+For **08-langchain-adapter**, install from the **repo root** (`pnpm install`), then:
+
+```bash
+pnpm --filter agent-inspect-example-08-langchain-adapter start
 ```
 
 ## Inspect traces

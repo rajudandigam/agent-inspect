@@ -1,22 +1,16 @@
-import { describe, expect, it } from "vitest";
-
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { describe, expect, it } from "vitest";
 
 import { parseLogsToTrees } from "../../src/logs/index.js";
 import { renderRunTrees } from "../../src/logs/tree-renderer.js";
 
-const jsonSample = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/sample-json.log",
-);
-const log4jsSample = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/sample-log4js.log",
-);
-const configPath = path.resolve(
-  process.cwd(),
-  "examples/06-log-to-tree/agent-inspect.logs.json",
-);
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
+
+const jsonSample = path.join(repoRoot, "examples/06-log-to-tree/sample-json.log");
+const log4jsSample = path.join(repoRoot, "examples/06-log-to-tree/sample-log4js.log");
+const configPath = path.join(repoRoot, "examples/06-log-to-tree/agent-inspect.logs.json");
 
 describe("v0.3 production pipeline vs spike samples", () => {
   it("parses JSON sample into a run tree with expected markers", async () => {

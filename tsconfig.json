@@ -18,7 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@agent-inspect/core": ["packages/core/src/index.ts"],
-      "@agent-inspect/core/*": ["packages/core/src/*"]
+      "@agent-inspect/core/*": ["packages/core/src/*"],
+      "@agent-inspect/langchain": ["packages/langchain/src/index.ts"],
+      "@agent-inspect/langchain/*": ["packages/langchain/src/*"]
     },
     "types": ["node"]
   },
@@ -26,6 +28,7 @@
     "packages/**/*.ts",
     "tsup.core.config.ts",
     "tsup.cli.config.ts",
+    "tsup.langchain.config.ts",
     "vitest.config.ts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**"]

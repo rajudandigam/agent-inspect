@@ -18,6 +18,10 @@ const MVP_EXAMPLES = [
 
 const SPIKE_EXAMPLES = ["06-log-to-tree"] as const;
 
+const ADAPTER_EXAMPLES = ["08-langchain-adapter"] as const;
+
+const NUMBERED_EXAMPLES = [...MVP_EXAMPLES, ...SPIKE_EXAMPLES, ...ADAPTER_EXAMPLES].sort();
+
 describe("MVP examples (static checks)", () => {
   it("each example has index.ts, package.json, and README.md", () => {
     for (const name of MVP_EXAMPLES) {
@@ -125,12 +129,12 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("05-observe-wrapper");
   });
 
-  it("examples/ contains the MVP examples plus the v0.3 spike folder", () => {
+  it("examples/ contains MVP, spike, and adapter folders", () => {
     const dirs = readdirSync(examplesRoot)
       .filter((name) => /^\d{2}-/.test(name))
       .sort();
 
-    expect(dirs).toEqual([...MVP_EXAMPLES, ...SPIKE_EXAMPLES].sort());
+    expect(dirs).toEqual(NUMBERED_EXAMPLES);
   });
 
   it("documentation and examples are readable multi-line files", () => {
@@ -165,7 +169,7 @@ describe("MVP examples (static checks)", () => {
     }
   });
 
-  it("examples/ contains the MVP examples plus the v0.3 spike folder", () => {
+  it("examples/ contains MVP, spike, and adapter folders (directory scan)", () => {
     const entries = readdirSync(examplesRoot, { withFileTypes: true });
 
     const dirs = entries
@@ -173,7 +177,37 @@ describe("MVP examples (static checks)", () => {
       .map((entry) => entry.name)
       .filter((name) => /^\d{2}-/.test(name));
 
-    expect(dirs.sort()).toEqual([...MVP_EXAMPLES, ...SPIKE_EXAMPLES].sort());
+    expect(dirs.sort()).toEqual(NUMBERED_EXAMPLES);
+  });
+});
+
+describe("LangChain adapter example (static checks)", () => {
+  it("example 08 has required files and workspace wiring", () => {
+    for (const name of ADAPTER_EXAMPLES) {
+      const dir = path.join(examplesRoot, name);
+
+      expect(existsSync(path.join(dir, "package.json"))).toBe(true);
+      expect(existsSync(path.join(dir, "README.md"))).toBe(true);
+      expect(existsSync(path.join(dir, "src", "index.ts"))).toBe(true);
+      expect(existsSync(path.join(dir, "expected-output.txt"))).toBe(true);
+
+      const raw = readFileSync(path.join(dir, "package.json"), "utf-8");
+      const pkg = JSON.parse(raw) as {
+        name?: string;
+        private?: boolean;
+        dependencies?: Record<string, string>;
+      };
+
+      expect(pkg.name).toBe("agent-inspect-example-08-langchain-adapter");
+      expect(pkg.private).toBe(true);
+      expect(pkg.dependencies?.["agent-inspect"]).toBe("workspace:*");
+      expect(pkg.dependencies?.["@agent-inspect/langchain"]).toBe("workspace:*");
+      expect(pkg.dependencies?.["@langchain/core"]).toMatch(/^\^/);
+
+      const src = readFileSync(path.join(dir, "src", "index.ts"), "utf-8");
+      expect(src).toContain("@agent-inspect/langchain");
+      expect(src).not.toMatch(/OPENAI_API_KEY/);
+    }
   });
 });
 

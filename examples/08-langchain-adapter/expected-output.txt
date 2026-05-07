@@ -1,0 +1,14 @@
+Example 08 runs a synthetic LangChain callback lifecycle (no network, no API keys).
+
+Expected shape (after `pnpm --filter agent-inspect-example-08-langchain-adapter start`):
+
+- JSON array of 6 `InspectEvent` objects printed to stdout.
+- First event: `kind` CHAIN, `eventId` `lc-root-run:CHAIN:start`, `runId` `lc-root-run`, no `parentId`.
+- Second event: inner CHAIN with `parentId` `lc-root-run` (LangChain `parentRunId` surfaced as `parentId`).
+- Third / fourth: LLM start then LLM end under `parentId` `lc-chain-inner`; end event includes `attributes.tokens` with `input` 12, `output` 34, `total` 46.
+- LLM **start** uses `name` `llm:mock-model` and `attributes.model` when `kwargs.model` is present on the serialized mock; the **end** event name follows `extractModelName` on the `LLMResult` (often `llm:llm` if no model metadata on the output).
+- Fifth / sixth: CHAIN end events closing inner then root; `durationMs` present when a matching start was recorded.
+- All events: `confidence` `explicit`, `source.type` `adapter`.
+- No `cost` field under `attributes.tokens`.
+
+Timestamps and exact `durationMs` values vary by machine speed.

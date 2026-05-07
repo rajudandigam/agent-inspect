@@ -1,0 +1,33 @@
+{
+  "name": "@agent-inspect/langchain",
+  "version": "0.1.2",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "description": "LangChain.js callback adapter for AgentInspect (in-memory execution events)",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.langchain.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "peerDependencies": {
+    "@langchain/core": "^1.0.0"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "devDependencies": {
+    "@langchain/core": "^1.0.0"
+  }
+}
