@@ -270,6 +270,28 @@ Safety notes:
 - Without `--dry-run`, `clean` requires confirmation unless `--yes` is provided.
 - In non-interactive terminals, deletion requires `--yes`.
 
+Inspect structured logs:
+
+```bash
+npx agent-inspect logs ./agent.log --format json
+npx agent-inspect logs ./agent.log --format log4js
+npx agent-inspect logs ./agent.log --format auto
+npx agent-inspect logs ./agent.log --config agent-inspect.logs.json
+npx agent-inspect logs ./agent.log --json
+npx agent-inspect logs ./agent.log --summary
+npx agent-inspect logs ./agent.log --warnings all
+```
+
+Log ingestion notes:
+
+- JSON logs are first-class.
+- log4js text logs are best-effort: only embedded **valid JSON payloads** are supported.
+- JavaScript object-literal payloads are intentionally unsupported.
+- No eval is used.
+- Flat timeline is default (nesting only with explicit `parentId`).
+- Confidence labels explain attribution.
+- Redaction is applied to sensitive attributes (based on config).
+
 Use a custom trace directory:
 
 ```bash
@@ -324,7 +346,7 @@ The repo includes five runnable MVP examples plus one v0.3 log-to-tree spike exa
 - `examples/03-parallel-steps` — `Promise.all` sibling isolation
 - `examples/04-error-handling` — failed steps and error traces
 - `examples/05-observe-wrapper` — `observe()` wrapper with internal steps
-- `examples/06-log-to-tree` — v0.3 spike/prototype for structured log-to-tree validation (not production CLI behavior)
+- `examples/06-log-to-tree` — v0.3 structured log-to-tree example (includes historical spike prototype and production `agent-inspect logs` usage)
 
 Run one locally:
 

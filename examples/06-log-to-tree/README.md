@@ -29,6 +29,32 @@ cd examples/06-log-to-tree
 node prototype-parser.mjs
 ```
 
+## Production CLI (v0.3)
+
+The spike remains as a historical prototype. The production workflow is:
+
+```bash
+pnpm build
+node ../../packages/cli/dist/index.cjs logs ./sample-json.log --format json --config ./agent-inspect.logs.json
+node ../../packages/cli/dist/index.cjs logs ./sample-log4js.log --format log4js --config ./agent-inspect.logs.json
+```
+
+JSON output:
+
+```bash
+node ../../packages/cli/dist/index.cjs logs ./sample-json.log --format json --config ./agent-inspect.logs.json --json
+```
+
+Notes:
+
+- JSON logs are first-class.
+- log4js text logs are best-effort: only embedded **valid JSON payloads** are supported.
+- JavaScript object-literal payloads (e.g. `{ event: "x" }`) are intentionally unsupported.
+- No eval is used.
+- Flat timeline is default. Nesting only with explicit `parentId`.
+- Confidence labels are mandatory.
+- Redaction is applied based on config.
+
 ## Files
 
 - `sample-json.log`: line-delimited JSON logs (first-class)

@@ -16,6 +16,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("list");
     expect(names).toContain("view");
     expect(names).toContain("clean");
+    expect(names).toContain("logs");
   });
 
   it("help output mentions agent-inspect, list, and view", () => {
@@ -25,6 +26,7 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("list");
     expect(help).toContain("view");
     expect(help).toContain("clean");
+    expect(help).toContain("logs");
   });
 
   it("clean help mentions key options", () => {
@@ -36,5 +38,17 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--keep");
     expect(help).toContain("--dry-run");
     expect(help).toContain("--yes");
+  });
+
+  it("logs help mentions key options", () => {
+    const program = createCliProgram();
+    const logs = program.commands.find((c) => c.name() === "logs");
+    expect(logs).toBeDefined();
+    const help = logs!.helpInformation();
+    expect(help).toContain("--format");
+    expect(help).toContain("--config");
+    expect(help).toContain("--run-id-key");
+    expect(help).toContain("--json");
+    expect(help).toContain("--warnings");
   });
 });
