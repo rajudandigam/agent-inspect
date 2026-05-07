@@ -88,7 +88,7 @@ describe("list", () => {
     expect(out).toContain(runId);
     expect(out).toContain("my-run");
     expect(out).toContain("✓");
-    expect(out).toContain("1.0s");
+    expect(out).toContain("1.00s");
     logSpy.mockRestore();
   });
 

@@ -60,14 +60,15 @@ describe("formatDuration", () => {
     expect(formatDuration(850)).toBe("850ms");
   });
 
-  it("formats second+ durations with one decimal", () => {
-    expect(formatDuration(1000)).toBe("1.0s");
-    expect(formatDuration(1234)).toBe("1.2s");
-    expect(formatDuration(5678)).toBe("5.7s");
+  it("formats seconds with two decimals and larger units for readability", () => {
+    expect(formatDuration(1000)).toBe("1.00s");
+    expect(formatDuration(1234)).toBe("1.23s");
+    expect(formatDuration(5678)).toBe("5.68s");
+    expect(formatDuration(125000)).toBe("2.1m");
   });
 
-  it("returns 0ms for invalid inputs", () => {
-    expect(formatDuration(-1)).toBe("0ms");
+  it("throws on negative values and returns 0ms for non-finite inputs", () => {
+    expect(() => formatDuration(-1)).toThrow(/non-negative/i);
     expect(formatDuration(Number.NaN)).toBe("0ms");
     expect(formatDuration(Number.POSITIVE_INFINITY)).toBe("0ms");
   });

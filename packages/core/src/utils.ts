@@ -5,6 +5,7 @@ import path from "node:path";
 import { nanoid } from "nanoid";
 
 import type { ErrorInfo } from "./types.js";
+import { formatDuration as formatDurationV2 } from "./utils/duration.js";
 
 /** Default folder under the user home for AgentInspect data. */
 export const DEFAULT_TRACE_DIR_NAME = ".agent-inspect";
@@ -32,19 +33,9 @@ export function createStepId(): string {
   return `step_${nanoid(10)}`;
 }
 
-/**
- * Formats a duration for CLI display.
- * Under 1000 ms uses whole milliseconds; from 1000 ms uses seconds with one decimal.
- */
+/** Formats a duration for CLI display (v0.2 rules). */
 export function formatDuration(ms: number): string {
-  if (!Number.isFinite(ms) || ms < 0) {
-    return "0ms";
-  }
-  if (ms < 1000) {
-    return `${Math.floor(ms)}ms`;
-  }
-  const seconds = ms / 1000;
-  return `${(Math.round(seconds * 10) / 10).toFixed(1)}s`;
+  return formatDurationV2(ms);
 }
 
 /**
@@ -73,6 +64,10 @@ export function formatTimestamp(timestamp: number): string {
  * Falls back to {@link FALLBACK_TRACE_DIR} when home cannot be resolved.
  */
 export function getDefaultTraceDir(): string {
+  const envDir = process.env.AGENT_INSPECT_TRACE_DIR;
+  if (typeof envDir === "string" && envDir.trim() !== "") {
+    return envDir.trim();
+  }
   try {
     const home = os.homedir();
     if (typeof home !== "string" || home.trim() === "") {

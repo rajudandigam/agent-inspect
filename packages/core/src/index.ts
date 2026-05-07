@@ -14,6 +14,9 @@ export type {
   StepStartedEvent,
   StepCompletedEvent,
   TraceEvent,
+  TraceMetadataStatus,
+  TraceMetadata,
+  RunSummary,
   InspectRunOptions,
   StepOptions,
   ObserveOptions,
@@ -64,6 +67,18 @@ export {
   listTraceFiles,
   getRunIdFromTraceFileName,
 } from "./storage.js";
+
+export type { TraceDirectoryOptions } from "./trace-directory.js";
+export { TraceDirectory } from "./trace-directory.js";
+
+export { extractMetadata, buildRunSummary } from "./trace-metadata.js";
+
+export type { TraceFilterOptions } from "./trace-filter.js";
+export { filterTraces } from "./trace-filter.js";
+
+export { isAgentInspectTrace } from "./trace-verification.js";
+
+export { parseDuration } from "./utils/duration.js";
 
 export {
   TERMINAL_INDENT,

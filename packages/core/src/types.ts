@@ -77,6 +77,47 @@ export interface Step {
 /** Version of the JSONL trace line schema consumed by AgentInspect tooling. */
 export type TraceSchemaVersion = "0.1";
 
+/**
+ * Status for lightweight trace metadata extraction.
+ * `"unknown"` means the file contained valid events but a run status could not be determined safely.
+ */
+export type TraceMetadataStatus = "success" | "error" | "running" | "unknown";
+
+export interface TraceMetadata {
+  runId: string;
+  name?: string;
+  status: TraceMetadataStatus;
+  startedAt?: number;
+  endedAt?: number;
+  durationMs?: number;
+  eventCount: number;
+  filePath: string;
+  fileSize: number;
+  createdAt: Date;
+}
+
+export interface RunSummary {
+  runId: string;
+  name?: string;
+  status: TraceMetadataStatus;
+  durationMs?: number;
+  totalSteps: number;
+  llmSteps: number;
+  toolSteps: number;
+  logicSteps: number;
+  errorSteps: number;
+  maxDepth: number;
+  longestStep?: {
+    name: string;
+    durationMs: number;
+    type: string;
+  };
+  totalTokens?: {
+    input: number;
+    output: number;
+  };
+}
+
 /** Fields shared by every persisted trace event line. */
 export interface TraceEventBase {
   schemaVersion: TraceSchemaVersion;

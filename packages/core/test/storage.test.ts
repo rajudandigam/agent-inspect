@@ -55,6 +55,17 @@ describe("serializeEvent", () => {
   });
 });
 
+describe("getDefaultTraceDir env override", () => {
+  it("uses AGENT_INSPECT_TRACE_DIR when set", async () => {
+    const prev = process.env.AGENT_INSPECT_TRACE_DIR;
+    process.env.AGENT_INSPECT_TRACE_DIR = "/tmp/agent-inspect-env-dir";
+    const { getDefaultTraceDir } = await import("../src/utils.js");
+    expect(getDefaultTraceDir()).toBe("/tmp/agent-inspect-env-dir");
+    if (prev === undefined) delete process.env.AGENT_INSPECT_TRACE_DIR;
+    else process.env.AGENT_INSPECT_TRACE_DIR = prev;
+  });
+});
+
 describe("validateEvent", () => {
   it("accepts run_started", () => {
     expect(validateEvent(runStarted())).toBe(true);

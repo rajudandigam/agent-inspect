@@ -11,6 +11,7 @@ import { MAX_NAME_LENGTH } from "../src/utils.js";
 
 describe("inspectRun", () => {
   let traceDir: string;
+  const prevEnv = process.env.AGENT_INSPECT_TRACE_DIR;
 
   beforeEach(async () => {
     traceDir = path.join(os.tmpdir(), `agent-inspect-ir-${Date.now()}`);
@@ -22,6 +23,11 @@ describe("inspectRun", () => {
       await rm(traceDir, { recursive: true, force: true });
     } catch {
       /* ignore */
+    }
+    if (prevEnv === undefined) {
+      delete process.env.AGENT_INSPECT_TRACE_DIR;
+    } else {
+      process.env.AGENT_INSPECT_TRACE_DIR = prevEnv;
     }
     vi.restoreAllMocks();
   });
@@ -219,5 +225,31 @@ describe("inspectRun", () => {
       expect(start.name.endsWith("...")).toBe(true);
       expect(start.name.length).toBe(MAX_NAME_LENGTH);
     }
+  });
+
+  it("writes to AGENT_INSPECT_TRACE_DIR when traceDir option is missing", async () => {
+    const envDir = path.join(os.tmpdir(), `agent-inspect-ir-env-${Date.now()}`);
+    await mkdir(envDir, { recursive: true });
+    process.env.AGENT_INSPECT_TRACE_DIR = envDir;
+
+    await inspectRun("env-run", async () => "ok", { silent: true });
+
+    const files = await readdir(envDir);
+    expect(files.some((f) => f.endsWith(".jsonl"))).toBe(true);
+    await rm(envDir, { recursive: true, force: true });
+  });
+
+  it("traceDir option wins over AGENT_INSPECT_TRACE_DIR", async () => {
+    const envDir = path.join(os.tmpdir(), `agent-inspect-ir-env-${Date.now()}`);
+    await mkdir(envDir, { recursive: true });
+    process.env.AGENT_INSPECT_TRACE_DIR = envDir;
+
+    await inspectRun("explicit-run", async () => "ok", { traceDir, silent: true });
+
+    const envFiles = await readdir(envDir);
+    const explicitFiles = await readdir(traceDir);
+    expect(envFiles.filter((f) => f.endsWith(".jsonl"))).toHaveLength(0);
+    expect(explicitFiles.filter((f) => f.endsWith(".jsonl")).length).toBeGreaterThan(0);
+    await rm(envDir, { recursive: true, force: true });
   });
 });
