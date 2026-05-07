@@ -26,4 +26,15 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("view");
     expect(help).toContain("clean");
   });
+
+  it("clean help mentions key options", () => {
+    const program = createCliProgram();
+    const clean = program.commands.find((c) => c.name() === "clean");
+    expect(clean).toBeDefined();
+    const help = clean!.helpInformation();
+    expect(help).toContain("--older-than");
+    expect(help).toContain("--keep");
+    expect(help).toContain("--dry-run");
+    expect(help).toContain("--yes");
+  });
 });
