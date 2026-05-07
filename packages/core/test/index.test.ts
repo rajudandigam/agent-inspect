@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { inspectRun, step, observe } from "../src/index.js";
+import {
+  inspectRun,
+  step,
+  observe,
+  parseLogsToTrees,
+  renderRunTrees,
+  JsonLogParser,
+  Log4jsParser,
+  Redactor,
+  TreeBuilder,
+} from "../src/index.js";
 
 describe("package exports", () => {
   it("exposes inspectRun, step, and observe from the barrel", () => {
@@ -9,5 +19,14 @@ describe("package exports", () => {
     expect(typeof step.llm).toBe("function");
     expect(typeof step.tool).toBe("function");
     expect(typeof observe).toBe("function");
+  });
+
+  it("exposes v0.3 log-to-tree APIs from the barrel", () => {
+    expect(typeof parseLogsToTrees).toBe("function");
+    expect(typeof renderRunTrees).toBe("function");
+    expect(typeof JsonLogParser).toBe("function");
+    expect(typeof Log4jsParser).toBe("function");
+    expect(typeof Redactor).toBe("function");
+    expect(typeof TreeBuilder).toBe("function");
   });
 });
