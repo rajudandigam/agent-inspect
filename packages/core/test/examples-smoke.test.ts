@@ -127,6 +127,8 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("03-parallel-steps");
     expect(readme).toContain("04-error-handling");
     expect(readme).toContain("05-observe-wrapper");
+    expect(readme).toContain("06-log-to-tree");
+    expect(readme).toContain("08-langchain-adapter");
   });
 
   it("examples/ contains MVP, spike, and adapter folders", () => {
@@ -207,6 +209,10 @@ describe("LangChain adapter example (static checks)", () => {
       const src = readFileSync(path.join(dir, "src", "index.ts"), "utf-8");
       expect(src).toContain("@agent-inspect/langchain");
       expect(src).not.toMatch(/OPENAI_API_KEY/);
+
+      const readme = readFileSync(path.join(dir, "README.md"), "utf-8");
+      expect(readme.toLowerCase()).toMatch(/no api key|provider-free/);
+      expect(readme).toMatch(/repo root|workspace/i);
     }
   });
 });

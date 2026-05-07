@@ -19,6 +19,7 @@
     "paths": {
       "@agent-inspect/core": ["packages/core/src/index.ts"],
       "@agent-inspect/core/*": ["packages/core/src/*"],
+      "agent-inspect": ["packages/core/src/index.ts"],
       "@agent-inspect/langchain": ["packages/langchain/src/index.ts"],
       "@agent-inspect/langchain/*": ["packages/langchain/src/*"]
     },

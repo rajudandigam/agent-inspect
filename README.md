@@ -384,7 +384,7 @@ cat ~/.agent-inspect/runs/run_abc123.jsonl | jq
 
 ## Runnable examples
 
-The repo includes five runnable MVP examples plus one v0.3 log-to-tree spike example:
+The repo includes five runnable MVP manual-tracing examples, the v0.3 structured log-to-tree example, and the v0.5 LangChain adapter example:
 
 - `examples/01-basic` — `inspectRun()` + `step()`
 - `examples/02-nested-steps` — nested execution tree hierarchy
@@ -392,6 +392,7 @@ The repo includes five runnable MVP examples plus one v0.3 log-to-tree spike exa
 - `examples/04-error-handling` — failed steps and error traces
 - `examples/05-observe-wrapper` — `observe()` wrapper with internal steps
 - `examples/06-log-to-tree` — v0.3 structured log-to-tree example (includes historical spike prototype and production `agent-inspect logs` usage)
+- `examples/08-langchain-adapter` — v0.5 LangChain callback adapter (`@agent-inspect/langchain`), provider-free simulated lifecycle (install from repo root; see example README)
 
 Run one locally:
 
@@ -435,7 +436,7 @@ Current scope also includes:
 
 Not included:
 
-- Framework adapters
+- Framework adapters beyond LangChain (available separately as `@agent-inspect/langchain`; additional adapters are not included yet)
 - Token or cost tracking
 - Replay
 - SQLite

@@ -20,12 +20,14 @@ export default defineConfig({
     // In-repo tests run before build; point workspace imports at source.
     alias: {
       "@agent-inspect/core": coreEntry,
+      /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
+      "agent-inspect": coreEntry,
       "@agent-inspect/langchain": langchainEntry,
     },
   },
   ssr: {
     // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
-    noExternal: ["@agent-inspect/core", "@agent-inspect/langchain"],
+    noExternal: ["@agent-inspect/core", "agent-inspect", "@agent-inspect/langchain"],
   },
   test: {
     environment: "node",

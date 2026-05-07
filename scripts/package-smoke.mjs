@@ -17,7 +17,15 @@ function assertHelp(label, stdout, stderr, status) {
     console.error(`[pack:smoke] ${label} exit ${status}\n${combined}`);
     process.exit(1);
   }
-  for (const needle of ["agent-inspect", "list", "view"]) {
+  // Core CLI commands shipped in the main tarball (no LangChain).
+  for (const needle of [
+    "agent-inspect",
+    "list",
+    "view",
+    "clean",
+    "logs",
+    "tail",
+  ]) {
     if (!combined.includes(needle)) {
       console.error(
         `[pack:smoke] ${label}: expected stdout to contain "${needle}"\n${combined}`,
