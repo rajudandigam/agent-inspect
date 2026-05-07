@@ -10,6 +10,10 @@ import { Redactor } from "./redactor.js";
 import { EventNormalizer } from "./normalizer.js";
 import { TreeBuilder } from "./tree-builder.js";
 import type { ParserWarning } from "./warnings.js";
+export type { LogSourceFormat, ParseLogLineOptions } from "./line-parser.js";
+export { parseLogLine } from "./line-parser.js";
+export type { LiveLogUpdate, LiveLogAccumulatorOptions } from "./live-tree.js";
+export { LiveLogAccumulator } from "./live-tree.js";
 
 export interface ParseLogsOptions {
   format?: "json" | "log4js" | "auto";

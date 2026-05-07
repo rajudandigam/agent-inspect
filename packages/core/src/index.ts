@@ -65,6 +65,10 @@ export { renderRunTree, renderRunTrees } from "./logs/tree-renderer.js";
 
 export type { ParseLogsOptions, LogToTreeResult } from "./logs/index.js";
 export { parseLogsToTrees } from "./logs/index.js";
+export type { LogSourceFormat, ParseLogLineOptions } from "./logs/line-parser.js";
+export { parseLogLine } from "./logs/line-parser.js";
+export type { LiveLogUpdate, LiveLogAccumulatorOptions } from "./logs/live-tree.js";
+export { LiveLogAccumulator } from "./logs/live-tree.js";
 
 export {
   createRunId,

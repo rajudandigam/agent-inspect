@@ -39,6 +39,41 @@ node ../../packages/cli/dist/index.cjs logs ./sample-json.log --format json --co
 node ../../packages/cli/dist/index.cjs logs ./sample-log4js.log --format log4js --config ./agent-inspect.logs.json
 ```
 
+## Live tail CLI (v0.4)
+
+`tail` reuses the same log-to-tree rules as `logs`:
+
+- JSON logs are first-class.
+- log4js is best-effort with embedded **valid JSON** payloads only.
+- JavaScript object-literal payloads are intentionally unsupported.
+- No eval is used.
+- Flat timeline by default (nesting only with explicit `parentId`).
+- Confidence labels remain visible.
+- Redaction is applied based on config.
+- Terminal-only output (not the optional TUI planned for v0.6). No keyboard navigation.
+- No trace files are written by default.
+- File tailing uses Node built-ins (polling), not chokidar.
+
+Examples (use `--once` for stable output while validating this example):
+
+```bash
+pnpm build
+
+node ../../packages/cli/dist/index.cjs tail --file ./sample-json.log --format json --config ./agent-inspect.logs.json --once
+node ../../packages/cli/dist/index.cjs tail --file ./sample-log4js.log --format log4js --config ./agent-inspect.logs.json --once
+```
+
+Pipe example:
+
+```bash
+cat ./sample-log4js.log | node ../../packages/cli/dist/index.cjs tail --format log4js --config ./agent-inspect.logs.json --once
+```
+
+Notes:
+
+- `tail --once` is useful for example validation.
+- Normal `tail` follows new lines (like `tail -f`).
+
 JSON output:
 
 ```bash

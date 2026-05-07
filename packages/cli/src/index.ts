@@ -13,6 +13,8 @@ import type { ViewOptions } from "./view.js";
 import { view } from "./view.js";
 import type { LogsOptions } from "./logs.js";
 import { logs } from "./logs.js";
+import type { TailOptions } from "./tail.js";
+import { tail } from "./tail.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -137,6 +139,46 @@ export function createCliProgram(): Command {
     .option("--no-color", "disable color output")
     .action((file: string, opts: LogsOptions) => {
       runCommand(() => logs(file, opts));
+    });
+
+  program
+    .command("tail")
+    .description("Live tail structured logs into execution trees")
+    .option("--file <path>", "tail a log file (default: read from stdin)")
+    .addOption(
+      new Option("--format <format>", "log format").choices([
+        "auto",
+        "json",
+        "log4js",
+      ]),
+    )
+    .option("--config <path>", "path to log ingest config (JSON)")
+    .option(
+      "--run-id-key <keys>",
+      "override run id keys (comma-separated, e.g. decisionId,requestId,jobId)",
+    )
+    .option("--event-key <key>", "override event key")
+    .option("--timestamp-key <key>", "override timestamp key")
+    .option("--message-key <key>", "override message key")
+    .option("--level-key <key>", "override level key")
+    .option("--parent-id-key <key>", "override parent id key")
+    .option("--duration-key <key>", "override duration key")
+    .option("--status-key <key>", "override status key")
+    .addOption(
+      new Option("--warnings <mode>", "warning output mode").choices([
+        "summary",
+        "all",
+        "none",
+      ]),
+    )
+    .option("--refresh <ms>", "minimum time between renders (ms)")
+    .option("--once", "read once and exit (for --file)")
+    .option("--json", "print newline-delimited JSON updates")
+    .option("--no-clear", "do not clear screen between renders")
+    .option("--verbose", "show more detail (reserved for future)")
+    .option("--no-color", "disable color output")
+    .action((opts: TailOptions) => {
+      runCommand(() => tail(opts));
     });
 
   return program;

@@ -292,6 +292,16 @@ Log ingestion notes:
 - Confidence labels explain attribution.
 - Redaction is applied to sensitive attributes (based on config).
 
+Live tail structured logs:
+
+```bash
+npx agent-inspect tail --file ./agent.log --format json
+npx agent-inspect tail --file ./agent.log --format log4js --config agent-inspect.logs.json
+npm run dev 2>&1 | npx agent-inspect tail --format log4js --config agent-inspect.logs.json
+npx agent-inspect tail --file ./agent.log --format auto --once
+npx agent-inspect tail --file ./agent.log --json --once
+```
+
 Use a custom trace directory:
 
 ```bash
@@ -370,7 +380,7 @@ Supporting material:
 
 - [examples/README.md](examples/README.md)
 
-## MVP scope
+## Original MVP scope
 
 Included:
 
@@ -381,6 +391,12 @@ Included:
 - `observe()`
 - JSONL traces
 - CLI `list` and `view`
+
+Current scope also includes:
+
+- CLI `clean` (safe deletion with verification)
+- CLI `logs` (structured log-to-tree)
+- CLI `tail` (live log tailing into grouped timelines)
 
 Not included:
 
