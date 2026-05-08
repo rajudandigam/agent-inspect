@@ -30,6 +30,8 @@ function buildRunName(target: object, methodKey: string): string {
 }
 
 /**
+ * Stable v1.0 API for observing agent-like objects locally.
+ *
  * Returns a Proxy that traces top-level `run`, `execute`, and `invoke` via {@link inspectRun}.
  * Other properties pass through; function members are bound to the real target so class private fields work.
  * Invalid agents are returned unchanged (with a warn); this function never throws.

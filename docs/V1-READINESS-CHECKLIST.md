@@ -4,21 +4,21 @@ This checklist prepares for a future **v1.0 Stable Local Agent Inspector** relea
 
 ## APIs & compatibility
 
-- [ ] Public TypeScript APIs reviewed for naming, naming stability, and accidental leakage of internals.
-- [ ] CLI surface (`agent-inspect …`) reviewed for consistency and backwards-compatible defaults.
-- [ ] Trace JSONL schema compatibility verified across supported minor versions (additive-only evolution documented).
-- [ ] Experimental surfaces clearly labeled (exports, optional packages).
+- [x] Public TypeScript APIs reviewed for naming, naming stability, and accidental leakage of internals.
+- [x] CLI surface (`agent-inspect …`) reviewed for consistency and backwards-compatible defaults.
+- [x] Trace JSONL schema compatibility verified across supported minor versions (additive-only evolution documented).
+- [x] Experimental surfaces clearly labeled (exports, optional packages).
 
 ## Documentation
 
-- [ ] README + architecture docs reflect actual behavior (including limitations).
+- [x] README + architecture docs reflect actual behavior (including limitations).
 - [ ] Examples run locally without external services by default.
 - [ ] Fixture catalog matches committed fixtures under `fixtures/`.
 
 ## Quality gates
 
-- [ ] Conformance-style tests cover critical contracts (events, tree rules, redaction, exports, diff).
-- [ ] Migration/compatibility tests cover legacy traces and log ingest expectations.
+- [x] Conformance-style tests cover critical contracts (events, tree rules, redaction, exports, diff).
+- [x] Migration/compatibility tests cover legacy traces and log ingest expectations.
 - [ ] Integration smoke passes on canonical fixtures.
 - [ ] `pnpm fixtures:check` passes after `pnpm build`.
 - [ ] Package smoke (`pnpm pack:smoke`) passes.

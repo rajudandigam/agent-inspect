@@ -81,6 +81,10 @@ function applyOverrides(
   return mergeLogIngestConfig(cfg, override);
 }
 
+/**
+ * @experimental Compatibility-oriented API for parsing structured logs into normalized run trees.
+ * Subject to refinement before a future stability declaration.
+ */
 export async function parseLogsToTrees(
   filePath: string,
   options: ParseLogsOptions = {},

@@ -19,6 +19,10 @@ export function mergeExportDefaults(options: ExportOptions): ExportOptions {
   };
 }
 
+/**
+ * @experimental Compatibility-oriented export API. Exports are local-only and do not upload anywhere.
+ * Subject to refinement before a future stability declaration.
+ */
 export function exportRunTree(tree: InspectRunTree, options: ExportOptions): ExportResult {
   const opts = mergeExportDefaults(options);
   switch (opts.format) {

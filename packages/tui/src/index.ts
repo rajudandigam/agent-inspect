@@ -1,3 +1,6 @@
+/**
+ * @experimental Optional TUI package. The CLI integration is supported, but programmatic TUI APIs may change.
+ */
 export type { TuiTraceModel, TuiTraceNode } from "./types.js";
 export { buildTuiTraceModel, countTreeSteps } from "./tree-model.js";
 export type { LoadTraceForTuiOptions } from "./trace-loader.js";

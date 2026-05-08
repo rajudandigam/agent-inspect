@@ -130,7 +130,11 @@ async function stepImpl<T>(
   return result;
 }
 
-/** Callable step tracer plus {@link step.llm} and {@link step.tool} shortcuts. */
+/**
+ * Stable v1.0 API for instrumenting a named step inside an AgentInspect run.
+ *
+ * Callable step tracer plus {@link step.llm} and {@link step.tool} shortcuts.
+ */
 export type StepFunction = {
   <T>(name: string, fn: () => Promise<T> | T, options?: StepOptions): Promise<T>;
   llm: <T>(model: string, fn: () => Promise<T> | T) => Promise<T>;

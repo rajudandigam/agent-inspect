@@ -23,7 +23,8 @@ export { diffRuns } from "./engine.js";
 export { renderRunDiff } from "./renderer.js";
 
 /**
- * Compare two v0.1 manual traces as normalized trees (read-only).
+ * @experimental Compare two v0.1 manual traces as normalized trees (read-only).
+ * Subject to refinement before a future stability declaration.
  */
 export function diffTraceEvents(
   leftEvents: TraceEvent[],

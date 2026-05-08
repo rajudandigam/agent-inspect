@@ -30,6 +30,8 @@ async function safeInstrumentation(
 }
 
 /**
+ * Stable v1.0 API for local manual run tracing.
+ *
  * Runs `fn` inside an AgentInspect trace: JSONL `run_started` / `run_completed`, optional terminal output,
  * and {@link ExecutionContext} for nested APIs. Instrumentation failures are swallowed; user errors are re-thrown.
  */

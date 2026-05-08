@@ -26,6 +26,16 @@ agent-inspect is designed for inner-loop debugging, not as a replacement for pro
 npm install agent-inspect
 ```
 
+## Documentation (v1.0 stabilization)
+
+- [Getting started](docs/GETTING-STARTED.md)
+- [API reference](docs/API.md)
+- [CLI reference](docs/CLI.md)
+- [Schema reference](docs/SCHEMA.md)
+- [Known issues](docs/KNOWN-ISSUES.md)
+- [Limitations](docs/LIMITATIONS.md)
+- [V1 readiness checklist (non-binding)](docs/V1-READINESS-CHECKLIST.md)
+
 ## See your first trace
 
 Run a traced workflow, then inspect it with the CLI.
