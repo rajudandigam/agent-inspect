@@ -1,0 +1,5 @@
+{"event":"proactive.agent.started","decisionId":"fixture_mixed","timestamp":1746451218000}
+bad line without json
+{"event":"proactive.tool.search","decisionId":"fixture_mixed","timestamp":1746451218100}
+2026-05-05 text without json payload
+{"event":"proactive.agent.completed","decisionId":"fixture_mixed","timestamp":1746451219000}

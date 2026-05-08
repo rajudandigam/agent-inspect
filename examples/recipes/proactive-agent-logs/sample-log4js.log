@@ -1,0 +1,3 @@
+2026-05-05 12:20:18.130 [INFO] [default] - Job started {"event":"proactive.job.started","jobId":"7a06467f","decisionId":"fixture_run_02","timestamp":1746451218130}
+2026-05-05 12:20:18.132 [INFO] [default] - Agent started {"event":"proactive.agent.started","trips":1,"decisionId":"fixture_run_02","timestamp":1746451218132}
+2026-05-05 12:20:25.624 [INFO] [default] - Tool called {"event":"proactive.tool.conversation_history_fetched","tripUuid":"89e28415-9999-8888-7777-abcdef000002","messageCount":19,"decisionId":"fixture_run_02","timestamp":1746451225624}

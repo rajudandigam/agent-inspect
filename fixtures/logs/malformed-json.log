@@ -1,0 +1,4 @@
+{"event":"proactive.agent.started","decisionId":"fixture_malformed","timestamp":1746451218000}
+this is not json
+{"event":"proactive.agent.completed","decisionId":"fixture_malformed","timestamp":1746451219000}
+{invalid json trailing

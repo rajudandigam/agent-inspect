@@ -3,6 +3,9 @@ node_modules
 dist
 coverage
 *.log
+!fixtures/logs/*.log
+!examples/06-log-to-tree/*.log
+!examples/recipes/proactive-agent-logs/*.log
 .DS_Store
 .turbo
 .pnpm-debug.log*

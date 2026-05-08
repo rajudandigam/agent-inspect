@@ -1,0 +1,7 @@
+2026-05-05 12:20:18.130 [INFO] [default] - Job started {"event":"proactive.job.started","jobId":"7a06467f","userUuid":"f0769fd4-1234-5678-9abc-abcdef000001","decisionId":"01fe6bf1","timestamp":1746451218130}
+2026-05-05 12:20:18.132 [INFO] [default] - Agent started {"event":"proactive.agent.started","trips":1,"decisionId":"01fe6bf1","timestamp":1746451218132}
+2026-05-05 12:20:25.624 [INFO] [default] - Tool called {"event":"proactive.tool.conversation_history_fetched","tripUuid":"89e28415-9999-8888-7777-abcdef000002","messageCount":19,"decisionId":"01fe6bf1","timestamp":1746451225624}
+2026-05-05 12:20:27.831 [INFO] [default] - LLM started {"event":"proactive.llm.generate_message","model":"gemini-3.1-pro-preview","decisionId":"01fe6bf1","timestamp":1746451227831}
+2026-05-05 12:20:29.875 [INFO] [default] - LLM completed {"event":"proactive.llm.generate_message_completed","tokens":{"input":1200,"output":356},"decisionId":"01fe6bf1","timestamp":1746451229875,"durationMs":2044}
+2026-05-05 12:20:30.012 [INFO] [default] - Result {"event":"proactive.result.notification","shouldNotify":true,"variant":"destination_content","decisionId":"01fe6bf1","timestamp":1746451230012}
+
