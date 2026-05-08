@@ -14,6 +14,10 @@ const langchainEntry = fileURLToPath(
   new URL("./packages/langchain/src/index.ts", import.meta.url),
 );
 
+const tuiEntry = fileURLToPath(
+  new URL("./packages/tui/src/index.ts", import.meta.url),
+);
+
 export default defineConfig({
   root: repoRoot,
   resolve: {
@@ -23,11 +27,17 @@ export default defineConfig({
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
       "@agent-inspect/langchain": langchainEntry,
+      "@agent-inspect/tui": tuiEntry,
     },
   },
   ssr: {
     // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
-    noExternal: ["@agent-inspect/core", "agent-inspect", "@agent-inspect/langchain"],
+    noExternal: [
+      "@agent-inspect/core",
+      "agent-inspect",
+      "@agent-inspect/langchain",
+      "@agent-inspect/tui",
+    ],
   },
   test: {
     environment: "node",

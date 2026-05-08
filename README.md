@@ -46,6 +46,18 @@ npx agent-inspect view run_abc123
 
 Replace `run_abc123` with the run id printed by `agent-inspect list`.
 
+### Optional TUI viewer
+
+The core `agent-inspect` package stays lightweight and does not bundle Ink or React. For a keyboard-driven terminal UI over existing traces, install the optional package:
+
+```bash
+pnpm add agent-inspect @agent-inspect/tui
+
+npx agent-inspect view run_abc123 --tui
+```
+
+The plain CLI remains the default. `--tui` requires an interactive terminal; for scripts or CI, use `agent-inspect view` or `agent-inspect view --json`. There is no live tail TUI yet.
+
 ## Minimal API
 
 ```ts
@@ -434,9 +446,11 @@ Current scope also includes:
 - CLI `logs` (structured log-to-tree)
 - CLI `tail` (live log tailing into grouped timelines)
 - LangChain callback adapter via `@agent-inspect/langchain`
+- Optional TUI viewer via `@agent-inspect/tui`
 
 Not included:
 
+- Live TUI / streaming trace updates in the TUI
 - Additional framework adapters beyond LangChain
 - Vendor sinks
 - Token cost calculation

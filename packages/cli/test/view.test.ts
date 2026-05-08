@@ -4,6 +4,14 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const { mockRunTraceViewer } = vi.hoisted(() => ({
+  mockRunTraceViewer: vi.fn(async () => {}),
+}));
+
+vi.mock("@agent-inspect/tui", () => ({
+  runTraceViewer: mockRunTraceViewer,
+}));
+
 import * as core from "@agent-inspect/core";
 
 import { view } from "../src/view.js";
@@ -96,6 +104,8 @@ describe("view", () => {
     traceDir = path.join(os.tmpdir(), `agent-inspect-cli-view-${Date.now()}`);
     await mkdir(traceDir, { recursive: true });
     delete process.env.AGENT_INSPECT_TRACE_DIR;
+    mockRunTraceViewer.mockClear();
+    mockRunTraceViewer.mockResolvedValue(undefined);
   });
 
   afterEach(async () => {
@@ -353,6 +363,66 @@ describe("view", () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await view("   ", { dir: traceDir });
     expect(errSpy.mock.calls.some((c) => String(c[0]).includes("Run id is required"))).toBe(
+      true,
+    );
+    expect(process.exitCode).toBe(1);
+    errSpy.mockRestore();
+  });
+
+  it("--tui delegates to optional TUI package", async () => {
+    await view("run_tui_delegate", { tui: true, dir: traceDir });
+    expect(mockRunTraceViewer).toHaveBeenCalledWith({
+      runId: "run_tui_delegate",
+      dir: traceDir,
+    });
+  });
+
+  it("--tui cannot combine with --json", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await view("run_x", { tui: true, json: true, dir: traceDir });
+    expect(
+      errSpy.mock.calls.some((c) =>
+        String(c[0]).includes("--tui cannot be combined"),
+      ),
+    ).toBe(true);
+    expect(process.exitCode).toBe(1);
+    expect(mockRunTraceViewer).not.toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+
+  it("--tui cannot combine with --summary", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await view("run_x", { tui: true, summary: true, dir: traceDir });
+    expect(process.exitCode).toBe(1);
+    expect(mockRunTraceViewer).not.toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+
+  it("--tui cannot combine with --metadata", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await view("run_x", { tui: true, metadata: true, dir: traceDir });
+    expect(process.exitCode).toBe(1);
+    expect(mockRunTraceViewer).not.toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+
+  it("--tui cannot combine with --errors-only", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await view("run_x", { tui: true, errorsOnly: true, dir: traceDir });
+    expect(process.exitCode).toBe(1);
+    expect(mockRunTraceViewer).not.toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+
+  it("prints TUI terminal message when runTraceViewer throws", async () => {
+    mockRunTraceViewer.mockRejectedValueOnce(
+      new Error(
+        "TUI requires an interactive terminal. Use agent-inspect view without --tui for plain output.",
+      ),
+    );
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await view("run_tty", { tui: true, dir: traceDir });
+    expect(errSpy.mock.calls.some((c) => String(c[0]).includes("interactive terminal"))).toBe(
       true,
     );
     expect(process.exitCode).toBe(1);

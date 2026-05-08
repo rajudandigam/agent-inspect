@@ -32,6 +32,17 @@ export interface ViewOptions {
   errorsOnly?: boolean;
   verbose?: boolean;
   json?: boolean;
+  /** Optional interactive TUI (requires @agent-inspect/tui installed). */
+  tui?: boolean;
+}
+
+function isModuleNotFound(e: unknown): boolean {
+  return (
+    e !== null &&
+    typeof e === "object" &&
+    "code" in e &&
+    (e as NodeJS.ErrnoException).code === "ERR_MODULE_NOT_FOUND"
+  );
 }
 
 type StepNode = {
@@ -215,6 +226,44 @@ export async function view(
     if (id === "") {
       console.error("Run id is required");
       process.exitCode = 1;
+      return;
+    }
+
+    if (options.tui) {
+      const conflict =
+        options.json ||
+        options.summary ||
+        options.metadata ||
+        options.errorsOnly;
+      if (conflict) {
+        console.error(
+          "--tui cannot be combined with --json, --summary, --metadata, or --errors-only",
+        );
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = (await import("@agent-inspect/tui")) as {
+          runTraceViewer: (o: { runId: string; dir?: string }) => Promise<void>;
+        };
+        await mod.runTraceViewer({ runId: id, dir: options.dir });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("interactive terminal")) {
+          console.error(msg);
+          process.exitCode = 1;
+          return;
+        }
+        if (isModuleNotFound(e)) {
+          console.error(
+            "TUI support is optional. Install @agent-inspect/tui to use --tui.",
+          );
+          process.exitCode = 1;
+          return;
+        }
+        console.error(`[AgentInspect] TUI failed: ${msg}`);
+        process.exitCode = 1;
+      }
       return;
     }
 

@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -21,15 +22,19 @@
       "@agent-inspect/core/*": ["packages/core/src/*"],
       "agent-inspect": ["packages/core/src/index.ts"],
       "@agent-inspect/langchain": ["packages/langchain/src/index.ts"],
-      "@agent-inspect/langchain/*": ["packages/langchain/src/*"]
+      "@agent-inspect/langchain/*": ["packages/langchain/src/*"],
+      "@agent-inspect/tui": ["packages/tui/src/index.ts"],
+      "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
     "types": ["node"]
   },
   "include": [
     "packages/**/*.ts",
+    "packages/**/*.tsx",
     "tsup.core.config.ts",
     "tsup.cli.config.ts",
     "tsup.langchain.config.ts",
+    "tsup.tui.config.ts",
     "vitest.config.ts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**"]

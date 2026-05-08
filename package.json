@@ -53,7 +53,7 @@
   },
   "scripts": {
     "clean": "pnpm -r exec -- rm -rf dist",
-    "build": "pnpm exec tsup --config tsup.core.config.ts && pnpm exec tsup --config tsup.cli.config.ts && pnpm exec tsup --config tsup.langchain.config.ts",
+    "build": "pnpm exec tsup --config tsup.core.config.ts && pnpm exec tsup --config tsup.cli.config.ts && pnpm exec tsup --config tsup.langchain.config.ts && pnpm exec tsup --config tsup.tui.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

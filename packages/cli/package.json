@@ -15,5 +15,8 @@
   "dependencies": {
     "@agent-inspect/core": "workspace:*",
     "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@agent-inspect/tui": "workspace:*"
   }
 }

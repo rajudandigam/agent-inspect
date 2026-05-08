@@ -71,6 +71,10 @@ export function createCliProgram(): Command {
     .option("--errors-only", "show only error events / failed steps")
     .option("--verbose", "show extra detail (types, metadata, error stacks)")
     .option("--json", "print raw trace events as JSON")
+    .option(
+      "--tui",
+      "open optional interactive TUI viewer (requires @agent-inspect/tui)",
+    )
     .action(
       (
         runId: string,

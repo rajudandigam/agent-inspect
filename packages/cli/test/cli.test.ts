@@ -68,4 +68,12 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--warnings");
     expect(help).toContain("--no-clear");
   });
+
+  it("view help mentions --tui", () => {
+    const program = createCliProgram();
+    const cmd = program.commands.find((c) => c.name() === "view");
+    expect(cmd).toBeDefined();
+    const help = cmd!.helpInformation();
+    expect(help).toContain("--tui");
+  });
 });
