@@ -20,12 +20,12 @@ This checklist prepares for a future **v1.0 Stable Local Agent Inspector** relea
 - [x] Conformance-style tests cover critical contracts (events, tree rules, redaction, exports, diff).
 - [x] Migration/compatibility tests cover legacy traces and log ingest expectations.
 - [ ] Integration smoke passes on canonical fixtures.
-- [ ] `pnpm fixtures:check` passes after `pnpm build`.
-- [ ] Package smoke (`pnpm pack:smoke`) passes.
+- [x] `pnpm fixtures:check` passes after `pnpm build`.
+- [x] Package smoke (`pnpm pack:smoke`) passes.
 
 ## Performance & dependencies
 
-- [ ] Performance baseline script reviewed (`pnpm perf:baseline`)—no strict CI thresholds required today.
+- [x] Performance baseline script reviewed (`pnpm perf:baseline`)—no strict CI thresholds required today.
 - [x] Dependency policy respected ([DEPENDENCY-POLICY.md](./architecture/DEPENDENCY-POLICY.md)); no accidental heavy runtime deps.
 
 ## Risk & release hygiene
