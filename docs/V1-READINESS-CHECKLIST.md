@@ -26,13 +26,17 @@ This checklist prepares for a future **v1.0 Stable Local Agent Inspector** relea
 ## Performance & dependencies
 
 - [ ] Performance baseline script reviewed (`pnpm perf:baseline`)—no strict CI thresholds required today.
-- [ ] Dependency policy respected ([DEPENDENCY-POLICY.md](./architecture/DEPENDENCY-POLICY.md)); no accidental heavy runtime deps.
+- [x] Dependency policy respected ([DEPENDENCY-POLICY.md](./architecture/DEPENDENCY-POLICY.md)); no accidental heavy runtime deps.
 
 ## Risk & release hygiene
 
 - [ ] No open P0/P1 defects blocking honest “safe default” claims.
 - [ ] Adapter-only packages remain clearly scoped; sink APIs not frozen prematurely.
-- [ ] Security posture: redacted-by-default behavior verified for logs + exports.
+- [x] Security posture: redacted-by-default behavior verified for logs + exports.
+- [x] Security policy present (`SECURITY.md`).
+- [x] Migration guide present (`docs/MIGRATION.md`).
+- [x] Release checklist present (`docs/RELEASE-CHECKLIST.md`).
+- [x] Changelog present (`CHANGELOG.md`) without declaring v1.0 shipped.
 
 ## Explicit non-goals (still)
 

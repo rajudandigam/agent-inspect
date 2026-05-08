@@ -186,7 +186,9 @@ Log-derived trees must remain honest:
 
 ## 13. Redaction considerations
 
-Redaction is applied to log-derived attributes and to exports by default. Manual trace metadata is user-controlled and should be treated as potentially sensitive.
+Redaction is applied to log-derived attributes and to exports by default. **Manual trace metadata is user-controlled** and should be treated as potentially sensitive.
+
+Always review any exported content (Markdown/HTML/OpenInference/OTLP JSON) before sharing, especially if you enable richer attribute inclusion.
 
 See: `docs/architecture/REDACTION.md`.
 

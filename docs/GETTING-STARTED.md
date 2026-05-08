@@ -8,10 +8,17 @@ AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agen
 pnpm add agent-inspect
 ```
 
-To use the CLI:
+The `agent-inspect` package includes the CLI binary via its `bin` field:
 
 ```bash
-pnpm add -D @agent-inspect/cli
+npx agent-inspect --help
+```
+
+For local repo development (this monorepo), build and run the CLI from `packages/cli`:
+
+```bash
+pnpm build
+node packages/cli/dist/index.cjs --help
 ```
 
 ## 2. Basic manual trace
