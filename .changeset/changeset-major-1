@@ -1,0 +1,23 @@
+---
+"agent-inspect": major
+"@agent-inspect/langchain": major
+"@agent-inspect/tui": major
+---
+
+Release AgentInspect 1.0.0 as a stable local-first agent inspection toolkit.
+
+This release stabilizes the core manual tracing API and local CLI workflows:
+
+- Stable manual tracing APIs: `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe`
+- Stable local CLI workflows: `list`, `view`, and `clean`
+- Backward-compatible v0.1 JSONL trace reading with `schemaVersion: "0.1"`
+- Structured log inspection through `logs` and `tail`
+- Conservative log-to-tree rendering with confidence labels
+- Optional LangChain callback adapter via `@agent-inspect/langchain`
+- Optional interactive TUI via `@agent-inspect/tui`
+- Local Markdown, HTML, OpenInference-compatible JSON, and OTLP JSON exports
+- Local run diff and compare support
+- Canonical fixtures, deterministic recipes, migration docs, security docs, and release-readiness validation
+
+AgentInspect remains local-first and does not include SaaS dashboards, vendor sinks, replay, cost calculation, production monitoring backends, or network upload behavior.
+

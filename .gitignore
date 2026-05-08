@@ -6,6 +6,7 @@ coverage
 .DS_Store
 .turbo
 .pnpm-debug.log*
+.pnpm-store/
 .idea
 .vscode/*.log
 .cursorrules*
