@@ -25,6 +25,7 @@ function assertHelp(label, stdout, stderr, status) {
     "clean",
     "logs",
     "tail",
+    "export",
   ]) {
     if (!combined.includes(needle)) {
       console.error(

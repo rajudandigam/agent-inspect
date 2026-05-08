@@ -10,3 +10,5 @@ coverage
 .vscode/*.log
 .cursorrules*
 .cursor/*
+tmp-export-traces/
+tmp-export-output/

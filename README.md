@@ -58,6 +58,20 @@ npx agent-inspect view run_abc123 --tui
 
 The plain CLI remains the default. `--tui` requires an interactive terminal; for scripts or CI, use `agent-inspect view` or `agent-inspect view --json`. There is no live tail TUI yet.
 
+### Export traces
+
+Export existing manual JSONL traces locally — **no upload**, **no vendor SDKs**. Markdown is handy for PRs and issues; HTML is a single offline file. OpenInference export is **OpenInference-compatible JSON** (not a guarantee for every backend). OTLP JSON uses **OTel GenAI-aligned attributes** where applicable and is **experimental** until validated against a specific collector.
+
+```bash
+npx agent-inspect export run_abc123 --format markdown
+npx agent-inspect export run_abc123 --format html -o run.html
+npx agent-inspect export run_abc123 --format openinference -o trace.openinference.json
+npx agent-inspect export run_abc123 --format otlp-json -o trace.otlp.json
+npx agent-inspect export run_abc123 --format openinference --validate
+```
+
+Review exported files for sensitive data before sharing. Attribute payloads are bounded and redacted by default; use `--include-attributes` only when you intend to share richer detail.
+
 ## Minimal API
 
 ```ts
@@ -447,17 +461,20 @@ Current scope also includes:
 - CLI `tail` (live log tailing into grouped timelines)
 - LangChain callback adapter via `@agent-inspect/langchain`
 - Optional TUI viewer via `@agent-inspect/tui`
+- Standards-aligned **local** exports (`export`: Markdown, HTML, OpenInference-compatible JSON, OTLP JSON mapping)
 
 Not included:
 
 - Live TUI / streaming trace updates in the TUI
+- Direct vendor sinks or uploads (Phoenix, Langfuse, Braintrust, New Relic, Datadog, …)
+- Live OTLP streaming / OTLP gRPC
+- Production monitoring platforms
 - Additional framework adapters beyond LangChain
-- Vendor sinks
 - Token cost calculation
 - Replay
 - SQLite
 - Dashboards
-- OpenTelemetry export
+- OpenTelemetry SDK instrumentation (exports are generated strings only)
 
 ## Development
 

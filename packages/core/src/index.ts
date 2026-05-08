@@ -144,3 +144,33 @@ export {
 export { inspectRun } from "./inspect-run.js";
 export { step } from "./step.js";
 export { observe } from "./observe.js";
+
+export type {
+  ExportFormat,
+  ExportOptions,
+  ExportResult,
+  ExportValidationResult,
+  TraceExporter,
+} from "./exporters/types.js";
+export { EXPORT_PAYLOAD_VERSION } from "./exporters/types.js";
+export {
+  mergeExportDefaults,
+  exportRunTree,
+  validateExport,
+  manualTraceEventsToRunTree,
+  exportMarkdown,
+  exportHtml,
+  exportOpenInference,
+  exportOtlpJson,
+  validateExportContent,
+} from "./exporters/index.js";
+export type { OpenInferenceExport, OpenInferenceSpan } from "./exporters/openinference-exporter.js";
+export {
+  safeString,
+  escapeMarkdown,
+  escapeHtml,
+  stableJson,
+  compactAttributes,
+  summarizeTree,
+  flattenTree,
+} from "./exporters/helpers.js";

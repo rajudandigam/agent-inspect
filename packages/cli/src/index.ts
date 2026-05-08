@@ -15,6 +15,8 @@ import type { LogsOptions } from "./logs.js";
 import { logs } from "./logs.js";
 import type { TailOptions } from "./tail.js";
 import { tail } from "./tail.js";
+import type { ExportCommandOptions } from "./export.js";
+import { exportCommand } from "./export.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -183,6 +185,29 @@ export function createCliProgram(): Command {
     .option("--no-color", "disable color output")
     .action((opts: TailOptions) => {
       runCommand(() => tail(opts));
+    });
+
+  program
+    .command("export")
+    .description("Export a manual trace run (Markdown, HTML, OpenInference-compatible JSON, OTLP JSON)")
+    .argument("<run-id>", "run id (e.g. from list output)")
+    .option("--dir <path>", "trace directory")
+    .addOption(
+      new Option("--format <format>", "export format (default: markdown)").choices([
+        "markdown",
+        "html",
+        "openinference",
+        "otlp-json",
+      ]),
+    )
+    .option("-o, --output <path>", "write export to file (creates parent dirs)")
+    .option("--json", "emit JSON wrapper about the export (includes content when writing to stdout)")
+    .option("--validate", "validate exported payload shape after generation")
+    .option("--include-attributes", "include bounded attributes (review before sharing)")
+    .option("--no-metadata", "omit summary / metadata sections")
+    .option("--no-errors", "omit error sections")
+    .action((runId: string, opts: ExportCommandOptions) => {
+      runCommand(() => exportCommand(runId, opts));
     });
 
   return program;
