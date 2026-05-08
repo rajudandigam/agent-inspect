@@ -3,6 +3,11 @@ import { describe, expect, it } from "vitest";
 import { formatDuration, parseDuration } from "../../src/utils/duration.js";
 
 describe("parseDuration", () => {
+  it("parses milliseconds", () => {
+    expect(parseDuration("500ms")).toBe(500);
+    expect(parseDuration("1ms")).toBe(1);
+  });
+
   it("parses seconds", () => {
     expect(parseDuration("30s")).toBe(30_000);
   });

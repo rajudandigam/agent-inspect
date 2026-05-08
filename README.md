@@ -72,6 +72,23 @@ npx agent-inspect export run_abc123 --format openinference --validate
 
 Review exported files for sensitive data before sharing. Attribute payloads are bounded and redacted by default; use `--include-attributes` only when you intend to share richer detail.
 
+### Compare runs
+
+Diff is **local** and **read-only**: it compares two existing AgentInspect JSONL traces and does **not** rerun agents, mutate trace files, or write output traces. It does **not** claim semantic equivalence and does **not** call an LLM.
+
+Finding differences does **not** change the exit code by default (exit code `1` is reserved for command errors such as a missing run).
+
+```bash
+npx agent-inspect diff run_a run_b
+npx agent-inspect diff run_a run_b --json
+npx agent-inspect diff run_a run_b --ignore-duration
+npx agent-inspect diff run_a run_b --duration-threshold 500ms
+npx agent-inspect diff run_a run_b --focus errors
+npx agent-inspect diff run_a run_b --check structure
+```
+
+Useful for comparing passing vs failing runs and spotting the **first divergence** in execution order.
+
 ## Minimal API
 
 ```ts
@@ -462,6 +479,7 @@ Current scope also includes:
 - LangChain callback adapter via `@agent-inspect/langchain`
 - Optional TUI viewer via `@agent-inspect/tui`
 - Standards-aligned **local** exports (`export`: Markdown, HTML, OpenInference-compatible JSON, OTLP JSON mapping)
+- Run diff / compare (`diff`: two local traces, read-only)
 
 Not included:
 
@@ -471,9 +489,11 @@ Not included:
 - Production monitoring platforms
 - Additional framework adapters beyond LangChain
 - Token cost calculation
-- Replay
+- Replay / fork execution
 - SQLite
 - Dashboards
+- Multi-run statistical eval dashboards
+- Semantic / LLM-powered trace comparison
 - OpenTelemetry SDK instrumentation (exports are generated strings only)
 
 ## Development

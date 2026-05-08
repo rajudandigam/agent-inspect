@@ -7,10 +7,10 @@
 
 export function parseDuration(duration: string): number {
   const raw = typeof duration === "string" ? duration.trim() : "";
-  const match = raw.match(/^(\d+)([smhd])$/);
+  const match = raw.match(/^(\d+)(ms|[smhd])$/);
   if (!match) {
     throw new Error(
-      `Invalid duration format: ${duration}. Use a positive integer followed by s, m, h, or d (e.g. 30s, 5m, 2h, 7d).`,
+      `Invalid duration format: ${duration}. Use a positive integer followed by ms, s, m, h, or d (e.g. 500ms, 30s, 5m, 2h, 7d).`,
     );
   }
 
@@ -24,6 +24,8 @@ export function parseDuration(duration: string): number {
   }
 
   switch (unit) {
+    case "ms":
+      return amount;
     case "s":
       return amount * 1000;
     case "m":

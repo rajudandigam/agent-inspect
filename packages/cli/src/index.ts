@@ -17,6 +17,8 @@ import type { TailOptions } from "./tail.js";
 import { tail } from "./tail.js";
 import type { ExportCommandOptions } from "./export.js";
 import { exportCommand } from "./export.js";
+import type { DiffCommandOptions } from "./diff.js";
+import { diffCommand } from "./diff.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -208,6 +210,40 @@ export function createCliProgram(): Command {
     .option("--no-errors", "omit error sections")
     .action((runId: string, opts: ExportCommandOptions) => {
       runCommand(() => exportCommand(runId, opts));
+    });
+
+  program
+    .command("diff")
+    .description("Compare two local AgentInspect JSONL traces (read-only)")
+    .argument("<left-run-id>", "first run id")
+    .argument("<right-run-id>", "second run id")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print diff result as JSON")
+    .option("--ignore-duration", "omit duration comparisons")
+    .option(
+      "--duration-threshold <duration>",
+      "ignore duration deltas at or below this (e.g. 500ms, 2s, 1m)",
+    )
+    .addOption(
+      new Option("--focus <scope>", "limit categories shown").choices([
+        "all",
+        "errors",
+        "structure",
+        "outputs",
+      ]),
+    )
+    .addOption(
+      new Option("--check <scope>", "limit categories compared").choices([
+        "all",
+        "structure",
+        "outputs",
+        "errors",
+        "timing",
+      ]),
+    )
+    .option("--verbose", "show more left/right detail")
+    .action((leftRunId: string, rightRunId: string, opts: DiffCommandOptions) => {
+      runCommand(() => diffCommand(leftRunId, rightRunId, opts));
     });
 
   return program;

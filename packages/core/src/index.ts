@@ -124,6 +124,26 @@ export { isAgentInspectTrace } from "./trace-verification.js";
 
 export { parseDuration } from "./utils/duration.js";
 
+export type {
+  DiffSeverity,
+  DiffKind,
+  DiffPathSegment,
+  DiffPath,
+  RunDiffItem,
+  StepComparable,
+  RunComparable,
+  RunDiffSummary,
+  RunDiffResult,
+  DiffOptions,
+  RenderDiffOptions,
+} from "./diff/types.js";
+export {
+  manualTraceEventsToComparableRun,
+  diffRuns,
+  diffTraceEvents,
+  renderRunDiff,
+} from "./diff/index.js";
+
 export {
   TERMINAL_INDENT,
   MAX_TERMINAL_NAME_LENGTH,
