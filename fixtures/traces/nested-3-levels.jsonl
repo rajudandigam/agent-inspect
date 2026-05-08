@@ -1,0 +1,8 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"nested-3-levels","name":"nested-3-levels","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"nested-3-levels","stepId":"step_outer","name":"outer","type":"logic","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001020,"runId":"nested-3-levels","stepId":"step_middle","parentId":"step_outer","name":"middle","type":"logic","startTime":1700000001020}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001030,"runId":"nested-3-levels","stepId":"step_inner","parentId":"step_middle","name":"inner","type":"logic","startTime":1700000001030}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001080,"runId":"nested-3-levels","stepId":"step_inner","status":"success","endTime":1700000001080,"durationMs":50}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001100,"runId":"nested-3-levels","stepId":"step_middle","status":"success","endTime":1700000001100,"durationMs":80}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001130,"runId":"nested-3-levels","stepId":"step_outer","status":"success","endTime":1700000001130,"durationMs":120}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001150,"runId":"nested-3-levels","status":"success","endTime":1700000001150,"durationMs":150}

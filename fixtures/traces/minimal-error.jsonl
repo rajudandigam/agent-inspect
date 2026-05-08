@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"minimal-error","name":"minimal-error","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"minimal-error","stepId":"step_fail","name":"failing-step","type":"logic","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001060,"runId":"minimal-error","stepId":"step_fail","status":"error","endTime":1700000001060,"durationMs":50,"error":{"message":"fixture failure"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001070,"runId":"minimal-error","status":"error","endTime":1700000001070,"durationMs":70,"error":{"message":"run ended with error"}}

@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"tool-with-io","name":"tool-with-io","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"tool-with-io","stepId":"tool_001","name":"tool:search-hotels","type":"tool","startTime":1700000001010,"metadata":{"toolName":"fixture-search","inputPreview":"{\"city\":\"Tokyo\"}","outputPreview":"{\"count\":2}"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001310,"runId":"tool-with-io","stepId":"tool_001","status":"success","endTime":1700000001310,"durationMs":300}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001320,"runId":"tool-with-io","status":"success","endTime":1700000001320,"durationMs":320}

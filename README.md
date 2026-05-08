@@ -89,6 +89,10 @@ npx agent-inspect diff run_a run_b --check structure
 
 Useful for comparing passing vs failing runs and spotting the **first divergence** in execution order.
 
+### Fixtures and hardening (v0.9)
+
+**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), and docs aimed at adoption—not new tracing features. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs/V1-READINESS-CHECKLIST.md).
+
 ## Minimal API
 
 ```ts
@@ -480,6 +484,7 @@ Current scope also includes:
 - Optional TUI viewer via `@agent-inspect/tui`
 - Standards-aligned **local** exports (`export`: Markdown, HTML, OpenInference-compatible JSON, OTLP JSON mapping)
 - Run diff / compare (`diff`: two local traces, read-only)
+- Canonical **fixtures** under [`fixtures/`](fixtures/README.md) plus `pnpm fixtures:check` for deterministic samples
 
 Not included:
 

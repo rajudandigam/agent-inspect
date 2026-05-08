@@ -1,0 +1,8 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"error-recovery","name":"error-recovery","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"error-recovery","stepId":"primary_tool","name":"tool:primary-search","type":"tool","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001110,"runId":"error-recovery","stepId":"primary_tool","status":"error","endTime":1700000001110,"durationMs":100,"error":{"message":"primary search unavailable"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001120,"runId":"error-recovery","stepId":"fallback_tool","name":"tool:fallback-search","type":"tool","startTime":1700000001120}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001320,"runId":"error-recovery","stepId":"fallback_tool","status":"success","endTime":1700000001320,"durationMs":200}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001330,"runId":"error-recovery","stepId":"handle_result","name":"handle-recovered-result","type":"logic","startTime":1700000001330}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001380,"runId":"error-recovery","stepId":"handle_result","status":"success","endTime":1700000001380,"durationMs":50}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001381,"runId":"error-recovery","status":"success","endTime":1700000001381,"durationMs":380}

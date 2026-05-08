@@ -1,0 +1,8 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"parallel-siblings","name":"parallel-siblings","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"parallel-siblings","stepId":"tool_hotels","name":"tool:search-hotels","type":"tool","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001011,"runId":"parallel-siblings","stepId":"tool_flights","name":"tool:search-flights","type":"tool","startTime":1700000001011}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001012,"runId":"parallel-siblings","stepId":"tool_cars","name":"tool:search-cars","type":"tool","startTime":1700000001012}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001110,"runId":"parallel-siblings","stepId":"tool_cars","status":"success","endTime":1700000001110,"durationMs":100}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001210,"runId":"parallel-siblings","stepId":"tool_flights","status":"success","endTime":1700000001210,"durationMs":200}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001310,"runId":"parallel-siblings","stepId":"tool_hotels","status":"success","endTime":1700000001310,"durationMs":300}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001320,"runId":"parallel-siblings","status":"success","endTime":1700000001320,"durationMs":320}

@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"minimal-success","name":"minimal-success","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"minimal-success","stepId":"step_root","name":"plan","type":"logic","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001110,"runId":"minimal-success","stepId":"step_root","status":"success","endTime":1700000001110,"durationMs":100}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001120,"runId":"minimal-success","status":"success","endTime":1700000001120,"durationMs":120}

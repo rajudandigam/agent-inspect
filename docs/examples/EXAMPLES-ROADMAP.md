@@ -6,6 +6,8 @@ AgentInspect examples are not just demos. They are adoption tools.
 
 Each example should help developers understand one concrete AgentInspect workflow and give Cursor reliable reference material when implementing future versions.
 
+Canonical repo fixtures under [`fixtures/`](../fixtures/README.md) complement runnable examples for deterministic tests and docs (`pnpm fixtures:check`).
+
 The examples should support the project direction:
 
 > AgentInspect is a local-first execution-tree debugging tool for TypeScript AI systems.

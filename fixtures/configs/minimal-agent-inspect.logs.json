@@ -1,0 +1,39 @@
+{
+  "runIdKeys": ["runId", "decisionId", "requestId"],
+  "eventKey": "event",
+  "timestampKey": "timestamp",
+  "mappings": {
+    "*.started": {
+      "status": "running"
+    },
+    "*.completed": {
+      "status": "ok"
+    },
+    "*.failed": {
+      "kind": "ERROR",
+      "status": "error"
+    },
+    "*.error": {
+      "kind": "ERROR",
+      "status": "error"
+    },
+    "*.tool.*": {
+      "kind": "TOOL"
+    },
+    "*.llm.*": {
+      "kind": "LLM"
+    },
+    "*.agent.*": {
+      "kind": "AGENT"
+    }
+  },
+  "redact": [
+    "authorization",
+    "cookie",
+    "token",
+    "apiKey",
+    "password",
+    "secret",
+    "email"
+  ]
+}

@@ -41,6 +41,30 @@ Fixtures should not be:
 - dependent on API keys
 - misleading about parent-child relationships
 
+## Repository fixtures (v0.9)
+
+Canonical files live under the repo root [`fixtures/`](../../fixtures/README.md). **Trace schema version is `0.1`** (matches shipped JSONL). Snippets later in this catalog may show illustrative shapes—committed files are authoritative.
+
+| Path | Feature coverage |
+|------|------------------|
+| `fixtures/traces/minimal-success.jsonl` | Minimal successful manual run |
+| `fixtures/traces/minimal-error.jsonl` | Failed step + failed run |
+| `fixtures/traces/nested-3-levels.jsonl` | Explicit `parentId` nesting |
+| `fixtures/traces/parallel-siblings.jsonl` | Root-level siblings |
+| `fixtures/traces/llm-with-tokens.jsonl` | Token metadata on LLM step |
+| `fixtures/traces/tool-with-io.jsonl` | Tool metadata / previews |
+| `fixtures/traces/long-running.jsonl` | Many sequential steps (~90 lines) |
+| `fixtures/traces/error-recovery.jsonl` | Error, fallback success, run succeeds |
+| `fixtures/logs/proactive-json.log` | JSON log ingest |
+| `fixtures/logs/proactive-log4js.log` | log4js-style lines |
+| `fixtures/logs/malformed-json.log` | Intentionally broken JSON lines |
+| `fixtures/logs/missing-run-id.log` | Valid JSON without join keys |
+| `fixtures/logs/mixed-valid-invalid.log` | Mixed valid / garbage lines |
+| `fixtures/configs/proactive-agent-inspect.logs.json` | Full ingest config |
+| `fixtures/configs/minimal-agent-inspect.logs.json` | Minimal ingest config |
+
+Validate with `pnpm fixtures:check` (requires `pnpm build` first).
+
 ## Recommended fixture location
 
 Use a dedicated fixture folder.
