@@ -1,0 +1,67 @@
+{
+  "runIdKeys": ["decisionId", "requestId", "jobId"],
+  "eventKey": "event",
+  "timestampKey": "timestamp",
+  "messageKey": "message",
+  "levelKey": "level",
+  "mappings": {
+    "proactive.job.started": {
+      "kind": "RUN",
+      "name": "job:started",
+      "startsRun": true
+    },
+    "proactive.agent.started": {
+      "kind": "AGENT",
+      "name": "agent:started"
+    },
+    "proactive.tool.conversation_history_fetched": {
+      "kind": "TOOL",
+      "name": "tool:get_conversation_history"
+    },
+    "proactive.tool.*": {
+      "kind": "TOOL"
+    },
+    "proactive.llm.generate_message": {
+      "kind": "LLM",
+      "name": "llm:generate_message"
+    },
+    "proactive.llm.generate_message_completed": {
+      "kind": "LLM",
+      "name": "llm:generate_message"
+    },
+    "proactive.llm.*": {
+      "kind": "LLM"
+    },
+    "proactive.result.*": {
+      "kind": "RESULT"
+    },
+    "*.failed": {
+      "kind": "ERROR",
+      "status": "error"
+    },
+    "*.error": {
+      "kind": "ERROR",
+      "status": "error"
+    }
+  },
+  "redact": [
+    "authorization",
+    "cookie",
+    "token",
+    "apiKey",
+    "password",
+    "secret",
+    "email",
+    {
+      "key": "userUuid",
+      "strategy": "prefix",
+      "keep": 8
+    },
+    {
+      "key": "tripUuid",
+      "strategy": "prefix",
+      "keep": 8
+    }
+  ],
+  "heuristicWindowMs": 2000
+}

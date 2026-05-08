@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-recipe-tool-failure-retry",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "file:../../..",
+    "tsx": "^4.19.0"
+  }
+}

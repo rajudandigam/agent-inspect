@@ -1,0 +1,10 @@
+# Markers (not a full screen capture; run IDs differ per execution)
+# After: pnpm start
+RAG result:
+# Substrings that should appear in stdout:
+RAG result:
+Summary (fixture):
+Next (from repo root):
+agent-inspect list
+agent-inspect view
+# Trace steps (via view): embed-query, retrieve-documents, rerank-results, generate-answer

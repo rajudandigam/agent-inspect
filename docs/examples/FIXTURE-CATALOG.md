@@ -17,6 +17,8 @@ The fixture catalog should help AgentInspect maintain consistent behavior across
 - future adapters
 - future conformance tests
 
+**Related:** Runnable recipes under [`examples/recipes/`](../../examples/recipes/README.md) mirror many fixture patterns for adoption; CI validates fixtures with `pnpm fixtures:check` and recipes with `pnpm recipes:check`.
+
 Fixtures should be small, deterministic, and safe to commit.
 
 ## Core principles

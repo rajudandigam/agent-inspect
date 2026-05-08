@@ -58,6 +58,60 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/multi-agent-handoff:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/parallel-tools:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/proactive-agent-logs:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/rag-pipeline:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/retry-fallback:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/tool-failure-retry:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   packages/cli:
     dependencies:
       '@agent-inspect/core':
@@ -905,6 +959,10 @@ packages:
   acorn@8.16.0:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  'agent-inspect@file:':
+    resolution: {directory: '', type: directory}
     hasBin: true
 
   ansi-colors@4.1.3:
@@ -2576,6 +2634,12 @@ snapshots:
       tinyrainbow: 1.2.0
 
   acorn@8.16.0: {}
+
+  'agent-inspect@file:':
+    dependencies:
+      chalk: 5.6.2
+      commander: 12.1.0
+      nanoid: 5.1.11
 
   ansi-colors@4.1.3: {}
 

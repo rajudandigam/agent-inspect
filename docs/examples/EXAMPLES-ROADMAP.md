@@ -290,23 +290,30 @@ Ownership
 
 v0.3 full implementation and post-spike validation.
 
-v0.9 recipe examples
+## v0.9 recipe examples (shipped)
 
-These examples should be added later during v0.9 Recipes & Integration Hardening.
+Runnable adoption recipes live under [`examples/recipes/`](../../examples/recipes/README.md):
 
-They should not distract from v0.2/v0.3 work today.
+- `rag-pipeline`
+- `tool-failure-retry`
+- `multi-agent-handoff`
+- `proactive-agent-logs`
+- `retry-fallback`
+- `parallel-tools`
+
+All are local, mocked, and require no external services by default. Optional future recipes (manual SDK / NestJS / error-propagation) remain described below for planning—not part of pass 2 deliverables.
 
 examples/recipes/
   rag-pipeline/
   tool-failure-retry/
   multi-agent-handoff/
   proactive-agent-logs/
-  vercel-ai-sdk/
-  openai-sdk/
-  nestjs-logging/
   retry-fallback/
   parallel-tools/
-  error-propagation/
+  vercel-ai-sdk/          # future / optional
+  openai-sdk/             # future / optional
+  nestjs-logging/         # future / optional
+  error-propagation/      # future / optional
 recipes/rag-pipeline
 Purpose
 
@@ -517,7 +524,7 @@ Example	Version	Status
 05-observe-wrapper	v0.1	Existing MVP
 06-log-to-tree	v0.3 spike	Next required example
 07-proactive-agent-logs	v0.3	After spike
-recipes/*	v0.9	Future hardening
+recipes/*	v0.9	Shipped under examples/recipes (pass 2)
 Immediate next example work
 
 The next example to create is:

@@ -12,3 +12,4 @@ coverage
 .cursor/*
 tmp-export-traces/
 tmp-export-output/
+examples/recipes/**/.agent-inspect-runs/

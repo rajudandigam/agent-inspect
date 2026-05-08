@@ -20,9 +20,15 @@ Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`
 | Optional TUI (`npx agent-inspect view --tui`) | v0.6 | Interactive viewer | requires interactive terminal | no |
 | CLI `export` | v0.7 | Standards-oriented exports | yes (`npx agent-inspect export …`) | no |
 | CLI `diff` | v0.8 | Compare two local traces | yes (`npx agent-inspect diff …`) | no |
-| `recipes/*` (planned) | v0.9+ | Real-world patterns | future | no by default |
+| `recipes/*` | v0.9 | Adoption-focused runnable recipes ([examples/recipes/](recipes/README.md)) | yes (`pnpm start` per recipe README) | no by default |
 
 Folders **07-live-tail**, **09-tui**, **10-standards-export**, and **11-diff-compare** are **not** present as standalone `examples/*` directories; use the **CLI** (`tail`, `export`, `diff`) and docs above.
+
+## Recipes (v0.9)
+
+Runnable **recipe** packages live under [**examples/recipes/**](recipes/README.md). They illustrate realistic patterns—RAG-shaped traces, retries, multi-step handoffs, structured logs, LLM fallback, and parallel tools—using **deterministic mocks only**. No API keys or external services are required by default; traces write to each recipe’s local `.agent-inspect-runs/` (ignored by git).
+
+See the [recipe index](recipes/README.md) for commands and which AgentInspect features each recipe exercises.
 
 ## MVP manual tracing
 

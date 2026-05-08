@@ -1,0 +1,7 @@
+Handoff summary:
+Fixture Inn
+FX-204
+coordinator-plan
+HotelAgent.run
+FlightAgent.run
+coordinator-finalize

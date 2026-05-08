@@ -1,5 +1,17 @@
 # Recipe Standards
 
+## v0.9 pass 2 (adoption hardening)
+
+Shipped recipes under `examples/recipes/` must be:
+
+- **local** and **deterministic** (no flaky randomness)
+- **no API keys** by default and **no external services** by default
+- **no real secrets** (use fake tokens, `example.test` emails, fixture IDs)
+- **`expected-output.txt` required** (stable marker substrings, not necessarily full trees)
+- **README required sections**: What this demonstrates, Why this matters, How to run, Expected output, What to look for, Notes and limitations, Version ownership
+- **`package.json`**: `"private": true`
+- **no vendor SDK imports** in recipe sources unless explicitly marked optional/future (not used in v0.9 pass 2)
+
 ## Purpose
 
 Recipes are runnable, real-world examples that show how to use AgentInspect in common AI system patterns.

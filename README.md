@@ -91,7 +91,7 @@ Useful for comparing passing vs failing runs and spotting the **first divergence
 
 ### Fixtures and hardening (v0.9)
 
-**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), and docs aimed at adoption—not new tracing features. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs/V1-READINESS-CHECKLIST.md).
+**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), **recipe examples** under [**examples/recipes/**](examples/recipes/README.md) (`pnpm recipes:check`), and docs aimed at adoption—not new tracing features. Recipes use mocks only and require no API keys or external services by default. Good starting points: **rag-pipeline**, **tool-failure-retry**, **proactive-agent-logs**. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs/V1-READINESS-CHECKLIST.md).
 
 ## Minimal API
 
