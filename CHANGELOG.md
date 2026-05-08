@@ -4,7 +4,7 @@ This changelog is **pre-release** and intended to track historical work and ongo
 
 It does **not** declare v1.0 shipped.
 
-## Unreleased — v1.0 stabilization work in progress
+## 1.0.0 — Prepared for release
 
 ### Stable local tracing
 

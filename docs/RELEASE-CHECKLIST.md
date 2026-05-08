@@ -12,7 +12,7 @@ This document does **not** declare v1.0 shipped. Publish steps are placeholders 
 
 ## Versioning requirements
 
-- [ ] Decide version bump type (patch/minor/major) and rationale
+- [ ] Decide version bump type (patch/minor/major) and rationale (target: **v1.0.0**)
 - [ ] Ensure any breaking changes (if any) are explicitly documented
 - [ ] Do not ship breaking trace schema changes in a minor/patch release
 
@@ -70,6 +70,10 @@ After `pnpm build`:
 - [ ] `node packages/cli/dist/index.cjs export minimal-success --dir fixtures/traces --format openinference --validate`
 - [ ] `node packages/cli/dist/index.cjs diff minimal-success minimal-error --dir fixtures/traces`
 
+## Manual interactive TUI check (maintainer-only)
+
+- [ ] `node packages/cli/dist/index.cjs view <runId> --tui`
+
 ## npm pack dry run
 
 - [ ] `npm pack --dry-run` and confirm only intended files are included (dist + README + LICENSE)
@@ -78,9 +82,14 @@ After `pnpm build`:
 
 These steps are intentionally not automated by this document:
 
+- [ ] `pnpm install --frozen-lockfile`
+- [ ] `pnpm run prepublish:checks`
+- [ ] `npm pack --dry-run`
 - [ ] Create a release branch/tag (if used)
 - [ ] Generate changesets (if used)
-- [ ] Publish to npm (intentional action)
+- [ ] Publish to npm (intentional action): `npm publish --access public`
+- [ ] Tag: `git tag v1.0.0`
+- [ ] GitHub release: `gh release create v1.0.0`
 - [ ] Create GitHub release notes (if used)
 
 ## Post-release checks
