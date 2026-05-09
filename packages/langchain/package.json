@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/langchain",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "type": "module",
   "private": false,
@@ -16,7 +16,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm --workspace-root exec tsup --config tsup.langchain.config.ts",
     "test": "vitest run -c ../../vitest.config.ts"
