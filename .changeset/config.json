@@ -7,5 +7,10 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@agent-inspect/core", "@agent-inspect/cli"]
+  "ignore": [
+    "@agent-inspect/core",
+    "@agent-inspect/cli",
+    "agent-inspect-example-*",
+    "agent-inspect-recipe-*"
+  ]
 }

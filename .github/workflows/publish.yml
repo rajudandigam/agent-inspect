@@ -1,14 +1,12 @@
 name: Publish
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
   contents: write
-  id-token: write
   pull-requests: write
 
 jobs:
@@ -42,10 +40,7 @@ jobs:
       # - GitHub owner: rajudandigam
       # - Repository: agent-inspect
       # - Workflow filename: publish.yml
-      - name: Create Release PR or Publish
+      - name: Create Release PR
         uses: changesets/action@v1
-        with:
-          publish: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
