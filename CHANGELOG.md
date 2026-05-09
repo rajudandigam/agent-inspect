@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- 575b093: docs: onboarding polish
+
 ## Unreleased
 
 ### Documentation

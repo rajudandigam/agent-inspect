@@ -7,7 +7,9 @@
   "bin": {
     "agent-inspect": "./dist/index.cjs"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm --workspace-root exec tsup --config tsup.cli.config.ts",
     "test": "vitest run -c ../../vitest.config.ts"
