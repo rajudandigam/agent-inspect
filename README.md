@@ -32,13 +32,21 @@ npm install agent-inspect
 - [API reference](docs/API.md)
 - [CLI reference](docs/CLI.md)
 - [Schema reference](docs/SCHEMA.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Logs](docs/LOGS.md)
+- [Exports](docs/EXPORTS.md)
+- [Diff](docs/DIFF.md)
+- [Adapters](docs/ADAPTERS.md)
 - [Security policy](SECURITY.md)
 - [Migration guide](docs/MIGRATION.md)
-- [Release checklist](docs/RELEASE-CHECKLIST.md)
 - [Changelog](CHANGELOG.md)
 - [Known issues](docs/KNOWN-ISSUES.md)
 - [Limitations](docs/LIMITATIONS.md)
-- [V1 readiness checklist (non-binding)](docs/V1-READINESS-CHECKLIST.md)
+
+## Maintainer / internal docs (local-only)
+
+- [Release checklist](docs-local/RELEASE-CHECKLIST.md)
+- [V1 readiness checklist (non-binding)](docs-local/V1-READINESS-CHECKLIST.md)
 
 ## See your first trace
 
@@ -105,7 +113,7 @@ Useful for comparing passing vs failing runs and spotting the **first divergence
 
 ### Fixtures and hardening (v0.9)
 
-**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), **recipe examples** under [**examples/recipes/**](examples/recipes/README.md) (`pnpm recipes:check`), and docs aimed at adoption—not new tracing features. Recipes use mocks only and require no API keys or external services by default. Good starting points: **rag-pipeline**, **tool-failure-retry**, **proactive-agent-logs**. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs/V1-READINESS-CHECKLIST.md).
+**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), **recipe examples** under [**examples/recipes/**](examples/recipes/README.md) (`pnpm recipes:check`), and docs aimed at adoption—not new tracing features. Recipes use mocks only and require no API keys or external services by default. Good starting points: **rag-pipeline**, **tool-failure-retry**, **proactive-agent-logs**. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs-local/V1-READINESS-CHECKLIST.md).
 
 ## Minimal API
 

@@ -122,5 +122,5 @@ agent-inspect view <runId> --tui
 - `docs/SCHEMA.md`
 - `docs/KNOWN-ISSUES.md`
 - `docs/LIMITATIONS.md`
-- `docs/V1-READINESS-CHECKLIST.md`
+- `docs-local/V1-READINESS-CHECKLIST.md`
 

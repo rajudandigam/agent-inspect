@@ -190,7 +190,7 @@ Redaction is applied to log-derived attributes and to exports by default. **Manu
 
 Always review any exported content (Markdown/HTML/OpenInference/OTLP JSON) before sharing, especially if you enable richer attribute inclusion.
 
-See: `docs/architecture/REDACTION.md`.
+See: `docs-local/architecture/REDACTION.md`.
 
 ## 14. Migration notes
 

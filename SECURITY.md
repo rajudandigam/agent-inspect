@@ -67,7 +67,7 @@ Important limitations:
 - Always **review exported files** before sharing them externally.
 - Avoid committing trace directories (`.agent-inspect-runs/`) to source control.
 
-For redaction design details, see `docs/architecture/REDACTION.md`.
+For redaction design details, see `docs-local/architecture/REDACTION.md`.
 
 ## Dependency and security review process
 

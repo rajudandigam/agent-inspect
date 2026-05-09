@@ -16,7 +16,7 @@ Covered:
 
 Not covered:
 
-- publish/version bump workflows (see `docs/RELEASE-CHECKLIST.md`)
+- publish/version bump workflows (see `docs-local/RELEASE-CHECKLIST.md`)
 - vendor sinks (not implemented)
 - replay (not implemented)
 - cost engine (not implemented)

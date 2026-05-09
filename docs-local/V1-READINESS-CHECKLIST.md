@@ -35,7 +35,7 @@ This checklist prepares for a future **v1.0 Stable Local Agent Inspector** relea
 - [x] Security posture: redacted-by-default behavior verified for logs + exports.
 - [x] Security policy present (`SECURITY.md`).
 - [x] Migration guide present (`docs/MIGRATION.md`).
-- [x] Release checklist present (`docs/RELEASE-CHECKLIST.md`).
+- [x] Release checklist present (`docs-local/RELEASE-CHECKLIST.md`).
 - [x] Changelog present (`CHANGELOG.md`) without declaring v1.0 shipped.
 
 ## Explicit non-goals (still)
