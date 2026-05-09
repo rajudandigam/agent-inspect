@@ -56,7 +56,7 @@ npx agent-inspect view <run-id> --dir ./.agent-inspect
 npx agent-inspect view <run-id> --dir ./.agent-inspect --summary
 ```
 
-Example output:
+Simplified example output:
 
 ```text
 Run run_abc123 (support-agent)
@@ -81,6 +81,18 @@ Console logs are great for quick values, but they’re flat. AgentInspect gives 
 - status + duration summaries
 - a CLI to list/view/export/diff runs
 - log ingestion workflows (`logs`, `tail`) when you already have structured logs
+
+## Inspect existing structured logs
+
+```bash
+npx agent-inspect logs ./agent.log \
+  --format json \
+  --run-id-key requestId \
+  --event-key event \
+  --timestamp-key timestamp
+```
+
+See the log-to-tree guide: [docs/LOG-TO-TREE-QUICKSTART.md](docs/LOG-TO-TREE-QUICKSTART.md).
 
 ## When to use AgentInspect
 
@@ -121,23 +133,19 @@ See `SECURITY.md`.
 
 ## Documentation
 
-- **Getting started**: `docs/GETTING-STARTED.md`
-- **API**: `docs/API.md`
-- **CLI**: `docs/CLI.md`
-- **Schema**: `docs/SCHEMA.md`
-- **Logs**: `docs/LOGS.md` and `docs/LOG-TO-TREE-QUICKSTART.md`
-- **Exports**: `docs/EXPORTS.md`
-- **Diff**: `docs/DIFF.md`
-- **Adapters**: `docs/ADAPTERS.md`
-- **Compare with other tools**: `docs/COMPARE.md`
-- **Known issues / limitations**: `docs/KNOWN-ISSUES.md`, `docs/LIMITATIONS.md`
+- **Getting started**: [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)
+- **API**: [docs/API.md](docs/API.md)
+- **CLI**: [docs/CLI.md](docs/CLI.md)
+- **Schema**: [docs/SCHEMA.md](docs/SCHEMA.md)
+- **Logs**: [docs/LOGS.md](docs/LOGS.md) and [docs/LOG-TO-TREE-QUICKSTART.md](docs/LOG-TO-TREE-QUICKSTART.md)
+- **Exports**: [docs/EXPORTS.md](docs/EXPORTS.md)
+- **Diff**: [docs/DIFF.md](docs/DIFF.md)
+- **Adapters**: [docs/ADAPTERS.md](docs/ADAPTERS.md)
+- **Compare with other tools**: [docs/COMPARE.md](docs/COMPARE.md)
+- **Known issues**: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md)
+- **Limitations**: [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
 
-Screenshots/GIFs are planned; see `docs/SCREENSHOTS.md`.
-
-## Maintainer / internal docs (local-only)
-
-- `docs-local/RELEASE-CHECKLIST.md`
-- `docs-local/V1-READINESS-CHECKLIST.md`
+Screenshots/GIFs are planned; see [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 ## Minimal API
 
@@ -310,7 +318,7 @@ await agent.run("How do I reset my password?");
 
 `observe()` wraps top-level `run`, `execute`, and `invoke` methods. For internal detail, add manual `step()` calls inside the agent.
 
-## LangChain adapter (v0.5, experimental)
+## LangChain adapter (experimental)
 
 Install:
 
@@ -341,9 +349,9 @@ Behavior:
 - **Preview** mode is opt-in (`capture: "preview"`) with truncation via `maxPreviewChars` (default `200`).
 - **Parent** links use LangChain `parentRunId`, surfaced as `parentId` on `InspectEvent` with `confidence: "explicit"`.
 - **No** cost calculation; token fields are informational only.
-- In this pass, events are collected **in memory** only (`getEvents()` / `clear()`). **No trace-file persistence** for adapter events yet; they are **not** written into v0.1 JSONL manual traces.
+- Events are collected **in memory** only (`getEvents()` / `clear()`). **No trace-file persistence** for adapter events yet; they are **not** written into the manual JSONL trace format.
 
-The API is **experimental** before v1.0. See [examples/08-langchain-adapter](examples/08-langchain-adapter).
+The LangChain adapter API remains **experimental** even though the core AgentInspect tracing API is stable in 1.0. See [examples/08-langchain-adapter](examples/08-langchain-adapter).
 
 ## CLI
 
@@ -477,15 +485,16 @@ cat ~/.agent-inspect/runs/run_abc123.jsonl | jq
 
 ## Runnable examples
 
-The repo includes five runnable MVP manual-tracing examples, the v0.3 structured log-to-tree example, and the v0.5 LangChain adapter example:
+The repo includes runnable examples for manual tracing, log-to-tree, and the optional LangChain adapter:
 
+- `examples/00-quickstart-demo` — minimal install-and-try demo
 - `examples/01-basic` — `inspectRun()` + `step()`
 - `examples/02-nested-steps` — nested execution tree hierarchy
 - `examples/03-parallel-steps` — `Promise.all` sibling isolation
 - `examples/04-error-handling` — failed steps and error traces
 - `examples/05-observe-wrapper` — `observe()` wrapper with internal steps
-- `examples/06-log-to-tree` — v0.3 structured log-to-tree example (includes historical spike prototype and production `agent-inspect logs` usage)
-- `examples/08-langchain-adapter` — v0.5 LangChain callback adapter (`@agent-inspect/langchain`), provider-free simulated lifecycle (install from repo root; see example README)
+- `examples/06-log-to-tree` — structured log-to-tree example (`agent-inspect logs`, `tail`)
+- `examples/08-langchain-adapter` — optional LangChain callback adapter (`@agent-inspect/langchain`), provider-free simulated lifecycle (install from repo root; see example README)
 
 Run one locally:
 
@@ -508,29 +517,6 @@ Do not commit `node_modules`. Example dependencies are installed locally when yo
 Supporting material:
 
 - [examples/README.md](examples/README.md)
-
-## Original MVP scope
-
-Included:
-
-- `inspectRun()`
-- `step()`
-- `step.llm()`
-- `step.tool()`
-- `observe()`
-- JSONL traces
-- CLI `list` and `view`
-
-Current scope also includes:
-
-- CLI `clean` (safe deletion with verification)
-- CLI `logs` (structured log-to-tree)
-- CLI `tail` (live log tailing into grouped timelines)
-- LangChain callback adapter via `@agent-inspect/langchain`
-- Optional TUI viewer via `@agent-inspect/tui`
-- Standards-aligned **local** exports (`export`: Markdown, HTML, OpenInference-compatible JSON, OTLP JSON mapping)
-- Run diff / compare (`diff`: two local traces, read-only)
-- Canonical **fixtures** under [`fixtures/`](fixtures/README.md) plus `pnpm fixtures:check` for deterministic samples
 
 Not included:
 
