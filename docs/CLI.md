@@ -1,4 +1,4 @@
-# CLI (v1.0 stabilization — Pass 1)
+# CLI (AgentInspect 1.0)
 
 This document describes the **stable CLI surface** of AgentInspect.
 
@@ -122,6 +122,13 @@ Options:
 - `--format <auto|json|log4js>`
 - `--config <path>`: ingest config JSON (see `docs/SCHEMA.md` for config types)
 - `--run-id-key <keys>`: override runId keys (comma-separated)
+- `--event-key <key>`: override event key
+- `--timestamp-key <key>`: override timestamp key
+- `--message-key <key>`: override message key
+- `--level-key <key>`: override level key
+- `--parent-id-key <key>`: override parent id key
+- `--duration-key <key>`: override duration key
+- `--status-key <key>`: override status key
 - `--json`: emit JSON payload (events/trees/warnings/summary)
 - `--summary`: include summary section in human output
 - `--warnings <none|summary|all>`: warning output mode

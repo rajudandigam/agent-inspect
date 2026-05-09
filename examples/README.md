@@ -2,7 +2,7 @@
 
 Runnable samples grouped by roadmap phase. No example requires paid API keys unless its README says otherwise.
 
-Roadmap context: [docs/examples/EXAMPLES-ROADMAP.md](../docs/examples/EXAMPLES-ROADMAP.md).
+Roadmap context: `docs-local/examples/EXAMPLES-ROADMAP.md`.
 
 Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`fixtures/`](../fixtures/README.md).
 
@@ -10,6 +10,7 @@ Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`
 
 | Example / area | Version | Purpose | Runnable locally | External services |
 |----------------|---------|---------|------------------|-------------------|
+| [00-quickstart-demo](00-quickstart-demo) | v1.0 | 60–90 second install-and-try demo | yes (`npm start` from folder) | no |
 | [01-basic](01-basic) | v0.1 | Manual `inspectRun` + `step()` | yes (`pnpm start` from folder) | no |
 | [02-nested-steps](02-nested-steps) | v0.1 | Nested execution tree | yes | no |
 | [03-parallel-steps](03-parallel-steps) | v0.1 | Parallel sibling steps | yes | no |

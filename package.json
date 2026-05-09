@@ -30,7 +30,24 @@
     "packages/core/dist",
     "packages/cli/dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "docs/GETTING-STARTED.md",
+    "docs/API.md",
+    "docs/CLI.md",
+    "docs/SCHEMA.md",
+    "docs/LIMITATIONS.md",
+    "docs/KNOWN-ISSUES.md",
+    "docs/MIGRATION.md",
+    "docs/ARCHITECTURE.md",
+    "docs/LOGS.md",
+    "docs/EXPORTS.md",
+    "docs/DIFF.md",
+    "docs/ADAPTERS.md",
+    "docs/COMPARE.md",
+    "docs/LOG-TO-TREE-QUICKSTART.md",
+    "docs/SCREENSHOTS.md"
   ],
   "sideEffects": false,
   "keywords": [
@@ -45,6 +62,9 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "chalk": "^5.3.0",

@@ -1,8 +1,8 @@
-# Migration guide (pre-v1.0 stabilization)
+# Migration guide (to AgentInspect 1.0)
 
-This guide summarizes how to move from early AgentInspect MVP usage to the current **v1.0 stabilization** state.
+This guide summarizes how to move from early AgentInspect MVP usage to **AgentInspect 1.0**.
 
-It does **not** declare v1.0 shipped, and it does not introduce any network upload or vendor sink workflows.
+AgentInspect remains local-first: it does not introduce any network upload or vendor sink workflows.
 
 ## Scope
 
@@ -29,7 +29,7 @@ If you were using:
 import { inspectRun, step } from "agent-inspect";
 ```
 
-that remains the recommended stable path. v1.0 stabilization is specifically about keeping these entry points compatible.
+that remains the recommended stable path. AgentInspect 1.0 is specifically about keeping these entry points compatible.
 
 ### Event names and failure representation
 

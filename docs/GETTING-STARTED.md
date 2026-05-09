@@ -1,4 +1,4 @@
-# Getting started (v1.0 stabilization — Pass 1)
+# Getting started
 
 AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agents. It helps you produce and inspect an execution tree of steps, safely and deterministically, without uploading data anywhere.
 
@@ -120,6 +120,8 @@ agent-inspect view <runId> --tui
 - `docs/API.md`
 - `docs/CLI.md`
 - `docs/SCHEMA.md`
+- `docs/COMPARE.md`
+- `docs/LOG-TO-TREE-QUICKSTART.md`
 - `docs/KNOWN-ISSUES.md`
 - `docs/LIMITATIONS.md`
 - `docs-local/V1-READINESS-CHECKLIST.md`

@@ -31,7 +31,7 @@ export function runCommand(action: () => Promise<void>): void {
 export function createCliProgram(): Command {
   const program = new Command("agent-inspect")
     .description("Local-first execution-tree debugger for AI agents")
-    .version("0.1.0");
+    .version("1.0.0");
 
   program
     .command("list")

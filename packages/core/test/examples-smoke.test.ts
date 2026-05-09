@@ -8,6 +8,8 @@ const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const examplesRoot = path.join(repoRoot, "examples");
 
+const QUICKSTART_EXAMPLES = ["00-quickstart-demo"] as const;
+
 const MVP_EXAMPLES = [
   "01-basic",
   "02-nested-steps",
@@ -20,7 +22,39 @@ const SPIKE_EXAMPLES = ["06-log-to-tree"] as const;
 
 const ADAPTER_EXAMPLES = ["08-langchain-adapter"] as const;
 
-const NUMBERED_EXAMPLES = [...MVP_EXAMPLES, ...SPIKE_EXAMPLES, ...ADAPTER_EXAMPLES].sort();
+const NUMBERED_EXAMPLES = [
+  ...QUICKSTART_EXAMPLES,
+  ...MVP_EXAMPLES,
+  ...SPIKE_EXAMPLES,
+  ...ADAPTER_EXAMPLES,
+].sort();
+
+describe("Quickstart demo (static checks)", () => {
+  it("example 00 has required files", () => {
+    for (const name of QUICKSTART_EXAMPLES) {
+      const dir = path.join(examplesRoot, name);
+      expect(existsSync(path.join(dir, "demo.mjs"))).toBe(true);
+      expect(existsSync(path.join(dir, "package.json"))).toBe(true);
+      expect(existsSync(path.join(dir, "README.md"))).toBe(true);
+    }
+  });
+
+  it("example 00 depends on agent-inspect 1.x from npm", () => {
+    for (const name of QUICKSTART_EXAMPLES) {
+      const dir = path.join(examplesRoot, name);
+      const raw = readFileSync(path.join(dir, "package.json"), "utf-8");
+      const pkg = JSON.parse(raw) as {
+        name?: string;
+        private?: boolean;
+        dependencies?: Record<string, string>;
+      };
+
+      expect(pkg.name).toBe("agent-inspect-example-00-quickstart-demo");
+      expect(pkg.private).toBe(true);
+      expect(pkg.dependencies?.["agent-inspect"]).toMatch(/^\^1\./);
+    }
+  });
+});
 
 describe("MVP examples (static checks)", () => {
   it("each example has index.ts, package.json, and README.md", () => {
@@ -125,6 +159,7 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("MVP manual tracing");
     expect(readme).toContain("Structured log examples");
     expect(readme).toContain("Adapter examples");
+    expect(readme).toContain("00-quickstart-demo");
     expect(readme).toContain("01-basic");
     expect(readme).toContain("02-nested-steps");
     expect(readme).toContain("03-parallel-steps");
@@ -132,7 +167,7 @@ describe("MVP examples (static checks)", () => {
     expect(readme).toContain("05-observe-wrapper");
     expect(readme).toContain("06-log-to-tree");
     expect(readme).toContain("08-langchain-adapter");
-    expect(readme).toContain("docs/examples/EXAMPLES-ROADMAP.md");
+    expect(readme).toContain("docs-local/examples/EXAMPLES-ROADMAP.md");
   });
 
   it("examples/ contains MVP, spike, and adapter folders", () => {

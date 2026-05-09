@@ -1,4 +1,4 @@
-# Schema (v1.0 stabilization — Pass 1)
+# Schema (AgentInspect 1.0)
 
 This document describes the **persisted manual trace JSONL schema** and the **log-derived normalized model** used by AgentInspect.
 

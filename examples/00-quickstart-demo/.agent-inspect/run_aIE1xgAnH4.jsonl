@@ -1,0 +1,8 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1778309254920,"runId":"run_aIE1xgAnH4","name":"quickstart-support-agent","startTime":1778309254920}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1778309254922,"runId":"run_aIE1xgAnH4","stepId":"step_mZp9hpjn-w","name":"plan","type":"logic","startTime":1778309254922}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1778309254974,"runId":"run_aIE1xgAnH4","stepId":"step_mZp9hpjn-w","status":"success","endTime":1778309254974,"durationMs":52}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1778309254976,"runId":"run_aIE1xgAnH4","stepId":"step_bTjiWGK_0J","name":"tool:search-docs","type":"tool","startTime":1778309254976,"metadata":{"toolName":"search-docs"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1778309255052,"runId":"run_aIE1xgAnH4","stepId":"step_bTjiWGK_0J","status":"success","endTime":1778309255052,"durationMs":76}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1778309255053,"runId":"run_aIE1xgAnH4","stepId":"step_QjFSkhGBvB","name":"llm:draft-answer","type":"llm","startTime":1778309255053,"metadata":{"model":"draft-answer"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1778309255155,"runId":"run_aIE1xgAnH4","stepId":"step_QjFSkhGBvB","status":"success","endTime":1778309255155,"durationMs":102}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1778309255157,"runId":"run_aIE1xgAnH4","status":"success","endTime":1778309255157,"durationMs":237}

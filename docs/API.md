@@ -1,4 +1,4 @@
-# API (v1.0 stabilization — Pass 1)
+# API (AgentInspect 1.0)
 
 This document describes the **public TypeScript API surface** of AgentInspect and classifies each area as **stable** or **experimental**.
 

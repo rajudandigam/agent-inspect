@@ -6,7 +6,7 @@ This document describes how to report vulnerabilities and how to think about dat
 
 ## Supported status
 
-AgentInspect is in active development and preparing for v1.0 stabilization. Security fixes are accepted and prioritized based on impact and exploitability.
+AgentInspect is in active development. Security fixes are accepted and prioritized based on impact and exploitability.
 
 There is **no formal SLA**. If a fix is needed, it should land as a patch release once verified.
 

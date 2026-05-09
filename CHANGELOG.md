@@ -1,10 +1,16 @@
 # Changelog
 
-This changelog is **pre-release** and intended to track historical work and ongoing **v1.0 stabilization**.
+## Unreleased
 
-It does **not** declare v1.0 shipped.
+### Documentation
 
-## 1.0.0 — Prepared for release
+- Improved README onboarding for new users.
+- Added comparison guide.
+- Added log-to-tree quickstart.
+- Added a quickstart demo example.
+- Clarified docs organization between user-facing `docs/` and internal `docs-local/`.
+
+## 1.0.0
 
 ### Stable local tracing
 
@@ -66,10 +72,10 @@ AgentInspect started as a minimal manual tracing MVP (v0.1) and evolved through:
 - run diff and compare
 - fixtures, recipes, and hardening focused on adoption
 
-For detailed intent and sequencing, see:
+For detailed intent and sequencing (planning docs), see:
 
-- `docs/roadmap/VERSION-ROADMAP.md`
-- `docs/strategy/PRODUCT-PRINCIPLES.md`
+- `docs-local/roadmap/VERSION-ROADMAP.md`
+- `docs-local/strategy/PRODUCT-PRINCIPLES.md`
 
 # agent-inspect
 

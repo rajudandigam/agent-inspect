@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-example-00-quickstart-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node demo.mjs"
+  },
+  "dependencies": {
+    "agent-inspect": "^1.0.0"
+  }
+}
+

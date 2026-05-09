@@ -29,4 +29,4 @@ This document states what AgentInspect **does not** provide today. It complement
 
 - Designed for **developer machines** and **inner-loop debugging**, not petabyte log warehouses.
 
-For roadmap intent, see [docs/roadmap/VERSION-ROADMAP.md](./roadmap/VERSION-ROADMAP.md) and the v1.0 PRD (future stabilization—not a promise of license/feature commitments).
+For roadmap intent, see `docs-local/roadmap/VERSION-ROADMAP.md` and `docs-local/prd/v1.0-STABLE-LOCAL-INSPECTOR-PRD.md` (planning docs; not a promise of future features).

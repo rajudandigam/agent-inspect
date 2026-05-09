@@ -1,24 +1,10 @@
 # agent-inspect
 
-agent-inspect is a local-first execution-tree debugger for TypeScript AI agents.
+Local execution trees for TypeScript AI agents.
 
-## Why
+AgentInspect helps you debug multi-step AI workflows locally by turning manual steps, structured logs, and agent callbacks into readable execution trees.
 
-AI agents are multi-step. Console logs are flat.
-
-agent-inspect turns runs into structured execution trees with JSONL traces and CLI inspection.
-
-agent-inspect is designed for inner-loop debugging, not as a replacement for production observability platforms.
-
-## What you get
-
-- Execution-tree tracing for TypeScript agent workflows
-- Nested `step()` support with parent-child relationships
-- `step.llm()` and `step.tool()` helpers for agent-aware traces
-- Local JSONL trace files
-- Real-time terminal output while the agent runs
-- CLI commands to inspect previous runs
-- No accounts, API keys, dashboards, or cloud ingestion
+No account. No cloud upload. No dashboard required.
 
 ## Install
 
@@ -26,94 +12,132 @@ agent-inspect is designed for inner-loop debugging, not as a replacement for pro
 npm install agent-inspect
 ```
 
-## Documentation (v1.0 stabilization)
+```bash
+pnpm add agent-inspect
+```
 
-- [Getting started](docs/GETTING-STARTED.md)
-- [API reference](docs/API.md)
-- [CLI reference](docs/CLI.md)
-- [Schema reference](docs/SCHEMA.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Logs](docs/LOGS.md)
-- [Exports](docs/EXPORTS.md)
-- [Diff](docs/DIFF.md)
-- [Adapters](docs/ADAPTERS.md)
-- [Security policy](SECURITY.md)
-- [Migration guide](docs/MIGRATION.md)
-- [Changelog](CHANGELOG.md)
-- [Known issues](docs/KNOWN-ISSUES.md)
-- [Limitations](docs/LIMITATIONS.md)
+## 60-second quickstart
+
+Create `demo.mjs`:
+
+```js
+import { inspectRun, step } from "agent-inspect";
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+await inspectRun(
+  "support-agent",
+  async () => {
+    const plan = await step("plan", async () => {
+      await delay(50);
+      return { query: "refund policy", intent: "support" };
+    });
+
+    const docs = await step.tool("search-docs", async () => {
+      await delay(75);
+      return ["Refunds are available within 30 days."];
+    });
+
+    return step.llm("answer", async () => {
+      await delay(100);
+      return `Based on ${docs.length} document(s), refunds are available within 30 days.`;
+    });
+  },
+  { traceDir: "./.agent-inspect" }
+);
+```
+
+Run it, then inspect it:
+
+```bash
+node demo.mjs
+npx agent-inspect list --dir ./.agent-inspect
+npx agent-inspect view <run-id> --dir ./.agent-inspect
+npx agent-inspect view <run-id> --dir ./.agent-inspect --summary
+```
+
+Example output:
+
+```text
+Run run_abc123 (support-agent)
+├─ ✔ plan (50ms)
+├─ ✔ tool:search-docs (75ms)
+└─ ✔ llm:answer (100ms)
+
+Summary:
+  Steps: 3 (0 error)
+  Duration: 225ms
+```
+
+Want a runnable demo folder? See [examples/00-quickstart-demo](examples/00-quickstart-demo/README.md).
+
+## Why not just console.log?
+
+Console logs are great for quick values, but they’re flat. AgentInspect gives you:
+
+- run grouping and local trace files
+- explicit step boundaries (including nesting)
+- step types (`tool:*`, `llm:*`)
+- status + duration summaries
+- a CLI to list/view/export/diff runs
+- log ingestion workflows (`logs`, `tail`) when you already have structured logs
+
+## When to use AgentInspect
+
+Use AgentInspect when:
+
+- you are building TypeScript/Node.js AI agents
+- you want local debugging before a hosted observability setup
+- console logs are too flat for multi-step execution
+- you want to inspect tool calls, LLM calls, failures, and durations locally
+- you want a lightweight CLI workflow with no account and no cloud upload
+- you want to compare two local runs
+- you want to turn structured logs into readable execution trees
+
+## When not to use AgentInspect
+
+Do not use AgentInspect as a replacement for:
+
+- production monitoring or alerting
+- hosted observability dashboards
+- long-term trace storage
+- eval dataset management
+- prompt management
+- cost analytics
+- replay/fork execution
+- vendor telemetry pipelines
+
+AgentInspect can complement tools like LangSmith, Langfuse, Braintrust, Phoenix/OpenInference, OpenTelemetry, New Relic, Datadog, etc. It does not replace their production/eval/dashboard workflows.
+
+## Security and privacy posture
+
+- local files only by default (no upload)
+- no vendor sinks
+- no API keys required
+- small root dependency footprint
+- traces can include **user-provided metadata**; review exports before sharing
+
+See `SECURITY.md`.
+
+## Documentation
+
+- **Getting started**: `docs/GETTING-STARTED.md`
+- **API**: `docs/API.md`
+- **CLI**: `docs/CLI.md`
+- **Schema**: `docs/SCHEMA.md`
+- **Logs**: `docs/LOGS.md` and `docs/LOG-TO-TREE-QUICKSTART.md`
+- **Exports**: `docs/EXPORTS.md`
+- **Diff**: `docs/DIFF.md`
+- **Adapters**: `docs/ADAPTERS.md`
+- **Compare with other tools**: `docs/COMPARE.md`
+- **Known issues / limitations**: `docs/KNOWN-ISSUES.md`, `docs/LIMITATIONS.md`
+
+Screenshots/GIFs are planned; see `docs/SCREENSHOTS.md`.
 
 ## Maintainer / internal docs (local-only)
 
-- [Release checklist](docs-local/RELEASE-CHECKLIST.md)
-- [V1 readiness checklist (non-binding)](docs-local/V1-READINESS-CHECKLIST.md)
-
-## See your first trace
-
-Run a traced workflow, then inspect it with the CLI.
-
-```ts
-import { inspectRun, step } from "agent-inspect";
-
-await inspectRun("hello-agent", async () => {
-  const plan = await step("plan", async () => "search hotels");
-  return step("finalize", async () => ({ plan, status: "done" }));
-});
-```
-
-```bash
-npx agent-inspect list
-npx agent-inspect view run_abc123
-```
-
-Replace `run_abc123` with the run id printed by `agent-inspect list`.
-
-### Optional TUI viewer
-
-The core `agent-inspect` package stays lightweight and does not bundle Ink or React. For a keyboard-driven terminal UI over existing traces, install the optional package:
-
-```bash
-pnpm add agent-inspect @agent-inspect/tui
-
-npx agent-inspect view run_abc123 --tui
-```
-
-The plain CLI remains the default. `--tui` requires an interactive terminal; for scripts or CI, use `agent-inspect view` or `agent-inspect view --json`. There is no live tail TUI yet.
-
-### Export traces
-
-Export existing manual JSONL traces locally — **no upload**, **no vendor SDKs**. Markdown is handy for PRs and issues; HTML is a single offline file. OpenInference export is **OpenInference-compatible JSON** (not a guarantee for every backend). OTLP JSON uses **OTel GenAI-aligned attributes** where applicable and is **experimental** until validated against a specific collector.
-
-```bash
-npx agent-inspect export run_abc123 --format markdown
-npx agent-inspect export run_abc123 --format html -o run.html
-npx agent-inspect export run_abc123 --format openinference -o trace.openinference.json
-npx agent-inspect export run_abc123 --format otlp-json -o trace.otlp.json
-npx agent-inspect export run_abc123 --format openinference --validate
-```
-
-Review exported files for sensitive data before sharing. Attribute payloads are bounded and redacted by default; use `--include-attributes` only when you intend to share richer detail.
-
-### Compare runs
-
-Diff is **local** and **read-only**: it compares two existing AgentInspect JSONL traces and does **not** rerun agents, mutate trace files, or write output traces. It does **not** claim semantic equivalence and does **not** call an LLM.
-
-Finding differences does **not** change the exit code by default (exit code `1` is reserved for command errors such as a missing run).
-
-```bash
-npx agent-inspect diff run_a run_b
-npx agent-inspect diff run_a run_b --json
-npx agent-inspect diff run_a run_b --ignore-duration
-npx agent-inspect diff run_a run_b --duration-threshold 500ms
-npx agent-inspect diff run_a run_b --focus errors
-npx agent-inspect diff run_a run_b --check structure
-```
-
-Useful for comparing passing vs failing runs and spotting the **first divergence** in execution order.
-
-### Fixtures and hardening (v0.9)
-
-**v0.9** adds canonical [**fixtures/**](fixtures/README.md), validation (`pnpm fixtures:check`), **recipe examples** under [**examples/recipes/**](examples/recipes/README.md) (`pnpm recipes:check`), and docs aimed at adoption—not new tracing features. Recipes use mocks only and require no API keys or external services by default. Good starting points: **rag-pipeline**, **tool-failure-retry**, **proactive-agent-logs**. See [**Known issues**](docs/KNOWN-ISSUES.md), [**Limitations**](docs/LIMITATIONS.md), and the non-binding [**v1 readiness checklist**](docs-local/V1-READINESS-CHECKLIST.md).
+- `docs-local/RELEASE-CHECKLIST.md`
+- `docs-local/V1-READINESS-CHECKLIST.md`
 
 ## Minimal API
 
