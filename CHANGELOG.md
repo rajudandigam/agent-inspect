@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+### Patch Changes
+
+- c72f044: docs: polish README
+
 ## 1.0.1
 
 ### Patch Changes
