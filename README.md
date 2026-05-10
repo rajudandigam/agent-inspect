@@ -2,46 +2,21 @@
 
 **Local execution trees for TypeScript AI agents.**
 
-AgentInspect helps you understand what happened inside an AI agent run — **locally**. It turns manual steps, tool calls, LLM calls, structured logs, failures, durations, and run metadata into **readable execution trees** you can inspect from the terminal.
+agent-inspect helps you understand what happened inside an AI agent run — **locally**. It turns manual steps, tool calls, LLM calls, structured logs, failures, durations, and run metadata into **readable execution trees** you can inspect from the terminal.
 
-It is built for **professional TypeScript/Node.js teams** shipping real agentic products, not only toy demos. Use it **before** a hosted observability platform, **alongside** one, or as the **local debugging layer** underneath enterprise observability.
+It is built for TypeScript/Node.js developers and teams shipping real agentic products — not just toy demos. Use it **before** a hosted observability platform, **alongside** one, or as the **local debugging layer** underneath enterprise observability.
 
 The tool starts with **manual traces** and **existing structured logs**, and extends into **optional framework callbacks** and **standards-aligned local export** — without turning the core into a SaaS or a vendor pipeline.
 
 **No account. No cloud upload. No dashboard required.**
 
-## Why AgentInspect exists
+## Why agent-inspect exists
 
 AI agents are no longer single function calls. They plan, call tools, invoke LLMs, branch, retry, fail, and run work in parallel. **Console logs are flat**; reconstructing causality from a wall of lines is slow and error-prone.
 
 **Hosted observability** is valuable in production, but it can be heavy for the **inner loop**: local runs, fast iteration, and debugging before anything reaches a collector or dashboard.
 
-AgentInspect gives those runs **structure**: an **execution tree** you can read and diff on disk, with a **CLI-first** workflow and **no vendor lock-in**.
-
-## What v1.0 stabilizes
-
-**AgentInspect 1.0** stabilizes the **local debugging foundation**:
-
-- Instrument a run with `inspectRun` and `step`
-- Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
-- Inspect runs with **`list`** and **`view`**
-- Safely remove old trace files with **`clean`**
-
-**Stable APIs:** `inspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`.
-
-**Stable CLI workflows:** `agent-inspect list`, `agent-inspect view`, `agent-inspect clean`.
-
-**Also included in 1.0** as local-first extensions:
-
-- Structured log inspection: **`logs`**
-- Live log tailing: **`tail`**
-- Local exports: **`export`** (Markdown, HTML, OpenInference-compatible JSON, OTLP JSON — files only)
-- Local run comparison: **`diff`**
-- Optional **`@agent-inspect/langchain`** callback adapter
-- Optional **`@agent-inspect/tui`** terminal viewer
-- **Fixtures** and **recipes** for deterministic checks and adoption patterns
-
-**Honest boundaries:** programmatic log parsing, export, and diff APIs; LangChain and TUI programmatic surfaces; and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
+agent-inspect gives those runs **structure**: an **execution tree** you can read and diff on disk, with a **CLI-first** workflow and **no vendor lock-in**.
 
 ## Install
 
@@ -51,6 +26,12 @@ npm install agent-inspect
 
 ```bash
 pnpm add agent-inspect
+```
+
+Verify the CLI is available:
+
+```bash
+npx agent-inspect --help
 ```
 
 ## 60-second quickstart
@@ -93,6 +74,14 @@ npx agent-inspect view <run-id> --dir ./.agent-inspect
 npx agent-inspect view <run-id> --dir ./.agent-inspect --summary
 ```
 
+Full flow:
+
+```bash
+npm install agent-inspect
+node demo.mjs
+npx agent-inspect list --dir ./.agent-inspect
+```
+
 **Simplified example output** (actual CLI formatting may differ slightly):
 
 ```text
@@ -110,7 +99,7 @@ Each run produces a **JSONL** trace: `run_started` / `run_completed`, `step_star
 
 ## Works with structured logs you already have
 
-Many production systems already emit **line-delimited JSON** or text logs with embedded JSON (e.g. via **pino**, **winston**, **log4js**, **NestJS** loggers, job runners, or custom event streams). AgentInspect can turn those into **local grouped timelines/trees** without wrapping every function.
+Many production systems already emit **line-delimited JSON** or text logs with embedded JSON (e.g. via **pino**, **winston**, **log4js**, **NestJS** loggers, job runners, or custom event streams). agent-inspect can turn those into **local grouped timelines/trees** without wrapping every function.
 
 ```bash
 npx agent-inspect logs ./agent.log \
@@ -157,11 +146,36 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - **Export** a run to Markdown for a PR, postmortem, or internal thread — then review before sharing.
 - Keep traces **on disk** while still using enterprise observability elsewhere.
 
+## What v1.0 stabilizes
+
+**agent-inspect 1.0** stabilizes the **local debugging foundation**:
+
+- Instrument a run with `inspectRun` and `step`
+- Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
+- Inspect runs with **`list`** and **`view`**
+- Safely remove old trace files with **`clean`**
+
+**Stable APIs:** `inspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`.
+
+**Stable CLI workflows:** `agent-inspect list`, `agent-inspect view`, `agent-inspect clean`.
+
+**Also included in 1.0** as local-first extensions:
+
+- Structured log inspection: **`logs`**
+- Live log tailing: **`tail`**
+- Local exports: **`export`** (Markdown, HTML, OpenInference-compatible JSON, OTLP JSON — files only)
+- Local run comparison: **`diff`**
+- Optional **`@agent-inspect/langchain`** callback adapter
+- Optional **`@agent-inspect/tui`** terminal viewer
+- **Fixtures** and **recipes** for deterministic checks and adoption patterns
+
+**Honest boundaries:** programmatic log parsing, export, and diff APIs; LangChain and TUI programmatic surfaces; and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
+
 ## Optional packages
 
 ### LangChain callback adapter (`@agent-inspect/langchain`)
 
-Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. The adapter API is **experimental in 1.0** even though core tracing is stable.
+Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. The LangChain adapter is available in 1.0, but its programmatic API remains experimental and may evolve independently of the stable core tracing API.
 
 ```bash
 pnpm add agent-inspect @agent-inspect/langchain @langchain/core
@@ -190,7 +204,7 @@ pnpm add agent-inspect @agent-inspect/tui
 npx agent-inspect view <run-id> --tui
 ```
 
-Programmatic TUI APIs are **experimental** and may change; the TUI is **intended for CLI integration** (`view --tui`). Details: [docs/ADAPTERS.md](docs/ADAPTERS.md).
+The TUI is available as a separate optional package; its programmatic API is experimental, while the CLI integration (`view --tui`) is the intended usage. Details: [docs/ADAPTERS.md](docs/ADAPTERS.md).
 
 ## Examples and recipes
 
@@ -222,21 +236,11 @@ Programmatic TUI APIs are **experimental** and may change; the TUI is **intended
 
 See [SECURITY.md](SECURITY.md).
 
-## What AgentInspect is not
-
-AgentInspect is **not**:
-
-- a SaaS observability platform
-- a production monitoring or alerting system
-- a web dashboard product
-- an eval dataset manager
-- a prompt manager
-- a cost analytics engine
-- a replay / fork engine
-- a vendor telemetry upload pipeline
-- a full **agent framework**
+## agent-inspect comparison
 
 It can **complement** LangSmith, Langfuse, Braintrust, Phoenix/OpenInference, OpenTelemetry, New Relic, Datadog, and similar platforms — but it does **not** replace their production or eval workflows.
+
+For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 
 ## Documentation
 
@@ -250,7 +254,6 @@ It can **complement** LangSmith, Langfuse, Braintrust, Phoenix/OpenInference, Op
 - [Exports](docs/EXPORTS.md)
 - [Diff](docs/DIFF.md)
 - [Adapters](docs/ADAPTERS.md)
-- [Migration](docs/MIGRATION.md)
 - [Compare with other tools](docs/COMPARE.md)
 - [Security](SECURITY.md)
 - [Changelog](CHANGELOG.md)
