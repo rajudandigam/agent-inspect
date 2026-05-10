@@ -1,5 +1,13 @@
 # @agent-inspect/tui
 
+## 1.0.2
+
+### Patch Changes
+
+- c72f044: docs: polish README
+- Updated dependencies [c72f044]
+  - agent-inspect@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
