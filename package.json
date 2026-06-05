@@ -18,9 +18,14 @@
   "types": "./packages/core/dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./packages/core/dist/index.d.ts",
-      "import": "./packages/core/dist/index.mjs",
-      "require": "./packages/core/dist/index.cjs"
+      "import": {
+        "types": "./packages/core/dist/index.d.ts",
+        "default": "./packages/core/dist/index.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/index.d.cts",
+        "default": "./packages/core/dist/index.cjs"
+      }
     }
   },
   "bin": {

@@ -120,6 +120,25 @@ try {
     process.exit(1);
   }
 
+  const cjsDir = path.join(tmpRoot, "cjs-check");
+  mkdirSync(cjsDir, { recursive: true });
+  writeFileSync(
+    path.join(cjsDir, "package.json"),
+    `${JSON.stringify({ name: "agent-inspect-cjs-smoke", private: true, type: "commonjs" }, null, 2)}\n`,
+  );
+  const cjs = spawnSync(
+    process.execPath,
+    [
+      "-e",
+      "const m = require('agent-inspect'); if (!m.inspectRun || !m.step || !m.observe) process.exit(1);",
+    ],
+    { cwd: cjsDir, encoding: "utf8" },
+  );
+  if (cjs.status !== 0) {
+    console.error("[pack:smoke] CJS require check failed:\n", cjs.stderr || cjs.stdout);
+    process.exit(1);
+  }
+
   const binPath = path.join(tmpRoot, "node_modules", ".bin", "agent-inspect");
   if (!existsSync(binPath)) {
     console.error("[pack:smoke] missing node_modules/.bin/agent-inspect");
@@ -146,7 +165,9 @@ try {
   });
   assertHelp("npx --no-install agent-inspect --help", npxNoInstall.stdout, npxNoInstall.stderr, npxNoInstall.status);
 
-  console.log("[pack:smoke] OK: tarball install, ESM import, and local bin / npm exec / npx --no-install --help");
+  console.log(
+    "[pack:smoke] OK: tarball install, ESM import, CJS require, and local bin / npm exec / npx --no-install --help",
+  );
 } finally {
   if (!keep) {
     rmSync(tmpRoot, { recursive: true, force: true });

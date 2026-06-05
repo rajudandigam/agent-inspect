@@ -12,13 +12,20 @@ const cliDistDir = path.join(repoRoot, "packages", "cli", "dist");
 const coreMjs = path.join(coreDistDir, "index.mjs");
 const coreCjs = path.join(coreDistDir, "index.cjs");
 const coreDts = path.join(coreDistDir, "index.d.ts");
+const coreDcts = path.join(coreDistDir, "index.d.cts");
 const cliCjs = path.join(cliDistDir, "index.cjs");
 
 const distPresent =
   existsSync(coreMjs) &&
   existsSync(coreCjs) &&
   existsSync(coreDts) &&
+  existsSync(coreDcts) &&
   existsSync(cliCjs);
+
+type DualExportEntry = {
+  import?: { types?: string; default?: string };
+  require?: { types?: string; default?: string };
+};
 
 describe("package manifest (root agent-inspect)", () => {
   it("has expected public package fields", () => {
@@ -30,8 +37,13 @@ describe("package manifest (root agent-inspect)", () => {
     expect(typeof pkg.module).toBe("string");
     expect(typeof pkg.types).toBe("string");
 
-    const exportsField = pkg.exports as Record<string, unknown> | undefined;
-    expect(exportsField?.["."]).toBeDefined();
+    const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
+    const rootExport = exportsField?.["."];
+    expect(rootExport).toBeDefined();
+    expect(rootExport?.import?.types).toContain("index.d.ts");
+    expect(rootExport?.import?.default).toContain("index.mjs");
+    expect(rootExport?.require?.types).toContain("index.d.cts");
+    expect(rootExport?.require?.default).toContain("index.cjs");
 
     const bin = pkg.bin as Record<string, string> | undefined;
     expect(bin?.["agent-inspect"]).toBeDefined();
@@ -74,6 +86,7 @@ describe("package dist outputs", () => {
       expect(existsSync(coreMjs)).toBe(true);
       expect(existsSync(coreCjs)).toBe(true);
       expect(existsSync(coreDts)).toBe(true);
+      expect(existsSync(coreDcts)).toBe(true);
       expect(existsSync(cliCjs)).toBe(true);
     },
   );
