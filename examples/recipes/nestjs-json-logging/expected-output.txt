@@ -1,0 +1,9 @@
+nestjs-json-logging recipe
+Run nest_run_01
+agent-inspect.logs.json
+sample-nestjs.log
+confidence
+tool:search
+llm:plan
+fixture-gpt
+agent:completed

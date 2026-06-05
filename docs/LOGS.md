@@ -4,6 +4,7 @@ AgentInspect can parse **existing logs** (line-delimited JSON, and best-effort l
 
 - **CLI usage**: `docs/CLI.md` (`logs`, `tail`)
 - **Quickstart**: `docs/LOG-TO-TREE-QUICKSTART.md`
+- **Production-shaped playbook**: `docs/LOGGING-PLAYBOOK.md` (pino, log4js, NestJS recipes)
 - **Log ingest config (field mapping + redaction)**: `docs-local/architecture/LOG-INGEST-CONFIG.md`
 - **Safety constraints** (no eval, no JS object parsing): `docs-local/architecture/ARCHITECTURE.md`
 

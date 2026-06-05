@@ -1,0 +1,6 @@
+{"level":30,"time":1746451218130,"pid":4242,"hostname":"fixture-host","msg":"Agent run started","runId":"pino_run_01","event":"agent.run.started"}
+{"level":30,"time":1746451218132,"runId":"pino_run_01","event":"tool.search.started","tool":"searchDocs","msg":"Tool search started"}
+{"level":30,"time":1746451218402,"runId":"pino_run_01","event":"tool.search.completed","tool":"searchDocs","durationMs":270,"msg":"Tool search completed"}
+{"level":30,"time":1746451218500,"runId":"pino_run_01","event":"llm.plan.started","model":"fixture-gpt","msg":"LLM plan started"}
+{"level":30,"time":1746451219100,"runId":"pino_run_01","event":"llm.plan.completed","model":"fixture-gpt","durationMs":600,"tokens":{"input":820,"output":210},"msg":"LLM plan completed"}
+{"level":30,"time":1746451219150,"runId":"pino_run_01","event":"agent.run.completed","status":"ok","msg":"Agent run completed"}

@@ -28,6 +28,9 @@ const REQUIRED = {
   logs: [
     "fixtures/logs/proactive-json.log",
     "fixtures/logs/proactive-log4js.log",
+    "fixtures/logs/pino-agent-json.log",
+    "fixtures/logs/log4js-agent-json.log",
+    "fixtures/logs/nestjs-agent-json.log",
     "fixtures/logs/malformed-json.log",
     "fixtures/logs/missing-run-id.log",
     "fixtures/logs/mixed-valid-invalid.log",
@@ -35,6 +38,9 @@ const REQUIRED = {
   configs: [
     "fixtures/configs/proactive-agent-inspect.logs.json",
     "fixtures/configs/minimal-agent-inspect.logs.json",
+    "fixtures/configs/pino-agent-inspect.logs.json",
+    "fixtures/configs/log4js-agent-inspect.logs.json",
+    "fixtures/configs/nestjs-agent-inspect.logs.json",
   ],
 };
 
@@ -132,18 +138,22 @@ function validateJsonLog(rel) {
     }
     return;
   }
-  if (base === "proactive-json.log") {
-    for (let i = 0; i < lines.length; i++) {
-      JSON.parse(lines[i]);
-    }
-    return;
-  }
-  if (base === "proactive-log4js.log") {
+  if (base === "proactive-log4js.log" || base === "log4js-agent-json.log") {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const idx = line.lastIndexOf("{");
       if (idx < 0) throw new Error(`${rel} line ${i + 1}: no JSON object`);
       JSON.parse(line.slice(idx));
+    }
+    return;
+  }
+  if (
+    base === "pino-agent-json.log" ||
+    base === "nestjs-agent-json.log" ||
+    base === "proactive-json.log"
+  ) {
+    for (let i = 0; i < lines.length; i++) {
+      JSON.parse(lines[i]);
     }
   }
 }

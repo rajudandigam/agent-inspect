@@ -50,5 +50,7 @@ Run req_123
 See also:
 - `docs/CLI.md` (`logs`, `tail`)
 - `docs/LOGS.md`
+- `docs/LOGGING-PLAYBOOK.md` (pino / log4js / NestJS examples + fixtures)
 - `docs/SCHEMA.md` (log ingest config types + confidence)
+- `examples/recipes/pino-json-logs/`, `log4js-json-layout/`, `nestjs-json-logging/`
 

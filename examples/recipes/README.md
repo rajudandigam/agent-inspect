@@ -38,6 +38,9 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [tool-failure-retry](tool-failure-retry) | Flaky tool → retry succeeds | `step.tool`, error then success in trace | yes | no |
 | [multi-agent-handoff](multi-agent-handoff) | Coordinator + specialist steps | Nested steps, `metadata` for handoff | yes | no |
 | [proactive-agent-logs](proactive-agent-logs) | Log ingest + tail | `logs`, `tail`, config mapping, redaction | yes (CLI + samples) | no |
+| [pino-json-logs](pino-json-logs) | pino-shaped JSON logs | `logs`, `tail`, `time`/`msg` field mapping | yes (CLI + samples) | no |
+| [log4js-json-layout](log4js-json-layout) | log4js text + embedded JSON | `logs` with `--format log4js` | yes (CLI + samples) | no |
+| [nestjs-json-logging](nestjs-json-logging) | NestJS structured JSON | `logs`, `message`/`timestamp` mapping | yes (CLI + samples) | no |
 | [retry-fallback](retry-fallback) | Primary LLM fails, fallback OK | `step.llm`, error + recovery | yes | no |
 | [parallel-tools](parallel-tools) | Sibling tools via `Promise.all` | `step.tool`, parallel siblings | yes | no |
 

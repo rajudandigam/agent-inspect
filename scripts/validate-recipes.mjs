@@ -14,9 +14,23 @@ const RECIPES = [
   "tool-failure-retry",
   "multi-agent-handoff",
   "proactive-agent-logs",
+  "pino-json-logs",
+  "log4js-json-layout",
+  "nestjs-json-logging",
   "retry-fallback",
   "parallel-tools",
 ];
+
+const LOG_RECIPE_FILES = {
+  "proactive-agent-logs": [
+    "agent-inspect.logs.json",
+    "sample-json.log",
+    "sample-log4js.log",
+  ],
+  "pino-json-logs": ["agent-inspect.logs.json", "sample-pino.log"],
+  "log4js-json-layout": ["agent-inspect.logs.json", "sample-log4js.log"],
+  "nestjs-json-logging": ["agent-inspect.logs.json", "sample-nestjs.log"],
+};
 
 const FORBIDDEN = [
   { re: /gmail\.com/i, msg: "gmail.com" },
@@ -108,12 +122,9 @@ function main() {
       scanFile(rel);
     }
 
-    if (name === "proactive-agent-logs") {
-      for (const f of [
-        "agent-inspect.logs.json",
-        "sample-json.log",
-        "sample-log4js.log",
-      ]) {
+    const extraFiles = LOG_RECIPE_FILES[name];
+    if (extraFiles) {
+      for (const f of extraFiles) {
         assert(
           fs.existsSync(path.join(dir, f)),
           `Missing ${dirRel}/${f}`,

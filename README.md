@@ -133,7 +133,7 @@ npx agent-inspect logs ./agent.log --config agent-inspect.logs.json
 - **Flat timeline by default**; nesting when parent relationships are explicit or configured.
 - **Confidence labels** (`explicit`, `correlated`, `heuristic`, `unknown`) describe how attribution was inferred.
 
-More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](docs/LOG-TO-TREE-QUICKSTART.md).
+More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](docs/LOG-TO-TREE-QUICKSTART.md) · [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) (pino, log4js, NestJS).
 
 ## CLI at a glance
 
@@ -242,6 +242,9 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/tool-failure-retry](examples/recipes/tool-failure-retry) | Tool failure + retry |
 | [examples/recipes/multi-agent-handoff](examples/recipes/multi-agent-handoff) | Handoff |
 | [examples/recipes/proactive-agent-logs](examples/recipes/proactive-agent-logs) | Structured logs |
+| [examples/recipes/pino-json-logs](examples/recipes/pino-json-logs) | pino-shaped JSON |
+| [examples/recipes/log4js-json-layout](examples/recipes/log4js-json-layout) | log4js embedded JSON |
+| [examples/recipes/nestjs-json-logging](examples/recipes/nestjs-json-logging) | NestJS JSON logs |
 | [examples/recipes/retry-fallback](examples/recipes/retry-fallback) | Fallback pattern |
 | [examples/recipes/parallel-tools](examples/recipes/parallel-tools) | Parallel tools |
 
@@ -271,6 +274,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 - [Architecture (links to deeper design notes)](docs/ARCHITECTURE.md)
 - [Logs & tail](docs/LOGS.md)
 - [Log-to-tree quickstart](docs/LOG-TO-TREE-QUICKSTART.md)
+- [Logging playbook](docs/LOGGING-PLAYBOOK.md)
 - [Exports](docs/EXPORTS.md)
 - [Diff](docs/DIFF.md)
 - [Adapters](docs/ADAPTERS.md)

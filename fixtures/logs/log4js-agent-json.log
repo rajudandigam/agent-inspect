@@ -1,0 +1,6 @@
+2026-05-08 10:00:00.130 [INFO] agent - Agent run started {"level":"INFO","timestamp":1746451218130,"runId":"log4js_run_01","event":"agent.run.started","msg":"Agent run started"}
+2026-05-08 10:00:00.132 [INFO] agent - Tool search started {"level":"INFO","timestamp":1746451218132,"runId":"log4js_run_01","event":"tool.search.started","tool":"searchDocs","msg":"Tool search started"}
+2026-05-08 10:00:00.402 [INFO] agent - Tool search completed {"level":"INFO","timestamp":1746451218402,"runId":"log4js_run_01","event":"tool.search.completed","tool":"searchDocs","durationMs":270,"msg":"Tool search completed"}
+2026-05-08 10:00:00.500 [INFO] agent - LLM plan started {"level":"INFO","timestamp":1746451218500,"runId":"log4js_run_01","event":"llm.plan.started","model":"fixture-gpt","msg":"LLM plan started"}
+2026-05-08 10:00:01.100 [INFO] agent - LLM plan completed {"level":"INFO","timestamp":1746451219100,"runId":"log4js_run_01","event":"llm.plan.completed","model":"fixture-gpt","durationMs":600,"tokensInput":820,"tokensOutput":210,"msg":"LLM plan completed"}
+2026-05-08 10:00:01.150 [INFO] agent - Agent run completed {"level":"INFO","timestamp":1746451219150,"runId":"log4js_run_01","event":"agent.run.completed","status":"ok","msg":"Agent run completed"}
