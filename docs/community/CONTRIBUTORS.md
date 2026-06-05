@@ -12,6 +12,24 @@ We list contributors who:
 
 This file is updated manually by maintainers after notable releases. It is not auto-generated from git history.
 
+## Contributor recognition
+
+Maintainers add rows after merged PRs or notable community help. **Do not add fake entries.**
+
+| Contributor | Area | Contribution | Date |
+| ----------- | ---- | ------------ | ---- |
+| *(none listed yet — add after first external merges)* | | | |
+
+### Recognition policy
+
+- Listed with contributor permission after a **merged PR** or substantive docs/fixture work.
+- Include area (e.g. fixtures, docs, recipes) and brief contribution summary.
+- Date = merge month or release when credited.
+- Security reporters included only with permission.
+- Not auto-generated from git history.
+
+See [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md).
+
 ## Core maintainers
 
 | Role | Responsibility |

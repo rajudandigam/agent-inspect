@@ -23,6 +23,15 @@ After a successful npm publish:
 - [ ] Verify CJS `require()` in a clean temp TypeScript project (`module: Node16`, `.cts` types)
 - [ ] Confirm scoped packages (`@agent-inspect/langchain`, `@agent-inspect/tui`) if published in the same release
 
+## Open-source activation sprint (post-1.1.0)
+
+- [ ] Run [scripts/github-labels.sh](../../scripts/github-labels.sh) (once)
+- [ ] Enable GitHub Discussions; pin stack survey — [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md)
+- [ ] Review [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) then run [scripts/create-live-issues-batch-01.sh](../../scripts/create-live-issues-batch-01.sh)
+- [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live issue numbers
+- [ ] Use [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) for feedback-first outreach
+- [ ] Share [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md) when inviting repeat contributors
+
 ## Triage labels
 
 | Label | Use |

@@ -1,6 +1,8 @@
 # Project vision
 
-AgentInspect helps TypeScript/Node.js developers **understand what happened inside an AI agent run — locally**.
+AgentInspect is the **local-first trace workbench** for TypeScript AI agents.
+
+It helps developers **understand, debug, compare, annotate, and export** agent runs locally — before they need a hosted observability platform.
 
 ## Core concept
 

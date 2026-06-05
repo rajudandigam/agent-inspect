@@ -2,7 +2,26 @@
 
 Curated entry points for contributors. Expanded notes live in [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md).
 
-Issue drafts (copy into GitHub when ready): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
+Issue drafts (historical): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
+
+**First live issues (batch 01):** prepared bodies in [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/) — maintainers open these gradually via [scripts/create-live-issues-batch-01.sh](scripts/create-live-issues-batch-01.sh). Not all drafts convert at once.
+
+---
+
+## First live issue batch (activation sprint)
+
+| # | Title | Labels | File |
+| - | ----- | ------ | ---- |
+| 1 | Add OpenInference export fixture | good first issue, fixtures, exports, testing | [001](.github/LIVE_ISSUE_BATCH_01/001-add-openinference-export-fixture.md) |
+| 2 | Improve diff CLI output examples | good first issue, documentation, cli, examples | [002](.github/LIVE_ISSUE_BATCH_01/002-improve-diff-cli-output-examples.md) |
+| 3 | AgentInspect vs production observability comparison | good first issue, documentation, roadmap-now | [003](.github/LIVE_ISSUE_BATCH_01/003-add-agentinspect-vs-production-observability-comparison.md) |
+| 4 | Add tool failure + retry fixture | good first issue, fixtures, examples | [004](.github/LIVE_ISSUE_BATCH_01/004-add-tool-failure-retry-fixture.md) |
+| 5 | Timeline command proposal | help wanted, cli, roadmap-next | [005](.github/LIVE_ISSUE_BATCH_01/005-timeline-command-proposal.md) |
+| 6 | Stats command proposal | help wanted, cli, roadmap-next | [006](.github/LIVE_ISSUE_BATCH_01/006-stats-command-proposal.md) |
+| 7 | Decision metadata recipe | examples, documentation, roadmap-next | [007](.github/LIVE_ISSUE_BATCH_01/007-decision-metadata-recipe.md) |
+| 8 | Persisted LangChain streaming design | langchain, adapter, roadmap-next, maintainer-owned | [008](.github/LIVE_ISSUE_BATCH_01/008-persisted-langchain-streaming-design.md) |
+
+After issues are live, add `#NNN` links in this table. See [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md) and [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md).
 
 ---
 

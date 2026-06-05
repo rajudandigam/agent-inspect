@@ -2,7 +2,17 @@
 
 Quick index: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)
 
-Issue drafts live in [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/). Maintainers copy a draft into GitHub Issues when ready to triage.
+Historical drafts: [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/)
+
+**First live batch:** [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) — open gradually via [scripts/create-live-issues-batch-01.sh](../../scripts/create-live-issues-batch-01.sh).
+
+---
+
+## First live issue batch
+
+See [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md#first-live-issue-batch-activation-sprint) for the eight prepared issues (OpenInference fixture, diff examples, COMPARE doc, tool-retry fixture, timeline/stats proposals, decision recipe, LangChain streaming design).
+
+Related: [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md) · [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) · [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md)
 
 ---
 
