@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "private": false,
-  "description": "LangChain.js callback adapter for AgentInspect (in-memory execution events)",
+  "description": "LangChain.js callback adapter for AgentInspect (in-memory or persisted JSONL execution events)",
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

@@ -115,6 +115,13 @@ Diff is local and read-only. Programmatic diff surfaces are experimental until t
 `@agent-inspect/langchain` is an optional adapter package.
 
 - **`AgentInspectCallback`** (experimental)
+  - **`persist`**: default `false` — when `true`, maps callback lifecycle to schemaVersion `"0.1"` JSONL (`run_started` / `step_started` / `step_completed` / `run_completed`)
+  - **`runName`**: default `"langchain-agent"` for standalone persisted runs
+  - **`traceDir`**: defaults via `resolveTraceDir` / `AGENT_INSPECT_TRACE_DIR`
+  - **`capture`**: `"none"` | `"metadata-only"` (default) | `"preview"` (truncated previews, opt-in)
+  - **`redact`**: custom `RedactionRule[]` applied before disk (core defaults still apply via shared redactor)
+  - **`runId`**: optional id for standalone persisted runs
+  - In-memory **`getEvents()`** / **`clear()`** unchanged when `persist` is false
 - Metadata helpers: `extractModelName`, `extractTokenUsage`, `safePreview`, `toPlainMetadata`
 
 Rationale: v1.0 includes one official adapter and **zero production sinks**, so adapter surfaces remain experimental.

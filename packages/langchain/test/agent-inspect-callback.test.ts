@@ -20,6 +20,11 @@ describe("AgentInspectCallback", () => {
     expect(cb.name).toBe("agent-inspect");
   });
 
+  it("persist defaults to false", () => {
+    const cb = new AgentInspectCallback();
+    expect(cb.getEvents()).toEqual([]);
+  });
+
   it("starts empty and clear resets", () => {
     const cb = new AgentInspectCallback();
     expect(cb.getEvents()).toEqual([]);

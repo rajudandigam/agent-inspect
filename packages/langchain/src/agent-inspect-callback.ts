@@ -19,6 +19,7 @@ import {
   safePreview,
   toPlainMetadata,
 } from "./metadata.js";
+import { LangChainTracePersistence } from "./trace-persistence.js";
 import type { AgentInspectCallbackOptions } from "./types.js";
 
 type StartEntry = { ts: number; kind: InspectKind };
@@ -45,6 +46,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     AgentInspectCallbackOptions;
 
   readonly #redactor: Redactor;
+  readonly #persistence?: LangChainTracePersistence;
   #events: InspectEvent[] = [];
   readonly #starts = new Map<string, StartEntry>();
   #rootRunId?: string;
@@ -55,9 +57,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       capture: options.capture ?? "metadata-only",
       silent: options.silent ?? false,
       maxPreviewChars: options.maxPreviewChars ?? 200,
+      persist: options.persist ?? false,
+      runName: options.runName ?? "langchain-agent",
       ...options,
     };
     this.#redactor = new Redactor({ rules: this.#opts.redact });
+    if (this.#opts.persist) {
+      this.#persistence = new LangChainTracePersistence({
+        runName: this.#opts.runName,
+        traceDir: this.#opts.traceDir,
+        runId: this.#opts.runId,
+        redact: this.#opts.redact,
+        silent: this.#opts.silent,
+        maxPreviewChars: this.#opts.maxPreviewChars,
+      });
+    }
   }
 
   getEvents(): InspectEvent[] {
@@ -72,6 +86,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     this.#events = [];
     this.#starts.clear();
     this.#rootRunId = undefined;
+    this.#persistence?.reset();
   }
 
   #ensureRoot(lcRunId: string, parentRunId?: string): void {
@@ -145,6 +160,63 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     }
   }
 
+  async #persistStepStart(
+    lcRunId: string,
+    lcParentRunId: string | undefined,
+    name: string,
+    kind: InspectKind,
+    attrs: Record<string, unknown>,
+    startTime: number,
+  ): Promise<void> {
+    await this.#persistence?.onStepStart({
+      lcRunId,
+      lcParentRunId,
+      name,
+      kind,
+      startTime,
+      attributes: attrs,
+    });
+  }
+
+  async #persistStepEnd(
+    lcRunId: string,
+    lcParentRunId: string | undefined,
+    status: "success" | "error",
+    endTime: number,
+    durationMs: number | undefined,
+    errorMessage?: string,
+  ): Promise<void> {
+    await this.#persistence?.onStepEnd({
+      lcRunId,
+      lcParentRunId,
+      endTime,
+      durationMs,
+      status,
+      errorMessage,
+    });
+  }
+
+  async #persistInstant(
+    lcRunId: string,
+    lcParentRunId: string | undefined,
+    name: string,
+    kind: InspectKind,
+    attrs: Record<string, unknown>,
+    status: "success" | "error",
+    errorMessage?: string,
+  ): Promise<void> {
+    await this.#persistence?.onInstantStep({
+      lcRunId,
+      lcParentRunId,
+      name,
+      kind,
+      timestamp: Date.now(),
+      attributes: attrs,
+      status,
+      errorMessage,
+    });
+  }
+
   override async handleChainStart(
     chain: Serialized,
     inputs: ChainValues,
@@ -167,18 +239,20 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     };
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:CHAIN:start`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: `chain:${runName ?? label}`,
       kind: "CHAIN",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "running",
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepStart(runId, parentRunId, `chain:${runName ?? label}`, "CHAIN", attrs, ts);
   }
 
   override async handleChainEnd(
@@ -197,19 +271,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
     };
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:CHAIN:end`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "chain:end",
       kind: "CHAIN",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "ok",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "success", ts, durationMs);
   }
 
   override async handleChainError(
@@ -228,19 +304,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       errorName,
       errorMessage,
     };
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:CHAIN:error`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "chain:error",
       kind: "CHAIN",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "error",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "error", ts, durationMs, errorMessage);
   }
 
   override async handleLLMStart(
@@ -266,18 +344,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     if (model && this.#opts.capture !== "none") attrs.model = model;
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
+    const stepName = `llm:${model ?? "llm"}`;
     this.#pushEvent({
       eventId: `${runId}:LLM:start`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
-      name: `llm:${model ?? "llm"}`,
+      name: stepName,
       kind: "LLM",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "running",
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepStart(runId, parentRunId, stepName, "LLM", attrs, ts);
   }
 
   override async handleChatModelStart(
@@ -301,18 +382,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     if (model && this.#opts.capture !== "none") attrs.model = model;
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
+    const stepName = `llm:${model ?? "llm"}`;
     this.#pushEvent({
       eventId: `${runId}:CHAT:start`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
-      name: `llm:${model ?? "llm"}`,
+      name: stepName,
       kind: "LLM",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "running",
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepStart(runId, parentRunId, stepName, "LLM", attrs, ts);
   }
 
   override async handleLLMEnd(
@@ -335,19 +419,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     if (model && this.#opts.capture !== "none") attrs.model = model;
     if (tokens && this.#opts.capture !== "none") attrs.tokens = tokens;
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:LLM:end`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: `llm:${model ?? "llm"}`,
       kind: "LLM",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "ok",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "success", ts, durationMs);
   }
 
   override async handleLLMError(
@@ -366,19 +452,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       errorName,
       errorMessage,
     };
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:LLM:error`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "llm:error",
       kind: "LLM",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "error",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "error", ts, durationMs, errorMessage);
   }
 
   override async handleToolStart(
@@ -402,18 +490,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     };
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
+    const stepName = `tool:${toolName}`;
     this.#pushEvent({
       eventId: `${runId}:TOOL:start`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
-      name: `tool:${toolName}`,
+      name: stepName,
       kind: "TOOL",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "running",
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepStart(runId, parentRunId, stepName, "TOOL", attrs, ts);
   }
 
   override async handleToolEnd(
@@ -431,19 +522,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
     };
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:TOOL:end`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "tool:end",
       kind: "TOOL",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "ok",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "success", ts, durationMs);
   }
 
   override async handleToolError(
@@ -461,19 +554,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       errorName,
       errorMessage,
     };
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:TOOL:error`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "tool:error",
       kind: "TOOL",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "error",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "error", ts, durationMs, errorMessage);
   }
 
   override async handleRetrieverStart(
@@ -494,18 +589,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       retriever: rname,
     };
     this.#mergeMetadata(attrs, metadata);
+    const ts = Date.now();
+    const stepName = `retriever:${rname}`;
     this.#pushEvent({
       eventId: `${runId}:RETRIEVER:start`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
-      name: `retriever:${rname}`,
+      name: stepName,
       kind: "RETRIEVER",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "running",
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepStart(runId, parentRunId, stepName, "RETRIEVER", attrs, ts);
   }
 
   override async handleRetrieverEnd(
@@ -526,19 +624,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       documentCount: documents.length,
     };
     this.#applyPreview(attrs, previews);
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:RETRIEVER:end`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "retriever:end",
       kind: "RETRIEVER",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "ok",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "success", ts, durationMs);
   }
 
   override async handleRetrieverError(
@@ -556,19 +656,21 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       errorName,
       errorMessage,
     };
+    const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:RETRIEVER:error`,
       runId: this.#traceRunId(runId),
       parentId: parentRunId,
       name: "retriever:error",
       kind: "RETRIEVER",
-      timestamp: Date.now(),
+      timestamp: ts,
       status: "error",
       durationMs,
       attributes: attrs,
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistStepEnd(runId, parentRunId, "error", ts, durationMs, errorMessage);
   }
 
   override async handleAgentAction(
@@ -600,6 +702,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistInstant(runId, parentRunId, "agent:action", "DECISION", attrs, "success");
   }
 
   override async handleAgentEnd(
@@ -630,5 +733,6 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       confidence: "explicit",
       source: { type: "adapter" },
     });
+    await this.#persistInstant(runId, parentRunId, "agent:end", "AGENT", attrs, "success");
   }
 }

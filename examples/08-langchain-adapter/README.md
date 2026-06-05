@@ -22,5 +22,20 @@ Running only inside `examples/08-langchain-adapter` without the parent workspace
 - **Token usage** is recorded only when present on a synthetic `handleLLMEnd` payload.
 - **No cost calculation** (cost fields are ignored for the token summary).
 - **Parent attribution** uses LangChain `parentRunId` → `parentId` on `InspectEvent`.
-- Events are held **in memory** only in this pass (`getEvents()`); **no** writes to v0.1 JSONL traces.
-- **Disk persistence** for adapter events is **deferred**.
+- **In-memory by default** (`getEvents()` / `clear()`).
+- **Optional disk persistence** — pass `persist: true` to write schemaVersion `"0.1"` JSONL runs inspectable by `agent-inspect list` / `view` / `export` / `diff`.
+- **Metadata-only by default**; `capture: "preview"` is opt-in with truncation.
+
+```ts
+const callback = new AgentInspectCallback({
+  runName: "support-agent",
+  traceDir: "./.agent-inspect",
+  persist: true,
+  capture: "metadata-only",
+});
+```
+
+```bash
+npx agent-inspect list --dir ./.agent-inspect
+npx agent-inspect view <run-id> --dir ./.agent-inspect
+```

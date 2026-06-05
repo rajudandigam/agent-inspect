@@ -9,6 +9,10 @@ export interface AgentInspectCallbackOptions {
   capture?: CaptureMode;
   redact?: RedactionRule[];
   maxPreviewChars?: number;
+  /** When true, persist callback lifecycle as schemaVersion "0.1" JSONL (default false). */
+  persist?: boolean;
+  /** Optional run id for standalone persisted runs (defaults to generated id). */
+  runId?: string;
 }
 
 export interface LangChainRunMetadata {

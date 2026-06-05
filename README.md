@@ -199,12 +199,18 @@ pnpm add agent-inspect @agent-inspect/langchain @langchain/core
 import { AgentInspectCallback } from "@agent-inspect/langchain";
 
 const callback = new AgentInspectCallback({
-  runName: "my-run",
+  runName: "support-agent",
+  traceDir: "./.agent-inspect",
+  persist: true,
   capture: "metadata-only",
 });
 
 await agent.invoke(input, { callbacks: [callback] });
+// In-memory events still available:
 const events = callback.getEvents();
+// Persisted runs are inspectable via CLI:
+// npx agent-inspect list --dir ./.agent-inspect
+// npx agent-inspect view <run-id> --dir ./.agent-inspect
 ```
 
 See [examples/08-langchain-adapter](examples/08-langchain-adapter/README.md) and [docs/ADAPTERS.md](docs/ADAPTERS.md).
