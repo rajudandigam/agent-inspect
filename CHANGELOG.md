@@ -4,28 +4,44 @@
 
 ### Added
 
-- Added env-gated tracing with `maybeInspectRun()` (`AGENT_INSPECT` environment variable).
+- Added env-gated tracing with `maybeInspectRun()` using `AGENT_INSPECT`.
 - Added `enabled` option for `inspectRun` passthrough when tracing should be skipped.
-- Added optional LangChain JSONL persistence (`persist: true` on `@agent-inspect/langchain`).
-- Added production-shaped logging playbook and pino/log4js/NestJS recipes ([docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md)).
-- Added community contribution scaffold and issue drafts.
+- Added default-on persisted trace safety for manual traces, including metadata redaction and event size bounds.
+- Added optional LangChain JSONL persistence with `persist: true` in `@agent-inspect/langchain`.
+- Added production-shaped logging guidance with pino, log4js, and NestJS JSON logging recipes.
+- Added community contribution scaffold, issue templates, and good-first-issue guidance.
 
 ### Fixed
 
-- Fixed conditional type exports for ESM and CommonJS TypeScript consumers (`import.types` / `require.types`).
+- Fixed conditional type exports for ESM and CommonJS TypeScript consumers.
+- Improved package compatibility for TypeScript Node16/NodeNext consumers using `import` and `require`.
+- Updated public docs to avoid treating `docs-local` as primary contributor/user documentation.
+- Updated stale docs around LangChain persistence, redaction, and package boundaries.
 
 ### Security
 
-- Redacts sensitive manual trace metadata before disk by default; opt out with `redact: false`.
+- Redacts sensitive manual trace metadata before disk by default.
+- Allows explicit opt-out with `redact: false`.
 - Bounds persisted event and metadata size to reduce accidental large trace files.
+- Keeps JSON logs first-class and log4js parsing best-effort without unsafe JavaScript object parsing.
+
+### Documentation
+
+- Added/updated logging playbook for structured JSON logs ([docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md)).
+- Updated public roadmap to separate completed v1.1-prep work from Now/Next/Future.
+- Updated contributor/community docs for package boundaries and optional packages.
+- Added clearer community onboarding and issue-draft guidance.
 
 ### Notes
 
 - LangChain adapter APIs remain experimental.
-- JSON logs remain first-class; log4js parsing remains best-effort.
-- No vendor upload or network sink behavior was added.
-- No replay or cost engine was added.
-- Public documentation prefers `docs/` over internal maintainer-only references.
+- `persist: false` remains the default for `@agent-inspect/langchain`; `persist: true` is opt-in.
+- Existing manual trace schema remains `schemaVersion: "0.1"`.
+- Existing event names remain `run_started`, `run_completed`, `step_started`, and `step_completed`.
+- There is still no `step_failed` event; failures are represented as `step_completed` with `status: "error"`.
+- JSON logs remain first-class; log4js text parsing remains best-effort.
+- No vendor upload, network sink, dashboard, replay engine, or cost engine was added.
+- Root `agent-inspect` runtime dependencies remain `chalk`, `commander`, and `nanoid` only.
 
 ## 1.0.3
 
