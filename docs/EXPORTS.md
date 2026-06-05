@@ -4,7 +4,7 @@ AgentInspect supports local-only exports from run trees and traces. Exports are 
 
 - **CLI usage**: `docs/CLI.md` (`export`)
 - **Schema + compatibility guarantees**: `docs/SCHEMA.md`
-- **Safety / redaction notes**: `docs/CLI.md`, `SECURITY.md`, and `docs-local/architecture/REDACTION.md`
+- **Safety / redaction notes**: `docs/CLI.md`, `SECURITY.md`, and `docs/SCHEMA.md` (redaction section)
 
 Notes:
 - Export formats (Markdown/HTML/OpenInference/OTLP JSON) are documented as **experimental / compatibility-oriented** in `docs/API.md`.

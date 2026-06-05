@@ -20,11 +20,7 @@ Best for first-time contributors. **Docs, examples, fixtures, CLI output samples
 
 ### Examples & recipes
 
-| # | Draft | Summary |
-| - | ----- | ------- |
-| 011 | [011-add-pino-json-logging-recipe.md](../../.github/ISSUE_DRAFTS/011-add-pino-json-logging-recipe.md) | pino → `agent-inspect logs` recipe |
-| 012 | [012-add-log4js-json-layout-recipe.md](../../.github/ISSUE_DRAFTS/012-add-log4js-json-layout-recipe.md) | log4js JSON layout recipe |
-| 013 | [013-add-nestjs-json-logging-recipe.md](../../.github/ISSUE_DRAFTS/013-add-nestjs-json-logging-recipe.md) | NestJS structured logging recipe |
+**Completed (v1.1 prep):** pino, log4js, and NestJS logging recipes — see [LOGGING-PLAYBOOK.md](../LOGGING-PLAYBOOK.md) and `examples/recipes/`.
 
 ### Fixtures & CLI examples
 
@@ -58,12 +54,12 @@ Coordinate with maintainers **before** implementation. Affects stable APIs, stor
 
 | # | Draft | Summary |
 | - | ----- | ------- |
-| 001 | [001-fix-cjs-esm-conditional-type-exports.md](../../.github/ISSUE_DRAFTS/001-fix-cjs-esm-conditional-type-exports.md) | Conditional `types` exports for CJS/ESM |
-| 005 | [005-add-enabled-option-to-inspect-run.md](../../.github/ISSUE_DRAFTS/005-add-enabled-option-to-inspect-run.md) | `enabled` option on `inspectRun` |
-| 006 | [006-add-maybe-inspect-run-helper.md](../../.github/ISSUE_DRAFTS/006-add-maybe-inspect-run-helper.md) | `maybeInspectRun` convenience helper |
-| 007 | [007-redact-manual-metadata-before-disk.md](../../.github/ISSUE_DRAFTS/007-redact-manual-metadata-before-disk.md) | Redact manual trace metadata at write time |
-| 008 | [008-add-event-size-bounds.md](../../.github/ISSUE_DRAFTS/008-add-event-size-bounds.md) | Max event / metadata size guards |
-| 009 | [009-persist-langchain-callback-events.md](../../.github/ISSUE_DRAFTS/009-persist-langchain-callback-events.md) | LangChain → JSONL persistence |
+| 001 | [001-fix-cjs-esm-conditional-type-exports.md](../../.github/ISSUE_DRAFTS/001-fix-cjs-esm-conditional-type-exports.md) | Conditional `types` exports for CJS/ESM — **implemented (1.1.0)** |
+| 005 | [005-add-enabled-option-to-inspect-run.md](../../.github/ISSUE_DRAFTS/005-add-enabled-option-to-inspect-run.md) | `enabled` option on `inspectRun` — **implemented (1.1.0)** |
+| 006 | [006-add-maybe-inspect-run-helper.md](../../.github/ISSUE_DRAFTS/006-add-maybe-inspect-run-helper.md) | `maybeInspectRun` convenience helper — **implemented (1.1.0)** |
+| 007 | [007-redact-manual-metadata-before-disk.md](../../.github/ISSUE_DRAFTS/007-redact-manual-metadata-before-disk.md) | Redact manual trace metadata at write time — **implemented (1.1.0)** |
+| 008 | [008-add-event-size-bounds.md](../../.github/ISSUE_DRAFTS/008-add-event-size-bounds.md) | Max event / metadata size guards — **implemented (1.1.0)** |
+| 009 | [009-persist-langchain-callback-events.md](../../.github/ISSUE_DRAFTS/009-persist-langchain-callback-events.md) | LangChain → JSONL persistence — **implemented (1.1.0)** |
 
 **Unified persisted event model** (manual JSONL + adapter events) is part of the design space for 009 and follow-on maintainer work — not a drive-by contributor change.
 

@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.1.0 — Unreleased
+
+### Added
+
+- Added env-gated tracing with `maybeInspectRun()` (`AGENT_INSPECT` environment variable).
+- Added `enabled` option for `inspectRun` passthrough when tracing should be skipped.
+- Added optional LangChain JSONL persistence (`persist: true` on `@agent-inspect/langchain`).
+- Added production-shaped logging playbook and pino/log4js/NestJS recipes ([docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md)).
+- Added community contribution scaffold and issue drafts.
+
+### Fixed
+
+- Fixed conditional type exports for ESM and CommonJS TypeScript consumers (`import.types` / `require.types`).
+
+### Security
+
+- Redacts sensitive manual trace metadata before disk by default; opt out with `redact: false`.
+- Bounds persisted event and metadata size to reduce accidental large trace files.
+
+### Notes
+
+- LangChain adapter APIs remain experimental.
+- JSON logs remain first-class; log4js parsing remains best-effort.
+- No vendor upload or network sink behavior was added.
+- No replay or cost engine was added.
+- Public documentation prefers `docs/` over internal maintainer-only references.
+
 ## 1.0.3
 
 ### Patch Changes
@@ -19,16 +46,6 @@
 ### Patch Changes
 
 - 575b093: docs: onboarding polish
-
-## Unreleased
-
-### Documentation
-
-- Improved README onboarding for new users.
-- Added comparison guide.
-- Added log-to-tree quickstart.
-- Added a quickstart demo example.
-- Clarified docs organization between user-facing `docs/` and internal `docs-local/`.
 
 ## 1.0.0
 

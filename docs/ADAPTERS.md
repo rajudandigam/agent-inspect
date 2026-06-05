@@ -38,5 +38,5 @@ npx agent-inspect view <run-id> --dir ./.agent-inspect
 
 See also:
 - `docs/MIGRATION.md` (what changed from early versions)
-- `docs-local/RELEASE-CHECKLIST.md` (maintainer-only release steps)
+- `docs/API.md` (LangChain adapter options: `persist`, `capture`, `traceDir`)
 

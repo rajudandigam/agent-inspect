@@ -196,7 +196,7 @@ Redaction is applied to **log-derived attributes**, **manual trace metadata (bef
 
 Always review any exported content (Markdown/HTML/OpenInference/OTLP JSON) before sharing, especially if you enable richer attribute inclusion.
 
-See: `docs-local/architecture/REDACTION.md`.
+See: `SECURITY.md` and `docs/API.md` (`InspectRunOptions.redact`, size bound options).
 
 ## 14. Migration notes
 

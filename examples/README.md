@@ -2,7 +2,7 @@
 
 Runnable samples grouped by roadmap phase. No example requires paid API keys unless its README says otherwise.
 
-Roadmap context: `docs-local/examples/EXAMPLES-ROADMAP.md`.
+Roadmap context: [ROADMAP.md](../ROADMAP.md) and [examples/recipes/README.md](recipes/README.md). Maintainer-only historical notes: `docs-local/examples/EXAMPLES-ROADMAP.md`.
 
 Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`fixtures/`](../fixtures/README.md).
 
@@ -62,7 +62,7 @@ See [06-log-to-tree/README.md](06-log-to-tree/README.md).
 
 | Example | Demonstrates |
 | --- | --- |
-| [08-langchain-adapter](08-langchain-adapter) | LangChain `BaseCallbackHandler` → in-memory `InspectEvent` capture (v0.5) |
+| [08-langchain-adapter](08-langchain-adapter) | LangChain `BaseCallbackHandler` → in-memory by default; optional `persist: true` JSONL (v0.5) |
 
 Install and run from the **repository root**:
 

@@ -143,7 +143,7 @@ Do **not** rely on AgentInspect for:
 | Vendor live tail / upload sinks | Out of scope for core |
 | Full prompt/output in every line | Use `metadata-only` logging; previews opt-in |
 
-If you need framework-specific transports (pino destination hooks, log4js appenders, Nest `LoggerService` wrappers), see future optional packages in `.github/ISSUE_DRAFTS/021-*` through `023-*`.
+Runnable framework recipes live under `examples/recipes/` (pino JSON logs, log4js JSON layout, NestJS structured logging). See [examples/recipes/README.md](../examples/recipes/README.md).
 
 ## See also
 

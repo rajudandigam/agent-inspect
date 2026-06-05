@@ -11,7 +11,7 @@ agent-inspect/
 ├── packages/langchain/  # @agent-inspect/langchain (optional public)
 ├── packages/tui/        # @agent-inspect/tui (optional public)
 ├── docs/                # User-facing docs (shipped in npm tarball)
-├── docs-local/          # Internal PRDs, architecture — historical context
+├── docs-local/          # Internal PRDs, architecture — historical context (maintainers)
 ├── docs/community/      # Contributor vision, guides (this folder)
 ├── examples/            # Tutorials and recipes
 ├── fixtures/            # Canonical traces and logs for tests
@@ -31,10 +31,14 @@ agent-inspect/
 
 ### Root `agent-inspect`
 
-- Published npm package bundling `packages/core/dist` + `packages/cli/dist`.
-- `bin.agent-inspect` → CLI.
-- Single `exports["."].types` → `packages/core/dist/index.d.ts`.
-- Runtime deps: `chalk`, `commander`, `nanoid` only.
+- **Public package name:** `agent-inspect` (install with `pnpm add agent-inspect` or `npm install agent-inspect`).
+- **CLI binary:** `agent-inspect` via `bin.agent-inspect` (bundles `packages/core/dist` + `packages/cli/dist`).
+- **Runtime dependencies** stay lean: `chalk`, `commander`, `nanoid` only.
+- **Conditional exports** for ESM and CJS TypeScript consumers:
+  - `import.types` → ESM declaration output (`packages/core/dist/index.d.ts`).
+  - `require.types` → CJS declaration output (usually `index.d.cts`).
+  - CJS consumers using `module: Node16` / `NodeNext` should resolve CJS-safe declaration files.
+  - This dual `types` layout is intentional package compatibility behavior — not a single top-level `exports["."].types` only.
 
 ### `@agent-inspect/core` (private)
 
@@ -45,22 +49,39 @@ agent-inspect/
 
 - Commander-based CLI; depends on core.
 - Optional dev dependency on TUI for `view --tui` integration tests.
+- **Not** a public install target — users install `agent-inspect`, not `@agent-inspect/cli`.
 
-### Optional public packages
+### `@agent-inspect/langchain` (optional public)
 
-- **`@agent-inspect/langchain`**: peer `@langchain/core`; in-memory events today.
-- **`@agent-inspect/tui`**: `ink` + `react`; interactive terminal only.
+- Peer / dev dependency on `@langchain/core`.
+- **In-memory events by default** (`getEvents()` / `clear()`).
+- **Optional persisted JSONL** when `persist: true` is configured (same `schemaVersion: "0.1"` format as manual traces).
+- Does **not** add LangChain to the root `agent-inspect` package.
+- **Experimental** — programmatic API may evolve independently of stable core tracing.
+
+### `@agent-inspect/tui` (optional public)
+
+- Isolates `ink` + `react` in an optional package.
+- Root `agent-inspect` does **not** depend on Ink/React.
+- **Experimental** programmatic surface.
 
 Changesets **ignores** private workspace packages — version bumps apply to `agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`.
+
+## Manual trace safety
+
+- `inspectRun` / `step` **metadata is redacted before disk by default** (common sensitive keys, case-insensitive).
+- Users may explicitly opt out with **`redact: false`**.
+- **Size bounds** apply to persisted events and metadata (defaults documented in `docs/API.md` and `SECURITY.md`).
+- Trace event safety must **not throw into user code** — failures degrade gracefully (warn/truncate/skip as appropriate).
 
 ## Development principles
 
 1. **Never throw instrumentation errors into user code** — warn and continue where safe.
 2. **Preserve `schemaVersion: "0.1"`** — additive changes only in minor/patch releases.
 3. **No `step_failed`** — use `step_completed` + `status: "error"`.
-4. **Default `inspectRun` traces** — opt-out requires explicit API design (`enabled`, `maybeInspectRun` — maintainer-owned).
+4. **Default `inspectRun` traces** — opt-out via `enabled: false` or `maybeInspectRun()` (env-gated with `AGENT_INSPECT`).
 5. **Conservative log parsing** — JSON first-class; no eval; no JS object-literal log format.
-6. **Redaction** for log-derived paths; manual metadata redaction is roadmap work.
+6. **Redaction** for log-derived paths, manual metadata (before disk), and exports by default.
 
 ## Testing conventions
 
@@ -76,23 +97,28 @@ Add tests when changing behavior. Docs-only PRs still run `pnpm typecheck` and `
 ## Documentation conventions
 
 - User-facing: `docs/` + `README.md` (included in npm `files`).
-- Do not link `docs-local/` from public README as primary docs.
+- Do not link `docs-local/` from public README or contributor guides as **primary** documentation.
+- Maintainer-only internal docs may contain additional historical context.
 - Label experimental surfaces in `docs/API.md`.
 - Use synthetic data in examples (no real API keys or customer logs).
 
 ## Dependency policy
 
-See `docs-local/architecture/DEPENDENCY-POLICY.md`. Summary:
+Summary (full rationale may exist in maintainer-only internal docs):
 
-- Justify every new runtime dependency.
-- Keep core lean; push weight to optional packages.
-- No vendor SDKs in root package.
+- Justify every new **runtime** dependency on the root `agent-inspect` package.
+- Keep core lean (`chalk`, `commander`, `nanoid` only); push weight to optional packages (`@agent-inspect/tui`, `@agent-inspect/langchain`).
+- No vendor SDKs, OpenTelemetry SDKs, or framework deps in the root package.
+- Optional packages may add focused deps (`ink`/`react` in TUI; `@langchain/core` as peer in LangChain adapter).
+- Run `packages/core/test/package-boundaries.test.ts` after dependency changes.
+
+See also [CONTRIBUTING.md](../../CONTRIBUTING.md) and [docs/ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ## Security
 
 - [SECURITY.md](../../SECURITY.md) — report vulnerabilities privately when possible.
 - Do not commit `.agent-inspect/` trace dirs with real data (see `.gitignore`).
-- Review exports before sharing — metadata is user-controlled.
+- Review exports before sharing — metadata is user-controlled; redaction is not encryption.
 
 ## Release process (maintainers)
 

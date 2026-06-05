@@ -1,4 +1,4 @@
-# AgentInspect roadmap
+# Roadmap
 
 AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agents. This public roadmap describes direction — not a delivery guarantee. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md) and [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md) for current boundaries.
 
@@ -6,18 +6,31 @@ AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agen
 
 ---
 
+## Released / Completed recently
+
+Work landed in the v1.1 preparation cycle (see [CHANGELOG.md](CHANGELOG.md) **1.1.0 — Unreleased**):
+
+- **Production package compatibility:** ESM/CJS conditional type exports (`import.types` / `require.types`).
+- **Runtime adoption ergonomics:** `enabled` option on `inspectRun` and `maybeInspectRun()` with `AGENT_INSPECT` env gating.
+- **Safety hardening:** manual metadata redaction before disk (default on; `redact: false` opt-out) and persisted event size bounds.
+- **LangChain persistence:** optional JSONL traces via `@agent-inspect/langchain` when `persist: true` (experimental adapter).
+- **Logging adoption:** [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) plus pino, log4js, and NestJS JSON logging recipes and fixtures.
+- **Community readiness:** contributing docs, issue templates, good-first-issue guidance, and issue drafts.
+
+LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain first-class; log4js parsing remains best-effort.
+
+---
+
 ## Now
 
-Focus: production-hardening the v1.x local debugging foundation without expanding into hosted observability.
+Focus: final pre-release polish before the 1.1.0 changelog and release pass.
 
 | Area | Intent |
 | ---- | ------ |
-| **Package CJS/ESM compatibility** | Improve conditional type exports and consumer DX for both `import` and `require` without breaking the published tarball layout. |
-| **`enabled` / `maybeInspectRun` ergonomics** | Optional opt-out and convenience helpers for environments where tracing should be conditional (dev-only, feature flags) — without changing default safe tracing behavior unless explicitly configured. |
-| **Manual metadata redaction** | Redact sensitive `inspectRun` / `step` metadata before writing JSONL to disk. |
-| **Event size bounds** | Guardrails on trace event payload size to prevent runaway disk use from accidental large metadata. |
-| **LangChain JSONL persistence** | Optional path to persist `@agent-inspect/langchain` callback events into local JSONL traces (experimental adapter surface). |
-| **Docs and examples** | Recipes, fixtures, FAQ, and comparison content that help real teams adopt local inspection faster. |
+| **Pre-release docs cleanup** | Align public docs with shipped behavior (exports, redaction, LangChain persistence, logging playbook). |
+| **Changelog and release notes** | Prepare the 1.1.0 section and maintainer release checklist. |
+| **Issue draft conversion** | Convert selected `.github/ISSUE_DRAFTS/` into live GitHub issues. |
+| **Package validation** | Final `pnpm test:all`, `npm pack --dry-run`, and smoke checks. |
 
 Draft issues: [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
 
@@ -29,10 +42,11 @@ Focus: integrations and CLI workflows that deepen local inspection — still no 
 
 | Area | Intent |
 | ---- | ------ |
-| **Logging integrations** | pino, log4js JSON layout, NestJS structured logging recipes and docs. |
-| **CI reporters** | Vitest (and similar) reporter proposals for local trace artifacts in CI logs. |
+| **Unified persisted InspectEvent model** | Align manual JSONL and adapter-persisted events where schema gaps remain. |
+| **LangChain streaming** | Design and optional support for streaming callbacks (experimental surface). |
 | **`timeline` command** | CLI view oriented around chronological event timelines (especially log-derived runs). |
 | **`stats` command** | Lightweight local aggregates (step counts, durations, error rates) without a dashboard. |
+| **CI reporters / artifacts** | Vitest (and similar) reporter proposals for local trace artifacts in CI logs. |
 | **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export patterns useful for human review (not a hosted eval platform). |
 
 ---
@@ -46,7 +60,7 @@ Exploratory — requires design review and explicit scope approval before implem
 | **Vercel AI SDK adapter** | Optional callback-style adapter (similar philosophy to LangChain: metadata-first, no vendor sink). |
 | **Standards hardening** | Tighter OpenInference / OTLP JSON validation and fixture-backed compatibility notes. |
 | **Experimental OTLP HTTP sink** | Opt-in, clearly experimental, local-or-explicit-endpoint only — not a default upload pipeline. |
-| **Stable v2 trace contract** | Major-version evolution only if additive `0.1` constraints become insufficient; migration guide required. |
+| **Stable v2 trace contract** | Major-version evolution only if additive `0.1` constraints become insufficient; stable trace contract and adapter/exporter/sink APIs for v2.0 with migration guide. |
 
 ---
 

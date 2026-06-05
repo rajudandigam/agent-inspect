@@ -77,14 +77,16 @@ Do **not** add `@langchain/core`, `ink`, `react`, OpenTelemetry SDKs, or vendor 
 
 Heavy dependencies belong in optional packages (`@agent-inspect/tui`, `@agent-inspect/langchain`) or stay out of scope.
 
-See [docs-local/architecture/DEPENDENCY-POLICY.md](docs-local/architecture/DEPENDENCY-POLICY.md) (internal reference).
-
 ## Dependency policy
 
-- Do **not** add new runtime dependencies without explicit maintainer approval and a clear UX justification.
+- Do **not** add new runtime dependencies to the root `agent-inspect` package without explicit maintainer approval and a clear UX justification.
+- Root runtime deps stay lean: `chalk`, `commander`, `nanoid` only.
 - Prefer Node.js built-ins and small internal utilities.
 - Optional packages may add focused deps (`ink`, `react` in TUI; `@langchain/core` as peer in LangChain adapter).
+- No vendor SDKs, OpenTelemetry SDKs, or framework libraries in the root package.
 - Run `packages/core/test/package-boundaries.test.ts` expectations after dependency changes.
+
+Maintainer-only internal docs may contain additional historical dependency rationale.
 
 ## Safe parsing policy
 

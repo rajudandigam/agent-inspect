@@ -117,11 +117,13 @@ See `examples/recipes/README.md`.
 
 ## 10. Optional LangChain adapter
 
-`@agent-inspect/langchain` is optional and **experimental**:
+`@agent-inspect/langchain` is optional and **experimental**. Events are **in-memory by default**; pass `persist: true` to write local JSONL traces inspectable by the CLI.
 
 ```bash
 pnpm add @agent-inspect/langchain
 ```
+
+See [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md) and [docs/ADAPTERS.md](./ADAPTERS.md).
 
 ## 11. Optional TUI
 
@@ -133,18 +135,20 @@ agent-inspect view <runId> --tui
 
 ## 12. Safety notes
 
-- Redaction is on by default for log-derived attributes and exports.
+- Redaction is on by default for log-derived attributes, **manual trace metadata (before disk)**, and exports. Pass `redact: false` to opt out of manual metadata redaction.
+- Persisted events are size-bounded by default (see `docs/API.md`).
 - Confidence labels are required to keep attribution honest.
 - AgentInspect is for local debugging, not production monitoring.
 
 ## 13. Next docs
 
-- `docs/API.md`
-- `docs/CLI.md`
-- `docs/SCHEMA.md`
-- `docs/COMPARE.md`
-- `docs/LOG-TO-TREE-QUICKSTART.md`
-- `docs/KNOWN-ISSUES.md`
-- `docs/LIMITATIONS.md`
-- `docs-local/V1-READINESS-CHECKLIST.md`
+- [docs/API.md](./API.md)
+- [docs/CLI.md](./CLI.md)
+- [docs/SCHEMA.md](./SCHEMA.md)
+- [docs/LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)
+- [docs/COMPARE.md](./COMPARE.md)
+- [docs/LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md)
+- [docs/KNOWN-ISSUES.md](./KNOWN-ISSUES.md)
+- [docs/LIMITATIONS.md](./LIMITATIONS.md)
+- [ROADMAP.md](../ROADMAP.md)
 
