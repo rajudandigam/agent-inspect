@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3
+
+### Patch Changes
+
+- Add `enabled` option and `maybeInspectRun` helper for env-gated tracing (`AGENT_INSPECT`).
+- Fix CJS/ESM conditional type exports for TypeScript consumers.
+- Add community contributor scaffold and issue drafts.
+
 ## 1.0.2
 
 ### Patch Changes

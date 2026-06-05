@@ -12,7 +12,7 @@ assignees: ''
 
 ## AgentInspect version
 
-<!-- e.g. agent-inspect@1.0.2, or commit SHA from main -->
+<!-- e.g. agent-inspect@1.0.3, or commit SHA from main -->
 
 ## Environment
 
