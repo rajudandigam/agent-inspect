@@ -1,10 +1,15 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 import type { ExecutionContext } from "./types.js";
+import {
+  resolveTraceSafetyOptions,
+  type TraceSafetyOptions,
+} from "./trace-event-safety.js";
 
 type RuntimeExecutionContext = ExecutionContext & {
   currentStepId?: string;
   currentDepth: number;
+  traceSafety: TraceSafetyOptions;
 };
 
 const storage = new AsyncLocalStorage<RuntimeExecutionContext>();
@@ -113,6 +118,15 @@ export function isSilentContext(): boolean {
   }
 }
 
+/** Resolved trace safety settings for the active run (redaction + size bounds). */
+export function getTraceSafetyFromContext(): TraceSafetyOptions | undefined {
+  try {
+    return storage.getStore()?.traceSafety;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Runs `fn` with a fresh AgentInspect run context (depth 0, no active step).
  * Propagates sync/async results and rejections; does not swallow user errors.
@@ -120,6 +134,7 @@ export function isSilentContext(): boolean {
 export function runWithContext<T>(
   context: ExecutionContext,
   fn: () => Promise<T> | T,
+  traceSafety: TraceSafetyOptions = resolveTraceSafetyOptions(),
 ): Promise<T> {
   const runtime: RuntimeExecutionContext = {
     runId: context.runId,
@@ -127,6 +142,7 @@ export function runWithContext<T>(
     traceDir: context.traceDir,
     silent: context.silent,
     metadata: context.metadata,
+    traceSafety,
     currentDepth: 0,
   };
 
@@ -166,6 +182,7 @@ export function runWithStepContext<T>(
     traceDir: parent.traceDir,
     silent: parent.silent,
     metadata: parent.metadata,
+    traceSafety: parent.traceSafety,
     currentStepId: stepId,
     currentDepth: parent.currentDepth + 1,
   };

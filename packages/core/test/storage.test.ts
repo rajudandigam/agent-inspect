@@ -342,6 +342,25 @@ describe("writeTraceEvent", () => {
     const events = await readTraceEvents("run_newdir", nested);
     expect(events.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("defensively bounds oversized events before append", async () => {
+    await initializeTraceFile("run_big", dir);
+    const huge = {
+      ...runStarted({ runId: "run_big", name: "big" }),
+      metadata: { blob: "x".repeat(200_000) },
+    } as TraceEvent;
+    await writeTraceEvent(huge, dir);
+    const raw = await readFile(path.join(dir, "run_big.jsonl"), "utf-8");
+    const line = raw.trim();
+    expect(() => JSON.parse(line)).not.toThrow();
+    expect(Buffer.byteLength(line, "utf8")).toBeLessThanOrEqual(65_536);
+    const parsed = JSON.parse(line) as TraceEvent;
+    expect(validateEvent(parsed)).toBe(true);
+    expect(parsed.event).toBe("run_started");
+    if (parsed.event === "run_started") {
+      expect(parsed.runId).toBe("run_big");
+    }
+  });
 });
 
 describe("readTraceFile", () => {

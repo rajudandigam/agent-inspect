@@ -1,7 +1,14 @@
-import { getCurrentContext, getCurrentDepth, getParentStepId, runWithStepContext } from "./context.js";
+import {
+  getCurrentContext,
+  getCurrentDepth,
+  getParentStepId,
+  getTraceSafetyFromContext,
+  runWithStepContext,
+} from "./context.js";
 import type { StepOptions, StepType, TraceEvent } from "./types.js";
 import { writeTraceEvent } from "./storage.js";
 import { printFailedAt, printError, printStepComplete, printStepStart } from "./terminal.js";
+import { prepareTraceEventForDisk } from "./trace-event-safety.js";
 import { createStepId, formatError, truncateName, warn } from "./utils.js";
 
 function normalizeStepName(name: unknown): string {
@@ -44,6 +51,7 @@ async function stepImpl<T>(
   const parentId = getParentStepId();
   const stepType: StepType = options?.type ?? "logic";
   const metadata = options?.metadata;
+  const traceSafety = getTraceSafetyFromContext();
   const startTime = Date.now();
 
   await safeInstrumentation("writeTraceEvent(step_started)", async () => {
@@ -61,7 +69,11 @@ async function stepImpl<T>(
       startTime,
       ...(metadata !== undefined ? { metadata } : {}),
     };
-    await writeTraceEvent(started, context.traceDir);
+    const safe =
+      traceSafety !== undefined
+        ? prepareTraceEventForDisk(started, traceSafety)
+        : started;
+    await writeTraceEvent(safe, context.traceDir);
   });
 
   await safeInstrumentation("printStepStart", () => {
@@ -90,7 +102,11 @@ async function stepImpl<T>(
         durationMs,
         error: formatted,
       };
-      await writeTraceEvent(completed, context.traceDir);
+      const safe =
+        traceSafety !== undefined
+          ? prepareTraceEventForDisk(completed, traceSafety)
+          : completed;
+      await writeTraceEvent(safe, context.traceDir);
     });
 
     await safeInstrumentation("printStepComplete(error)", () => {
@@ -120,7 +136,11 @@ async function stepImpl<T>(
       endTime,
       durationMs,
     };
-    await writeTraceEvent(completed, context.traceDir);
+    const safe =
+      traceSafety !== undefined
+        ? prepareTraceEventForDisk(completed, traceSafety)
+        : completed;
+    await writeTraceEvent(safe, context.traceDir);
   });
 
   await safeInstrumentation("printStepComplete(success)", () => {

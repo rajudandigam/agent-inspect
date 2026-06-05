@@ -1,3 +1,5 @@
+import type { RedactionRule } from "./types/log-config.js";
+
 /**
  * Discriminator for what kind of work a {@link Step} represents.
  * `"decision"` captures agent branching/choices; other values cover runs, LLM calls, tools, and user-defined steps.
@@ -187,6 +189,17 @@ export interface InspectRunOptions {
    * Omitted or `true` preserves default tracing behavior.
    */
   enabled?: boolean;
+  /**
+   * Redact sensitive metadata keys before writing JSONL. Default `true` (conservative keys).
+   * Pass `false` to persist metadata as-is (explicit opt-out).
+   */
+  redact?: boolean | { rules?: RedactionRule[] };
+  /** Max UTF-8 bytes for a serialized trace event line. Default 65536. */
+  maxEventBytes?: number;
+  /** Max length for string metadata values (non-preview keys). Default 2000. */
+  maxMetadataValueLength?: number;
+  /** Max length for preview-like metadata keys (contains `preview`). Default 500. */
+  maxPreviewLength?: number;
 }
 
 /** Options passed when opening a logical step (implemented in a later step). */

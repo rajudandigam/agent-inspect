@@ -26,9 +26,13 @@ import { inspectRun, maybeInspectRun, step, observe } from "agent-inspect";
 ```
 
 - **`inspectRun(name, fn, options?)`**: wraps a workflow in a local JSONL trace (`run_started` / `run_completed`), prints terminal progress, and swallows instrumentation failures (user errors are re-thrown). **Traces by default** when `enabled` is omitted or `true`. Pass **`enabled: false`** to run `fn` with no trace file, no execution context, and no terminal output.
+  - **`redact`**: default `true` — redacts sensitive metadata keys before disk (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Pass `false` to persist metadata as-is. Pass `{ rules?: RedactionRule[] }` for custom rules (defaults still apply).
+  - **`maxMetadataValueLength`**: max string length for metadata values (default `2000`).
+  - **`maxPreviewLength`**: max string length for preview-like keys containing `preview` (default `500`).
+  - **`maxEventBytes`**: max UTF-8 bytes per serialized JSONL event (default `65536`). Oversized events are truncated; instrumentation never throws into user code.
 - **`maybeInspectRun(name, fn, options?)`**: same as `inspectRun` when tracing is enabled; otherwise passthrough. Enablement: explicit **`options.enabled`** wins; when omitted, reads **`AGENT_INSPECT`** (`1`, `true`, `yes`, `on`, `enabled` — case-insensitive). Unset or other values disable tracing. Use in eval harnesses, CI, or jobs where tracing should be toggled by environment.
 - **`isAgentInspectEnabled(value?)`**: returns whether a string (or `process.env.AGENT_INSPECT`) matches an enable token.
-- **`step(name, fn, options?)`**: traces a named unit of work inside `inspectRun` (`step_started` / `step_completed`).
+- **`step(name, fn, options?)`**: traces a named unit of work inside `inspectRun` (`step_started` / `step_completed`). Step `metadata` inherits the parent run's redaction and size-bound settings.
   - **`step.llm(model, fn)`**: convenience wrapper (`type: "llm"`, `metadata.model`).
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
 - **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.

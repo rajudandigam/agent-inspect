@@ -245,7 +245,7 @@ The TUI is available as a separate optional package; its programmatic API is exp
 
 - **Local files by default** — no upload, no vendor sinks in core workflows.
 - **No API keys** required for core tracing and CLI inspection.
-- **Manual metadata** is user-controlled; traces and exports can contain sensitive data if you put it there.
+- **Manual metadata** is user-controlled. By default, common sensitive keys are **redacted before disk**; pass `redact: false` to opt out. Long metadata is truncated and events are capped at 64 KiB per JSONL line. Review traces and exports before sharing.
 - **Review exports** before sharing (especially with richer attribute flags).
 
 See [SECURITY.md](SECURITY.md).

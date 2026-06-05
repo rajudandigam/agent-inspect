@@ -63,7 +63,9 @@ AgentInspect aims to be safe-by-default for **log-derived attributes** and **exp
 
 Important limitations:
 
-- **Manual trace metadata is user-controlled.** If you attach secrets to `inspectRun({ metadata })` or step metadata, those values may appear in local trace files and could appear in some views/exports depending on your settings and what you choose to include.
+- **Manual trace metadata is user-controlled.** By default, `inspectRun()` and `step()` **redact common sensitive keys** before writing JSONL (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email` — case-insensitive). Pass **`redact: false`** to persist metadata as-is (explicit opt-out).
+- **Non-sensitive metadata and custom keys** are still written locally. Do not attach secrets you are unwilling to store on disk, even with redaction enabled (custom key names may bypass defaults).
+- **Size bounds** truncate long metadata values and cap serialized event size (default 64 KiB per line). Oversized events are truncated further or replaced with a `{ truncated: true, reason: "maxEventBytes" }` marker — instrumentation never throws into your app because of payload size.
 - Always **review exported files** before sharing them externally.
 - Avoid committing trace directories (`.agent-inspect-runs/`) to source control.
 

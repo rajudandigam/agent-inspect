@@ -99,6 +99,7 @@ export {
   hasActiveContext,
   runWithContext,
   runWithStepContext,
+  getTraceSafetyFromContext,
 } from "./context.js";
 
 export {
@@ -160,6 +161,16 @@ export {
   renderErrorLine,
   renderRunSummary,
 } from "./terminal.js";
+
+export type { TraceSafetyOptions } from "./trace-event-safety.js";
+export {
+  DEFAULT_MAX_EVENT_BYTES,
+  DEFAULT_MAX_METADATA_VALUE_LENGTH,
+  DEFAULT_MAX_PREVIEW_LENGTH,
+  prepareMetadataForDisk,
+  prepareTraceEventForDisk,
+  resolveTraceSafetyOptions,
+} from "./trace-event-safety.js";
 
 export { inspectRun } from "./inspect-run.js";
 export { maybeInspectRun, isAgentInspectEnabled } from "./maybe-inspect-run.js";

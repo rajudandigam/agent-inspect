@@ -131,6 +131,8 @@ Unknown status must **not** be treated as success.
 - Runs may include `metadata` on `run_started`.
 - Steps may include `metadata` on `step_started`.
 - Manual traces intentionally avoid full prompt/output capture by default.
+- **Redaction (default on):** before disk, `inspectRun` / `step` redact sensitive keys using the shared `Redactor` defaults (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Opt out with `redact: false`.
+- **Size bounds:** long string values are truncated (`maxMetadataValueLength`, default 2000; preview-like keys use `maxPreviewLength`, default 500). Serialized events are capped at `maxEventBytes` (default 65536 UTF-8 bytes). If still too large, `metadata` may be replaced with `{ truncated: true, reason: "maxEventBytes", originalApproxBytes: number }`. Required event fields are never removed.
 
 ## 7. Additive fields and unknown fields
 
@@ -186,7 +188,11 @@ Log-derived trees must remain honest:
 
 ## 13. Redaction considerations
 
-Redaction is applied to log-derived attributes and to exports by default. **Manual trace metadata is user-controlled** and should be treated as potentially sensitive.
+Redaction is applied to **log-derived attributes**, **manual trace metadata (before disk, by default)**, and **exports by default**.
+
+- Manual metadata redaction uses exact key matching (case-insensitive), not substring matching.
+- `redact: false` is an explicit opt-out; use only when you accept local persistence of metadata as provided.
+- Local trace files can still contain sensitive data if you use non-default key names or opt out of redaction.
 
 Always review any exported content (Markdown/HTML/OpenInference/OTLP JSON) before sharing, especially if you enable richer attribute inclusion.
 

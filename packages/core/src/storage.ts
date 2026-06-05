@@ -4,6 +4,11 @@ import path from "node:path";
 import type { TraceEvent } from "./types.js";
 import { isStepType } from "./types.js";
 import {
+  DEFAULT_MAX_EVENT_BYTES,
+  prepareTraceEventForDisk,
+  resolveTraceSafetyOptions,
+} from "./trace-event-safety.js";
+import {
   ensureTraceDir,
   FALLBACK_TRACE_DIR,
   getTraceFilePath,
@@ -137,16 +142,26 @@ export async function initializeTraceFile(
 /**
  * Appends one validated JSONL line for `event.runId`. Falls back to {@link FALLBACK_TRACE_DIR} on append failure.
  */
+function ensureEventWithinBounds(event: TraceEvent): TraceEvent {
+  const line = serializeEvent(event);
+  if (line === "") return event;
+  const bytes = Buffer.byteLength(line, "utf8");
+  if (bytes <= DEFAULT_MAX_EVENT_BYTES) return event;
+  return prepareTraceEventForDisk(event, resolveTraceSafetyOptions());
+}
+
 export async function writeTraceEvent(
   event: TraceEvent,
   traceDir: string,
 ): Promise<void> {
-  if (!validateEvent(event)) {
+  const bounded = ensureEventWithinBounds(event);
+
+  if (!validateEvent(bounded)) {
     warn("Skipped invalid trace event (validation failed)");
     return;
   }
 
-  const line = serializeEvent(event);
+  const line = serializeEvent(bounded);
   if (line === "") {
     warn("Skipped trace event (serialization failed)");
     return;

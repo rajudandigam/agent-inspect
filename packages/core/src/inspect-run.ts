@@ -4,6 +4,10 @@ import { initializeTraceFile, writeTraceEvent } from "./storage.js";
 import { printRunComplete, printRunStart } from "./terminal.js";
 import { resolveTraceDir } from "./trace-directory.js";
 import {
+  prepareTraceEventForDisk,
+  resolveTraceSafetyOptions,
+} from "./trace-event-safety.js";
+import {
   createRunId,
   formatError,
   getTraceFilePath,
@@ -52,6 +56,8 @@ export async function inspectRun<T>(
   const runId = createRunId();
   const traceDir = resolveTraceDir({ dir: options?.traceDir });
 
+  const traceSafety = resolveTraceSafetyOptions(options);
+
   const context: ExecutionContext = {
     runId,
     runName,
@@ -80,7 +86,10 @@ export async function inspectRun<T>(
           ? { metadata: options.metadata }
           : {}),
       };
-      await writeTraceEvent(started, traceDir);
+      await writeTraceEvent(
+        prepareTraceEventForDisk(started, traceSafety),
+        traceDir,
+      );
     });
 
     await safeInstrumentation("printRunStart", () => {
@@ -107,7 +116,10 @@ export async function inspectRun<T>(
           durationMs,
           error: formatted,
         };
-        await writeTraceEvent(completed, traceDir);
+        await writeTraceEvent(
+          prepareTraceEventForDisk(completed, traceSafety),
+          traceDir,
+        );
       });
 
       await safeInstrumentation("printRunComplete(error)", () => {
@@ -131,7 +143,10 @@ export async function inspectRun<T>(
         endTime,
         durationMs,
       };
-      await writeTraceEvent(completed, traceDir);
+      await writeTraceEvent(
+        prepareTraceEventForDisk(completed, traceSafety),
+        traceDir,
+      );
     });
 
     await safeInstrumentation("printRunComplete(success)", () => {
@@ -139,5 +154,5 @@ export async function inspectRun<T>(
     });
 
     return result;
-  });
+  }, traceSafety);
 }
