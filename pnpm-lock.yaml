@@ -58,6 +58,15 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/log4js-json-layout:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/multi-agent-handoff:
     dependencies:
       agent-inspect:
@@ -67,7 +76,25 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/nestjs-json-logging:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/parallel-tools:
+    dependencies:
+      agent-inspect:
+        specifier: file:../../..
+        version: 'file:'
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/pino-json-logs:
     dependencies:
       agent-inspect:
         specifier: file:../../..
@@ -963,6 +990,7 @@ packages:
 
   'agent-inspect@file:':
     resolution: {directory: '', type: directory}
+    engines: {node: '>=20'}
     hasBin: true
 
   ansi-colors@4.1.3:
