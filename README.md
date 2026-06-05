@@ -93,6 +93,18 @@ support-agent
 
 A runnable copy lives in [examples/00-quickstart-demo](examples/00-quickstart-demo/README.md).
 
+**Env-gated tracing** (eval harnesses, CI): use `maybeInspectRun` and set `AGENT_INSPECT=1` when you want a trace — otherwise no files are written.
+
+```ts
+import { maybeInspectRun } from "agent-inspect";
+
+await maybeInspectRun("eval-case-42", async () => runAgent());
+```
+
+```bash
+AGENT_INSPECT=1 node eval-runner.mjs
+```
+
 ## What the trace shows
 
 Each run produces a **JSONL** trace: `run_started` / `run_completed`, `step_started` / `step_completed`, with **nested steps**, **tool/LLM** types where you use `step.tool` / `step.llm`, and **durations** on completed steps. Failures are recorded on `step_completed` with `status: "error"` (there is no separate `step_failed` event). See [docs/SCHEMA.md](docs/SCHEMA.md).
@@ -155,7 +167,9 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - Inspect runs with **`list`** and **`view`**
 - Safely remove old trace files with **`clean`**
 
-**Stable APIs:** `inspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`.
+**Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`.
+
+Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` (or `true` / `yes` / `on` / `enabled`) to toggle tracing in eval or CI jobs — see [docs/API.md](docs/API.md).
 
 **Stable CLI workflows:** `agent-inspect list`, `agent-inspect view`, `agent-inspect clean`.
 

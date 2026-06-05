@@ -177,11 +177,16 @@ export type TraceEvent =
   | StepStartedEvent
   | StepCompletedEvent;
 
-/** Options for `inspectRun()` (implemented in a later step). */
+/** Options for `inspectRun()` and `maybeInspectRun()`. */
 export interface InspectRunOptions {
   traceDir?: string;
   silent?: boolean;
   metadata?: Record<string, unknown>;
+  /**
+   * When `false`, runs `fn` with no trace file, no execution context, and no terminal output.
+   * Omitted or `true` preserves default tracing behavior.
+   */
+  enabled?: boolean;
 }
 
 /** Options passed when opening a logical step (implemented in a later step). */

@@ -162,6 +162,7 @@ export {
 } from "./terminal.js";
 
 export { inspectRun } from "./inspect-run.js";
+export { maybeInspectRun, isAgentInspectEnabled } from "./maybe-inspect-run.js";
 export { step } from "./step.js";
 export { observe } from "./observe.js";
 

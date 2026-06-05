@@ -5,6 +5,8 @@ import * as core from "../src/index.js";
 describe("core API stability (v1.0 Pass 1)", () => {
   it("stable core APIs exist", () => {
     expect(typeof core.inspectRun).toBe("function");
+    expect(typeof core.maybeInspectRun).toBe("function");
+    expect(typeof core.isAgentInspectEnabled).toBe("function");
     expect(typeof core.step).toBe("function");
     expect(typeof core.observe).toBe("function");
     expect(typeof (core.step as any).llm).toBe("function");

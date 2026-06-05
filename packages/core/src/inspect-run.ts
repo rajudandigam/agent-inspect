@@ -44,6 +44,10 @@ export async function inspectRun<T>(
     throw new TypeError("inspectRun requires `fn` to be a function");
   }
 
+  if (options?.enabled === false) {
+    return Promise.resolve(fn());
+  }
+
   const runName = normalizeRunName(name);
   const runId = createRunId();
   const traceDir = resolveTraceDir({ dir: options?.traceDir });

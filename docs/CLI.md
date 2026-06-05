@@ -31,6 +31,7 @@ Core commands:
 
 - **`AGENT_INSPECT_TRACE_DIR`**: default directory for manual trace files (`.jsonl`) when not passed via `--dir` (or API options).
 - **`AGENT_INSPECT_SILENT`**: when `true`, suppresses live terminal tree output during manual tracing (`inspectRun` / `step`). Trace files are still written.
+- **`AGENT_INSPECT`**: enables manual tracing for **`maybeInspectRun`** when set to `1`, `true`, `yes`, `on`, or `enabled` (case-insensitive). Unset or any other value disables tracing. Does **not** change default **`inspectRun`** behavior (which always traces unless `enabled: false` is passed in code). No network upload — local JSONL only.
 
 ## 3. Exit code policy
 

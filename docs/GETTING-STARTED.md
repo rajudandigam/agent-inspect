@@ -38,6 +38,28 @@ This writes a local JSONL trace with stable v1.0 event names:
 - `run_started`, `run_completed`
 - `step_started`, `step_completed`
 
+### Always trace vs env-gated tracing
+
+Use **`inspectRun`** when you always want a local trace (default behavior).
+
+Use **`maybeInspectRun`** in eval harnesses, CI, or production-shaped jobs where tracing should be toggled by environment:
+
+```ts
+import { maybeInspectRun } from "agent-inspect";
+
+await maybeInspectRun("eval-case-42", async () => {
+  return runAgent();
+});
+```
+
+```bash
+AGENT_INSPECT=1 node eval-runner.mjs
+```
+
+Enable tokens: `1`, `true`, `yes`, `on`, `enabled` (case-insensitive). Explicit `enabled: true | false` in options overrides the env var.
+
+To skip tracing in code without env vars: `inspectRun(name, fn, { enabled: false })`.
+
 ## 3. View runs
 
 ```bash
