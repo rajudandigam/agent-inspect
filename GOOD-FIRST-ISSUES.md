@@ -18,7 +18,7 @@ Documentation, examples, fixtures, and CLI output improvements — **no core tra
 | [015](.github/ISSUE_DRAFTS/015-improve-diff-output-examples.md) | Improve diff CLI output examples | docs / CLI examples |
 | [020](.github/ISSUE_DRAFTS/020-add-agentinspect-vs-production-observability-comparison.md) | AgentInspect vs production observability comparison | docs |
 
-**Recently completed (v1.1 prep):** pino, log4js, and NestJS logging recipes — see [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) and `examples/recipes/`.
+**Shipped in 1.1.0:** pino, log4js, and NestJS logging recipes — see [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) and `examples/recipes/`.
 
 **Skills:** Markdown, TypeScript examples, reading existing `fixtures/` and `examples/recipes/` patterns.
 

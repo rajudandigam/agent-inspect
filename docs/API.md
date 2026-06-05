@@ -1,4 +1,4 @@
-# API (AgentInspect 1.0)
+# API (AgentInspect 1.x)
 
 This document describes the **public TypeScript API surface** of AgentInspect and classifies each area as **stable** or **experimental**.
 
@@ -11,9 +11,9 @@ AgentInspect is a **local-first execution-tree debugger**. It is not a SaaS, not
 
 Notes:
 
-- The core guarantee of v1.0 is **stable local debugging**: manual tracing + CLI inspection.
+- The core guarantee of v1.x is **stable local debugging**: manual tracing + CLI inspection.
 - Export formats (OpenInference / OTLP JSON) are **local-only** and **compatibility-oriented**. They do **not** upload anywhere.
-- There are **zero production sinks** in v1.0; sink/uploader APIs are not stable.
+- There are **zero production sinks** in v1.x; sink/uploader APIs are not stable.
 
 ## 2. Stable core APIs (manual tracing)
 
@@ -124,7 +124,7 @@ Diff is local and read-only. Programmatic diff surfaces are experimental until t
   - In-memory **`getEvents()`** / **`clear()`** unchanged when `persist` is false
 - Metadata helpers: `extractModelName`, `extractTokenUsage`, `safePreview`, `toPlainMetadata`
 
-Rationale: v1.0 includes one official adapter and **zero production sinks**, so adapter surfaces remain experimental.
+Rationale: v1.x includes one official adapter and **zero production sinks**, so adapter surfaces remain experimental.
 
 ## 10. Experimental `@agent-inspect/tui` APIs
 
@@ -134,7 +134,7 @@ Rationale: v1.0 includes one official adapter and **zero production sinks**, so 
 
 ## 11. Deprecated APIs
 
-No deprecated APIs are declared in v1.0 Pass 1.
+No deprecated APIs are declared as of 1.1.0.
 
 ## 12. Removal / deprecation policy
 

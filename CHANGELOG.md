@@ -2,11 +2,7 @@
 
 ## 1.1.0
 
-### Minor Changes
-
-- 21ecc6f: v1.1.0: env-gated tracing, trace safety (redaction + size bounds), LangChain JSONL persistence, logging recipes, CJS/ESM type export compatibility, community docs.
-
-## 1.1.0 — Unreleased
+Changeset `21ecc6f`: env-gated tracing, trace safety (redaction + size bounds), LangChain JSONL persistence, logging recipes, CJS/ESM type export compatibility, community docs.
 
 ### Added
 
@@ -34,7 +30,7 @@
 ### Documentation
 
 - Added/updated logging playbook for structured JSON logs ([docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md)).
-- Updated public roadmap to separate completed v1.1-prep work from Now/Next/Future.
+- Updated public roadmap after the 1.1.0 release (Released recently / Now / Next / Future).
 - Updated contributor/community docs for package boundaries and optional packages.
 - Added clearer community onboarding and issue-draft guidance.
 

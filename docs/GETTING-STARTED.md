@@ -33,7 +33,7 @@ await inspectRun("demo-agent", async () => {
 });
 ```
 
-This writes a local JSONL trace with stable v1.0 event names:
+This writes a local JSONL trace with stable event names (`schemaVersion: "0.1"`):
 
 - `run_started`, `run_completed`
 - `step_started`, `step_completed`

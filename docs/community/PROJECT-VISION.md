@@ -52,6 +52,6 @@ LangSmith, Langfuse, Braintrust, Phoenix/OpenInference, OpenTelemetry, New Relic
 
 ## Roadmap
 
-Public sequencing: [ROADMAP.md](../../ROADMAP.md) (Released / Now / Next / Future).
+Public sequencing: [ROADMAP.md](../../ROADMAP.md) (Released recently / Now / Next / Future).
 
 Internal historical PRDs live in `docs-local/prd/` — context only, not execution orders.

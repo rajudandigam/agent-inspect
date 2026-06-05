@@ -20,7 +20,7 @@ Best for first-time contributors. **Docs, examples, fixtures, CLI output samples
 
 ### Examples & recipes
 
-**Completed (v1.1 prep):** pino, log4js, and NestJS logging recipes — see [LOGGING-PLAYBOOK.md](../LOGGING-PLAYBOOK.md) and `examples/recipes/`.
+**Shipped in 1.1.0:** pino, log4js, and NestJS logging recipes — see [LOGGING-PLAYBOOK.md](../LOGGING-PLAYBOOK.md) and `examples/recipes/`.
 
 ### Fixtures & CLI examples
 

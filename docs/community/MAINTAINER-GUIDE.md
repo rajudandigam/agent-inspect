@@ -6,10 +6,22 @@ Internal reference for repository maintainers. Not shipped as primary user docum
 
 - **Changesets** for version bumps (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`).
 - **Do not** version-bump in unrelated PRs.
-- **`publish.yml`** — currently creates Release PR via `changesets/action`; publish step may need explicit `changeset publish` + OIDC (`id-token: write`) per package on npm.
+- **`publish.yml`** — `changesets/action` opens Version Packages PRs and runs `pnpm run release` (`changeset publish`) via npm Trusted Publishing (OIDC). Requires `id-token: write` and `publish: pnpm run release` on the action step.
 - **`prepublishOnly`** runs full gate locally on `npm publish` — contributors should not publish manually without running checks.
 
-Checklists: `docs-local/RELEASE-CHECKLIST.md`, `docs-local/V1-READINESS-CHECKLIST.md` (update stale “v1.0 not shipped” wording when editing).
+Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
+
+## Post-release follow-up (1.1.0+)
+
+After a successful npm publish:
+
+- [ ] Create GitHub tag and release for the version (e.g. `v1.1.0`) if not already done
+- [ ] Convert selected `.github/ISSUE_DRAFTS/` into live GitHub issues (close implemented maintainer drafts)
+- [ ] Verify npm install in a clean temp project: `npm install agent-inspect@<version>`
+- [ ] Verify CLI: `npx agent-inspect --help` and `npx agent-inspect list`
+- [ ] Verify ESM import in a clean temp TypeScript project (`module: NodeNext`)
+- [ ] Verify CJS `require()` in a clean temp TypeScript project (`module: Node16`, `.cts` types)
+- [ ] Confirm scoped packages (`@agent-inspect/langchain`, `@agent-inspect/tui`) if published in the same release
 
 ## Triage labels
 

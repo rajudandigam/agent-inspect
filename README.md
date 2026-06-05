@@ -20,6 +20,8 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
+Current npm release: **1.1.0**.
+
 ```bash
 npm install agent-inspect
 ```
@@ -158,9 +160,9 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - **Export** a run to Markdown for a PR, postmortem, or internal thread — then review before sharing.
 - Keep traces **on disk** while still using enterprise observability elsewhere.
 
-## What v1.0 stabilizes
+## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.0** stabilizes the **local debugging foundation**:
+**agent-inspect 1.x** (current: **1.1.0**) stabilizes the **local debugging foundation**:
 
 - Instrument a run with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
@@ -173,7 +175,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Stable CLI workflows:** `agent-inspect list`, `agent-inspect view`, `agent-inspect clean`.
 
-**Also included in 1.0** as local-first extensions:
+**Also included in 1.x** as local-first extensions:
 
 - Structured log inspection: **`logs`**
 - Live log tailing: **`tail`**
@@ -189,7 +191,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 ### LangChain callback adapter (`@agent-inspect/langchain`)
 
-Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. The LangChain adapter is available in 1.0, but its programmatic API remains experimental and may evolve independently of the stable core tracing API.
+Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. The LangChain adapter ships with 1.x; its programmatic API remains experimental and may evolve independently of the stable core tracing API.
 
 ```bash
 pnpm add agent-inspect @agent-inspect/langchain @langchain/core

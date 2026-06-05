@@ -4,11 +4,13 @@ AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agen
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · no vendor upload by default · no SaaS/dashboard scope.
 
+**Current release:** [1.1.0](CHANGELOG.md#110) on npm (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`).
+
 ---
 
-## Released / Completed recently
+## Released recently
 
-Work landed in the v1.1 preparation cycle (see [CHANGELOG.md](CHANGELOG.md) **1.1.0 — Unreleased**):
+Shipped in **1.1.0** (see [CHANGELOG.md](CHANGELOG.md#110)):
 
 - **Production package compatibility:** ESM/CJS conditional type exports (`import.types` / `require.types`).
 - **Runtime adoption ergonomics:** `enabled` option on `inspectRun` and `maybeInspectRun()` with `AGENT_INSPECT` env gating.
@@ -23,14 +25,14 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: final pre-release polish before the 1.1.0 changelog and release pass.
+Focus: post-release validation and community follow-through.
 
 | Area | Intent |
 | ---- | ------ |
-| **Pre-release docs cleanup** | Align public docs with shipped behavior (exports, redaction, LangChain persistence, logging playbook). |
-| **Changelog and release notes** | Prepare the 1.1.0 section and maintainer release checklist. |
+| **Published package validation** | Verify npm install, CLI help, ESM/CJS TypeScript import, and tarball smoke in clean temp projects. |
 | **Issue draft conversion** | Convert selected `.github/ISSUE_DRAFTS/` into live GitHub issues. |
-| **Package validation** | Final `pnpm test:all`, `npm pack --dry-run`, and smoke checks. |
+| **Production feedback** | Gather adoption feedback from real TypeScript agent workflows (logs, traces, optional adapters). |
+| **Patch/minor planning** | Triage fixes and small improvements for v1.1.1 / v1.2 based on feedback. |
 
 Draft issues: [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
 
