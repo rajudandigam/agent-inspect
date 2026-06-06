@@ -67,7 +67,7 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAI
 
 **Can own:**
 
-- Applying labels from [scripts/github-labels.sh](../../scripts/github-labels.sh) set
+- Applying the repo's existing label set (see batch 01 labels on live issues)
 - Redirecting questions to [Discussions](./DISCUSSIONS-STARTERS.md)
 - Pointing contributors to validation commands in [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
@@ -112,7 +112,8 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAI
 - Package exports and compatibility
 - LangChain adapter persistence semantics
 - OTLP sink experiments (Future)
-- Running `scripts/github-labels.sh` and `scripts/create-live-issues-batch-01.sh`
+- Running `scripts/create-live-issues-batch-01.sh` (after reviewing bodies)
+- [MONTHLY-OSS-HYGIENE.md](./MONTHLY-OSS-HYGIENE.md) pass
 
 **Community responsibilities:**
 
@@ -128,10 +129,12 @@ These remain **maintainer-owned** until explicitly promoted in ROADMAP and a liv
 
 | Area | Why |
 | ---- | --- |
+| **Unified persisted InspectEvent model** | Aligns manual JSONL and adapter-persisted events |
 | **Schema evolution** | `schemaVersion: "0.1"` compatibility across v1.x |
 | **Redaction / security internals** | Safe-by-default promise |
 | **Package exports** | ESM/CJS consumer compatibility |
 | **OTLP HTTP sink architecture** | High risk of implying vendor upload |
+| **v2 stable trace contract** | Major-version migration and public API promises |
 | **Default tracing behavior** | `inspectRun` defaults and env gating semantics |
 
 Contributors may still propose **docs, fixtures, and RFCs** — implementation merges require maintainer ack.

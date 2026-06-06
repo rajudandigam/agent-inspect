@@ -87,11 +87,23 @@ Maintainer-owned design issue: {issue-url}. RFC-style comments welcome; please c
 
 ---
 
-## Follow-up after someone comments
+## Decision metadata / eval workflow outreach
 
-Thanks {name} — this is exactly the kind of feedback we need. I've noted {specific point} for the roadmap.
+Subject: Branching agent workflows — decision metadata recipe
 
-If you want to go further, {issue-url} is scoped and contributor-friendly. No rush — happy to answer questions in the thread.
+Hi {name},
+
+We're adding a **decision metadata recipe** for local traces — how to record branch/route/guardrail choices in `inspectRun` metadata and structured logs **without** a hosted eval platform or replay engine.
+
+If your agents branch on policies, models, or human gates, I'd love your feedback on what fields you'd actually log. Issue: {issue-url}. Comments only are perfect.
+
+---
+
+## Thank-you after issue feedback
+
+Thanks {name} — really helpful. I've captured {specific point} for the roadmap / issue thread.
+
+No PR expected. If you later want to own a scoped slice of {issue-url}, comment on the issue and we can align scope before you start.
 
 ---
 

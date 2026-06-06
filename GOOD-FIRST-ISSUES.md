@@ -21,7 +21,16 @@ Issue drafts (historical): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
 | 7 | Decision metadata recipe | examples, documentation, roadmap-next | [007](.github/LIVE_ISSUE_BATCH_01/007-decision-metadata-recipe.md) |
 | 8 | Persisted LangChain streaming design | langchain, adapter, roadmap-next, maintainer-owned | [008](.github/LIVE_ISSUE_BATCH_01/008-persisted-langchain-streaming-design.md) |
 
-After issues are live, add `#NNN` links in this table. See [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md) and [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md).
+After issues are live, add `#NNN` links in this table.
+
+**Activation rules:**
+
+- **Do not open all** `.github/ISSUE_DRAFTS/` at once — ship batch 01, gather feedback, then plan batch 02.
+- **Do not open** completed 1.1.0 work (CJS exports, `enabled` / `maybeInspectRun`, redaction, size bounds, LangChain persistence) as new active issues — close or reference as done.
+- **Good first issues** = docs, examples, fixtures, CLI output samples — no core tracing default changes.
+- **Maintainer-owned** issues (e.g. LangChain streaming **design**, unified InspectEvent) are **not** good-first issues — comment before substantial runtime work.
+
+See [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md), [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md), [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md), [docs/community/MONTHLY-OSS-HYGIENE.md](docs/community/MONTHLY-OSS-HYGIENE.md).
 
 ---
 

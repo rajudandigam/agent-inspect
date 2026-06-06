@@ -25,12 +25,13 @@ After a successful npm publish:
 
 ## Open-source activation sprint (post-1.1.0)
 
-- [ ] Run [scripts/github-labels.sh](../../scripts/github-labels.sh) (once)
+- [x] GitHub labels for batch 01 (created manually)
 - [ ] Enable GitHub Discussions; pin stack survey — [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md)
 - [ ] Review [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) then run [scripts/create-live-issues-batch-01.sh](../../scripts/create-live-issues-batch-01.sh)
 - [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live issue numbers
 - [ ] Use [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) for feedback-first outreach
 - [ ] Share [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md) when inviting repeat contributors
+- [ ] Schedule [MONTHLY-OSS-HYGIENE.md](./MONTHLY-OSS-HYGIENE.md) after activation settles
 
 ## Triage labels
 

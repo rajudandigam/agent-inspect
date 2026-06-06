@@ -60,23 +60,44 @@ If you share logs or traces, please **redact secrets** and avoid production cust
 
 ## Follow-up discussion ideas
 
-### 1. Local traces vs logs — what do you use first?
+### 1. What should AgentInspect support next?
 
-Prompt: Do you start with `inspectRun` manual traces, structured log ingest (`logs` / `tail`), or the LangChain adapter? What friction did you hit?
+**Title:** What should AgentInspect support next: timeline, stats, CI artifacts, or Vercel AI SDK?
 
-Use responses to improve [docs/GETTING-STARTED.md](../GETTING-STARTED.md) and recipes.
+Prompt: AgentInspect stays **local-first** — no dashboard, no vendor upload. Which **Next** direction would help your team most?
 
-### 2. Export and review workflows
+- `timeline` CLI (chronological log/trace view)
+- `stats` CLI (local aggregates per run)
+- CI trace artifacts / Vitest-style reporters
+- Vercel AI SDK adapter (metadata-first, experimental)
 
-Prompt: Do you export traces to Markdown, OpenInference JSON, or OTLP JSON for review? What do you wish the export included (while staying local-first)?
+Comment with your stack and why. Maintainers map votes to [ROADMAP.md](../../ROADMAP.md) — not a commitment to ship on a date.
 
-Informs fixture and export docs work ([LIVE_ISSUE_BATCH_01](../../.github/LIVE_ISSUE_BATCH_01/001-add-openinference-export-fixture.md)).
+### 2. What logging stack should AgentInspect support better?
 
-### 3. What would make AgentInspect a daily driver?
+**Title:** What logging stack should AgentInspect support better?
 
-Prompt: What one CLI command, fixture, or adapter improvement would make you reach for AgentInspect every day during agent development?
+Prompt: 1.1.0 shipped recipes for **pino**, **log4js**, and **NestJS**. What should we improve next?
 
-Maps feedback to ROADMAP **Next** (`timeline`, `stats`, unified InspectEvent model).
+- Field naming (`runId`, `event`, timestamps)
+- Winston / Bunyan / other JSON loggers
+- NestJS / worker job patterns you use in production-shaped dev
+- Optional helper packages (Future roadmap — not required for core)
+
+Share a **redacted** sample line if you can. See [docs/LOGGING-PLAYBOOK.md](../LOGGING-PLAYBOOK.md).
+
+### 3. What would make local agent traces easier to share safely?
+
+**Title:** What would make local agent traces easier to share safely?
+
+Prompt: Traces stay on disk by default; exports are for **review before sharing**. What would help you share debugging context with teammates without leaking secrets?
+
+- Better redaction defaults or docs
+- Markdown / OpenInference export improvements
+- Smaller fixture examples for PRs and postmortems
+- Decision-metadata patterns for branching workflows
+
+Do not post production customer data. See [SECURITY.md](../../SECURITY.md).
 
 ---
 

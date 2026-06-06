@@ -5,11 +5,13 @@
 #   ./scripts/create-live-issues-batch-01.sh
 #
 # Requires: gh CLI authenticated with issue create permission
-# Repo: rajudandigam/agent-inspect (override with GITHUB_REPOSITORY)
+# Labels for batch 01 should already exist on the repo (created manually).
+# Override repo: GITHUB_REPOSITORY=owner/repo ./scripts/create-live-issues-batch-01.sh
 
 set -euo pipefail
 
-REPO="${GITHUB_REPOSITORY:-rajudandigam/agent-inspect}"
+REPO="rajudandigam/agent-inspect"
+REPO="${GITHUB_REPOSITORY:-$REPO}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BATCH="$ROOT/.github/LIVE_ISSUE_BATCH_01"
 

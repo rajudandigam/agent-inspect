@@ -18,9 +18,9 @@ Prepared issue bodies for the first wave of **public GitHub Issues**. These are 
 ## Maintainer steps
 
 1. Review each issue body for accuracy after 1.1.0.
-2. Run `scripts/github-labels.sh` (once) to create labels.
+2. Confirm GitHub **labels** exist (batch 01 labels were created manually).
 3. Enable **GitHub Discussions** in repo settings; pin stack survey per [docs/community/DISCUSSIONS-STARTERS.md](../../docs/community/DISCUSSIONS-STARTERS.md).
-4. Run `scripts/create-live-issues-batch-01.sh` to open issues.
+4. Run `scripts/create-live-issues-batch-01.sh` to open issues (review bodies first).
 5. Link live issue numbers back in [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md).
 
 Do **not** bulk-convert all `.github/ISSUE_DRAFTS/` at once — ship this batch first, gather feedback, then plan batch 02.
