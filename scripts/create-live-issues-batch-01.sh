@@ -1,41 +1,76 @@
 #!/usr/bin/env bash
 # Maintainer-only: create live GitHub issues from batch 01 body files.
-# DO NOT run from CI. Review issue bodies first, then run manually:
-#   chmod +x scripts/create-live-issues-batch-01.sh
-#   ./scripts/create-live-issues-batch-01.sh
 #
-# Requires: gh CLI authenticated with issue create permission
-# Labels for batch 01 should already exist on the repo (created manually).
-# Override repo: GITHUB_REPOSITORY=owner/repo ./scripts/create-live-issues-batch-01.sh
+# IMPORTANT — review before running:
+#   Read every markdown file in .github/LIVE_ISSUE_BATCH_01/ for accuracy
+#   after 1.1.0. Confirm labels already exist on the repo. Do not run from CI.
+#
+# Usage:
+#   chmod +x scripts/create-live-issues-batch-01.sh
+#   DRY_RUN=1 ./scripts/create-live-issues-batch-01.sh   # print commands only
+#   ./scripts/create-live-issues-batch-01.sh             # create issues (manual)
 
 set -euo pipefail
 
 REPO="rajudandigam/agent-inspect"
-REPO="${GITHUB_REPOSITORY:-$REPO}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BATCH="$ROOT/.github/LIVE_ISSUE_BATCH_01"
+DRY_RUN="${DRY_RUN:-0}"
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "Error: gh CLI not found. Install https://cli.github.com/" >&2
   exit 1
 fi
 
-echo "Creating issues on $REPO from $BATCH"
-echo "Press Enter to continue or Ctrl+C to abort..."
-read -r _
+if [[ "$DRY_RUN" != "1" ]]; then
+  if ! gh auth status >/dev/null 2>&1; then
+    echo "Error: gh is not authenticated. Run: gh auth login" >&2
+    exit 1
+  fi
+fi
 
 create_issue() {
   local title="$1"
-  shift
-  local body_file="$1"
-  shift
+  local body_file="$2"
+  shift 2
+
+  if [[ ! -f "$body_file" ]]; then
+    echo "Error: body file not found: $body_file" >&2
+    exit 1
+  fi
+
+  if [[ "$DRY_RUN" == "1" ]]; then
+    echo "gh issue create \\"
+    echo "  --repo \"$REPO\" \\"
+    echo "  --title \"$title\" \\"
+    echo "  --body-file \"$body_file\" \\"
+    for arg in "$@"; do
+      echo "  $arg \\"
+    done
+    echo ""
+    return 0
+  fi
+
   echo "--- Creating: $title"
-  gh issue create \
+  local url
+  url=$(gh issue create \
     --repo "$REPO" \
     --title "$title" \
     --body-file "$body_file" \
-    "$@"
+    "$@")
+  echo "Created: $url"
 }
+
+if [[ "$DRY_RUN" == "1" ]]; then
+  echo "DRY RUN — commands only (no issues will be created)"
+  echo "Repo: $REPO"
+  echo "Batch: $BATCH"
+  echo ""
+else
+  echo "Creating 8 issues on $REPO from $BATCH"
+  echo "Press Enter to continue or Ctrl+C to abort..."
+  read -r _
+fi
 
 create_issue "Add OpenInference export fixture" \
   "$BATCH/001-add-openinference-export-fixture.md" \
@@ -69,6 +104,10 @@ create_issue "Persisted LangChain streaming design" \
   "$BATCH/008-persisted-langchain-streaming-design.md" \
   --label "langchain" --label "adapter" --label "roadmap-next" --label "maintainer-owned"
 
-echo ""
-echo "Done. Update GOOD-FIRST-ISSUES.md with live issue numbers."
-echo "List open issues: gh issue list --repo $REPO"
+if [[ "$DRY_RUN" == "1" ]]; then
+  echo "Dry run complete. Re-run without DRY_RUN=1 to create issues."
+else
+  echo ""
+  echo "Done. Update GOOD-FIRST-ISSUES.md with live issue numbers."
+  echo "List open issues: gh issue list --repo $REPO"
+fi

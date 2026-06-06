@@ -27,12 +27,12 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: open-source activation after the 1.1.0 publish — validate the release, open the first live issues, enable Discussions, and collect feedback.
+Focus: open-source activation after the 1.1.0 publish — validate the release, triage live issues, enable Discussions, and collect feedback.
 
 | Area | Intent |
 | ---- | ------ |
 | **Validate 1.1.0** | Confirm npm install, CLI help, ESM/CJS TypeScript import, and tarball smoke in clean temp projects. |
-| **First live GitHub issues** | Convert selected `.github/LIVE_ISSUE_BATCH_01/` bodies into Issues (see [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md)). |
+| **First live GitHub issues** | Batch 01 open ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen); see [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md)). Source bodies: `.github/LIVE_ISSUE_BATCH_01/`. |
 | **Enable GitHub Discussions** | Turn on Discussions; pin stack survey (see [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)). |
 | **Collect feedback** | Learn from TypeScript AI developers using manual traces, logs, LangChain adapter, and exports. |
 | **Unified persisted InspectEvent design** | Start design for aligning manual JSONL and adapter-persisted events (maintainer-led; contributor-friendly docs/fixtures welcome). |
@@ -48,11 +48,11 @@ Focus: deepen local inspection workflows — still no vendor sinks in core.
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
 | **Unified persisted InspectEvent model** | Align manual JSONL and adapter-persisted events where schema gaps remain. | ~v1.2.0 |
-| **LangChain streaming** | Design and optional support for streaming callbacks (experimental surface). | ~v1.2.1 |
-| **`timeline` command** | CLI view oriented around chronological event timelines (especially log-derived runs). | ~v1.3.0 |
-| **`stats` command** | Lightweight local aggregates (step counts, durations, error rates) without a dashboard. | ~v1.3.0 |
+| **LangChain streaming** | Design and optional support for streaming callbacks (experimental surface). Track [#14](https://github.com/rajudandigam/agent-inspect/issues/14). | ~v1.2.1 |
+| **`timeline` command** | CLI view oriented around chronological event timelines (especially log-derived runs). Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11). | ~v1.3.0 |
+| **`stats` command** | Lightweight local aggregates (step counts, durations, error rates) without a dashboard. Track [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.3.0 |
 | **CI trace artifacts** | Vitest (and similar) reporter proposals for local trace artifacts in CI logs. | ~v1.4.0 |
-| **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review (not a hosted eval platform). | ~v1.5.0 |
+| **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review (not a hosted eval platform). Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.0 |
 
 ---
 
