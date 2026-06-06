@@ -287,6 +287,17 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 - [Limitations](docs/LIMITATIONS.md)
 - [Screenshot checklist (planned assets)](docs/SCREENSHOTS.md)
 
+## Contributing
+
+AgentInspect welcomes docs, fixtures, examples, and carefully scoped CLI improvements.
+
+- **Good first issues:** [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) — live batch [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) (comment on an issue before opening a PR)
+- **Discussions:** [github.com/rajudandigam/agent-inspect/discussions](https://github.com/rajudandigam/agent-inspect/discussions) — feedback, stack survey, integration ideas
+- **Roadmap:** [ROADMAP.md](ROADMAP.md) — Now / Next / Future direction (non-committal)
+- **Contributing guide:** [CONTRIBUTING.md](CONTRIBUTING.md) — validation commands, PR expectations, scope boundaries
+
+**Security:** Traces and logs may contain secrets. **Redact before sharing** in issues, Discussions, PRs, or exports. See [SECURITY.md](SECURITY.md).
+
 ## Development
 
 From a clone of this repo:

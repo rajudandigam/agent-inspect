@@ -9,7 +9,9 @@ Not automated. No SLA implied.
 ## Issue and draft hygiene
 
 - [ ] **Close or archive stale completed drafts** in `.github/ISSUE_DRAFTS/` (especially items shipped in 1.0.x / 1.1.0 — e.g. CJS exports, redaction, LangChain persistence).
-- [ ] **Convert 3–5 useful drafts** into live GitHub issues — not the entire backlog. Prefer [LIVE_ISSUE_BATCH_01](../../.github/LIVE_ISSUE_BATCH_01/) pattern.
+- [ ] **Check whether [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) points to live issue links**, not only draft files.
+- [ ] **Review issue batch [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)** before opening more issues — triage comments/PRs, close duplicates, adjust labels.
+- [ ] **Convert 3–5 useful drafts** into live GitHub issues — not the entire backlog. Prefer [LIVE_ISSUE_BATCH_01](../../.github/LIVE_ISSUE_BATCH_01/) pattern for batch 02+.
 - [ ] **Do not reopen** completed 1.1.0 work as active issues unless tracking follow-up bugs.
 - [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live `#NNN` links and remove duplicates.
 

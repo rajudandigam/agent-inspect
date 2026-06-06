@@ -27,17 +27,32 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: open-source activation after the 1.1.0 publish — validate the release, triage live issues, enable Discussions, and collect feedback.
+Focus: collect feedback, support the first contributor issues, refine the **v1.2 unified persisted InspectEvent model** (maintainer-led), and continue the maintainer-owned core roadmap — without expanding SaaS or vendor-upload scope.
+
+**First OSS issue batch is live** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)):
+
+| Issue | Title |
+| - | ----- |
+| [#7](https://github.com/rajudandigam/agent-inspect/issues/7) | Add OpenInference export fixture |
+| [#8](https://github.com/rajudandigam/agent-inspect/issues/8) | Improve diff CLI output examples |
+| [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | Add AgentInspect vs production observability comparison |
+| [#10](https://github.com/rajudandigam/agent-inspect/issues/10) | Add tool failure + retry fixture |
+| [#11](https://github.com/rajudandigam/agent-inspect/issues/11) | Timeline command proposal |
+| [#12](https://github.com/rajudandigam/agent-inspect/issues/12) | Stats command proposal |
+| [#13](https://github.com/rajudandigam/agent-inspect/issues/13) | Decision metadata recipe |
+| [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design (maintainer-owned) |
+
+Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bodies: `.github/LIVE_ISSUE_BATCH_01/`
 
 | Area | Intent |
 | ---- | ------ |
+| **Collect feedback** | Learn from TypeScript AI developers using manual traces, logs, LangChain adapter, and exports — [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues. |
+| **Support first contributor issues** | Triage and review PRs for [#7–#13](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen); contributors should comment before opening PRs. |
+| **Unified persisted InspectEvent model (~v1.2)** | Maintainer-led design to align manual JSONL and adapter-persisted events; contributor-friendly docs/fixtures welcome when scoped in a live issue. |
+| **Maintainer-led core roadmap** | Schema compatibility, adapter design ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)), package boundaries, and safety defaults — coordinate before runtime changes. |
 | **Validate 1.1.0** | Confirm npm install, CLI help, ESM/CJS TypeScript import, and tarball smoke in clean temp projects. |
-| **First live GitHub issues** | Batch 01 open ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen); see [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md)). Source bodies: `.github/LIVE_ISSUE_BATCH_01/`. |
-| **Enable GitHub Discussions** | Turn on Discussions; pin stack survey (see [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)). |
-| **Collect feedback** | Learn from TypeScript AI developers using manual traces, logs, LangChain adapter, and exports. |
-| **Unified persisted InspectEvent design** | Start design for aligning manual JSONL and adapter-persisted events (maintainer-led; contributor-friendly docs/fixtures welcome). |
 
-Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md)
+Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
 ---
 

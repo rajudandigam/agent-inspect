@@ -1,13 +1,17 @@
 # GitHub Discussions starters
 
-Use this guide when enabling **Discussions** on [rajudandigam/agent-inspect](https://github.com/rajudandigam/agent-inspect) after the 1.1.0 publish.
+Use this guide for **Discussions** on [rajudandigam/agent-inspect](https://github.com/rajudandigam/agent-inspect).
 
-## Enable Discussions (maintainer)
+**Discussions URL:** [github.com/rajudandigam/agent-inspect/discussions](https://github.com/rajudandigam/agent-inspect/discussions)
+
+The **pinned stack survey** is live under the **Q&A** category. Maintainers may move it to **Integrations & stacks** if that fits the category layout better — optional housekeeping, not required for contributors.
+
+## Enable Discussions (maintainer — already done)
 
 1. GitHub repo → **Settings** → **General** → **Features** → enable **Discussions**.
 2. Choose categories below (edit defaults to match).
 3. Create and **pin** the stack survey discussion.
-4. Link Discussions from [README.md](../../README.md) (optional) and outreach messages.
+4. Link Discussions from [README.md](../../README.md) and outreach messages.
 
 ## Suggested categories
 
@@ -28,7 +32,7 @@ Keep **Issues** for actionable, scoped work; use **Discussions** for open-ended 
 
 **Title:** What stack are you using with AgentInspect?
 
-**Category:** Integrations & stacks (or General)
+**Category:** Q&A (currently pinned; optional: move to Integrations & stacks)
 
 **Body:**
 
