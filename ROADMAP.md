@@ -29,25 +29,14 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 Focus: collect feedback, support the first contributor issues, refine the **v1.2 unified persisted InspectEvent model** (maintainer-led), and continue the maintainer-owned core roadmap — without expanding SaaS or vendor-upload scope.
 
-**First OSS issue batch is live** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)):
+**OSS Activation Batch 01 is live** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02 is live** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
-| Issue | Title |
-| - | ----- |
-| [#7](https://github.com/rajudandigam/agent-inspect/issues/7) | Add OpenInference export fixture |
-| [#8](https://github.com/rajudandigam/agent-inspect/issues/8) | Improve diff CLI output examples |
-| [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | Add AgentInspect vs production observability comparison |
-| [#10](https://github.com/rajudandigam/agent-inspect/issues/10) | Add tool failure + retry fixture |
-| [#11](https://github.com/rajudandigam/agent-inspect/issues/11) | Timeline command proposal |
-| [#12](https://github.com/rajudandigam/agent-inspect/issues/12) | Stats command proposal |
-| [#13](https://github.com/rajudandigam/agent-inspect/issues/13) | Decision metadata recipe |
-| [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design (maintainer-owned) |
-
-Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bodies: `.github/LIVE_ISSUE_BATCH_01/`
+Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bodies: `.github/LIVE_ISSUE_BATCH_01/` · `.github/LIVE_ISSUE_BATCH_02/`
 
 | Area | Intent |
 | ---- | ------ |
 | **Collect feedback** | Learn from TypeScript AI developers using manual traces, logs, LangChain adapter, and exports — [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues. |
-| **Support first contributor issues** | Triage and review PRs for [#7–#13](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen); contributors should comment before opening PRs. |
+| **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18); contributors should comment before opening PRs. |
 | **Unified persisted InspectEvent model (~v1.2)** | Maintainer-led design to align manual JSONL and adapter-persisted events; contributor-friendly docs/fixtures welcome when scoped in a live issue. |
 | **Maintainer-led core roadmap** | Schema compatibility, adapter design ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)), package boundaries, and safety defaults — coordinate before runtime changes. |
 | **Validate 1.1.0** | Confirm npm install, CLI help, ESM/CJS TypeScript import, and tarball smoke in clean temp projects. |
@@ -66,7 +55,7 @@ Focus: deepen local inspection workflows — still no vendor sinks in core.
 | **LangChain streaming** | Design and optional support for streaming callbacks (experimental surface). Track [#14](https://github.com/rajudandigam/agent-inspect/issues/14). | ~v1.2.1 |
 | **`timeline` command** | CLI view oriented around chronological event timelines (especially log-derived runs). Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11). | ~v1.3.0 |
 | **`stats` command** | Lightweight local aggregates (step counts, durations, error rates) without a dashboard. Track [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.3.0 |
-| **CI trace artifacts** | Vitest (and similar) reporter proposals for local trace artifacts in CI logs. | ~v1.4.0 |
+| **CI trace artifacts** | Vitest (and similar) reporter proposals for local trace artifacts in CI logs. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | ~v1.4.0 |
 | **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review (not a hosted eval platform). Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.0 |
 
 ---
@@ -78,7 +67,7 @@ Exploratory — requires design review and explicit scope approval before implem
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
 | **Optional logging integration packages** | pino / log4js / NestJS helper packages beyond recipes (if justified). | ~v1.6.0 |
-| **Vercel AI SDK adapter** | Optional callback-style adapter (metadata-first, no vendor sink). | ~v1.7.0 |
+| **Vercel AI SDK adapter** | Optional callback-style adapter (metadata-first, no vendor sink). Track [#30](https://github.com/rajudandigam/agent-inspect/issues/30) (design). | ~v1.7.0 |
 | **Standards hardening** | OpenInference / OTLP / Phoenix fixture-backed compatibility notes. | ~v1.8.0 |
 | **Experimental OTLP HTTP sink** | Opt-in, local-or-explicit-endpoint only — not a default upload pipeline. | ~v1.9.0 |
 | **Stable v2 trace contract** | Major-version evolution if additive `0.1` constraints become insufficient; migration guide required. | v2.0 |

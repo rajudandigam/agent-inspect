@@ -10,12 +10,12 @@ Not automated. No SLA implied.
 
 - [ ] **Close or archive stale completed drafts** in `.github/ISSUE_DRAFTS/` (especially items shipped in 1.0.x / 1.1.0 — e.g. CJS exports, redaction, LangChain persistence).
 - [ ] **Check whether [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) points to live issue links**, not only draft files.
-- [ ] **Review issue batch [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)** before opening more issues — triage comments/PRs, close duplicates, adjust labels.
-- [ ] **Review Batch 02** ([.github/LIVE_ISSUE_BATCH_02/](../../.github/LIVE_ISSUE_BATCH_02/)) before creating Batch 03 — triage batch 01 [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) first.
+- [ ] **Review Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) — triage comments/PRs, close duplicates, adjust labels.
+- [ ] **Review Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — triage comments/PRs; confirm [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) links stay current.
+- [ ] **Defer Batch 03** until Batch 02 receives comments or PRs — do not open another large issue wave immediately.
 - [ ] **Close or update issues** that become completed through merged PRs (link PR, remove from good-first lists).
-- [ ] **Keep good-first issues below ~15 active items** where possible — stagger batch 02 opening per [LIVE_ISSUE_BATCH_02/README.md](../../.github/LIVE_ISSUE_BATCH_02/README.md).
-- [ ] **Move accepted design proposals** (e.g. Vercel AI SDK adapter RFC) into [ROADMAP.md](../../ROADMAP.md) Next/Future with maintainer ack.
-- [ ] **Convert 3–5 useful drafts** into live GitHub issues — not the entire backlog. Use batch 02 pattern via [scripts/create-live-issues-batch-02.sh](../../scripts/create-live-issues-batch-02.sh).
+- [ ] **Move accepted design proposals** (e.g. [#30](https://github.com/rajudandigam/agent-inspect/issues/30) Vercel AI SDK adapter RFC) into [ROADMAP.md](../../ROADMAP.md) Next/Future with maintainer ack.
+- [ ] **Convert 3–5 useful drafts** into live GitHub issues — not the entire backlog. Use prepared batch folders under `.github/LIVE_ISSUE_BATCH_*/`.
 - [ ] **Do not reopen** completed 1.1.0 work as active issues unless tracking follow-up bugs.
 - [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live `#NNN` links and remove duplicates.
 

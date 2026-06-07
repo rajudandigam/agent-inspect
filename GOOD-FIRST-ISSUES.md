@@ -2,7 +2,7 @@
 
 Curated entry points for contributors. Expanded notes live in [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md).
 
-**Comment on an issue before opening a PR** — especially for help-wanted and maintainer-owned design items. Maintainers use comments to avoid duplicate work and to scope changes.
+**Comment on an issue before opening a PR** — especially for intermediate and maintainer-owned design items. Maintainers use comments to avoid duplicate work and to scope changes.
 
 Historical issue drafts (source material only): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/) · batch 01 bodies: [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/) · batch 02 bodies: [.github/LIVE_ISSUE_BATCH_02/](.github/LIVE_ISSUE_BATCH_02/)
 
@@ -10,7 +10,9 @@ Historical issue drafts (source material only): [.github/ISSUE_DRAFTS/](.github/
 
 ## Live issues
 
-The first OSS issue batch is open on GitHub ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)). Pick a live issue below — not a draft file — then **comment** that you want to work on it before sending a PR.
+OSS activation batches **01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) and **02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+OR+label%3Aroadmap-next+OR+label%3Aroadmap-future)) are open on GitHub. Pick a **live issue** — not a draft file — then **comment** that you want to work on it before sending a PR.
+
+### Batch 01 ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen))
 
 | Issue | Title | Labels | Source |
 | - | ----- | ------ | ------ |
@@ -23,61 +25,39 @@ The first OSS issue batch is open on GitHub ([#7–#14](https://github.com/rajud
 | [#13](https://github.com/rajudandigam/agent-inspect/issues/13) | Decision metadata recipe | examples, documentation, roadmap-next | [007](.github/LIVE_ISSUE_BATCH_01/007-decision-metadata-recipe.md) |
 | [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design | langchain, adapter, roadmap-next, maintainer-owned | [008](.github/LIVE_ISSUE_BATCH_01/008-persisted-langchain-streaming-design.md) |
 
+### Batch 02 ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18))
+
+| Issue | Title | Labels | Source |
+| - | ----- | ------ | ------ |
+| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | Add first PR walkthrough for new contributors | good first issue, documentation, community contribution | [001](.github/LIVE_ISSUE_BATCH_02/001-add-first-pr-walkthrough.md) |
+| [#19](https://github.com/rajudandigam/agent-inspect/issues/19) | Update contributor docs with live issue links | good first issue, documentation, community contribution | [002](.github/LIVE_ISSUE_BATCH_02/002-update-contributor-docs-with-live-issue-links.md) |
+| [#20](https://github.com/rajudandigam/agent-inspect/issues/20) | Add clean install smoke-test guide | documentation, testing, package-compatibility | [003](.github/LIVE_ISSUE_BATCH_02/003-add-clean-install-smoke-test-guide.md) |
+| [#21](https://github.com/rajudandigam/agent-inspect/issues/21) | Add Winston structured logging recipe | good first issue, examples, logging | [004](.github/LIVE_ISSUE_BATCH_02/004-add-winston-structured-logging-recipe.md) |
+| [#22](https://github.com/rajudandigam/agent-inspect/issues/22) | Add MCP tool-call trace fixture | fixtures, examples, roadmap-next | [005](.github/LIVE_ISSUE_BATCH_02/005-add-mcp-tool-call-trace-fixture.md) |
+| [#23](https://github.com/rajudandigam/agent-inspect/issues/23) | Add Vercel AI SDK manual instrumentation recipe | examples, adapter, roadmap-next | [006](.github/LIVE_ISSUE_BATCH_02/006-add-vercel-ai-sdk-manual-instrumentation-recipe.md) |
+| [#24](https://github.com/rajudandigam/agent-inspect/issues/24) | Add GitHub Actions trace artifact recipe | examples, testing, roadmap-next | [007](.github/LIVE_ISSUE_BATCH_02/007-add-github-actions-trace-artifact-recipe.md) |
+| [#25](https://github.com/rajudandigam/agent-inspect/issues/25) | Add Phoenix/OpenInference import recipe | exports, documentation, roadmap-next | [008](.github/LIVE_ISSUE_BATCH_02/008-add-phoenix-openinference-import-recipe.md) |
+| [#26](https://github.com/rajudandigam/agent-inspect/issues/26) | Add safe trace sharing checklist | good first issue, documentation, security | [009](.github/LIVE_ISSUE_BATCH_02/009-add-safe-trace-sharing-checklist.md) |
+| [#27](https://github.com/rajudandigam/agent-inspect/issues/27) | Add log ingest config cookbook | good first issue, documentation, logging | [010](.github/LIVE_ISSUE_BATCH_02/010-add-log-ingest-config-cookbook.md) |
+| [#28](https://github.com/rajudandigam/agent-inspect/issues/28) | Add multi-run fixture pack for future stats command | fixtures, testing, roadmap-next | [011](.github/LIVE_ISSUE_BATCH_02/011-add-multi-run-fixture-pack-for-stats.md) |
+| [#29](https://github.com/rajudandigam/agent-inspect/issues/29) | Add LangChain persisted trace example | examples, langchain, adapter | [012](.github/LIVE_ISSUE_BATCH_02/012-add-langchain-persisted-trace-example.md) |
+| [#30](https://github.com/rajudandigam/agent-inspect/issues/30) | Add Vercel AI SDK adapter design note | help wanted, adapter, roadmap-future | [013](.github/LIVE_ISSUE_BATCH_02/013-add-vercel-ai-sdk-adapter-design-note.md) |
+
 **Activation rules:**
 
-- **Do not open all** `.github/ISSUE_DRAFTS/` or batch 02 bodies at once — stagger activation; keep active good-first issues below ~15 where possible.
+- **Batch 03 should wait** until Batch 02 receives comments or PRs — do not open another large issue wave immediately.
 - **Do not open** completed 1.1.0 work (CJS exports, `enabled` / `maybeInspectRun`, redaction, size bounds, LangChain persistence) as new active issues — close or reference as done.
 - **Good first issues** = docs, examples, fixtures, CLI output samples — no core tracing default changes.
-- **Maintainer-owned** issues (e.g. LangChain streaming **design**, unified InspectEvent) are **not** good-first issues — comment and wait for maintainer ack before substantial runtime work.
+- **Intermediate issues** = stack-specific recipes, multi-file fixtures, CI examples — comment before substantial work.
+- **Maintainer-owned** issues (design RFCs, unified InspectEvent, adapter architecture) are **not** good-first issues — comment and wait for maintainer ack before runtime work.
 
 See [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md), [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md), [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md), [docs/community/MONTHLY-OSS-HYGIENE.md](docs/community/MONTHLY-OSS-HYGIENE.md).
 
 ---
 
-## Second live issue batch candidates
-
-Prepared bodies in [.github/LIVE_ISSUE_BATCH_02/](.github/LIVE_ISSUE_BATCH_02/) — **not live on GitHub until** a maintainer runs [scripts/create-live-issues-batch-02.sh](scripts/create-live-issues-batch-02.sh) (review bodies first; `DRY_RUN=1` to preview). Do not mark as completed here.
-
-### Open now
-
-Good first / docs — low risk, high contributor value:
-
-| File | Title | Labels |
-| ---- | ----- | ------ |
-| [001](.github/LIVE_ISSUE_BATCH_02/001-add-first-pr-walkthrough.md) | Add first PR walkthrough for new contributors | good first issue, documentation, community contribution |
-| [003](.github/LIVE_ISSUE_BATCH_02/003-add-clean-install-smoke-test-guide.md) | Add clean install smoke-test guide | documentation, testing, package-compatibility |
-| [004](.github/LIVE_ISSUE_BATCH_02/004-add-winston-structured-logging-recipe.md) | Add Winston structured logging recipe | good first issue, examples, logging |
-| [009](.github/LIVE_ISSUE_BATCH_02/009-add-safe-trace-sharing-checklist.md) | Add safe trace sharing checklist | good first issue, documentation, security |
-| [010](.github/LIVE_ISSUE_BATCH_02/010-add-log-ingest-config-cookbook.md) | Add log ingest config cookbook | good first issue, documentation, logging |
-
-### Open after targeted outreach
-
-Use [OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) before opening — intermediate scope or stack-specific audience:
-
-| File | Title | Labels |
-| ---- | ----- | ------ |
-| [005](.github/LIVE_ISSUE_BATCH_02/005-add-mcp-tool-call-trace-fixture.md) | Add MCP tool-call trace fixture | fixtures, examples, roadmap-next |
-| [006](.github/LIVE_ISSUE_BATCH_02/006-add-vercel-ai-sdk-manual-instrumentation-recipe.md) | Add Vercel AI SDK manual instrumentation recipe | examples, adapter, roadmap-next |
-| [007](.github/LIVE_ISSUE_BATCH_02/007-add-github-actions-trace-artifact-recipe.md) | Add GitHub Actions trace artifact recipe | examples, testing, roadmap-next |
-| [008](.github/LIVE_ISSUE_BATCH_02/008-add-phoenix-openinference-import-recipe.md) | Add Phoenix/OpenInference import recipe | exports, documentation, roadmap-next |
-| [011](.github/LIVE_ISSUE_BATCH_02/011-add-multi-run-fixture-pack-for-stats.md) | Add multi-run fixture pack for future stats command | fixtures, testing, roadmap-next |
-| [012](.github/LIVE_ISSUE_BATCH_02/012-add-langchain-persisted-trace-example.md) | Add LangChain persisted trace example | examples, langchain, adapter |
-
-**Defer or skip unless needed:** [002](.github/LIVE_ISSUE_BATCH_02/002-update-contributor-docs-with-live-issue-links.md) — run immediately after batch 02 issues are created to link `#NNN` in this file.
-
-### Maintainer-owned / design only
-
-| File | Title | Labels |
-| ---- | ----- | ------ |
-| [013](.github/LIVE_ISSUE_BATCH_02/013-add-vercel-ai-sdk-adapter-design-note.md) | Add Vercel AI SDK adapter design note | help wanted, adapter, roadmap-future |
-
-RFC-style comments welcome; **wait for maintainer ack** before adapter implementation PRs.
-
----
-
 ## Good first issues
 
-Documentation, examples, fixtures, and CLI output improvements — **no core tracing behavior changes**.
+Documentation, examples, fixtures, and CLI output improvements — **no core tracing behavior changes**. Best for first-time contributors.
 
 | Issue | Title | Area |
 | ----- | ----- | ---- |
@@ -85,6 +65,12 @@ Documentation, examples, fixtures, and CLI output improvements — **no core tra
 | [#8](https://github.com/rajudandigam/agent-inspect/issues/8) | Improve diff CLI output examples | docs / CLI examples |
 | [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | Add AgentInspect vs production observability comparison | docs |
 | [#10](https://github.com/rajudandigam/agent-inspect/issues/10) | Add tool failure + retry fixture | fixtures |
+| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | Add first PR walkthrough for new contributors | community / docs |
+| [#19](https://github.com/rajudandigam/agent-inspect/issues/19) | Update contributor docs with live issue links | community / docs |
+| [#20](https://github.com/rajudandigam/agent-inspect/issues/20) | Add clean install smoke-test guide | docs / testing |
+| [#21](https://github.com/rajudandigam/agent-inspect/issues/21) | Add Winston structured logging recipe | examples / logging |
+| [#26](https://github.com/rajudandigam/agent-inspect/issues/26) | Add safe trace sharing checklist | docs / security |
+| [#27](https://github.com/rajudandigam/agent-inspect/issues/27) | Add log ingest config cookbook | docs / logging |
 
 **Shipped in 1.1.0:** pino, log4js, and NestJS logging recipes — see [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) and `examples/recipes/`.
 
@@ -94,15 +80,21 @@ Documentation, examples, fixtures, and CLI output improvements — **no core tra
 
 ---
 
-## Help wanted / design
+## Intermediate issues
 
-CLI proposals and recipes that touch multiple packages or need careful scoping. **Comment on the issue** before substantial work.
+Stack-specific recipes, multi-file fixtures, and CLI design proposals. **Comment on the issue** before substantial work.
 
 | Issue | Title | Area |
 | ----- | ----- | ---- |
 | [#11](https://github.com/rajudandigam/agent-inspect/issues/11) | Timeline command proposal | CLI design |
 | [#12](https://github.com/rajudandigam/agent-inspect/issues/12) | Stats command proposal | CLI design |
 | [#13](https://github.com/rajudandigam/agent-inspect/issues/13) | Decision metadata recipe | examples |
+| [#22](https://github.com/rajudandigam/agent-inspect/issues/22) | Add MCP tool-call trace fixture | fixtures |
+| [#23](https://github.com/rajudandigam/agent-inspect/issues/23) | Add Vercel AI SDK manual instrumentation recipe | examples / adapter |
+| [#24](https://github.com/rajudandigam/agent-inspect/issues/24) | Add GitHub Actions trace artifact recipe | examples / CI |
+| [#25](https://github.com/rajudandigam/agent-inspect/issues/25) | Add Phoenix/OpenInference import recipe | exports / docs |
+| [#28](https://github.com/rajudandigam/agent-inspect/issues/28) | Add multi-run fixture pack for future stats command | fixtures |
+| [#29](https://github.com/rajudandigam/agent-inspect/issues/29) | Add LangChain persisted trace example | examples / langchain |
 
 **Not live yet (draft only):** [002 package export compatibility tests](.github/ISSUE_DRAFTS/002-add-package-export-compatibility-tests.md), [018 Vitest reporter proposal](.github/ISSUE_DRAFTS/018-add-vitest-reporter-proposal.md).
 
@@ -110,13 +102,16 @@ CLI proposals and recipes that touch multiple packages or need careful scoping. 
 
 ---
 
-## Maintainer-owned design
+## Maintainer-owned / design-only
 
-Core API, schema, storage, and package export changes — **comment and wait for maintainer ack** before opening a PR.
+Core API, schema, storage, adapter architecture, and package export changes — **comment and wait for maintainer ack** before opening a PR.
 
-| Issue / draft | Title | Area | Status |
-| ----- | ----- | ---- | ------ |
-| [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design | langchain adapter | Open — design (maintainer-owned) |
+| Issue | Title | Area |
+| ----- | ----- | ---- |
+| [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design | langchain adapter |
+| [#30](https://github.com/rajudandigam/agent-inspect/issues/30) | Add Vercel AI SDK adapter design note | adapter / roadmap-future |
+
+RFC-style comments welcome; **wait for maintainer ack** before adapter implementation PRs.
 
 **Implemented in 1.1.0 (historical drafts — do not reopen as active work):**
 
@@ -136,7 +131,7 @@ Core API, schema, storage, and package export changes — **comment and wait for
 ## Before you pick an issue
 
 1. **Comment** on the live issue you want to work on — do not open a surprise PR.
-2. For **help wanted / design** and **maintainer-owned** items, wait for maintainer ack.
+2. For **intermediate** and **maintainer-owned** items, wait for maintainer ack.
 3. Read [CONTRIBUTING.md](CONTRIBUTING.md) validation commands for your PR type.
 4. Do not add runtime dependencies without explicit approval.
 5. **Redact** traces and logs before sharing in issues, Discussions, or PRs — see [SECURITY.md](SECURITY.md).
