@@ -58,6 +58,10 @@ AGENT_INSPECT=1 node eval-runner.mjs
 
 Enable tokens: `1`, `true`, `yes`, `on`, `enabled` (case-insensitive). Explicit `enabled: true | false` in options overrides the env var.
 
+### Install compatibility
+
+If `import` or `require` fails after install, see [KNOWN-ISSUES.md — Common install/runtime compatibility checks](./KNOWN-ISSUES.md#common-installruntime-compatibility-checks).
+
 To skip tracing in code without env vars: `inspectRun(name, fn, { enabled: false })`.
 
 ## 3. View runs

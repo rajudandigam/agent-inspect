@@ -111,7 +111,7 @@ try {
     process.execPath,
     [
       "-e",
-      "import('agent-inspect').then(m => { if (!m.inspectRun || !m.step || !m.observe) process.exit(1); })",
+      "import('agent-inspect').then(m => { if (!m.inspectRun || !m.step || !m.maybeInspectRun || !m.observe) process.exit(1); })",
     ],
     { cwd: tmpRoot, encoding: "utf8" },
   );
@@ -130,7 +130,7 @@ try {
     process.execPath,
     [
       "-e",
-      "const m = require('agent-inspect'); if (!m.inspectRun || !m.step || !m.observe) process.exit(1);",
+      "const m = require('agent-inspect'); if (!m.inspectRun || !m.step || !m.maybeInspectRun || !m.observe) process.exit(1);",
     ],
     { cwd: cjsDir, encoding: "utf8" },
   );

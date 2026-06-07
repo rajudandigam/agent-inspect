@@ -90,6 +90,7 @@
     "prepack": "pnpm run clean && pnpm run build",
     "pack:dry-run": "pnpm run build && npm pack --dry-run",
     "pack:smoke": "pnpm run build && node scripts/package-smoke.mjs",
+    "compat:smoke": "node scripts/compat-smoke.mjs",
     "fixtures:check": "node scripts/validate-fixtures.mjs",
     "recipes:check": "node scripts/validate-recipes.mjs",
     "perf:baseline": "node scripts/performance-baseline.mjs",

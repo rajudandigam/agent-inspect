@@ -51,7 +51,7 @@ Not automated. No SLA implied.
 
 - [ ] Clean temp-dir `npm install agent-inspect@<latest>` + `npx agent-inspect --help`
 - [ ] `pnpm fixtures:check` and `pnpm recipes:check` on main
-- [ ] Optional: `pnpm pack:smoke` before next publish
+- [ ] `pnpm compat:smoke` and `pnpm pack:smoke` before next publish
 
 ---
 

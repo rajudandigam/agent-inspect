@@ -4,7 +4,7 @@
 
 agent-inspect helps you understand what happened inside an AI agent run — **locally**. It turns manual steps, tool calls, LLM calls, structured logs, failures, durations, and run metadata into **readable execution trees** you can inspect from the terminal.
 
-It is built for TypeScript/Node.js developers and teams shipping real agentic products — not just toy demos. Use it **before** a hosted observability platform, **alongside** one, or as the **local debugging layer** underneath enterprise observability.
+It is built for TypeScript/Node.js developers and teams shipping real agentic products — not just toy demos. Use it for **local TypeScript agent debugging**, **eval iteration**, and **CI trace artifacts**. It **complements** production observability platforms; it does **not** replace them.
 
 The tool starts with **manual traces** and **existing structured logs**, and extends into **optional framework callbacks** and **standards-aligned local export** — without turning the core into a SaaS or a vendor pipeline.
 
@@ -291,7 +291,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 
 AgentInspect welcomes docs, fixtures, examples, and carefully scoped CLI improvements.
 
-- **Good first issues:** [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) — live batch [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) (comment on an issue before opening a PR)
+- **Good first issues:** [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) — live batches [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18) (comment on an issue before opening a PR)
 - **Discussions:** [github.com/rajudandigam/agent-inspect/discussions](https://github.com/rajudandigam/agent-inspect/discussions) — feedback, stack survey, integration ideas
 - **Roadmap:** [ROADMAP.md](ROADMAP.md) — Now / Next / Future direction (non-committal)
 - **Contributing guide:** [CONTRIBUTING.md](CONTRIBUTING.md) — validation commands, PR expectations, scope boundaries

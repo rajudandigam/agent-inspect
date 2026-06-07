@@ -49,6 +49,7 @@ pnpm pack:smoke
 For package/export surface changes, also run:
 
 ```bash
+pnpm compat:smoke
 npm pack --dry-run
 ```
 
