@@ -196,6 +196,53 @@ Options:
 - `--focus <all|errors|structure|outputs>`
 - `--check <all|structure|outputs|errors|timing>`
 
+Fixture examples:
+
+```bash
+agent-inspect diff minimal-success minimal-error --dir fixtures/traces
+agent-inspect diff minimal-success long-running --dir fixtures/traces --check timing --duration-threshold 1ms
+agent-inspect diff minimal-success nested-3-levels --dir fixtures/traces --check structure --ignore-duration
+```
+
+**Simplified example output** (actual CLI formatting may differ slightly):
+
+```text
+Run diff
+Left:  minimal-success
+Right: minimal-error
+
+Summary:
+  Differences: 4
+  Errors: 0
+  Warnings: 3
+  Info: 1
+
+First divergence:
+  run-status at (run)
+    left: success
+    right: error
+
+Differences:
+  [warning] run-status
+    Run completion status differs
+    left: success
+    right: error
+  [info] duration
+    Run duration differs
+    left: 120
+    right: 70
+  [warning] step-removed plan
+    Step only in left run: plan
+    left: step_root
+    right: (undefined)
+  [warning] step-added failing-step
+    Step only in right run: failing-step
+    left: (undefined)
+    right: step_fail
+```
+
+More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
+
 ## 7. Optional TUI behavior
 
 `view --tui` delegates to `@agent-inspect/tui` and requires an interactive terminal. If the package is not installed, the CLI prints a short install hint.
