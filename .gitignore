@@ -6,6 +6,7 @@ coverage
 !fixtures/logs/*.log
 !examples/06-log-to-tree/*.log
 !examples/recipes/proactive-agent-logs/*.log
+!examples/recipes/winston-json-logs/*.log
 .DS_Store
 .turbo
 .pnpm-debug.log*
