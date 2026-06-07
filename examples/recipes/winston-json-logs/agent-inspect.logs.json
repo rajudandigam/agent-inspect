@@ -1,0 +1,64 @@
+{
+  "runIdKeys": ["runId", "decisionId", "requestId", "reqId"],
+  "eventKey": "event",
+  "timestampKey": "timestamp",
+  "messageKey": "message",
+  "levelKey": "level",
+  "mappings": {
+    "agent.run.started": {
+      "kind": "RUN",
+      "name": "agent:started",
+      "startsRun": true
+    },
+    "tool.search.started": {
+      "kind": "TOOL",
+      "name": "tool:search"
+    },
+    "tool.search.completed": {
+      "kind": "TOOL",
+      "name": "tool:search"
+    },
+    "tool.*.started": {
+      "kind": "TOOL"
+    },
+    "tool.*.completed": {
+      "kind": "TOOL"
+    },
+    "llm.plan.started": {
+      "kind": "LLM",
+      "name": "llm:plan"
+    },
+    "llm.plan.completed": {
+      "kind": "LLM",
+      "name": "llm:plan"
+    },
+    "llm.*.started": {
+      "kind": "LLM"
+    },
+    "llm.*.completed": {
+      "kind": "LLM"
+    },
+    "agent.run.completed": {
+      "kind": "RESULT",
+      "name": "agent:completed"
+    },
+    "*.failed": {
+      "kind": "ERROR",
+      "status": "error"
+    },
+    "*.error": {
+      "kind": "ERROR",
+      "status": "error"
+    }
+  },
+  "redact": [
+    "authorization",
+    "cookie",
+    "token",
+    "apiKey",
+    "password",
+    "secret",
+    "email"
+  ],
+  "heuristicWindowMs": 2000
+}

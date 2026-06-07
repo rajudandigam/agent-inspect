@@ -56,7 +56,20 @@ Config highlights: `timestampKey: "time"`, `messageKey: "msg"`.
 - Fixture: `fixtures/logs/pino-agent-json.log`
 - Config: `fixtures/configs/pino-agent-inspect.logs.json`
 
-## 5. log4js JSON layout example
+## 5. Winston structured logging example
+
+Winston JSON lines commonly use string `level`, ISO `timestamp`, and `message`:
+
+```json
+{"level":"info","timestamp":"2026-05-08T10:00:18.130Z","message":"Agent run started","runId":"winston_run_01","event":"agent.run.started"}
+{"level":"info","timestamp":"2026-05-08T10:00:18.402Z","runId":"winston_run_01","event":"tool.search.completed","tool":"searchDocs","durationMs":270,"message":"Tool search completed"}
+```
+
+Config highlights: `timestampKey: "timestamp"`, `messageKey: "message"`, `levelKey: "level"`.
+
+- Recipe: `examples/recipes/winston-json-logs/`
+
+## 6. log4js JSON layout example
 
 Text prefix + **valid JSON** payload (one object per line):
 
@@ -70,7 +83,7 @@ Use `--format log4js`. Do not log JS object literals.
 - Fixture: `fixtures/logs/log4js-agent-json.log`
 - Config: `fixtures/configs/log4js-agent-inspect.logs.json`
 
-## 6. NestJS structured logging example
+## 7. NestJS structured logging example
 
 Nest JSON lines often use `message` and ISO `timestamp`:
 
@@ -84,7 +97,7 @@ Config highlights: `messageKey: "message"`, `timestampKey: "timestamp"`.
 - Fixture: `fixtures/logs/nestjs-agent-json.log`
 - Config: `fixtures/configs/nestjs-agent-inspect.logs.json`
 
-## 7. Run `agent-inspect logs`
+## 8. Run `agent-inspect logs`
 
 ```bash
 pnpm build
@@ -107,7 +120,7 @@ node packages/cli/dist/index.cjs logs fixtures/logs/nestjs-agent-json.log \
 
 Flags: `--run-id-key`, `--event-key`, `--warnings`, `--json` (see `docs/CLI.md`).
 
-## 8. Run `agent-inspect tail`
+## 9. Run `agent-inspect tail`
 
 Live local tail (developer machine only—not a production monitor):
 
@@ -121,7 +134,7 @@ node packages/cli/dist/index.cjs tail \
 
 Omit `--once` to follow append-only files; use stdin with `--file -` when piping.
 
-## 9. Redaction recommendations
+## 10. Redaction recommendations
 
 - Add `redact` rules in `agent-inspect.logs.json` for keys you may log (`authorization`, `token`, `apiKey`, `password`, `secret`, `email`).
 - Prefer **prefix** or **hash** strategies for correlation ids (`userUuid`, `tripUuid`) instead of full values in shared logs.
@@ -130,7 +143,7 @@ Omit `--once` to follow append-only files; use stdin with `--file -` when piping
 
 Default conservative keys ship in recipe configs; extend per your schema.
 
-## 10. Unsupported patterns
+## 11. Unsupported patterns
 
 Do **not** rely on AgentInspect for:
 
@@ -143,7 +156,7 @@ Do **not** rely on AgentInspect for:
 | Vendor live tail / upload sinks | Out of scope for core |
 | Full prompt/output in every line | Use `metadata-only` logging; previews opt-in |
 
-Runnable framework recipes live under `examples/recipes/` (pino JSON logs, log4js JSON layout, NestJS structured logging). See [examples/recipes/README.md](../examples/recipes/README.md).
+Runnable framework recipes live under `examples/recipes/` (pino JSON logs, Winston JSON logs, log4js JSON layout, NestJS structured logging). See [examples/recipes/README.md](../examples/recipes/README.md).
 
 ## See also
 

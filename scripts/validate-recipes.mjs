@@ -15,6 +15,7 @@ const RECIPES = [
   "multi-agent-handoff",
   "proactive-agent-logs",
   "pino-json-logs",
+  "winston-json-logs",
   "log4js-json-layout",
   "nestjs-json-logging",
   "retry-fallback",
@@ -28,6 +29,7 @@ const LOG_RECIPE_FILES = {
     "sample-log4js.log",
   ],
   "pino-json-logs": ["agent-inspect.logs.json", "sample-pino.log"],
+  "winston-json-logs": ["agent-inspect.logs.json", "sample-winston.log"],
   "log4js-json-layout": ["agent-inspect.logs.json", "sample-log4js.log"],
   "nestjs-json-logging": ["agent-inspect.logs.json", "sample-nestjs.log"],
 };

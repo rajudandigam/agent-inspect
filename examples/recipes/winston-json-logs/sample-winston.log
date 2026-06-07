@@ -1,0 +1,6 @@
+{"level":"info","timestamp":"2026-05-08T10:00:18.130Z","service":"agent","message":"Agent run started","runId":"winston_run_01","event":"agent.run.started"}
+{"level":"info","timestamp":"2026-05-08T10:00:18.132Z","service":"agent","message":"Tool search started","runId":"winston_run_01","event":"tool.search.started","tool":"searchDocs"}
+{"level":"info","timestamp":"2026-05-08T10:00:18.402Z","service":"agent","message":"Tool search completed","runId":"winston_run_01","event":"tool.search.completed","tool":"searchDocs","durationMs":270}
+{"level":"info","timestamp":"2026-05-08T10:00:18.500Z","service":"agent","message":"LLM plan started","runId":"winston_run_01","event":"llm.plan.started","model":"fixture-gpt"}
+{"level":"info","timestamp":"2026-05-08T10:00:19.100Z","service":"agent","message":"LLM plan completed","runId":"winston_run_01","event":"llm.plan.completed","model":"fixture-gpt","durationMs":600,"tokens":{"input":820,"output":210}}
+{"level":"info","timestamp":"2026-05-08T10:00:19.150Z","service":"agent","message":"Agent run completed","runId":"winston_run_01","event":"agent.run.completed","status":"ok"}
