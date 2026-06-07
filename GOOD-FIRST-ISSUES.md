@@ -4,7 +4,7 @@ Curated entry points for contributors. Expanded notes live in [docs/community/GO
 
 **Comment on an issue before opening a PR** — especially for help-wanted and maintainer-owned design items. Maintainers use comments to avoid duplicate work and to scope changes.
 
-Historical issue drafts (source material only): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/) · batch 01 bodies: [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/)
+Historical issue drafts (source material only): [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/) · batch 01 bodies: [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/) · batch 02 bodies: [.github/LIVE_ISSUE_BATCH_02/](.github/LIVE_ISSUE_BATCH_02/)
 
 ---
 
@@ -25,12 +25,53 @@ The first OSS issue batch is open on GitHub ([#7–#14](https://github.com/rajud
 
 **Activation rules:**
 
-- **Do not open all** `.github/ISSUE_DRAFTS/` at once — ship batch 01, gather feedback, then plan batch 02.
+- **Do not open all** `.github/ISSUE_DRAFTS/` or batch 02 bodies at once — stagger activation; keep active good-first issues below ~15 where possible.
 - **Do not open** completed 1.1.0 work (CJS exports, `enabled` / `maybeInspectRun`, redaction, size bounds, LangChain persistence) as new active issues — close or reference as done.
 - **Good first issues** = docs, examples, fixtures, CLI output samples — no core tracing default changes.
 - **Maintainer-owned** issues (e.g. LangChain streaming **design**, unified InspectEvent) are **not** good-first issues — comment and wait for maintainer ack before substantial runtime work.
 
 See [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md), [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md), [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md), [docs/community/MONTHLY-OSS-HYGIENE.md](docs/community/MONTHLY-OSS-HYGIENE.md).
+
+---
+
+## Second live issue batch candidates
+
+Prepared bodies in [.github/LIVE_ISSUE_BATCH_02/](.github/LIVE_ISSUE_BATCH_02/) — **not live on GitHub until** a maintainer runs [scripts/create-live-issues-batch-02.sh](scripts/create-live-issues-batch-02.sh) (review bodies first; `DRY_RUN=1` to preview). Do not mark as completed here.
+
+### Open now
+
+Good first / docs — low risk, high contributor value:
+
+| File | Title | Labels |
+| ---- | ----- | ------ |
+| [001](.github/LIVE_ISSUE_BATCH_02/001-add-first-pr-walkthrough.md) | Add first PR walkthrough for new contributors | good first issue, documentation, community contribution |
+| [003](.github/LIVE_ISSUE_BATCH_02/003-add-clean-install-smoke-test-guide.md) | Add clean install smoke-test guide | documentation, testing, package-compatibility |
+| [004](.github/LIVE_ISSUE_BATCH_02/004-add-winston-structured-logging-recipe.md) | Add Winston structured logging recipe | good first issue, examples, logging |
+| [009](.github/LIVE_ISSUE_BATCH_02/009-add-safe-trace-sharing-checklist.md) | Add safe trace sharing checklist | good first issue, documentation, security |
+| [010](.github/LIVE_ISSUE_BATCH_02/010-add-log-ingest-config-cookbook.md) | Add log ingest config cookbook | good first issue, documentation, logging |
+
+### Open after targeted outreach
+
+Use [OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) before opening — intermediate scope or stack-specific audience:
+
+| File | Title | Labels |
+| ---- | ----- | ------ |
+| [005](.github/LIVE_ISSUE_BATCH_02/005-add-mcp-tool-call-trace-fixture.md) | Add MCP tool-call trace fixture | fixtures, examples, roadmap-next |
+| [006](.github/LIVE_ISSUE_BATCH_02/006-add-vercel-ai-sdk-manual-instrumentation-recipe.md) | Add Vercel AI SDK manual instrumentation recipe | examples, adapter, roadmap-next |
+| [007](.github/LIVE_ISSUE_BATCH_02/007-add-github-actions-trace-artifact-recipe.md) | Add GitHub Actions trace artifact recipe | examples, testing, roadmap-next |
+| [008](.github/LIVE_ISSUE_BATCH_02/008-add-phoenix-openinference-import-recipe.md) | Add Phoenix/OpenInference import recipe | exports, documentation, roadmap-next |
+| [011](.github/LIVE_ISSUE_BATCH_02/011-add-multi-run-fixture-pack-for-stats.md) | Add multi-run fixture pack for future stats command | fixtures, testing, roadmap-next |
+| [012](.github/LIVE_ISSUE_BATCH_02/012-add-langchain-persisted-trace-example.md) | Add LangChain persisted trace example | examples, langchain, adapter |
+
+**Defer or skip unless needed:** [002](.github/LIVE_ISSUE_BATCH_02/002-update-contributor-docs-with-live-issue-links.md) — run immediately after batch 02 issues are created to link `#NNN` in this file.
+
+### Maintainer-owned / design only
+
+| File | Title | Labels |
+| ---- | ----- | ------ |
+| [013](.github/LIVE_ISSUE_BATCH_02/013-add-vercel-ai-sdk-adapter-design-note.md) | Add Vercel AI SDK adapter design note | help wanted, adapter, roadmap-future |
+
+RFC-style comments welcome; **wait for maintainer ack** before adapter implementation PRs.
 
 ---
 

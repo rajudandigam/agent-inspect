@@ -123,3 +123,83 @@ If you're up for another pass, {issue-url} might be a good fit — totally optio
 - Be specific about **one issue** when inviting ownership.
 - Never imply production APM, SaaS, or vendor upload scope.
 - Point to [SECURITY.md](../../SECURITY.md) when discussing traces/logs shared publicly.
+
+---
+
+## Batch 02 outreach templates
+
+Replace `{issue-url}` with the live GitHub issue after batch 02 is created. Use [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) tone — feedback first.
+
+### Winston logging recipe
+
+Subject: Winston + AgentInspect — structured JSON recipe feedback
+
+Hi {name},
+
+AgentInspect ships pino, log4js, and NestJS logging recipes. We're adding a **Winston structured JSON** recipe so `agent-inspect logs` works on Winston-shaped lines — local only, no helper package yet.
+
+If you use Winston with agents, does our field naming match your logs? Good first issue when ready: {issue-url}
+
+---
+
+### MCP fixture
+
+Subject: MCP-style tool call fixtures — local trace shape feedback
+
+Hi {name},
+
+We're adding an MCP-**inspired** tool-call fixture (deterministic, no MCP SDK) to show how tool start/end/error metadata might look in local traces and JSON logs.
+
+Not full MCP integration — fixture + docs only. Feedback or scoped PR welcome: {issue-url}
+
+---
+
+### Vercel AI SDK manual recipe / design
+
+Subject: Vercel AI SDK — manual instrumentation before an adapter
+
+Hi {name},
+
+AgentInspect is exploring a **manual instrumentation recipe** for Vercel AI SDK-like flows (`generateText` / `streamText` mocks) before any `@agent-inspect/ai-sdk` package.
+
+Manual recipe: {issue-url-manual} · Design note (RFC): {issue-url-design}
+
+Comments on capture defaults (metadata-only) and non-goals are especially helpful.
+
+---
+
+### GitHub Actions CI artifact recipe
+
+Subject: CI trace artifacts without a hosted observability platform
+
+Hi {name},
+
+We're documenting an **example** GitHub Actions workflow: run with `AGENT_INSPECT=1`, upload `.agent-inspect` JSONL or Markdown exports as artifacts — not a Vitest reporter package yet.
+
+Does this match how your team debugs agent CI failures locally? Issue: {issue-url}
+
+---
+
+### Phoenix / OpenInference import recipe
+
+Subject: OpenInference export — local Phoenix-oriented workflow (experimental)
+
+Hi {name},
+
+AgentInspect exports OpenInference-compatible JSON **locally** (experimental). We're adding docs on careful import/inspection boundaries — no Phoenix dependency, no vendor upload claims.
+
+If you use Phoenix/OpenInference alongside local debugging: {issue-url}
+
+---
+
+### Safe trace sharing checklist
+
+Subject: Sharing agent traces safely — checklist feedback
+
+Hi {name},
+
+Before traces land in issues, PRs, or Discussions, we want a short **safe sharing checklist** (redaction, metadata review, prefer Markdown export).
+
+Security policy exists; this is the practical how-to. Good first docs issue: {issue-url}
+
+---

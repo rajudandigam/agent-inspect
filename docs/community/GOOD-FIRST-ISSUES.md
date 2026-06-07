@@ -2,7 +2,7 @@
 
 Quick index: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)
 
-Historical drafts (source material only): [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/) · batch 01 bodies: [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/)
+Historical drafts (source material only): [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/) · batch 01: [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) · batch 02: [.github/LIVE_ISSUE_BATCH_02/](../../.github/LIVE_ISSUE_BATCH_02/)
 
 ---
 
@@ -22,6 +22,43 @@ The first OSS issue batch is open ([#7–#14](https://github.com/rajudandigam/ag
 | [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | Persisted LangChain streaming design | langchain, adapter, roadmap-next, maintainer-owned | [008](../../.github/LIVE_ISSUE_BATCH_01/008-persisted-langchain-streaming-design.md) |
 
 Related: [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md) · [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) · [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md)
+
+---
+
+## Second live issue batch candidates
+
+Prepared in [.github/LIVE_ISSUE_BATCH_02/](../../.github/LIVE_ISSUE_BATCH_02/) — **not on GitHub yet**. Maintainer runs [scripts/create-live-issues-batch-02.sh](../../scripts/create-live-issues-batch-02.sh) after review (`DRY_RUN=1` first).
+
+### Open now
+
+| File | Title |
+| ---- | ----- |
+| [001](../../.github/LIVE_ISSUE_BATCH_02/001-add-first-pr-walkthrough.md) | Add first PR walkthrough for new contributors |
+| [003](../../.github/LIVE_ISSUE_BATCH_02/003-add-clean-install-smoke-test-guide.md) | Add clean install smoke-test guide |
+| [004](../../.github/LIVE_ISSUE_BATCH_02/004-add-winston-structured-logging-recipe.md) | Add Winston structured logging recipe |
+| [009](../../.github/LIVE_ISSUE_BATCH_02/009-add-safe-trace-sharing-checklist.md) | Add safe trace sharing checklist |
+| [010](../../.github/LIVE_ISSUE_BATCH_02/010-add-log-ingest-config-cookbook.md) | Add log ingest config cookbook |
+
+### Open after targeted outreach
+
+| File | Title |
+| ---- | ----- |
+| [005](../../.github/LIVE_ISSUE_BATCH_02/005-add-mcp-tool-call-trace-fixture.md) | Add MCP tool-call trace fixture |
+| [006](../../.github/LIVE_ISSUE_BATCH_02/006-add-vercel-ai-sdk-manual-instrumentation-recipe.md) | Add Vercel AI SDK manual instrumentation recipe |
+| [007](../../.github/LIVE_ISSUE_BATCH_02/007-add-github-actions-trace-artifact-recipe.md) | Add GitHub Actions trace artifact recipe |
+| [008](../../.github/LIVE_ISSUE_BATCH_02/008-add-phoenix-openinference-import-recipe.md) | Add Phoenix/OpenInference import recipe |
+| [011](../../.github/LIVE_ISSUE_BATCH_02/011-add-multi-run-fixture-pack-for-stats.md) | Add multi-run fixture pack for future stats command |
+| [012](../../.github/LIVE_ISSUE_BATCH_02/012-add-langchain-persisted-trace-example.md) | Add LangChain persisted trace example |
+
+After creation: [002](../../.github/LIVE_ISSUE_BATCH_02/002-update-contributor-docs-with-live-issue-links.md) links live `#NNN` here.
+
+### Maintainer-owned / design only
+
+| File | Title |
+| ---- | ----- |
+| [013](../../.github/LIVE_ISSUE_BATCH_02/013-add-vercel-ai-sdk-adapter-design-note.md) | Add Vercel AI SDK adapter design note |
+
+See also live [#14 LangChain streaming design](https://github.com/rajudandigam/agent-inspect/issues/14) (batch 01, maintainer-owned).
 
 ---
 

@@ -17,3 +17,4 @@ coverage
 tmp-export-traces/
 tmp-export-output/
 examples/recipes/**/.agent-inspect-runs/
+docs-local/*
