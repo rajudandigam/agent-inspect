@@ -53,6 +53,8 @@ pnpm compat:smoke
 npm pack --dry-run
 ```
 
+For user-facing clean install verification, follow [docs/INSTALL-SMOKE-TEST.md](docs/INSTALL-SMOKE-TEST.md). It covers npm and pnpm temp-project checks, ESM import, CJS require, and CLI help without changing package exports.
+
 ## Development principles
 
 1. **Local-first** — features should work offline with files on disk; no hidden cloud dependencies.

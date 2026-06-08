@@ -36,6 +36,8 @@ Verify the CLI is available:
 npx agent-inspect --help
 ```
 
+For a clean npm/pnpm install checklist with ESM, CJS, and CLI checks, see [Clean install smoke test](docs/INSTALL-SMOKE-TEST.md).
+
 ## 60-second quickstart
 
 Create `demo.mjs`:
@@ -270,6 +272,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 ## Documentation
 
 - [Getting started](docs/GETTING-STARTED.md)
+- [Clean install smoke test](docs/INSTALL-SMOKE-TEST.md)
 - [API stability & experimental surfaces](docs/API.md)
 - [CLI reference](docs/CLI.md)
 - [Schema (`schemaVersion: "0.1"`)](docs/SCHEMA.md)
