@@ -70,7 +70,7 @@ Important limitations:
 - Always **review exported files** before sharing them externally.
 - Avoid committing trace directories (`.agent-inspect-runs/`) to source control.
 
-For schema-level redaction notes, see `docs/SCHEMA.md` (redaction section) and `docs/API.md`.
+For a practical pre-share workflow, see `docs/SAFE-TRACE-SHARING.md`. For schema-level redaction notes, see `docs/SCHEMA.md` (redaction section) and `docs/API.md`.
 
 ## Dependency and security review process
 

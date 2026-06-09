@@ -261,7 +261,7 @@ The TUI is available as a separate optional package; its programmatic API is exp
 - **Manual metadata** is user-controlled. By default, common sensitive keys are **redacted before disk**; pass `redact: false` to opt out. Long metadata is truncated and events are capped at 64 KiB per JSONL line. Review traces and exports before sharing.
 - **Review exports** before sharing (especially with richer attribute flags).
 
-See [SECURITY.md](SECURITY.md).
+See [SECURITY.md](SECURITY.md) and the [safe trace sharing checklist](docs/SAFE-TRACE-SHARING.md).
 
 ## agent-inspect comparison
 
@@ -285,6 +285,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 - [Adapters](docs/ADAPTERS.md)
 - [Compare with other tools](docs/COMPARE.md)
 - [Security](SECURITY.md)
+- [Safe trace sharing checklist](docs/SAFE-TRACE-SHARING.md)
 - [Changelog](CHANGELOG.md)
 - [Known issues](docs/KNOWN-ISSUES.md)
 - [Limitations](docs/LIMITATIONS.md)
@@ -299,7 +300,7 @@ AgentInspect welcomes docs, fixtures, examples, and carefully scoped CLI improve
 - **Roadmap:** [ROADMAP.md](ROADMAP.md) — Now / Next / Future direction (non-committal)
 - **Contributing guide:** [CONTRIBUTING.md](CONTRIBUTING.md) — validation commands, PR expectations, scope boundaries
 
-**Security:** Traces and logs may contain secrets. **Redact before sharing** in issues, Discussions, PRs, or exports. See [SECURITY.md](SECURITY.md).
+**Security:** Traces and logs may contain secrets. **Redact before sharing** in issues, Discussions, PRs, or exports. See [SECURITY.md](SECURITY.md) and the [safe trace sharing checklist](docs/SAFE-TRACE-SHARING.md).
 
 ## Development
 
