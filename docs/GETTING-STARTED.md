@@ -14,6 +14,8 @@ The `agent-inspect` package includes the CLI binary via its `bin` field:
 npx agent-inspect --help
 ```
 
+For a clean install verification path covering npm, pnpm, ESM import, CJS require, and CLI help, see [Clean install smoke test](./INSTALL-SMOKE-TEST.md).
+
 For local repo development (this monorepo), build and run the CLI from `packages/cli`:
 
 ```bash
@@ -155,4 +157,3 @@ agent-inspect view <runId> --tui
 - [docs/KNOWN-ISSUES.md](./KNOWN-ISSUES.md)
 - [docs/LIMITATIONS.md](./LIMITATIONS.md)
 - [ROADMAP.md](../ROADMAP.md)
-
