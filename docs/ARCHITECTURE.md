@@ -19,6 +19,7 @@ Root `agent-inspect` uses **conditional exports** for ESM/CJS TypeScript consume
 - Manual traces use **`schemaVersion: "0.1"`** JSONL events (`run_started`, `step_started`, `step_completed`, `run_completed`).
 - Failures use `step_completed` with `status: "error"` — there is no `step_failed` event.
 - Log-derived runs use confidence labels (`explicit`, `correlated`, `heuristic`, `unknown`) and conservative tree-building rules.
+- **v1.2 design (in progress):** unified persisted `PersistedInspectEvent` proposal — [proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md](./proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md). No runtime change until follow-up PRs.
 
 See [SCHEMA.md](./SCHEMA.md) for field reference and [API.md](./API.md) for public surfaces (stable vs experimental).
 
