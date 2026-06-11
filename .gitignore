@@ -6,7 +6,10 @@ coverage
 !fixtures/logs/*.log
 !examples/06-log-to-tree/*.log
 !examples/recipes/proactive-agent-logs/*.log
+!examples/recipes/pino-json-logs/*.log
 !examples/recipes/winston-json-logs/*.log
+!examples/recipes/log4js-json-layout/*.log
+!examples/recipes/nestjs-json-logging/*.log
 .DS_Store
 .turbo
 .pnpm-debug.log*

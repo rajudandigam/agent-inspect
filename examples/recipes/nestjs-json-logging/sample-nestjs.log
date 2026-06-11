@@ -1,0 +1,6 @@
+{"context":"AgentService","level":"log","timestamp":"2026-05-08T10:00:00.130Z","message":"Agent run started","runId":"nest_run_01","event":"agent.run.started"}
+{"context":"ToolService","level":"log","timestamp":"2026-05-08T10:00:00.132Z","message":"Tool search started","runId":"nest_run_01","event":"tool.search.started","tool":"searchDocs"}
+{"context":"ToolService","level":"log","timestamp":"2026-05-08T10:00:00.402Z","message":"Tool search completed","runId":"nest_run_01","event":"tool.search.completed","tool":"searchDocs","durationMs":270}
+{"context":"LlmService","level":"log","timestamp":"2026-05-08T10:00:00.500Z","message":"LLM plan started","runId":"nest_run_01","event":"llm.plan.started","model":"fixture-gpt"}
+{"context":"LlmService","level":"log","timestamp":"2026-05-08T10:00:01.100Z","message":"LLM plan completed","runId":"nest_run_01","event":"llm.plan.completed","model":"fixture-gpt","durationMs":600,"tokens":{"input":820,"output":210}}
+{"context":"AgentService","level":"log","timestamp":"2026-05-08T10:00:01.150Z","message":"Agent run completed","runId":"nest_run_01","event":"agent.run.completed","status":"ok"}
