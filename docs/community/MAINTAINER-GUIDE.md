@@ -11,6 +11,8 @@ Internal reference for repository maintainers. Not shipped as primary user docum
 
 Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
 
+**Cursor execution (v1.2.0 → v2.0 trains):** [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](../implementation/CURSOR-MAINTAINER-ROADMAP.md) · prompt stubs in [docs/implementation/prompts/](../implementation/prompts/).
+
 ## Post-release follow-up (1.1.0+)
 
 After a successful npm publish:

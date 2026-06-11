@@ -6,7 +6,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release:** [1.1.0](CHANGELOG.md#110) on npm (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`). **v1.1.1** focuses on compatibility smoke tests and positioning hardening. **v1.2.0** starts with the [unified persisted InspectEvent design proposal](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) before runtime implementation.
+**Current release on npm:** [1.1.0](CHANGELOG.md#110) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`). **v1.1.1** compatibility hardening may exist on `main` locally but is **not published** until a changeset release. **v1.2.0** is **in progress (not published)** — design complete; implementation chunks PR 2–8 per [execution guide](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md).
 
 ---
 
@@ -40,7 +40,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 | **Design LangChain streaming** | Maintainer-owned RFC ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)) — metadata-only defaults, size bounds; no implementation in v1.1.1. |
 | **Plan CI trace artifacts** | Recipes and reporter proposals ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)) — local artifacts only, no upload pipeline. |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
-| **Unified persisted InspectEvent model (~v1.2)** | **PR 1 live:** [design proposal](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) + [checklist](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md). Maintainer-owned; OSS batches [#7–#30](https://github.com/rajudandigam/agent-inspect/issues/18) remain parallel (docs/examples/fixtures). |
+| **Unified persisted InspectEvent model (~v1.2)** | **PR 1 done:** [design](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) + [checklist](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md). **PR 2–8** implementation train — maintainer-owned; OSS batches [#7–#30](https://github.com/rajudandigam/agent-inspect/issues/18) remain parallel. |
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -88,6 +88,21 @@ Exploratory — requires design review and explicit scope approval before implem
 - Vendor telemetry upload as a default workflow
 
 AgentInspect **complements** LangSmith, Langfuse, Braintrust, Phoenix/OpenInference, OpenTelemetry, New Relic, Datadog, and similar platforms. It does not replace their production or eval workflows.
+
+---
+
+## Maintainer release trains
+
+Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** by grouping work into trains. Do not version bump or publish per chunk.
+
+| Train | Status | Guide |
+| ----- | ------ | ----- |
+| **v1.2.0** — Unified persisted InspectEvent | Design done; implementation PR 2–8 pending | [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md) |
+| **v1.3.0** — LangChain streaming, correlation, redaction profiles | Planned | Same guide §4 |
+| **v1.4.0** — CI artifacts, timeline, stats | Planned | Same guide §4 |
+| **v2.0** — Stable trace contract | Future | Same guide §4 |
+
+**Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.
 
 ---
 

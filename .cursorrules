@@ -3,7 +3,7 @@
 ## Source of truth
 
 - **Product, architecture, MVP scope, public API, data model, JSONL schema:** repo top-level docs (start with `README.md`)
-- **Step-by-step implementation sequence:** follow the repo’s implementation guide (if present) and existing patterns in `packages/`
+- **Step-by-step implementation sequence:** follow [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md) for maintainer release trains; otherwise existing patterns in `packages/`
 
 ## MVP drift (do not implement unless the PRD explicitly promotes it)
 
