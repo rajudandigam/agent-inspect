@@ -53,41 +53,30 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 - [x] Batch conversion + invalid timestamp fallback + input immutability
 - [x] `api-stability.test.ts` converter exports
 
-## PR 2C — Log-derived InspectEvent converters (next)
+## PR 2C/2D — InspectEvent ↔ PersistedInspectEvent bridge (completed)
 
-**Prompt stub:** [v1.2.0-pr2-persisted-event-types.md](../implementation/prompts/v1.2.0-pr2-persisted-event-types.md)
-
----
-
-## PR 3 — Legacy `0.1` TraceEvent converters
-
-- [ ] Implement `traceEventToPersisted()` (per-event and/or batch coalescing per proposal §5)
-- [ ] Implement `persistedToInspectEvent()` for tree-builder interop
-- [ ] Pure functions only — **no** `writeTraceEvent` changes
-
-**Expected tests:**
-
-- [ ] Maps `run_started` / `run_completed` / `step_started` / `step_completed` correctly
-- [ ] No `step_failed` assumption — errors from `step_completed` + `status: "error"`
-- [ ] All `fixtures/traces/*.jsonl` convert without throw
-- [ ] Converted tree matches `manualTraceEventsToRunTree` for fixture set
-- [ ] `parentId` explicit nesting only — no timestamp-only nesting
-- [ ] `source.type: manual`, `confidence: explicit`
-
----
-
-## PR 4 — Log-derived InspectEvent converters
-
-- [ ] Implement `inspectEventToPersisted(event: InspectEvent): PersistedInspectEvent`
-- [ ] Preserve `confidence` and log `source.type` (`json-log`, `log4js`, etc.)
-- [ ] Map numeric timestamps → ISO strings in persisted form
+- [x] `PersistedInspectEvent` types and `isPersistedInspectEvent` (PR 2A)
+- [x] `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents` (PR 2B)
+- [x] Add `packages/core/src/persisted/from-inspect-event.ts`
+- [x] Implement `inspectEventToPersistedInspectEvent` / `inspectEventsToPersistedInspectEvents`
+- [x] Add `packages/core/src/persisted/to-inspect-event.ts`
+- [x] Implement `persistedInspectEventToInspectEvent` / `persistedInspectEventsToInspectEvents`
+- [x] Export all persisted types, validators, and converters from `packages/core/src/index.ts`
+- [x] **No** storage read/write, CLI, or `schemaVersion: "0.2"` file persistence changes
 
 **Expected tests:**
 
-- [ ] JSON log fixture events convert with `confidence` preserved
-- [ ] log4js-derived events map `source.type: log4js`
-- [ ] `parentId` preserved when present; flat when absent
-- [ ] Redaction-ready `attributes` shape (no new redaction logic required in PR 4)
+- [x] `packages/core/test/persisted/from-inspect-event.test.ts` — source mapping, tokens, errors, previews, timestamps
+- [x] `packages/core/test/persisted/to-inspect-event.test.ts` — reverse mapping, `skipInvalid`, invalid input throws
+- [x] `packages/core/test/api-stability.test.ts` — all converter exports and option type witnesses
+
+---
+
+## PR 3 — Source-agnostic tree builder (next)
+
+- [ ] Implement `buildRunTreeFromPersisted()` (or equivalent) for `PersistedInspectEvent[]`
+- [ ] Pure functions only — **no** CLI read-path changes yet
+- [ ] **No** `writeTraceEvent` / `readTraceEvents` changes
 
 ---
 

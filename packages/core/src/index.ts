@@ -55,6 +55,20 @@ export {
   traceEventsToPersistedInspectEvents,
 } from "./persisted/from-trace-event.js";
 
+export type { InspectEventToPersistedOptions } from "./persisted/from-inspect-event.js";
+
+export {
+  inspectEventToPersistedInspectEvent,
+  inspectEventsToPersistedInspectEvents,
+} from "./persisted/from-inspect-event.js";
+
+export type { PersistedToInspectEventOptions } from "./persisted/to-inspect-event.js";
+
+export {
+  persistedInspectEventToInspectEvent,
+  persistedInspectEventsToInspectEvents,
+} from "./persisted/to-inspect-event.js";
+
 export type {
   LogEventMapping,
   RedactionStrategy,

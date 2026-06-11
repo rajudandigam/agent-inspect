@@ -53,13 +53,24 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_persistedTypeWitness).toBeNull();
   });
 
-  it("TraceEvent to PersistedInspectEvent converters are exported (v1.2.0 PR 2B)", () => {
+  it("persisted-event converters are exported (v1.2.0 PR 2B/2C/2D)", () => {
     expect(typeof core.traceEventToPersistedInspectEvent).toBe("function");
     expect(typeof core.traceEventsToPersistedInspectEvents).toBe("function");
+    expect(typeof core.inspectEventToPersistedInspectEvent).toBe("function");
+    expect(typeof core.inspectEventsToPersistedInspectEvents).toBe("function");
+    expect(typeof core.persistedInspectEventToInspectEvent).toBe("function");
+    expect(typeof core.persistedInspectEventsToInspectEvents).toBe("function");
 
-    const _optsWitness =
+    const _traceOptsWitness =
       null as unknown as core.TraceEventToPersistedOptions;
-    expect(_optsWitness).toBeNull();
+    const _inspectOptsWitness =
+      null as unknown as core.InspectEventToPersistedOptions;
+    const _persistedToInspectOptsWitness =
+      null as unknown as core.PersistedToInspectEventOptions;
+
+    expect(_traceOptsWitness).toBeNull();
+    expect(_inspectOptsWitness).toBeNull();
+    expect(_persistedToInspectOptsWitness).toBeNull();
   });
 });
 
