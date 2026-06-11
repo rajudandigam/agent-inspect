@@ -52,5 +52,14 @@ describe("core API stability (v1.0 Pass 1)", () => {
       null as unknown as core.PersistedInspectEvent;
     expect(_persistedTypeWitness).toBeNull();
   });
+
+  it("TraceEvent to PersistedInspectEvent converters are exported (v1.2.0 PR 2B)", () => {
+    expect(typeof core.traceEventToPersistedInspectEvent).toBe("function");
+    expect(typeof core.traceEventsToPersistedInspectEvents).toBe("function");
+
+    const _optsWitness =
+      null as unknown as core.TraceEventToPersistedOptions;
+    expect(_optsWitness).toBeNull();
+  });
 });
 

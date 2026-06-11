@@ -37,7 +37,23 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 - [x] `source.type` union accepts `manual`, `json-log`, `log4js`, `adapter`, `ai-sdk`, `otel`
 - [x] `packages/core/test/api-stability.test.ts` updated if export surface changes
 
-## PR 2B — Legacy `0.1` TraceEvent converters (next)
+## PR 2B — Legacy `0.1` TraceEvent converters (completed)
+
+- [x] Add `packages/core/src/persisted/from-trace-event.ts`
+- [x] Implement `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents`
+- [x] Deterministic `eventId`, ISO timestamps, manual `source`, explicit `confidence`
+- [x] Export from `packages/core/src/index.ts`
+- [x] **No** storage write path or CLI changes
+
+**Expected tests:**
+
+- [x] `packages/core/test/persisted/from-trace-event.test.ts` — all four event kinds
+- [x] `run_completed` / `step_completed` error + stack mapping
+- [x] StepType → InspectKind mapping
+- [x] Batch conversion + invalid timestamp fallback + input immutability
+- [x] `api-stability.test.ts` converter exports
+
+## PR 2C — Log-derived InspectEvent converters (next)
 
 **Prompt stub:** [v1.2.0-pr2-persisted-event-types.md](../implementation/prompts/v1.2.0-pr2-persisted-event-types.md)
 
