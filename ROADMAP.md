@@ -6,7 +6,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.1.0](CHANGELOG.md#110) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`). **v1.1.1** compatibility hardening may exist on `main` locally but is **not published** until a changeset release. **v1.2.0** is **in progress (not published)** — design complete; implementation chunks PR 2–8 per [execution guide](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md).
+**Current release on npm:** [1.1.0](CHANGELOG.md#110) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`). **v1.2.0** is in **release-readiness** on `main` (persisted-event foundation complete; **not published** until maintainer version bump + release). Scope: types, validators, converters, in-memory tree bridge, docs, and v0.2 fixtures — **not** default `0.2` file writing or CLI migration. See [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md).
 
 ---
 
@@ -40,7 +40,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 | **Design LangChain streaming** | Maintainer-owned RFC ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)) — metadata-only defaults, size bounds; no implementation in v1.1.1. |
 | **Plan CI trace artifacts** | Recipes and reporter proposals ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)) — local artifacts only, no upload pipeline. |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
-| **Unified persisted InspectEvent model (~v1.2)** | **PR 1 done:** [design](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) + [checklist](docs/proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md). **PR 2–8** implementation train — maintainer-owned; OSS batches [#7–#30](https://github.com/rajudandigam/agent-inspect/issues/18) remain parallel. |
+| **v1.2.0 release readiness** | Persisted-event foundation merged (types, converters, tree bridge, fixtures, docs). Awaiting maintainer validation + version bump — see [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md). OSS batches [#7–#30](https://github.com/rajudandigam/agent-inspect/issues/18) remain parallel. |
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -57,7 +57,7 @@ Focus: deepen local inspection workflows — still no vendor sinks in core.
 | **CI reporters** | Vitest (and similar) reporters for local trace artifacts in CI logs. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | ~v1.3.x |
 | **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.3.x |
 | **`timeline` / `stats` / cohort views** | CLI views for chronological timelines and lightweight aggregates — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11), [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.3.x |
-| **Unified persisted InspectEvent model** | Implement proposal PRs 2–4 (types, storage, CLI); `0.1` traces remain readable. | ~v1.2.0 |
+| **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration after v1.2.0 foundation publish; `0.1` traces remain readable. | post–v1.2.0 |
 | **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.4.x |
 
 ---

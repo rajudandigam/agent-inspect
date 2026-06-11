@@ -12,6 +12,7 @@ const REQUIRED = {
   readmes: [
     "fixtures/README.md",
     "fixtures/traces/README.md",
+    "fixtures/traces-v0.2/README.md",
     "fixtures/logs/README.md",
     "fixtures/configs/README.md",
   ],
@@ -24,6 +25,12 @@ const REQUIRED = {
     "fixtures/traces/tool-with-io.jsonl",
     "fixtures/traces/long-running.jsonl",
     "fixtures/traces/error-recovery.jsonl",
+  ],
+  tracesV02: [
+    "fixtures/traces-v0.2/manual-basic.jsonl",
+    "fixtures/traces-v0.2/manual-tool-error.jsonl",
+    "fixtures/traces-v0.2/log-derived-basic.jsonl",
+    "fixtures/traces-v0.2/adapter-langchain-like.jsonl",
   ],
   logs: [
     "fixtures/logs/proactive-json.log",
@@ -61,11 +68,13 @@ const FORBIDDEN = [
 ];
 
 let validateEvent;
+let isPersistedInspectEvent;
 try {
   const mod = await import(
     pathToFileURL(path.join(root, "packages/core/dist/index.mjs")).href,
   );
   validateEvent = mod.validateEvent;
+  isPersistedInspectEvent = mod.isPersistedInspectEvent;
 } catch (e) {
   console.error(
     "[fixtures:check] Could not import packages/core/dist/index.mjs. Run `pnpm build` first.\n",
@@ -90,6 +99,26 @@ function scanForbidden(rel) {
   for (const { re, msg } of FORBIDDEN) {
     if (re.test(text)) {
       throw new Error(`Forbidden content in ${rel}: ${msg}`);
+    }
+  }
+}
+
+function validatePersistedTraceJsonl(rel) {
+  const text = readText(rel);
+  const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
+  if (lines.length === 0) throw new Error(`${rel}: empty`);
+  for (let i = 0; i < lines.length; i++) {
+    let obj;
+    try {
+      obj = JSON.parse(lines[i]);
+    } catch (e) {
+      throw new Error(`${rel} line ${i + 1}: invalid JSON (${e})`);
+    }
+    if (obj.schemaVersion !== "0.2") {
+      throw new Error(`${rel} line ${i + 1}: schemaVersion must be "0.2"`);
+    }
+    if (!isPersistedInspectEvent(obj)) {
+      throw new Error(`${rel} line ${i + 1}: not a valid PersistedInspectEvent`);
     }
   }
 }
@@ -194,11 +223,17 @@ function walkFixturesFiles() {
 try {
   for (const rel of REQUIRED.readmes) assertFile(rel);
   for (const rel of REQUIRED.traces) assertFile(rel);
+  for (const rel of REQUIRED.tracesV02) assertFile(rel);
   for (const rel of REQUIRED.logs) assertFile(rel);
   for (const rel of REQUIRED.configs) assertFile(rel);
 
   for (const rel of REQUIRED.traces) {
     validateTraceJsonl(rel);
+    scanForbidden(rel);
+  }
+
+  for (const rel of REQUIRED.tracesV02) {
+    validatePersistedTraceJsonl(rel);
     scanForbidden(rel);
   }
 
@@ -217,7 +252,8 @@ try {
   }
 
   console.log("[fixtures:check] OK");
-  console.log(`  traces: ${REQUIRED.traces.length} JSONL files validated`);
+  console.log(`  traces: ${REQUIRED.traces.length} v0.1 JSONL files validated`);
+  console.log(`  traces-v0.2: ${REQUIRED.tracesV02.length} v0.2 JSONL files validated`);
   console.log(`  logs: ${REQUIRED.logs.length} files`);
   console.log(`  configs: ${REQUIRED.configs.length} JSON files`);
   process.exit(0);

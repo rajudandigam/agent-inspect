@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.2.0 — Unreleased
+
+### Added
+
+- Added experimental `PersistedInspectEvent` model (`schemaVersion: "0.2"`) as a source-agnostic event foundation.
+- Added validator for persisted events (`isPersistedInspectEvent`).
+- Added converters from legacy `schemaVersion: "0.1"` manual trace events to persisted events.
+- Added converters between `InspectEvent` and `PersistedInspectEvent`.
+- Added in-memory helpers to build run trees from persisted events (`persistedInspectEventsToRunTrees`, `traceEventsToPersistedRunTrees`).
+- Added canonical v0.2 fixture samples under `fixtures/traces-v0.2/`.
+
+### Notes
+
+- Existing manual trace writing remains `schemaVersion: "0.1"`.
+- v0.2 is not written by default in this release.
+- CLI read/write behavior is unchanged.
+- No vendor upload, hosted dashboard, OTLP HTTP sink, replay engine, or cost engine was added.
+
 ## 1.1.0
 
 Changeset `21ecc6f`: env-gated tracing, trace safety (redaction + size bounds), LangChain JSONL persistence, logging recipes, CJS/ESM type export compatibility, community docs.

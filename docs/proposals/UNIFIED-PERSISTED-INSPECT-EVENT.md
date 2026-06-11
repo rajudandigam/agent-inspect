@@ -1,6 +1,6 @@
 # Unified persisted InspectEvent model (proposal)
 
-**Status:** Design / RFC — PR 1 of v1.2.0  
+**Status:** Implemented foundation (v1.2.0 release-readiness) — in-memory helpers and docs; storage/CLI migration future  
 **Audience:** Maintainers and contributors coordinating on core schema design  
 **Not in scope for this document:** Runtime implementation, CLI changes, or `schemaVersion: "0.1"` write-path changes
 

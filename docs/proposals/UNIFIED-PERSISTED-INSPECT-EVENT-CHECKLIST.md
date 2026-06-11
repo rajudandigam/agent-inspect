@@ -3,6 +3,7 @@
 Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UNIFIED-PERSISTED-INSPECT-EVENT.md).
 
 **Execution guide:** [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](../implementation/CURSOR-MAINTAINER-ROADMAP.md)  
+**Release readiness:** [docs/implementation/V1.2.0-RELEASE-READINESS.md](../implementation/V1.2.0-RELEASE-READINESS.md)  
 **Publish policy:** Merge chunks to `main`; publish **one** npm release when the full train passes release gates — not per chunk.
 
 ---
@@ -14,149 +15,77 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 - [x] Link from `docs/ARCHITECTURE.md` and `ROADMAP.md`
 - [x] No runtime or `schemaVersion: "0.1"` write-path changes
 
-**Expected validation (docs-only):**
-
-- [x] `pnpm typecheck`
-- [x] `pnpm test`
-
 ---
 
 ## PR 2A — Core types and validator (completed)
 
-- [x] Add `packages/core/src/types/persisted-inspect-event.ts`
-- [x] Define `PersistedInspectEvent`, `PersistedEventSource`, status/kind helper types
-- [x] Implement `isPersistedInspectEvent(value: unknown): value is PersistedInspectEvent`
-- [x] Export types and validator from `packages/core/src/index.ts`
-- [x] **No** storage write path, converters, or CLI changes
-
-**Expected tests:**
-
-- [x] `packages/core/test/types/persisted-inspect-event.test.ts` — valid minimal event passes
-- [x] Rejects missing `schemaVersion`, wrong version, missing `eventId`/`runId`/`kind`/`timestamp`/`confidence`/`source`
-- [x] Accepts optional `parentId`, `attributes`, `tokenUsage`, `trace` block
-- [x] `source.type` union accepts `manual`, `json-log`, `log4js`, `adapter`, `ai-sdk`, `otel`
-- [x] `packages/core/test/api-stability.test.ts` updated if export surface changes
+- [x] `PersistedInspectEvent` types and `isPersistedInspectEvent`
+- [x] Export from `packages/core/src/index.ts`
+- [x] `packages/core/test/types/persisted-inspect-event.test.ts`
 
 ## PR 2B — Legacy `0.1` TraceEvent converters (completed)
 
-- [x] Add `packages/core/src/persisted/from-trace-event.ts`
-- [x] Implement `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents`
-- [x] Deterministic `eventId`, ISO timestamps, manual `source`, explicit `confidence`
-- [x] Export from `packages/core/src/index.ts`
-- [x] **No** storage write path or CLI changes
-
-**Expected tests:**
-
-- [x] `packages/core/test/persisted/from-trace-event.test.ts` — all four event kinds
-- [x] `run_completed` / `step_completed` error + stack mapping
-- [x] StepType → InspectKind mapping
-- [x] Batch conversion + invalid timestamp fallback + input immutability
-- [x] `api-stability.test.ts` converter exports
+- [x] `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents`
+- [x] `packages/core/test/persisted/from-trace-event.test.ts`
 
 ## PR 2C/2D — InspectEvent ↔ PersistedInspectEvent bridge (completed)
 
-- [x] `PersistedInspectEvent` types and `isPersistedInspectEvent` (PR 2A)
-- [x] `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents` (PR 2B)
-- [x] Add `packages/core/src/persisted/from-inspect-event.ts`
-- [x] Implement `inspectEventToPersistedInspectEvent` / `inspectEventsToPersistedInspectEvents`
-- [x] Add `packages/core/src/persisted/to-inspect-event.ts`
-- [x] Implement `persistedInspectEventToInspectEvent` / `persistedInspectEventsToInspectEvents`
-- [x] Export all persisted types, validators, and converters from `packages/core/src/index.ts`
-- [x] **No** storage read/write, CLI, or `schemaVersion: "0.2"` file persistence changes
-
-**Expected tests:**
-
-- [x] `packages/core/test/persisted/from-inspect-event.test.ts` — source mapping, tokens, errors, previews, timestamps
-- [x] `packages/core/test/persisted/to-inspect-event.test.ts` — reverse mapping, `skipInvalid`, invalid input throws
-- [x] `packages/core/test/api-stability.test.ts` — all converter exports and option type witnesses
+- [x] `inspectEventToPersistedInspectEvent` / `inspectEventsToPersistedInspectEvents`
+- [x] `persistedInspectEventToInspectEvent` / `persistedInspectEventsToInspectEvents`
+- [x] `packages/core/test/persisted/from-inspect-event.test.ts`
+- [x] `packages/core/test/persisted/to-inspect-event.test.ts`
 
 ---
 
 ## PR 3 — Source-agnostic in-memory tree bridge (completed)
 
-- [x] `PersistedInspectEvent` types and `isPersistedInspectEvent` (PR 2A)
-- [x] `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents` (PR 2B)
-- [x] `inspectEventToPersistedInspectEvent` / `inspectEventsToPersistedInspectEvents` (PR 2C)
-- [x] `persistedInspectEventToInspectEvent` / `persistedInspectEventsToInspectEvents` (PR 2D)
-- [x] Add `packages/core/src/persisted/tree-bridge.ts`
-- [x] Implement `persistedInspectEventsToRunTrees` / `traceEventsToPersistedRunTrees`
-- [x] Reuse existing `TreeBuilder` via `persistedInspectEventsToInspectEvents`
-- [x] Export from `packages/core/src/index.ts`
-- [x] **No** storage read/write, CLI, or `schemaVersion: "0.2"` file persistence changes
-
-**Expected tests:**
-
-- [x] `packages/core/test/persisted/tree-bridge.test.ts` — nesting, multi-run, metadata, legacy bridge
-- [x] Explicit `parentId` only — no timestamp-only nesting
-- [x] `api-stability.test.ts` tree bridge exports
+- [x] `persistedInspectEventsToRunTrees` / `traceEventsToPersistedRunTrees`
+- [x] Reuse existing `TreeBuilder`
+- [x] `packages/core/test/persisted/tree-bridge.test.ts`
 
 ---
 
-## PR 4 — Dual-format storage read helpers (next)
+## Release readiness — v1.2.0 foundation (completed)
 
-- [ ] `readPersistedEvents()` — dual-read `0.1` + `0.2` lines
-- [ ] Add `fixtures/traces-v0.2/` canonical samples
-- [ ] Pure read helpers only — **no** default CLI behavior change yet
-- [ ] **No** `writeTraceEvent` changes
-
----
-
-## PR 5 — LangChain adapter converters
-
-- [ ] Implement adapter-path `inspectEventToPersisted` variants or shared helper with `source.name: langchain`
-- [ ] Map in-memory LangChain callback events to persisted shape
-- [ ] **No** change to `LangChainTracePersistence` write path yet
-
-**Expected tests:**
-
-- [ ] LangChain callback sample events convert with `source.type: adapter`
-- [ ] Kinds LLM / TOOL / CHAIN preserved
-- [ ] Metadata-only capture defaults reflected in `attributes` shape
+- [x] Public exports (types, validators, converters, tree bridge) from `packages/core/src/index.ts`
+- [x] `packages/core/test/api-stability.test.ts` — persisted-event surface
+- [x] `fixtures/traces-v0.2/` canonical samples
+- [x] `pnpm fixtures:check` validates v0.2 fixtures via `isPersistedInspectEvent`
+- [x] `docs/SCHEMA.md` — v0.2 section
+- [x] `docs/API.md` — experimental persisted-event helpers
+- [x] `docs/ARCHITECTURE.md`, `docs/LIMITATIONS.md` alignment
+- [x] `CHANGELOG.md` — `1.2.0 — Unreleased` draft
+- [x] `docs/implementation/V1.2.0-RELEASE-READINESS.md`
+- [x] **No** package version bump, publish, or tag in release-readiness work
 
 ---
 
-## PR 7 — CLI read-path integration (if approved)
+## Future / not complete
 
-- [ ] Dual-read: detect `0.1` vs `0.2` per JSONL line
-- [ ] `view` / `export` / `diff` consume unified tree path (fallback to legacy OK during transition)
-- [ ] `list` metadata scanner for `0.2` files (keep `0.1` fast path)
-- [ ] **No** default write of `0.2` unless explicitly approved in same or prior chunk
-
-**Expected tests:**
-
-- [ ] `packages/cli/test/view.test.ts` — dual format cases
-- [ ] CLI `view` golden output for `0.1` fixtures unchanged
-- [ ] `packages/core/test/conformance/exporters.conformance.test.ts` on `0.2` fixtures
-- [ ] `schema-compatibility.test.ts` extended for `0.2`
-
----
-
-## PR 8 — Docs, fixtures, changelog (train completion)
-
-- [ ] Add `fixtures/traces-v0.2/` canonical samples
-- [ ] Update `docs/SCHEMA.md` with additive `0.2` section
-- [ ] Update `CHANGELOG.md` with v1.2.0 section (maintainer adds changeset separately)
-- [ ] Update `ROADMAP.md` Released recently when published
-- [ ] `pnpm fixtures:check` validates new fixtures
-
-**Expected tests:**
-
-- [ ] All existing `fixtures/traces/*.jsonl` still pass validation
-- [ ] New `0.2` fixtures pass validation
-- [ ] Full release-train readiness validation (see execution guide §8)
+- [ ] Storage dual-read (`readPersistedEvents`, dual-format line detection)
+- [ ] CLI read-path integration (`list`, `view`, `export`, `diff`, `logs`, `tail`)
+- [ ] Default `schemaVersion: "0.2"` file writing (`writeTraceEvent` opt-in)
+- [ ] LangChain native `0.2` persistence (adapter still writes v0.1 when `persist: true`)
+- [ ] LangChain streaming ([#14](https://github.com/rajudandigam/agent-inspect/issues/14))
+- [ ] Timeline / stats / cohort CLI
+- [ ] CI reporters ([#24](https://github.com/rajudandigam/agent-inspect/issues/24))
+- [ ] OTLP HTTP sink / vendor upload
 
 ---
 
 ## Validation gates (every implementation chunk)
 
 ```bash
-pnpm build          # runtime chunks
+pnpm build
 pnpm typecheck
 pnpm test
 pnpm fixtures:check   # when fixtures change
 pnpm recipes:check    # if recipes touched
 pnpm compat:smoke     # if package exports or bundle layout change
+pnpm test:all
 ```
+
+Full publish gate: [V1.2.0-RELEASE-READINESS.md](../implementation/V1.2.0-RELEASE-READINESS.md)
 
 ---
 

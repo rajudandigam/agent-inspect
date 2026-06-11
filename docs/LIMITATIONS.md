@@ -9,6 +9,12 @@ This document states what AgentInspect **does not** provide today. It complement
 - **No vendor upload pipeline**: no built-in Langfuse/Braintrust/New Relic/Datadog direct exporters as live sinks.
 - **No automatic universal instrumentation** of every framework: integration is explicit (manual traces, log ingest, optional adapters).
 
+## Persisted event model (v1.2.0 foundation)
+
+- **v0.2 is not the default persisted trace file format.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL.
+- **CLI commands** (`list`, `view`, `export`, `diff`, `logs`, `tail`) still primarily operate on current v0.1 trace and log paths.
+- **v0.2 read/write integration** (dual-format storage, CLI consumption) is future work — v1.2.0 ships in-memory converters and canonical fixtures only.
+
 ## Data fidelity
 
 - **No full prompt/output capture by default** for manual traces (by design: safety and PII risk).

@@ -58,6 +58,10 @@ describe("core API stability (v1.0 Pass 1)", () => {
 
     const _persistedTypeWitness =
       null as unknown as core.PersistedInspectEvent;
+    const _persistedSourceTypeWitness =
+      null as unknown as core.PersistedEventSourceType;
+    const _persistedStatusWitness =
+      null as unknown as core.PersistedEventStatus;
     const _traceOptsWitness =
       null as unknown as core.TraceEventToPersistedOptions;
     const _inspectOptsWitness =
@@ -68,6 +72,8 @@ describe("core API stability (v1.0 Pass 1)", () => {
       null as unknown as core.PersistedTreeBridgeOptions;
 
     expect(_persistedTypeWitness).toBeNull();
+    expect(_persistedSourceTypeWitness).toBeNull();
+    expect(_persistedStatusWitness).toBeNull();
     expect(_traceOptsWitness).toBeNull();
     expect(_inspectOptsWitness).toBeNull();
     expect(_persistedToInspectOptsWitness).toBeNull();

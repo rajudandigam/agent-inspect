@@ -132,23 +132,49 @@ Rationale: v1.x includes one official adapter and **zero production sinks**, so 
 
 - `runTraceViewer`, `loadTraceForTui`, `buildTuiTraceModel`, etc.
 
-## 11. Deprecated APIs
+## 11. Experimental persisted-event foundation (v1.2.0)
+
+These helpers expose the **source-agnostic `PersistedInspectEvent` model** (`schemaVersion: "0.2"`). They are **local-only**, **in-memory**, and **do not change** storage write/read or CLI behavior in v1.2.0.
+
+Import from `agent-inspect`:
+
+| API | Role |
+| --- | ---- |
+| `isPersistedInspectEvent` | Runtime validator for v0.2 persisted events |
+| `traceEventToPersistedInspectEvent` | Convert one v0.1 `TraceEvent` |
+| `traceEventsToPersistedInspectEvents` | Batch v0.1 → v0.2 |
+| `inspectEventToPersistedInspectEvent` | Convert one in-memory `InspectEvent` |
+| `inspectEventsToPersistedInspectEvents` | Batch `InspectEvent` → v0.2 |
+| `persistedInspectEventToInspectEvent` | Convert one v0.2 event to `InspectEvent` |
+| `persistedInspectEventsToInspectEvents` | Batch v0.2 → `InspectEvent` |
+| `persistedInspectEventsToRunTrees` | Build `InspectRunTree[]` from v0.2 events (via `TreeBuilder`) |
+| `traceEventsToPersistedRunTrees` | v0.1 `TraceEvent[]` → persisted model → trees |
+
+Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEventStatus`, `TraceEventToPersistedOptions`, `InspectEventToPersistedOptions`, `PersistedToInspectEventOptions`, `PersistedTreeBridgeOptions`.
+
+**Notes:**
+
+- Manual trace **writing** remains `schemaVersion: "0.1"`.
+- v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
+- Storage dual-read and CLI integration are future work.
+
+## 12. Deprecated APIs
 
 No deprecated APIs are declared as of 1.1.0.
 
-## 12. Removal / deprecation policy
+## 13. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 13. Backward compatibility policy
+## 14. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 14. Examples
+## 15. Examples
 
 ### Minimal manual trace
 

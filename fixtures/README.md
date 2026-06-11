@@ -7,6 +7,7 @@ Canonical **deterministic** samples for tests, CI validation, and documentation.
 | Directory | Contents |
 |-----------|----------|
 | `traces/` | v0.1 JSONL manual traces (`schemaVersion` **0.1**) |
+| `traces-v0.2/` | v0.2 persisted InspectEvent samples (`schemaVersion` **0.2**, experimental foundation) |
 | `logs/` | Structured log lines (JSON, log4js-style, intentional breakage) |
 | `configs/` | Log ingest JSON configs |
 
