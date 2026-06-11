@@ -1,5 +1,16 @@
 # @agent-inspect/tui
 
+## 1.2.0
+
+### Minor Changes
+
+- 5a7f785: v1.2.0: experimental persisted-event foundation (`PersistedInspectEvent` schemaVersion 0.2), validators, TraceEvent/InspectEvent converters, in-memory tree bridge, v0.2 fixtures, and docs. Manual trace writing remains schemaVersion 0.1; no storage or CLI behavior change.
+
+### Patch Changes
+
+- Updated dependencies [5a7f785]
+  - agent-inspect@1.2.0
+
 ## 1.1.0
 
 ### Minor Changes
