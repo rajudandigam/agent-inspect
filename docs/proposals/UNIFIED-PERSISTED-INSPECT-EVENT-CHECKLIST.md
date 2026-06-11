@@ -72,11 +72,32 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 
 ---
 
-## PR 3 — Source-agnostic tree builder (next)
+## PR 3 — Source-agnostic in-memory tree bridge (completed)
 
-- [ ] Implement `buildRunTreeFromPersisted()` (or equivalent) for `PersistedInspectEvent[]`
-- [ ] Pure functions only — **no** CLI read-path changes yet
-- [ ] **No** `writeTraceEvent` / `readTraceEvents` changes
+- [x] `PersistedInspectEvent` types and `isPersistedInspectEvent` (PR 2A)
+- [x] `traceEventToPersistedInspectEvent` / `traceEventsToPersistedInspectEvents` (PR 2B)
+- [x] `inspectEventToPersistedInspectEvent` / `inspectEventsToPersistedInspectEvents` (PR 2C)
+- [x] `persistedInspectEventToInspectEvent` / `persistedInspectEventsToInspectEvents` (PR 2D)
+- [x] Add `packages/core/src/persisted/tree-bridge.ts`
+- [x] Implement `persistedInspectEventsToRunTrees` / `traceEventsToPersistedRunTrees`
+- [x] Reuse existing `TreeBuilder` via `persistedInspectEventsToInspectEvents`
+- [x] Export from `packages/core/src/index.ts`
+- [x] **No** storage read/write, CLI, or `schemaVersion: "0.2"` file persistence changes
+
+**Expected tests:**
+
+- [x] `packages/core/test/persisted/tree-bridge.test.ts` — nesting, multi-run, metadata, legacy bridge
+- [x] Explicit `parentId` only — no timestamp-only nesting
+- [x] `api-stability.test.ts` tree bridge exports
+
+---
+
+## PR 4 — Dual-format storage read helpers (next)
+
+- [ ] `readPersistedEvents()` — dual-read `0.1` + `0.2` lines
+- [ ] Add `fixtures/traces-v0.2/` canonical samples
+- [ ] Pure read helpers only — **no** default CLI behavior change yet
+- [ ] **No** `writeTraceEvent` changes
 
 ---
 
@@ -91,20 +112,6 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 - [ ] LangChain callback sample events convert with `source.type: adapter`
 - [ ] Kinds LLM / TOOL / CHAIN preserved
 - [ ] Metadata-only capture defaults reflected in `attributes` shape
-
----
-
-## PR 6 — Source-agnostic tree builder bridge
-
-- [ ] Implement `buildRunTreeFromPersisted(events: PersistedInspectEvent[]): InspectRunTree`
-- [ ] Reuse or wrap existing `TreeBuilder` via `persistedToInspectEvent`
-- [ ] Explicit `parentId` nesting only
-
-**Expected tests:**
-
-- [ ] Manual `0.1` fixture → convert → tree matches `manualTraceEventsToRunTree`
-- [ ] Log-derived persisted events build flat/correlated trees per confidence rules
-- [ ] `packages/core/test/conformance/tree-builder.conformance.test.ts` extended
 
 ---
 

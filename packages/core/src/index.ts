@@ -69,6 +69,13 @@ export {
   persistedInspectEventsToInspectEvents,
 } from "./persisted/to-inspect-event.js";
 
+export type { PersistedTreeBridgeOptions } from "./persisted/tree-bridge.js";
+
+export {
+  persistedInspectEventsToRunTrees,
+  traceEventsToPersistedRunTrees,
+} from "./persisted/tree-bridge.js";
+
 export type {
   LogEventMapping,
   RedactionStrategy,

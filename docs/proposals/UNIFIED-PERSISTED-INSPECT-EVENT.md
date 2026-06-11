@@ -281,19 +281,24 @@ Language: **OTel GenAI-aligned** — experimental until verified against target 
   - `persistedToInspectEvent(event: PersistedInspectEvent): InspectEvent` (for tree builder reuse)
 - Unit tests only; **no change** to `writeTraceEvent` or CLI.
 
-### PR 3 — Storage read/write path
+### PR 3 — In-memory tree bridge (completed)
+
+- `persistedInspectEventsToRunTrees` and `traceEventsToPersistedRunTrees` build `InspectRunTree[]` via existing `TreeBuilder`.
+- Pure in-memory helpers only — **no** storage or CLI changes in this chunk.
+
+### PR 4 — Storage read/write path (future)
 
 - Optional write of `0.2` lines (feature-flagged or opt-in `persistFormat: "0.2"` on `inspectRun`).
 - `readPersistedEvents()` — dual-read `0.1` + `0.2`.
-- Source-agnostic `buildRunTreeFromPersisted(events)` replacing parallel `manualTraceEventsToRunTree` + log tree paths for persisted files.
+- CLI integration remains a later step.
 
-### PR 4 — CLI integration
+### PR 5 — CLI integration
 
 - `list` / `view` / `export` / `diff` consume unified read path.
 - Fixtures: add `fixtures/traces-v0.2/` samples; keep all `fixtures/traces/*.jsonl` (`0.1`) valid.
 - Update `docs/SCHEMA.md` with `0.2` section (additive).
 
-### PR 5 — Docs / fixtures cleanup (if needed)
+### PR 6 — Docs / fixtures cleanup (if needed)
 
 - LangChain `persist` emits `0.2` natively (stop re-encoding to manual step pairs).
 - Migration guide for authors who want to **opt in** to `0.2` writes.

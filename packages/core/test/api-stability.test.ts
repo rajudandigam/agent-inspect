@@ -45,32 +45,33 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_typeWitness).toBeNull();
   });
 
-  it("PersistedInspectEvent validator is exported (v1.2.0 PR 2A)", () => {
+  it("persisted-event surface is exported (v1.2.0 PR 2–3)", () => {
     expect(typeof core.isPersistedInspectEvent).toBe("function");
-
-    const _persistedTypeWitness =
-      null as unknown as core.PersistedInspectEvent;
-    expect(_persistedTypeWitness).toBeNull();
-  });
-
-  it("persisted-event converters are exported (v1.2.0 PR 2B/2C/2D)", () => {
     expect(typeof core.traceEventToPersistedInspectEvent).toBe("function");
     expect(typeof core.traceEventsToPersistedInspectEvents).toBe("function");
     expect(typeof core.inspectEventToPersistedInspectEvent).toBe("function");
     expect(typeof core.inspectEventsToPersistedInspectEvents).toBe("function");
     expect(typeof core.persistedInspectEventToInspectEvent).toBe("function");
     expect(typeof core.persistedInspectEventsToInspectEvents).toBe("function");
+    expect(typeof core.persistedInspectEventsToRunTrees).toBe("function");
+    expect(typeof core.traceEventsToPersistedRunTrees).toBe("function");
 
+    const _persistedTypeWitness =
+      null as unknown as core.PersistedInspectEvent;
     const _traceOptsWitness =
       null as unknown as core.TraceEventToPersistedOptions;
     const _inspectOptsWitness =
       null as unknown as core.InspectEventToPersistedOptions;
     const _persistedToInspectOptsWitness =
       null as unknown as core.PersistedToInspectEventOptions;
+    const _treeBridgeOptsWitness =
+      null as unknown as core.PersistedTreeBridgeOptions;
 
+    expect(_persistedTypeWitness).toBeNull();
     expect(_traceOptsWitness).toBeNull();
     expect(_inspectOptsWitness).toBeNull();
     expect(_persistedToInspectOptsWitness).toBeNull();
+    expect(_treeBridgeOptsWitness).toBeNull();
   });
 });
 
