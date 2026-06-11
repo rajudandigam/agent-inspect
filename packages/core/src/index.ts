@@ -36,6 +36,19 @@ export type {
 } from "./types/inspect-event.js";
 
 export type {
+  PersistedSchemaVersion,
+  PersistedEventSourceType,
+  PersistedEventSource,
+  PersistedEventStatus,
+  PersistedInspectError,
+  PersistedTokenUsage,
+  PersistedTraceContext,
+  PersistedInspectEvent,
+} from "./types/persisted-inspect-event.js";
+
+export { isPersistedInspectEvent } from "./types/persisted-inspect-event.js";
+
+export type {
   LogEventMapping,
   RedactionStrategy,
   RedactionRule,

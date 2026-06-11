@@ -44,5 +44,13 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(confidence).toBe("explicit");
     expect(_typeWitness).toBeNull();
   });
+
+  it("PersistedInspectEvent validator is exported (v1.2.0 PR 2A)", () => {
+    expect(typeof core.isPersistedInspectEvent).toBe("function");
+
+    const _persistedTypeWitness =
+      null as unknown as core.PersistedInspectEvent;
+    expect(_persistedTypeWitness).toBeNull();
+  });
 });
 

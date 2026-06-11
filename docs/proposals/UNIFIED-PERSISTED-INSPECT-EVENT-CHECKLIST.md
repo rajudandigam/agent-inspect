@@ -21,21 +21,23 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 
 ---
 
-## PR 2 — Core types and validator
+## PR 2A — Core types and validator (completed)
 
-- [ ] Add `packages/core/src/types/persisted-inspect-event.ts`
-- [ ] Define `PersistedInspectEvent`, `PersistedEventSource`, status/kind helper types
-- [ ] Implement `isPersistedInspectEvent(value: unknown): value is PersistedInspectEvent`
-- [ ] Export types and validator from `packages/core/src/index.ts`
-- [ ] **No** storage write path, converters, or CLI changes
+- [x] Add `packages/core/src/types/persisted-inspect-event.ts`
+- [x] Define `PersistedInspectEvent`, `PersistedEventSource`, status/kind helper types
+- [x] Implement `isPersistedInspectEvent(value: unknown): value is PersistedInspectEvent`
+- [x] Export types and validator from `packages/core/src/index.ts`
+- [x] **No** storage write path, converters, or CLI changes
 
 **Expected tests:**
 
-- [ ] `packages/core/test/types/persisted-inspect-event.test.ts` — valid minimal event passes
-- [ ] Rejects missing `schemaVersion`, wrong version, missing `eventId`/`runId`/`kind`/`timestamp`/`confidence`/`source`
-- [ ] Accepts optional `parentId`, `attributes`, `tokenUsage`, `trace` block
-- [ ] `source.type` union accepts `manual`, `json-log`, `log4js`, `adapter`, `ai-sdk`, `otel`
-- [ ] `packages/core/test/api-stability.test.ts` updated if export surface changes
+- [x] `packages/core/test/types/persisted-inspect-event.test.ts` — valid minimal event passes
+- [x] Rejects missing `schemaVersion`, wrong version, missing `eventId`/`runId`/`kind`/`timestamp`/`confidence`/`source`
+- [x] Accepts optional `parentId`, `attributes`, `tokenUsage`, `trace` block
+- [x] `source.type` union accepts `manual`, `json-log`, `log4js`, `adapter`, `ai-sdk`, `otel`
+- [x] `packages/core/test/api-stability.test.ts` updated if export surface changes
+
+## PR 2B — Legacy `0.1` TraceEvent converters (next)
 
 **Prompt stub:** [v1.2.0-pr2-persisted-event-types.md](../implementation/prompts/v1.2.0-pr2-persisted-event-types.md)
 
