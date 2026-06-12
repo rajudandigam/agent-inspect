@@ -1,3 +1,4 @@
+import { extractCorrelationMetadata } from "../correlation-metadata.js";
 import type { InspectKind } from "../types/inspect-event.js";
 import type {
   ErrorInfo,
@@ -183,10 +184,15 @@ export function traceEventToPersistedInspectEvent(
   switch (event.event) {
     case "run_started": {
       const tsStart = toIsoTimestamp(event.startTime);
+      const correlation = extractCorrelationMetadata(event.metadata);
       const attributes = compactAttributes({
         legacyEvent: "run_started",
         metadata:
           event.metadata !== undefined ? { ...event.metadata } : undefined,
+        correlationId: correlation?.correlationId,
+        requestId: correlation?.requestId,
+        decisionId: correlation?.decisionId,
+        groupId: correlation?.groupId,
         invalidTimestamp:
           tsMain.invalidTimestamp || tsStart.invalidTimestamp ? true : undefined,
       });

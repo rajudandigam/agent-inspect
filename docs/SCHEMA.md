@@ -129,6 +129,7 @@ Unknown status must **not** be treated as success.
 ## 6. Metadata policy
 
 - Runs may include `metadata` on `run_started`.
+- **Correlation metadata (v1.3.0+):** optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started.metadata` when passed via `inspectRun` / `maybeInspectRun` options. Event names remain unchanged (`run_started`, `step_started`, `step_completed`, `run_completed`). CLI list/view does not filter by correlation fields yet.
 - Steps may include `metadata` on `step_started`.
 - Manual traces intentionally avoid full prompt/output capture by default.
 - **Redaction (default on):** before disk, `inspectRun` / `step` redact sensitive keys using the shared `Redactor` defaults (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Opt out with `redact: false`.

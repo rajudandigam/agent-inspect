@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getCurrentContext,
+  getCurrentCorrelationMetadata,
   getCurrentDepth,
   getCurrentRunId,
   getCurrentRunName,
@@ -65,6 +66,25 @@ describe("runWithContext", () => {
     await runWithContext({ ...context, metadata: meta }, async () => {
       expect(getCurrentContext()?.metadata).toBe(meta);
     });
+  });
+
+  it("getCurrentCorrelationMetadata returns known keys from run metadata", async () => {
+    await runWithContext(
+      {
+        ...context,
+        metadata: {
+          correlationId: "corr-ctx",
+          requestId: "req-ctx",
+          environment: "test",
+        },
+      },
+      async () => {
+        expect(getCurrentCorrelationMetadata()).toEqual({
+          correlationId: "corr-ctx",
+          requestId: "req-ctx",
+        });
+      },
+    );
   });
 
   it("nested step context preserves metadata", async () => {

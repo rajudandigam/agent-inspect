@@ -1,3 +1,4 @@
+import { buildRunStartedMetadata } from "./correlation-metadata.js";
 import { runWithContext } from "./context.js";
 import type { ExecutionContext, InspectRunOptions, TraceEvent } from "./types.js";
 import { initializeTraceFile, writeTraceEvent } from "./storage.js";
@@ -57,13 +58,14 @@ export async function inspectRun<T>(
   const traceDir = resolveTraceDir({ dir: options?.traceDir });
 
   const traceSafety = resolveTraceSafetyOptions(options);
+  const runMetadata = buildRunStartedMetadata(options);
 
   const context: ExecutionContext = {
     runId,
     runName,
     traceDir,
     silent: options?.silent ?? false,
-    metadata: options?.metadata,
+    metadata: runMetadata,
   };
 
   return runWithContext(context, async () => {
@@ -82,9 +84,7 @@ export async function inspectRun<T>(
         runId,
         name: runName,
         startTime,
-        ...(options?.metadata !== undefined
-          ? { metadata: options.metadata }
-          : {}),
+        ...(runMetadata !== undefined ? { metadata: runMetadata } : {}),
       };
       await writeTraceEvent(
         prepareTraceEventForDisk(started, traceSafety),

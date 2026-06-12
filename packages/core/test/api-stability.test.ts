@@ -7,6 +7,7 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.inspectRun).toBe("function");
     expect(typeof core.maybeInspectRun).toBe("function");
     expect(typeof core.isAgentInspectEnabled).toBe("function");
+    expect(typeof core.getCurrentCorrelationMetadata).toBe("function");
     expect(typeof core.step).toBe("function");
     expect(typeof core.observe).toBe("function");
     expect(typeof (core.step as any).llm).toBe("function");
@@ -70,6 +71,8 @@ describe("core API stability (v1.0 Pass 1)", () => {
       null as unknown as core.PersistedToInspectEventOptions;
     const _treeBridgeOptsWitness =
       null as unknown as core.PersistedTreeBridgeOptions;
+    const _correlationWitness =
+      null as unknown as core.TraceCorrelationMetadata;
 
     expect(_persistedTypeWitness).toBeNull();
     expect(_persistedSourceTypeWitness).toBeNull();
@@ -78,6 +81,7 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_inspectOptsWitness).toBeNull();
     expect(_persistedToInspectOptsWitness).toBeNull();
     expect(_treeBridgeOptsWitness).toBeNull();
+    expect(_correlationWitness).toBeNull();
   });
 });
 

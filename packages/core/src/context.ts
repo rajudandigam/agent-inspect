@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import type { ExecutionContext } from "./types.js";
+import { extractCorrelationMetadata } from "./correlation-metadata.js";
+import type { ExecutionContext, TraceCorrelationMetadata } from "./types.js";
 import {
   resolveTraceSafetyOptions,
   type TraceSafetyOptions,
@@ -49,6 +50,20 @@ export function getCurrentContext(): ExecutionContext | undefined {
 export function getCurrentRunId(): string | undefined {
   try {
     return storage.getStore()?.runId;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Correlation metadata for the active run (`correlationId`, `requestId`, `decisionId`, `groupId`).
+ * `undefined` outside `inspectRun` / `maybeInspectRun` or when no correlation fields were set.
+ */
+export function getCurrentCorrelationMetadata():
+  | TraceCorrelationMetadata
+  | undefined {
+  try {
+    return extractCorrelationMetadata(storage.getStore()?.metadata);
   } catch {
     return undefined;
   }

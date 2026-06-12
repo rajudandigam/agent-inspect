@@ -30,12 +30,14 @@ import { inspectRun, maybeInspectRun, step, observe } from "agent-inspect";
   - **`maxMetadataValueLength`**: max string length for metadata values (default `2000`).
   - **`maxPreviewLength`**: max string length for preview-like keys containing `preview` (default `500`).
   - **`maxEventBytes`**: max UTF-8 bytes per serialized JSONL event (default `65536`). Oversized events are truncated; instrumentation never throws into user code.
+  - **Correlation metadata (v1.3.0+):** optional `correlationId`, `requestId`, `decisionId`, and `groupId` strings. When set, they are written on `run_started.metadata` (not on every step). Top-level correlation options override the same keys in `options.metadata`. Useful for eval cases, CI job IDs, request tracing, and future stats/cohort views. They are **metadata only** — they do not replace `runId`. Treat sensitive IDs as trace data before sharing exports.
 - **`maybeInspectRun(name, fn, options?)`**: same as `inspectRun` when tracing is enabled; otherwise passthrough. Enablement: explicit **`options.enabled`** wins; when omitted, reads **`AGENT_INSPECT`** (`1`, `true`, `yes`, `on`, `enabled` — case-insensitive). Unset or other values disable tracing. Use in eval harnesses, CI, or jobs where tracing should be toggled by environment.
 - **`isAgentInspectEnabled(value?)`**: returns whether a string (or `process.env.AGENT_INSPECT`) matches an enable token.
 - **`step(name, fn, options?)`**: traces a named unit of work inside `inspectRun` (`step_started` / `step_completed`). Step `metadata` inherits the parent run's redaction and size-bound settings.
   - **`step.llm(model, fn)`**: convenience wrapper (`type: "llm"`, `metadata.model`).
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
 - **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.
+- **`getCurrentCorrelationMetadata()`**: returns active run correlation fields (`correlationId`, `requestId`, `decisionId`, `groupId`) inside `inspectRun` / `maybeInspectRun`; `undefined` outside a traced run or when none were set.
 
 ## 3. Stable local inspection APIs
 

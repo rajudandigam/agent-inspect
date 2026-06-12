@@ -9,6 +9,10 @@ This document states what AgentInspect **does not** provide today. It complement
 - **No vendor upload pipeline**: no built-in Langfuse/Braintrust/New Relic/Datadog direct exporters as live sinks.
 - **No automatic universal instrumentation** of every framework: integration is explicit (manual traces, log ingest, optional adapters).
 
+## Correlation metadata (v1.3.0 chunk 1)
+
+- **No CLI filter/query** by `correlationId`, `requestId`, `decisionId`, or `groupId` yet — fields are written to `run_started.metadata` and available via persisted converters; list/view/export filtering is future work.
+
 ## Persisted event model (v1.2.0 foundation)
 
 - **v0.2 is not the default persisted trace file format.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL.

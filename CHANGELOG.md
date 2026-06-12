@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 — Unreleased
+
+### Planned
+
+- Correlation metadata foundation.
+- Redaction profiles and share-safe export mode.
+- LangChain streaming metadata support.
+
 ## 1.2.0
 
 Released **2026-06-11**. Changeset `5a7f785`.

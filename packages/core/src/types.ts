@@ -179,8 +179,16 @@ export type TraceEvent =
   | StepStartedEvent
   | StepCompletedEvent;
 
+/** Optional correlation fields for grouping and cross-run tracing (v1.3.0+). */
+export interface TraceCorrelationMetadata {
+  correlationId?: string;
+  requestId?: string;
+  decisionId?: string;
+  groupId?: string;
+}
+
 /** Options for `inspectRun()` and `maybeInspectRun()`. */
-export interface InspectRunOptions {
+export interface InspectRunOptions extends TraceCorrelationMetadata {
   traceDir?: string;
   silent?: boolean;
   metadata?: Record<string, unknown>;

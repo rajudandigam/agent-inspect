@@ -50,7 +50,7 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 ### v1.3.0 — Correlation, redaction profiles, LangChain streaming (current)
 
 **npm status:** Not published — train in progress on `main`.  
-**Guide:** [V1.3.0-RELEASE-TRAIN.md](./V1.3.0-RELEASE-TRAIN.md)
+**Guide:** [V1.3.0-IMPLEMENTATION-PLAN.md](./V1.3.0-IMPLEMENTATION-PLAN.md) · [V1.3.0-RELEASE-TRAIN.md](./V1.3.0-RELEASE-TRAIN.md)
 
 | Chunk | Scope |
 | ----- | ----- |

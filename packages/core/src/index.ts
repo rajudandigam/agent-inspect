@@ -18,6 +18,7 @@ export type {
   TraceMetadata,
   RunSummary,
   InspectRunOptions,
+  TraceCorrelationMetadata,
   StepOptions,
   ObserveOptions,
   ExecutionContext,
@@ -130,6 +131,7 @@ export {
 
 export {
   getCurrentContext,
+  getCurrentCorrelationMetadata,
   getCurrentRunId,
   getCurrentRunName,
   getCurrentStepId,
