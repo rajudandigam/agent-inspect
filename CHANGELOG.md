@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.4.0 — Unreleased
+## 1.4.0
 
 ### Added
 
@@ -17,6 +17,7 @@
 - Stats/search scan local files linearly — intended for developer-machine scale.
 - No Vitest/Jest reporter package in this release.
 - Manual trace writing remains `schemaVersion: "0.1"`.
+- Linked release aligns `@agent-inspect/tui` with `agent-inspect` and `@agent-inspect/langchain` (all **1.4.0**).
 
 ## 1.3.0
 

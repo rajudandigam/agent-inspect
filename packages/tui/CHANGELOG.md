@@ -1,5 +1,16 @@
 # @agent-inspect/tui
 
+## 1.4.0
+
+### Minor Changes
+
+- v1.4.0: CI artifact recipe and docs; `agent-inspect timeline`, `stats`, and `search` CLI commands; core helpers `buildRunTimeline`, `buildTraceStats`, and `searchTraces`. Linked release aligns `@agent-inspect/tui` with `agent-inspect` and `@agent-inspect/langchain`. Read-only local inspection over v0.1 JSONL; no vendor upload, semantic search, or reporter packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@1.4.0
+
 ## 1.2.1
 
 ### Patch Changes
