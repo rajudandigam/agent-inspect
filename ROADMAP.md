@@ -49,7 +49,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
 
-Train guide: [V1.3.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.3.0-IMPLEMENTATION-PLAN.md) · [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
+Train guide: [V1.3.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.3.0-IMPLEMENTATION-PLAN.md) · [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) · [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -57,15 +57,17 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ## Next
 
-Focus: deepen local inspection workflows — still no vendor sinks in core.
+Focus: **v1.4.0** — local CI artifact workflows, `timeline`, and `stats` CLI — still no vendor sinks in core. Guide: [V1.4.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.4.0-IMPLEMENTATION-PLAN.md)
 
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
+| **CI artifacts** | GitHub Actions recipe + trace export workflow polish; `AGENT_INSPECT=1` examples. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | v1.4.0 |
+| **`timeline` CLI** | Chronological run view — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11). | v1.4.0 |
+| **`stats` CLI** | Lightweight local aggregates (`--since`, `--dir`). Track [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | v1.4.0 |
 | **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration; `0.1` traces remain readable. | post–v1.2.0 |
-| **CI reporters** | Vitest (and similar) reporters for local trace artifacts in CI logs. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | ~v1.4.x |
 | **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.4.x |
-| **`timeline` / `stats` / cohort views** | CLI views for chronological timelines and lightweight aggregates — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11), [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.4.x |
 | **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.x |
+| **Cohort / check helpers** | Local multi-run aggregates and regression checks — not hosted eval. | ~v1.5.x |
 
 ---
 

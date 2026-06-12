@@ -15,10 +15,10 @@
 
 - LangChain `capture: "metadata-only"` remains default; full stream text is not captured by default.
 - LangChain streaming does not emit per-token JSONL events.
-
 - Redaction profiles are key-based safeguards, not compliance-grade PII detection.
 - Export redaction does not upload anywhere and does not mutate original traces.
-- Manual trace writing remains `schemaVersion: "0.1"`.
+- No vendor upload, hosted dashboard, or OTLP HTTP sink was added.
+- Manual trace writing remains `schemaVersion: "0.1"`; v0.2 is not written by default.
 
 ## 1.2.0
 

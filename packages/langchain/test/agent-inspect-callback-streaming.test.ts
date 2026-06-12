@@ -207,6 +207,18 @@ describe("AgentInspectCallback streaming", () => {
     spy.mockRestore();
   });
 
+  it("does not emit per-token InspectEvents when streaming many tokens", async () => {
+    const cb = new AgentInspectCallback({ stream: true, capture: "metadata-only" });
+    await cb.handleLLMStart(mockSerialized("m"), ["p"], "spam-run");
+    for (let i = 0; i < 50; i++) {
+      cb.handleLLMNewToken(`t${i}`, { prompt: 0, completion: i }, "spam-run");
+    }
+    await cb.handleLLMEnd({ llmOutput: {} } as unknown as LLMResult, "spam-run");
+    const llmEvents = cb.getEvents().filter((e) => e.kind === "LLM");
+    expect(llmEvents).toHaveLength(2);
+    expect(llmEvents[1]?.attributes?.chunkCount).toBe(50);
+  });
+
   it("includes correlation metadata on LLM lifecycle when inside inspectRun", async () => {
     const cb = new AgentInspectCallback({ stream: true, capture: "metadata-only" });
     await inspectRun(

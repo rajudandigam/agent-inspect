@@ -13,5 +13,17 @@ describe("@agent-inspect/langchain API stability (v1.0 Pass 1)", () => {
     const _streamingOpts = null as unknown as lc.LangChainStreamingOptions;
     expect(_streamingOpts).toBeNull();
   });
+
+  it("AgentInspectCallback accepts streaming options", () => {
+    const cb = new lc.AgentInspectCallback({
+      stream: true,
+      maxStreamPreviewChars: 64,
+      capture: "metadata-only",
+    });
+    expect(cb.name).toBe("agent-inspect");
+    expect(cb.getEvents()).toEqual([]);
+    cb.clear();
+    expect(cb.getEvents()).toEqual([]);
+  });
 });
 

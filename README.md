@@ -287,7 +287,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 - [Compare with other tools](docs/COMPARE.md)
 - [Security](SECURITY.md)
 - [Safe trace sharing checklist](docs/SAFE-TRACE-SHARING.md)
-- [Changelog](CHANGELOG.md)
+- [Changelog](CHANGELOG.md) — **upcoming [1.3.0](CHANGELOG.md#130--unreleased)** on `main` (not yet on npm): correlation metadata, share-safe export profiles, LangChain streaming metadata
 - [Known issues](docs/KNOWN-ISSUES.md)
 - [Limitations](docs/LIMITATIONS.md)
 - [Screenshot checklist (planned assets)](docs/SCREENSHOTS.md)
