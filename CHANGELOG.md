@@ -2,11 +2,22 @@
 
 ## 1.3.0 — Unreleased
 
+### Added
+
+- Added correlation metadata on `inspectRun` / `maybeInspectRun` (`correlationId`, `requestId`, `decisionId`, `groupId`) and `getCurrentCorrelationMetadata()`.
+- Added redaction profiles (`local`, `share`, `strict`) for trace safety and share-safe exports.
+- Added `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
+- Added `--redaction-profile` to `agent-inspect export`.
+
 ### Planned
 
-- Correlation metadata foundation.
-- Redaction profiles and share-safe export mode.
 - LangChain streaming metadata support.
+
+### Notes
+
+- Redaction profiles are key-based safeguards, not compliance-grade PII detection.
+- Export redaction does not upload anywhere and does not mutate original traces.
+- Manual trace writing remains `schemaVersion: "0.1"`.
 
 ## 1.2.0
 

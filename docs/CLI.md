@@ -1,4 +1,4 @@
-# CLI (AgentInspect 1.0)
+# CLI (AgentInspect 1.x)
 
 This document describes the **stable CLI surface** of AgentInspect.
 
@@ -178,6 +178,14 @@ Options:
 - `--include-attributes`: include bounded attributes (review before sharing)
 - `--no-metadata`: omit summary/metadata sections
 - `--no-errors`: omit error sections
+- `--redaction-profile <profile>`: redaction profile for exported copies — `local` (default), `share`, or `strict`. Key-based safety only; review exports before sharing.
+
+Examples:
+
+```bash
+npx agent-inspect export <run-id> --format markdown --redaction-profile share
+npx agent-inspect export <run-id> --format html --redaction-profile strict
+```
 
 ### 6.7 `diff`
 

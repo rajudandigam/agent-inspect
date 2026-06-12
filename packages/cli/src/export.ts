@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { ExportFormat, ExportOptions } from "@agent-inspect/core";
+import type { ExportFormat, ExportOptions, RedactionProfile } from "@agent-inspect/core";
 import {
   exportRunTree,
   manualTraceEventsToRunTree,
@@ -19,6 +19,17 @@ export interface ExportCommandOptions {
   includeAttributes?: boolean;
   noMetadata?: boolean;
   noErrors?: boolean;
+  redactionProfile?: string;
+}
+
+function parseRedactionProfile(s: string | undefined): RedactionProfile {
+  const v = (s ?? "local").trim().toLowerCase();
+  if (v === "local" || v === "share" || v === "strict") {
+    return v;
+  }
+  throw new Error(
+    `Unsupported --redaction-profile "${s ?? ""}". Use local, share, or strict.`,
+  );
 }
 
 function parseExportFormat(s: string | undefined): ExportFormat {
@@ -49,8 +60,10 @@ export async function exportCommand(
   }
 
   let format: ExportFormat;
+  let redactionProfile: RedactionProfile;
   try {
     format = parseExportFormat(options.format);
+    redactionProfile = parseRedactionProfile(options.redactionProfile);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(msg);
@@ -93,6 +106,7 @@ export async function exportCommand(
     pretty: true,
     redacted: true,
     maxAttributeLength: 500,
+    redactionProfile,
   };
 
   const result = exportRunTree(tree, exportOpts);

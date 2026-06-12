@@ -26,7 +26,8 @@ import { inspectRun, maybeInspectRun, step, observe } from "agent-inspect";
 ```
 
 - **`inspectRun(name, fn, options?)`**: wraps a workflow in a local JSONL trace (`run_started` / `run_completed`), prints terminal progress, and swallows instrumentation failures (user errors are re-thrown). **Traces by default** when `enabled` is omitted or `true`. Pass **`enabled: false`** to run `fn` with no trace file, no execution context, and no terminal output.
-  - **`redact`**: default `true` — redacts sensitive metadata keys before disk (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Pass `false` to persist metadata as-is. Pass `{ rules?: RedactionRule[] }` for custom rules (defaults still apply).
+  - **`redact`**: default `true` — redacts sensitive metadata keys before disk (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Pass `false` to persist metadata as-is. Pass `{ rules?: RedactionRule[] }` for custom rules (defaults still apply). **`redact: false` wins** over `redactionProfile` for trace writing.
+  - **`redactionProfile`**: optional preset — `local` (default), `share`, or `strict`. Adds extra key-based redaction and tighter metadata string bounds for trace writing. Key-based only — not compliance-grade DLP.
   - **`maxMetadataValueLength`**: max string length for metadata values (default `2000`).
   - **`maxPreviewLength`**: max string length for preview-like keys containing `preview` (default `500`).
   - **`maxEventBytes`**: max UTF-8 bytes per serialized JSONL event (default `65536`). Oversized events are truncated; instrumentation never throws into user code.
@@ -38,6 +39,8 @@ import { inspectRun, maybeInspectRun, step, observe } from "agent-inspect";
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
 - **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.
 - **`getCurrentCorrelationMetadata()`**: returns active run correlation fields (`correlationId`, `requestId`, `decisionId`, `groupId`) inside `inspectRun` / `maybeInspectRun`; `undefined` outside a traced run or when none were set.
+- **`RedactionProfile`**: `"local" | "share" | "strict"` — see `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
+- **`resolveRedactionProfile(profile?)`**: resolves profile extra keys and metadata caps (for advanced integrations).
 
 ## 3. Stable local inspection APIs
 
@@ -97,7 +100,8 @@ The CLI `tail` workflow is supported. The programmatic accumulator is experiment
 
 Exports are **read-only**, **local-only**, and **compatibility-oriented**. They do not upload, stream, or integrate vendor SDKs.
 
-- **`exportRunTree`**
+- **`exportRunTree`**, **`redactRunTreeForExport`**
+- **`ExportOptions.redactionProfile`**: `local` (default), `share`, or `strict` — applies key-based redaction to an exported copy without mutating the source tree.
 - **`exportMarkdown`**, **`exportHtml`**
 - **`exportOpenInference`** (OpenInference-compatible JSON)
 - **`exportOtlpJson`** (OTLP JSON, experimental until verified per backend)

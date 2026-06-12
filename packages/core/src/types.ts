@@ -179,6 +179,9 @@ export type TraceEvent =
   | StepStartedEvent
   | StepCompletedEvent;
 
+/** Named redaction presets for trace writing and share-safe exports (v1.3.0+). */
+export type RedactionProfile = "local" | "share" | "strict";
+
 /** Optional correlation fields for grouping and cross-run tracing (v1.3.0+). */
 export interface TraceCorrelationMetadata {
   correlationId?: string;
@@ -202,6 +205,12 @@ export interface InspectRunOptions extends TraceCorrelationMetadata {
    * Pass `false` to persist metadata as-is (explicit opt-out).
    */
   redact?: boolean | { rules?: RedactionRule[] };
+  /**
+   * Redaction preset for trace metadata. Default `local` (same keys as default redaction).
+   * `share` and `strict` add extra key-based redaction and tighter string bounds.
+   * Ignored when `redact: false`.
+   */
+  redactionProfile?: RedactionProfile;
   /** Max UTF-8 bytes for a serialized trace event line. Default 65536. */
   maxEventBytes?: number;
   /** Max length for string metadata values (non-preview keys). Default 2000. */

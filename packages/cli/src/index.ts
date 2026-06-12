@@ -208,6 +208,12 @@ export function createCliProgram(): Command {
     .option("--include-attributes", "include bounded attributes (review before sharing)")
     .option("--no-metadata", "omit summary / metadata sections")
     .option("--no-errors", "omit error sections")
+    .addOption(
+      new Option(
+        "--redaction-profile <profile>",
+        "redaction profile for exported copies: local, share, strict (default: local)",
+      ).choices(["local", "share", "strict"]),
+    )
     .action((runId: string, opts: ExportCommandOptions) => {
       runCommand(() => exportCommand(runId, opts));
     });

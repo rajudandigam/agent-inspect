@@ -1,6 +1,7 @@
 import type { InspectRunTree } from "../types/inspect-event.js";
 
 import type { ExportOptions, ExportResult, ExportValidationResult } from "./types.js";
+import { redactRunTreeForExport } from "./redact-export.js";
 import { exportHtml } from "./html-exporter.js";
 import { exportMarkdown } from "./markdown-exporter.js";
 import { exportOpenInference } from "./openinference-exporter.js";
@@ -16,6 +17,7 @@ export function mergeExportDefaults(options: ExportOptions): ExportOptions {
     pretty: options.pretty ?? true,
     redacted: options.redacted ?? true,
     maxAttributeLength: options.maxAttributeLength ?? 500,
+    redactionProfile: options.redactionProfile ?? "local",
   };
 }
 
@@ -25,15 +27,19 @@ export function mergeExportDefaults(options: ExportOptions): ExportOptions {
  */
 export function exportRunTree(tree: InspectRunTree, options: ExportOptions): ExportResult {
   const opts = mergeExportDefaults(options);
+  const exportTree =
+    opts.redactionProfile === "local"
+      ? tree
+      : redactRunTreeForExport(tree, { redactionProfile: opts.redactionProfile });
   switch (opts.format) {
     case "markdown":
-      return exportMarkdown(tree, opts);
+      return exportMarkdown(exportTree, opts);
     case "html":
-      return exportHtml(tree, opts);
+      return exportHtml(exportTree, opts);
     case "openinference":
-      return exportOpenInference(tree, opts);
+      return exportOpenInference(exportTree, opts);
     case "otlp-json":
-      return exportOtlpJson(tree, opts);
+      return exportOtlpJson(exportTree, opts);
     default: {
       const _x: never = opts.format;
       throw new Error(`Unsupported export format: ${String(_x)}`);
@@ -67,3 +73,4 @@ export type { OpenInferenceExport, OpenInferenceSpan } from "./openinference-exp
 export { exportOpenInference } from "./openinference-exporter.js";
 export { exportOtlpJson } from "./otlp-json-exporter.js";
 export { validateExportContent } from "./validation.js";
+export { redactRunTreeForExport } from "./redact-export.js";

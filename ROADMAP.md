@@ -35,7 +35,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: **v1.3.0** — correlation metadata foundation, redaction profiles / share-safe exports, LangChain streaming design and metadata-only support, and **OSS issue batch** triage — without expanding SaaS or vendor-upload scope.
+Focus: **v1.3.0** — correlation metadata (shipped in train), redaction profiles / share-safe exports (current chunk), LangChain streaming design and metadata-only support (next chunk), and **OSS issue batch** triage — without expanding SaaS or vendor-upload scope.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -43,8 +43,8 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Correlation metadata** | `correlationId` / `requestId` / `decisionId` propagation in persisted and manual metadata (v1.3.0 train). |
-| **Redaction profiles** | Named presets beyond default keys; share-safe export defaults — local-first, opt-in. |
+| **Correlation metadata** | Shipped — `correlationId` / `requestId` / `decisionId` / `groupId` on `run_started` metadata. |
+| **Redaction profiles** | In progress — `local` / `share` / `strict` presets; `agent-inspect export --redaction-profile`. |
 | **LangChain streaming** | Design and metadata-only streaming support ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)); size bounds; no vendor sink. |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |

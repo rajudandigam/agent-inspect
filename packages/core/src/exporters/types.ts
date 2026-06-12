@@ -3,6 +3,7 @@
  */
 
 import type { InspectRunTree } from "../types/inspect-event.js";
+import type { RedactionProfile } from "../types.js";
 
 export type ExportFormat = "markdown" | "html" | "openinference" | "otlp-json";
 
@@ -14,6 +15,11 @@ export interface ExportOptions {
   pretty?: boolean;
   redacted?: boolean;
   maxAttributeLength?: number;
+  /**
+   * Redaction preset for exported copies. Default `local`.
+   * `share` and `strict` apply stronger key-based redaction before rendering.
+   */
+  redactionProfile?: RedactionProfile;
 }
 
 export interface ExportResult {

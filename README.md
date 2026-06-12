@@ -159,7 +159,7 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - See **which step dominated latency** in a multi-step planner or RAG pipeline.
 - **Diff two runs** after a prompt, model, or routing change (see [diff examples](docs/DIFF.md)).
 - Point **`logs`** / **`tail`** at existing job or service logs to get a **local execution view** without shipping data upstream.
-- **Export** a run to Markdown for a PR, postmortem, or internal thread — then review before sharing.
+- **Export** a run to Markdown for a PR, postmortem, or internal thread — use `--redaction-profile share` for share-safe copies, then review before sharing.
 - Keep traces **on disk** while still using enterprise observability elsewhere.
 
 ## Stable foundation (AgentInspect 1.x)

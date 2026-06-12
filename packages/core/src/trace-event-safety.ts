@@ -1,7 +1,17 @@
 import { Redactor } from "./logs/redactor.js";
+import {
+  applyProfileMetadataCaps,
+  resolveRedactionProfile,
+  type ResolvedRedactionProfile,
+} from "./redaction-profiles.js";
 import { serializeEvent } from "./storage.js";
 import type { RedactionRule } from "./types/log-config.js";
-import type { InspectRunOptions, StepMetadata, TraceEvent } from "./types.js";
+import type {
+  InspectRunOptions,
+  RedactionProfile,
+  StepMetadata,
+  TraceEvent,
+} from "./types.js";
 
 /** Default max length for string metadata values (non-preview keys). */
 export const DEFAULT_MAX_METADATA_VALUE_LENGTH = 2000;
@@ -16,10 +26,15 @@ export const DEFAULT_MAX_EVENT_BYTES = 65_536;
 export interface TraceSafetyOptions {
   redactEnabled: boolean;
   redactionRules?: RedactionRule[];
+  redactionProfile: RedactionProfile;
+  profileExtraKeys: readonly string[];
   maxMetadataValueLength: number;
   maxPreviewLength: number;
   maxEventBytes: number;
 }
+
+export type { ResolvedRedactionProfile };
+export { resolveRedactionProfile };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -43,7 +58,11 @@ function byteLength(text: string): number {
 export function resolveTraceSafetyOptions(
   options?: Pick<
     InspectRunOptions,
-    "redact" | "maxEventBytes" | "maxMetadataValueLength" | "maxPreviewLength"
+    | "redact"
+    | "redactionProfile"
+    | "maxEventBytes"
+    | "maxMetadataValueLength"
+    | "maxPreviewLength"
   >,
 ): TraceSafetyOptions {
   const redact = options?.redact;
@@ -59,21 +78,42 @@ export function resolveTraceSafetyOptions(
     redactionRules = redact.rules;
   }
 
+  const profile = options?.redactionProfile ?? "local";
+  const resolvedProfile = resolveRedactionProfile(profile);
+
+  const userMaxMetadata =
+    typeof options?.maxMetadataValueLength === "number" &&
+    Number.isFinite(options.maxMetadataValueLength) &&
+    options.maxMetadataValueLength >= 0
+      ? Math.floor(options.maxMetadataValueLength)
+      : undefined;
+  const userMaxPreview =
+    typeof options?.maxPreviewLength === "number" &&
+    Number.isFinite(options.maxPreviewLength) &&
+    options.maxPreviewLength >= 0
+      ? Math.floor(options.maxPreviewLength)
+      : undefined;
+
+  let maxMetadataValueLength = userMaxMetadata ?? DEFAULT_MAX_METADATA_VALUE_LENGTH;
+  let maxPreviewLength = userMaxPreview ?? DEFAULT_MAX_PREVIEW_LENGTH;
+
+  if (redactEnabled && profile !== "local") {
+    const capped = applyProfileMetadataCaps(
+      maxMetadataValueLength,
+      maxPreviewLength,
+      resolvedProfile,
+    );
+    maxMetadataValueLength = capped.maxMetadataValueLength;
+    maxPreviewLength = capped.maxPreviewLength;
+  }
+
   return {
     redactEnabled,
     redactionRules,
-    maxMetadataValueLength:
-      typeof options?.maxMetadataValueLength === "number" &&
-      Number.isFinite(options.maxMetadataValueLength) &&
-      options.maxMetadataValueLength >= 0
-        ? Math.floor(options.maxMetadataValueLength)
-        : DEFAULT_MAX_METADATA_VALUE_LENGTH,
-    maxPreviewLength:
-      typeof options?.maxPreviewLength === "number" &&
-      Number.isFinite(options.maxPreviewLength) &&
-      options.maxPreviewLength >= 0
-        ? Math.floor(options.maxPreviewLength)
-        : DEFAULT_MAX_PREVIEW_LENGTH,
+    redactionProfile: profile,
+    profileExtraKeys: redactEnabled ? resolvedProfile.extraKeys : [],
+    maxMetadataValueLength,
+    maxPreviewLength,
     maxEventBytes:
       typeof options?.maxEventBytes === "number" &&
       Number.isFinite(options.maxEventBytes) &&
@@ -129,7 +169,10 @@ function redactMetadata(
   opts: TraceSafetyOptions,
 ): Record<string, unknown> {
   if (!opts.redactEnabled) return { ...metadata };
-  const redactor = new Redactor({ rules: opts.redactionRules });
+  const redactor = new Redactor({
+    rules: opts.redactionRules,
+    extraKeys: opts.profileExtraKeys,
+  });
   return redactor.redactRecord(metadata);
 }
 

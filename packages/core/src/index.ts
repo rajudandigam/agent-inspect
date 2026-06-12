@@ -18,6 +18,7 @@ export type {
   TraceMetadata,
   RunSummary,
   InspectRunOptions,
+  RedactionProfile,
   TraceCorrelationMetadata,
   StepOptions,
   ObserveOptions,
@@ -205,13 +206,17 @@ export {
   renderRunSummary,
 } from "./terminal.js";
 
-export type { TraceSafetyOptions } from "./trace-event-safety.js";
+export type {
+  ResolvedRedactionProfile,
+  TraceSafetyOptions,
+} from "./trace-event-safety.js";
 export {
   DEFAULT_MAX_EVENT_BYTES,
   DEFAULT_MAX_METADATA_VALUE_LENGTH,
   DEFAULT_MAX_PREVIEW_LENGTH,
   prepareMetadataForDisk,
   prepareTraceEventForDisk,
+  resolveRedactionProfile,
   resolveTraceSafetyOptions,
 } from "./trace-event-safety.js";
 
@@ -231,6 +236,7 @@ export { EXPORT_PAYLOAD_VERSION } from "./exporters/types.js";
 export {
   mergeExportDefaults,
   exportRunTree,
+  redactRunTreeForExport,
   validateExport,
   manualTraceEventsToRunTree,
   exportMarkdown,

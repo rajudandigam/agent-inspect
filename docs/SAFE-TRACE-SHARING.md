@@ -2,11 +2,25 @@
 
 AgentInspect traces, log-ingest outputs, and exports are local files. They may still contain sensitive metadata that you attached manually, collected from logs, or included through optional preview settings. Use this checklist before sharing an artifact in a GitHub issue, Discussion, PR, support thread, or public post.
 
-This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish.
+This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **key-based safeguards**, not compliance-grade DLP.
+
+## Quick presets (v1.3.0+)
+
+- **`--redaction-profile share`** — PRs, GitHub issues, Slack/email threads inside your org. Redacts correlation IDs, customer/user IDs, and common contact fields.
+- **`--redaction-profile strict`** — external sharing or public posts. Also redacts prompt/output/message-like metadata keys.
+- **Default (`local`)** — same as before; still review before sharing.
+
+```bash
+npx agent-inspect export <run-id> --format markdown --redaction-profile share
+npx agent-inspect export <run-id> --format html --redaction-profile strict
+```
+
+Original trace files under `.agent-inspect-runs/` are **not modified** by export redaction.
 
 ## Before sharing
 
-- Prefer redacted output. Keep exporter defaults unless you have a specific reason to include more detail.
+- Use **`--redaction-profile share`** for PR/issue attachments; use **`strict`** when sharing outside your team.
+- **Review** the exported file — profiles do not detect all sensitive data.
 - Treat traces written with `redact: false` as sensitive. Review every event before sharing them outside your team.
 - Inspect manual metadata passed to `inspectRun()`, `step()`, `step.tool()`, `step.llm()`, or `observe()`.
 - Inspect log-derived fields from `logs` / `tail` ingest configs, including custom `run-id`, `event`, `parent`, timestamp, and attribute mappings.

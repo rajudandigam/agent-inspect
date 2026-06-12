@@ -14,6 +14,8 @@ export const DEFAULT_REDACT_KEYS = [
 
 export interface RedactorOptions {
   rules?: RedactionRule[];
+  /** Additional exact keys (case-insensitive) to redact in addition to defaults. */
+  extraKeys?: readonly string[];
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -34,7 +36,10 @@ type CompiledRule =
   | { key: string; strategy: "prefix"; keep: number }
   | { key: string; strategy: "hash" };
 
-function compileRules(rules?: RedactionRule[]): CompiledRule[] {
+function compileRules(
+  rules?: RedactionRule[],
+  extraKeys?: readonly string[],
+): CompiledRule[] {
   const out = new Map<string, CompiledRule>();
 
   const set = (r: CompiledRule) => {
@@ -44,6 +49,12 @@ function compileRules(rules?: RedactionRule[]): CompiledRule[] {
 
   for (const k of DEFAULT_REDACT_KEYS) {
     set({ key: k, strategy: "full" });
+  }
+
+  for (const k of extraKeys ?? []) {
+    if (typeof k === "string" && k.length > 0) {
+      set({ key: k, strategy: "full" });
+    }
   }
 
   for (const r of rules ?? []) {
@@ -66,7 +77,7 @@ export class Redactor {
   readonly #rules: CompiledRule[];
 
   constructor(options?: RedactorOptions) {
-    this.#rules = compileRules(options?.rules);
+    this.#rules = compileRules(options?.rules, options?.extraKeys);
   }
 
   redactValue(key: string, value: unknown): unknown {

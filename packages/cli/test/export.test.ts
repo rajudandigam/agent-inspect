@@ -106,6 +106,79 @@ describe("export CLI", () => {
     errSpy.mockRestore();
   });
 
+  it("accepts --redaction-profile share", async () => {
+    const runId = "run_share_prof";
+    const lines = [
+      JSON.stringify({
+        schemaVersion: "0.1",
+        event: "run_started",
+        timestamp: 1,
+        runId,
+        name: "ex",
+        startTime: 1,
+      }),
+      JSON.stringify({
+        schemaVersion: "0.1",
+        event: "step_started",
+        timestamp: 2,
+        runId,
+        stepId: "s1",
+        name: "step",
+        type: "logic",
+        startTime: 2,
+        metadata: { correlationId: "corr-cli", customerId: "cust-cli" },
+      }),
+      JSON.stringify({
+        schemaVersion: "0.1",
+        event: "step_completed",
+        timestamp: 3,
+        runId,
+        stepId: "s1",
+        status: "success",
+        endTime: 3,
+        durationMs: 1,
+      }),
+      JSON.stringify({
+        schemaVersion: "0.1",
+        event: "run_completed",
+        timestamp: 4,
+        runId,
+        status: "success",
+        endTime: 4,
+        durationMs: 3,
+      }),
+      "",
+    ].join("\n");
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), lines, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await exportCommand(runId, {
+      dir: traceDir,
+      format: "markdown",
+      includeAttributes: true,
+      redactionProfile: "share",
+    });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("[REDACTED]");
+    expect(out).not.toContain("corr-cli");
+    logSpy.mockRestore();
+  });
+
+  it("rejects invalid --redaction-profile", async () => {
+    const runId = "run_bad_prof";
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), jsonl(runId), "utf-8");
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    await exportCommand(runId, {
+      dir: traceDir,
+      format: "markdown",
+      redactionProfile: "ultra",
+    });
+    expect(process.exitCode).toBe(1);
+    expect(errSpy.mock.calls.map((c) => String(c[0])).join("\n")).toMatch(
+      /redaction-profile/i,
+    );
+    errSpy.mockRestore();
+  });
+
   it("uses AGENT_INSPECT_TRACE_DIR", async () => {
     const runId = "run_env_ex";
     await writeFile(path.join(traceDir, `${runId}.jsonl`), jsonl(runId), "utf-8");
