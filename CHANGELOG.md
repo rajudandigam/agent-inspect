@@ -8,12 +8,13 @@
 - Added redaction profiles (`local`, `share`, `strict`) for trace safety and share-safe exports.
 - Added `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
 - Added `--redaction-profile` to `agent-inspect export`.
-
-### Planned
-
-- LangChain streaming metadata support.
+- Added LangChain streaming metadata support (`stream: true`) for token chunk counts and duration.
+- Added bounded preview behavior for preview capture mode (`maxStreamPreviewChars`).
 
 ### Notes
+
+- LangChain `capture: "metadata-only"` remains default; full stream text is not captured by default.
+- LangChain streaming does not emit per-token JSONL events.
 
 - Redaction profiles are key-based safeguards, not compliance-grade PII detection.
 - Export redaction does not upload anywhere and does not mutate original traces.

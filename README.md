@@ -194,7 +194,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 ### LangChain callback adapter (`@agent-inspect/langchain`)
 
-Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. The LangChain adapter ships with 1.x; its programmatic API remains experimental and may evolve independently of the stable core tracing API.
+Optional package: official **LangChain.js callbacks** (`BaseCallbackHandler`), **metadata-oriented by default**, **no monkey-patching**, **no vendor sink**. Optional **`stream: true`** records chunk counts and stream duration **without storing full token text by default**. The LangChain adapter ships with 1.x; its programmatic API remains experimental and may evolve independently of the stable core tracing API.
 
 ```bash
 pnpm add agent-inspect @agent-inspect/langchain @langchain/core

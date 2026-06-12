@@ -6,6 +6,7 @@ export type {
   AgentInspectCallbackOptions,
   CaptureMode,
   LangChainRunMetadata,
+  LangChainStreamingOptions,
 } from "./types.js";
 export {
   extractModelName,

@@ -9,6 +9,9 @@ describe("@agent-inspect/langchain API stability (v1.0 Pass 1)", () => {
     expect(typeof lc.extractTokenUsage).toBe("function");
     expect(typeof lc.safePreview).toBe("function");
     expect(typeof lc.toPlainMetadata).toBe("function");
+
+    const _streamingOpts = null as unknown as lc.LangChainStreamingOptions;
+    expect(_streamingOpts).toBeNull();
   });
 });
 

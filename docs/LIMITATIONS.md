@@ -19,6 +19,12 @@ This document states what AgentInspect **does not** provide today. It complement
 - **CLI commands** (`list`, `view`, `export`, `diff`, `logs`, `tail`) still primarily operate on current v0.1 trace and log paths.
 - **v0.2 read/write integration** (dual-format storage, CLI consumption) is future work — v1.2.0 ships in-memory converters and canonical fixtures only.
 
+## LangChain streaming (v1.3.0)
+
+- **Metadata-focused only** — `stream: true` records chunk counts, timing, and optional bounded previews; it is **not** a replay/cassette system.
+- **No full token stream storage by default** — even with `stream: true`, `capture: "metadata-only"` does not persist raw streamed text.
+- **No per-token JSONL events** — streaming does not emit one trace line per token.
+
 ## Data fidelity
 
 - **No full prompt/output capture by default** for manual traces (by design: safety and PII risk).

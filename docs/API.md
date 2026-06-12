@@ -125,6 +125,8 @@ Diff is local and read-only. Programmatic diff surfaces are experimental until t
   - **`runName`**: default `"langchain-agent"` for standalone persisted runs
   - **`traceDir`**: defaults via `resolveTraceDir` / `AGENT_INSPECT_TRACE_DIR`
   - **`capture`**: `"none"` | `"metadata-only"` (default) | `"preview"` (truncated previews, opt-in)
+  - **`stream`**: default `false` — when `true`, records streaming lifecycle metadata (`chunkCount`, `streamDurationMs`, etc.) on LLM end/error; does **not** capture full token text by default
+  - **`maxStreamPreviewChars`**: bounds `streamPreview` when `capture: "preview"` and `stream: true` (defaults to `maxPreviewChars`)
   - **`redact`**: custom `RedactionRule[]` applied before disk (core defaults still apply via shared redactor)
   - **`runId`**: optional id for standalone persisted runs
   - In-memory **`getEvents()`** / **`clear()`** unchanged when `persist` is false

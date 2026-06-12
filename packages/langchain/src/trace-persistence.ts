@@ -157,9 +157,31 @@ export class LangChainTracePersistence {
     durationMs?: number;
     status: "success" | "error";
     errorMessage?: string;
+    completionAttributes?: Record<string, unknown>;
   }): Promise<void> {
     try {
-      const stepId = this.#lcToStepId.get(params.lcRunId);
+      let stepId = this.#lcToStepId.get(params.lcRunId);
+      if (!stepId && params.completionAttributes) {
+        stepId = createStepId();
+        this.#lcToStepId.set(params.lcRunId, stepId);
+        const parentId = this.resolveParentId(params.lcParentRunId);
+        const startTime = params.endTime - (params.durationMs ?? 0);
+        const started: TraceEvent = {
+          schemaVersion: "0.1",
+          event: "step_started",
+          timestamp: startTime,
+          runId: this.#runId,
+          stepId,
+          ...(parentId ? { parentId } : {}),
+          name: String(params.completionAttributes.name ?? "llm:llm"),
+          type: kindToStepType(
+            (params.completionAttributes.kind as InspectKind | undefined) ?? "LLM",
+          ),
+          startTime,
+          metadata: toStepMetadata(params.completionAttributes),
+        };
+        await this.#write(started);
+      }
       if (!stepId) return;
 
       const durationMs =
