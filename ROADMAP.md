@@ -6,11 +6,19 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.1.0](CHANGELOG.md#110) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`). **v1.2.0** is in **release-readiness** on `main` (persisted-event foundation complete; **not published** until maintainer version bump + release). Scope: types, validators, converters, in-memory tree bridge, docs, and v0.2 fixtures — **not** default `0.2` file writing or CLI migration. See [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md).
+**Current release on npm:** [1.2.0](CHANGELOG.md#120) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`).
 
 ---
 
 ## Released recently
+
+Shipped in **1.2.0** (see [CHANGELOG.md](CHANGELOG.md#120)):
+
+- **Persisted-event foundation:** `PersistedInspectEvent` model (`schemaVersion: "0.2"`), `isPersistedInspectEvent` validator.
+- **Converters:** v0.1 `TraceEvent` → persisted; `InspectEvent` ↔ `PersistedInspectEvent`.
+- **In-memory tree bridge:** `persistedInspectEventsToRunTrees`, `traceEventsToPersistedRunTrees` (via existing `TreeBuilder`).
+- **Docs and fixtures:** v0.2 schema/API docs; canonical `fixtures/traces-v0.2/` samples.
+- **Unchanged by design:** manual trace writing remains `schemaVersion: "0.1"`; v0.2 is **not written by default**; CLI read/write behavior unchanged.
 
 Shipped in **1.1.0** (see [CHANGELOG.md](CHANGELOG.md#110)):
 
@@ -27,7 +35,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: validate **1.1.0 compatibility** in real consumer environments (ESM, CJS, Jest-style tests), support **current OSS issue batches**, **design LangChain streaming** ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)), **plan CI trace artifacts** ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)), and **collect feedback** — without expanding SaaS or vendor-upload scope.
+Focus: **v1.3.0** — correlation metadata foundation, redaction profiles / share-safe exports, LangChain streaming design and metadata-only support, and **OSS issue batch** triage — without expanding SaaS or vendor-upload scope.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -35,12 +43,13 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Validate 1.1.0 compatibility** | `pnpm compat:smoke`, `pnpm pack:smoke`, ESM/CJS/Jest-style consumer fixtures — see [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md#common-installruntime-compatibility-checks). |
-| **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18); contributors should comment before opening PRs. |
-| **Design LangChain streaming** | Maintainer-owned RFC ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)) — metadata-only defaults, size bounds; no implementation in v1.1.1. |
-| **Plan CI trace artifacts** | Recipes and reporter proposals ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)) — local artifacts only, no upload pipeline. |
+| **Correlation metadata** | `correlationId` / `requestId` / `decisionId` propagation in persisted and manual metadata (v1.3.0 train). |
+| **Redaction profiles** | Named presets beyond default keys; share-safe export defaults — local-first, opt-in. |
+| **LangChain streaming** | Design and metadata-only streaming support ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)); size bounds; no vendor sink. |
+| **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
-| **v1.2.0 release readiness** | Persisted-event foundation merged (types, converters, tree bridge, fixtures, docs). Awaiting maintainer validation + version bump — see [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md). OSS batches [#7–#30](https://github.com/rajudandigam/agent-inspect/issues/18) remain parallel. |
+
+Train guide: [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -52,13 +61,11 @@ Focus: deepen local inspection workflows — still no vendor sinks in core.
 
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
-| **LangChain streaming** | Design and optional support for streaming callbacks (experimental surface). Track [#14](https://github.com/rajudandigam/agent-inspect/issues/14). | ~v1.2.x |
-| **Redaction profiles** | Named presets for metadata redaction beyond default keys — local-first, opt-in. | ~v1.2.x |
-| **CI reporters** | Vitest (and similar) reporters for local trace artifacts in CI logs. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | ~v1.3.x |
-| **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.3.x |
-| **`timeline` / `stats` / cohort views** | CLI views for chronological timelines and lightweight aggregates — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11), [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.3.x |
-| **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration after v1.2.0 foundation publish; `0.1` traces remain readable. | post–v1.2.0 |
-| **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.4.x |
+| **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration; `0.1` traces remain readable. | post–v1.2.0 |
+| **CI reporters** | Vitest (and similar) reporters for local trace artifacts in CI logs. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | ~v1.4.x |
+| **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.4.x |
+| **`timeline` / `stats` / cohort views** | CLI views for chronological timelines and lightweight aggregates — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11), [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | ~v1.4.x |
+| **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.x |
 
 ---
 
@@ -97,9 +104,9 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 
 | Train | Status | Guide |
 | ----- | ------ | ----- |
-| **v1.2.0** — Unified persisted InspectEvent | Design done; implementation PR 2–8 pending | [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md) |
-| **v1.3.0** — LangChain streaming, correlation, redaction profiles | Planned | Same guide §4 |
-| **v1.4.0** — CI artifacts, timeline, stats | Planned | Same guide §4 |
+| **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
+| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **In progress** | [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) |
+| **v1.4.0** — CI artifacts, timeline, stats | Planned | [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md) §4 |
 | **v2.0** — Stable trace contract | Future | Same guide §4 |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

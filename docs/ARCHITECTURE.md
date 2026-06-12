@@ -19,7 +19,7 @@ Root `agent-inspect` uses **conditional exports** for ESM/CJS TypeScript consume
 - Manual traces use **`schemaVersion: "0.1"`** JSONL events (`run_started`, `step_started`, `step_completed`, `run_completed`).
 - Failures use `step_completed` with `status: "error"` — there is no `step_failed` event.
 - Log-derived runs use confidence labels (`explicit`, `correlated`, `heuristic`, `unknown`) and conservative tree-building rules.
-- **v1.2.0 persisted-event foundation (release-readiness):** source-agnostic `PersistedInspectEvent` helpers (`schemaVersion: "0.2"`) — types, validators, converters, and in-memory tree bridge. Existing **`TreeBuilder`** remains the canonical tree builder. v0.2 bridge works **in memory only**; storage dual-read and CLI integration are future work. See [proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md](./proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) and [implementation/V1.2.0-RELEASE-READINESS.md](./implementation/V1.2.0-RELEASE-READINESS.md).
+- **v1.2.0 persisted-event foundation (released):** source-agnostic `PersistedInspectEvent` helpers (`schemaVersion: "0.2"`) — types, validators, converters, and in-memory tree bridge. Existing **`TreeBuilder`** remains the canonical tree builder. v0.2 bridge works **in memory only**; storage dual-read and CLI integration are v1.3+ / post-foundation work. See [proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md](./proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md) and [implementation/V1.3.0-RELEASE-TRAIN.md](./implementation/V1.3.0-RELEASE-TRAIN.md).
 
 See [SCHEMA.md](./SCHEMA.md) for field reference and [API.md](./API.md) for public surfaces (stable vs experimental).
 

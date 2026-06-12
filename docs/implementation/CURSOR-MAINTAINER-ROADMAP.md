@@ -42,37 +42,29 @@ AgentInspect is **not**:
 
 ### v1.2.0 — Unified persisted InspectEvent foundation
 
-**npm status:** Not published — `package.json` remains **1.1.0** until this train ships.  
-**Design status:** PR 1 complete (proposal + checklist). Implementation chunks PR 2–8 pending.
+**npm status:** **Published** 2026-06-11 (`1.2.0`).  
+**Shipped:** types, validators, converters, in-memory tree bridge, v0.2 fixtures/docs. Storage/CLI migration deferred.
 
-| Chunk | Scope | Publish alone? |
-| ----- | ----- | -------------- |
-| **PR 1** | Proposal, checklist, architecture links | No — docs only |
-| **PR 2** | `PersistedInspectEvent` types + `isPersistedInspectEvent` validator | No |
-| **PR 3** | Legacy `0.1` `TraceEvent` → persisted conversion helpers | No |
-| **PR 4** | Log-derived `InspectEvent` → persisted conversion helpers | No |
-| **PR 5** | LangChain adapter event → persisted conversion helpers | No |
-| **PR 6** | Source-agnostic tree builder bridge | No |
-| **PR 7** | CLI read-path integration (if approved) | No |
-| **PR 8** | Docs, fixtures, CHANGELOG preparation for v1.2.0 | No — still needs changeset + publish instruction |
+Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checklist: [UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md)
 
-**Train publish criteria:** Types, converters, read path, and docs are coherent; `schemaVersion: "0.1"` traces still readable; `pnpm compat:smoke` passes.
+### v1.3.0 — Correlation, redaction profiles, LangChain streaming (current)
 
-Checklist: [UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md)  
-Next prompt stub: [prompts/v1.2.0-pr2-persisted-event-types.md](./prompts/v1.2.0-pr2-persisted-event-types.md)
+**npm status:** Not published — train in progress on `main`.  
+**Guide:** [V1.3.0-RELEASE-TRAIN.md](./V1.3.0-RELEASE-TRAIN.md)
+
+| Chunk | Scope |
+| ----- | ----- |
+| **3A** | Correlation metadata propagation |
+| **3B** | Redaction profile presets |
+| **3C** | Share-safe export defaults |
+| **3D** | LangChain streaming design + metadata-only hooks ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)) |
+| **3E** | Docs, CHANGELOG, release readiness |
 
 ---
 
 ## 4. Next release trains
 
-Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md).
-
-### v1.3.0 — LangChain depth + correlation + redaction profiles
-
-- LangChain streaming (design [#14](https://github.com/rajudandigam/agent-inspect/issues/14), maintainer-owned)
-- `correlationId` / `requestId` / `decisionId` propagation in persisted metadata
-- Capture policy: `onSuccess` metadata-only / `onError` preview
-- Redaction profiles and share-safe export defaults
+Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current train:** v1.3.0 (§3 above).
 
 ### v1.4.0 — CI artifacts + timeline + stats
 

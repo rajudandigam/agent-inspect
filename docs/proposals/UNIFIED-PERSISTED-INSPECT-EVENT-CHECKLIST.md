@@ -45,6 +45,12 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 
 ---
 
+## v1.2.0 — Shipped (2026-06-11)
+
+- [x] Published to npm as `agent-inspect@1.2.0`
+- [x] All foundation chunks (2A–3, release readiness) merged
+- [x] Manual trace writing remains `schemaVersion: "0.1"`
+
 ## Release readiness — v1.2.0 foundation (completed)
 
 - [x] Public exports (types, validators, converters, tree bridge) from `packages/core/src/index.ts`
@@ -54,13 +60,19 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 - [x] `docs/SCHEMA.md` — v0.2 section
 - [x] `docs/API.md` — experimental persisted-event helpers
 - [x] `docs/ARCHITECTURE.md`, `docs/LIMITATIONS.md` alignment
-- [x] `CHANGELOG.md` — `1.2.0 — Unreleased` draft
+- [x] `CHANGELOG.md` — `1.2.0` released section
 - [x] `docs/implementation/V1.2.0-RELEASE-READINESS.md`
 - [x] **No** package version bump, publish, or tag in release-readiness work
 
 ---
 
-## Future / not complete
+## v1.3.0 train (current — see [V1.3.0-RELEASE-TRAIN.md](../implementation/V1.3.0-RELEASE-TRAIN.md))
+
+- [ ] Correlation metadata foundation
+- [ ] Redaction profiles / share-safe exports
+- [ ] LangChain streaming design + metadata-only support ([#14](https://github.com/rajudandigam/agent-inspect/issues/14))
+
+## Future / not complete (post–v1.3)
 
 - [ ] Storage dual-read (`readPersistedEvents`, dual-format line detection)
 - [ ] CLI read-path integration (`list`, `view`, `export`, `diff`, `logs`, `tail`)

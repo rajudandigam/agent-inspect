@@ -20,7 +20,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.1.0**.
+Current npm release: **1.2.0**.
 
 ```bash
 npm install agent-inspect
@@ -164,7 +164,7 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 ## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.x** (current: **1.1.0**) stabilizes the **local debugging foundation**:
+**agent-inspect 1.x** (current: **1.2.0**) stabilizes the **local debugging foundation**:
 
 - Instrument a run with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
@@ -186,6 +186,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 - Optional **`@agent-inspect/langchain`** callback adapter
 - Optional **`@agent-inspect/tui`** terminal viewer
 - **Fixtures** and **recipes** for deterministic checks and adoption patterns
+- **v1.2.0** — experimental persisted-event foundation (`PersistedInspectEvent`, converters, in-memory tree bridge) for future source-agnostic local inspection. Manual trace writing remains **`schemaVersion: "0.1"`**; v0.2 is **not written by default**; CLI behavior unchanged; no vendor upload.
 
 **Honest boundaries:** programmatic log parsing, export, and diff APIs; LangChain and TUI programmatic surfaces; and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
 
