@@ -36,7 +36,10 @@ On each package: **Settings → Trusted Publisher → GitHub Actions**
 3. Confirm versions: `npm view agent-inspect version`, `npm view @agent-inspect/langchain version`, `npm view @agent-inspect/tui version`.
 4. Create or update the GitHub Release if tags are incomplete.
 
-Scoped packages require `"publishConfig": { "access": "public" }` in their `package.json` (already set in-repo).
+Scoped packages require in `package.json`:
+
+- `"publishConfig": { "access": "public" }`
+- `"repository"` matching the GitHub repo (required when `NPM_CONFIG_PROVENANCE=true`; missing `repository.url` causes `E422` provenance validation failures)
 
 Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
 

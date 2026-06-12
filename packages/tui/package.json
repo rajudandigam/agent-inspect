@@ -5,6 +5,15 @@
   "type": "module",
   "private": false,
   "description": "Optional Ink-based terminal UI for inspecting AgentInspect traces",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/tui"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
