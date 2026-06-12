@@ -162,7 +162,7 @@ Important: `tail` is a local developer tool, not a production monitor.
 
 ### 6.6 `export`
 
-Export a manual trace run to local formats. **No upload**.
+Export a manual trace run to local formats. **No upload.** Export redaction operates on a **copy** of the run tree — original JSONL files are not modified. Review every export before sharing, even with `--redaction-profile strict`.
 
 ```bash
 agent-inspect export <run-id> --format <markdown|html|openinference|otlp-json> [options]

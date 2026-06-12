@@ -16,6 +16,12 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 
 - **Vendor sinks** (hosted dashboards, Langfuse/Braintrust/New Relic/Datadog native uploads, OTLP gRPC streaming, etc.) are **not implemented** in the core packages described here.
 - **LangChain adapter** captures **metadata-oriented** signals by default; it does not replace full framework observability.
+- **LangChain `stream: true`** records chunk counts and timing only — not a full token replay. Per-token JSONL events are not emitted.
+- **Correlation metadata** (`correlationId`, `requestId`, `decisionId`, `groupId`) is written on `run_started` but **CLI list/view does not filter by correlation fields** yet.
+
+## Structured log parsing
+
+- Ingest requires **line-delimited JSON** or a **recoverable JSON payload** in the log line (log4js-style is best-effort). Arbitrary printf-style text without JSON is not supported.
 
 ## UI / replay
 

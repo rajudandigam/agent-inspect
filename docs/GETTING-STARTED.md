@@ -60,6 +60,24 @@ AGENT_INSPECT=1 node eval-runner.mjs
 
 Enable tokens: `1`, `true`, `yes`, `on`, `enabled` (case-insensitive). Explicit `enabled: true | false` in options overrides the env var.
 
+### Correlation metadata (v1.3.0+)
+
+Attach optional correlation fields to `run_started` metadata — useful for eval cases, CI job IDs, and future stats views. They are **metadata only**, not run IDs. Review before sharing exports.
+
+```ts
+await inspectRun(
+  "support-agent",
+  async () => runAgent(),
+  {
+    correlationId: "eval-suite-2026-06",
+    requestId: "req-abc123",
+    groupId: "ci-job-42",
+  }
+);
+```
+
+Inside a traced run, adapters can read active fields via `getCurrentCorrelationMetadata()`.
+
 ### Install compatibility
 
 If `import` or `require` fails after install, see [KNOWN-ISSUES.md — Common install/runtime compatibility checks](./KNOWN-ISSUES.md#common-installruntime-compatibility-checks).
@@ -109,7 +127,14 @@ agent-inspect export minimal-success --dir fixtures/traces --format markdown
 agent-inspect export minimal-success --dir fixtures/traces --format openinference --validate
 ```
 
-Exports are **local-only** and do not upload anywhere.
+Share-safe copy for a PR or issue (v1.3.0+):
+
+```bash
+agent-inspect export minimal-success --dir fixtures/traces \
+  --format markdown --redaction-profile share
+```
+
+Exports are **local-only** and do not upload anywhere. Review output before sharing — see [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
 
 ## 8. Diff two runs
 
@@ -151,6 +176,9 @@ agent-inspect view <runId> --tui
 - [docs/API.md](./API.md)
 - [docs/CLI.md](./CLI.md)
 - [docs/SCHEMA.md](./SCHEMA.md)
+- [docs/EXPORTS.md](./EXPORTS.md)
+- [docs/SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md)
+- [docs/ADAPTERS.md](./ADAPTERS.md)
 - [docs/LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)
 - [docs/COMPARE.md](./COMPARE.md)
 - [docs/LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md)

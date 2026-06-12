@@ -1,4 +1,4 @@
-# Schema (AgentInspect 1.0)
+# Schema (AgentInspect 1.x)
 
 This document describes the **persisted manual trace JSONL schema** and the **log-derived normalized model** used by AgentInspect.
 
@@ -25,7 +25,7 @@ Manual trace events use:
 
 - **`schemaVersion: "0.1"`**
 
-Existing `0.1` traces remain readable in v1.0.
+Existing `0.1` traces remain readable across AgentInspect 1.x.
 
 ### 2.3 TraceEvent union
 
@@ -133,6 +133,7 @@ Unknown status must **not** be treated as success.
 - Steps may include `metadata` on `step_started`.
 - Manual traces intentionally avoid full prompt/output capture by default.
 - **Redaction (default on):** before disk, `inspectRun` / `step` redact sensitive keys using the shared `Redactor` defaults (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Opt out with `redact: false`.
+- **Redaction profiles (v1.3.0+):** optional `redactionProfile` (`local`, `share`, `strict`) adds preset extra keys and tighter metadata bounds for trace writing. Key-based only — not compliance-grade DLP. `export --redaction-profile` applies profiles to export copies without mutating source JSONL.
 - **Size bounds:** long string values are truncated (`maxMetadataValueLength`, default 2000; preview-like keys use `maxPreviewLength`, default 500). Serialized events are capped at `maxEventBytes` (default 65536 UTF-8 bytes). If still too large, `metadata` may be replaced with `{ truncated: true, reason: "maxEventBytes", originalApproxBytes: number }`. Required event fields are never removed.
 
 ## 7. Additive fields and unknown fields
@@ -150,7 +151,7 @@ Manual trace reading:
 
 ## 9. Backward compatibility
 
-- v0.1 JSONL traces remain readable in v1.0.
+- v0.1 JSONL traces remain readable across AgentInspect 1.x.
 - No automatic migrations or rewriting of old files.
 
 ## 10. Breaking change policy
@@ -235,7 +236,7 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 | `tokenUsage` | no | `{ input?, output?, total? }` when known |
 | `trace` | no | Optional `{ traceId?, spanId?, parentSpanId? }` for future OTel alignment |
 
-Programmatic helpers: see [API.md](./API.md) §15 (experimental persisted-event foundation).
+Programmatic helpers: see [API.md](./API.md) §11 (experimental persisted-event foundation).
 
 ## 15. Migration notes
 

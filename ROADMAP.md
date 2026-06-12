@@ -6,11 +6,18 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.2.0](CHANGELOG.md#120) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`).
+**Current release on npm:** [1.3.0](CHANGELOG.md#130) (`agent-inspect`, `@agent-inspect/langchain`; `@agent-inspect/tui` **1.2.1**).
 
 ---
 
 ## Released recently
+
+Shipped in **1.3.0** (see [CHANGELOG.md](CHANGELOG.md#130)):
+
+- **Correlation metadata:** `correlationId`, `requestId`, `decisionId`, `groupId` on `run_started`; `getCurrentCorrelationMetadata()`.
+- **Redaction profiles:** `local` / `share` / `strict` on trace writing and `agent-inspect export --redaction-profile`.
+- **LangChain streaming metadata:** opt-in `stream: true` — chunk counts, timing, bounded preview; no full token capture by default.
+- **Unchanged by design:** local-first, no vendor upload, manual traces remain `schemaVersion: "0.1"`.
 
 Shipped in **1.2.0** (see [CHANGELOG.md](CHANGELOG.md#120)):
 
@@ -35,7 +42,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: **v1.3.0 release readiness** — correlation metadata, redaction profiles / share-safe exports, and LangChain streaming metadata are implemented on `main`; final validation and publish prep remain. **OSS issue batch** triage continues without expanding SaaS or vendor-upload scope.
+Focus: **v1.4.0 planning and OSS contributor support** — CI artifact recipes, `timeline`, and `stats` CLI (see Next). **OSS issue batch** triage continues without expanding SaaS or vendor-upload scope.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -43,13 +50,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Correlation metadata** | Shipped — `correlationId` / `requestId` / `decisionId` / `groupId` on `run_started` metadata. |
-| **Redaction profiles** | Shipped — `local` / `share` / `strict` presets; `agent-inspect export --redaction-profile`. |
-| **LangChain streaming** | Shipped — metadata-only `stream: true` ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)); chunk counts/duration; no full token capture by default. |
+| **v1.4.0 train prep** | CI artifacts docs/recipe, `timeline`, `stats` — local only. Guide: [V1.4.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.4.0-IMPLEMENTATION-PLAN.md). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
 
-Train guide: [V1.3.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.3.0-IMPLEMENTATION-PLAN.md) · [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) · [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
+Train archive: [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -107,8 +112,8 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 | Train | Status | Guide |
 | ----- | ------ | ----- |
 | **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
-| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **In progress** | [V1.3.0-RELEASE-TRAIN.md](docs/implementation/V1.3.0-RELEASE-TRAIN.md) |
-| **v1.4.0** — CI artifacts, timeline, stats | Planned | [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md) §4 |
+| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
+| **v1.4.0** — CI artifacts, timeline, stats | **Planned** | [V1.4.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.4.0-IMPLEMENTATION-PLAN.md) |
 | **v2.0** — Stable trace contract | Future | Same guide §4 |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

@@ -47,6 +47,21 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 - Structured log ingest configs: confirm mapped keys do not pull in full request bodies, headers, raw prompts, or unbounded output fields.
 - LangChain adapter traces: keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments.
 
+## When to use each profile
+
+| Situation | Profile | Format tip |
+| --------- | ------- | ---------- |
+| Local debugging only | `local` (default) | Full CLI `view` is fine on your machine |
+| PR or GitHub issue attachment | `share` | `export --format markdown --redaction-profile share` |
+| External blog, public forum, customer-facing | `strict` | Review twice; prefer synthetic/minimal repro |
+| Security incident or secret leak suspicion | — | Do not post traces publicly; use [SECURITY.md](../SECURITY.md) |
+
+## What this guide does not claim
+
+- Redaction profiles are **not** GDPR/HIPAA/SOC2 compliance tools.
+- Export redaction does **not** upload anywhere — it only shapes a local copy.
+- No automated scan guarantees an artifact is safe to publish.
+
 ## Final review
 
 - Open the exact file you plan to share and search for common sensitive strings: `token`, `secret`, `authorization`, `cookie`, `password`, `email`, `apiKey`, `key`, `jwt`, `bearer`.

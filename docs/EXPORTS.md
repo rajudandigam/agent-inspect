@@ -1,26 +1,84 @@
-## Exports
+# Exports
 
-AgentInspect supports local-only exports from run trees and traces. Exports are intended for **compatibility and sharing**, but should be reviewed before sending to others.
+AgentInspect exports are **local-only**: they produce strings or files on disk. Nothing uploads to a vendor, collector, or hosted dashboard.
 
-- **CLI usage**: `docs/CLI.md` (`export`)
-- **Schema + compatibility guarantees**: `docs/SCHEMA.md`
-- **Safety / redaction notes**: `docs/CLI.md`, `SECURITY.md`, and `docs/SCHEMA.md` (redaction section)
+Use exports to share run summaries in PRs, postmortems, or internal threads — **after reviewing** the output. See [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
 
-## Share-safe exports (v1.3.0+)
-
-Use `--redaction-profile share` (PRs, issues, internal threads) or `strict` (external sharing) when generating an export copy:
+## CLI
 
 ```bash
-agent-inspect export <run-id> --format markdown --redaction-profile share
+agent-inspect export <run-id> --format <markdown|html|openinference|otlp-json> [options]
 ```
 
-- Profiles are **key-based** redaction presets — not compliance-grade PII detection.
-- Export redaction operates on a **copy** of the run tree; original JSONL traces on disk are **not mutated**.
-- **Review** every export before posting — especially when `--include-attributes` is set.
+Full flags: [CLI.md](./CLI.md) §6.6.
 
-See [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
+## Formats
 
-Notes:
-- Export formats (Markdown/HTML/OpenInference/OTLP JSON) are documented as **experimental / compatibility-oriented** in `docs/API.md`.
-- AgentInspect does **not** upload anywhere; exports write local strings/files only.
+| Format | Purpose |
+| ------ | ------- |
+| `markdown` | Human-readable tree for PRs, issues, docs |
+| `html` | Standalone HTML snapshot for local viewing |
+| `openinference` | OpenInference-compatible JSON (compatibility-oriented) |
+| `otlp-json` | OTLP JSON shape (experimental; validate per backend) |
 
+All formats are **compatibility-oriented** for local inspection and handoff — not guaranteed to match every vendor schema version.
+
+## Common options
+
+| Flag | Notes |
+| ---- | ----- |
+| `--dir <path>` | Trace directory (default from `AGENT_INSPECT_TRACE_DIR` or `.agent-inspect`) |
+| `-o, --output <path>` | Write to file instead of stdout |
+| `--json` | JSON wrapper output (includes content when not writing to file) |
+| `--validate` | Validate exported payload shape before writing |
+| `--include-attributes` | Include bounded attributes — **review before sharing** |
+| `--no-metadata` | Omit summary/metadata sections |
+| `--no-errors` | Omit error sections |
+| `--redaction-profile <local\|share\|strict>` | Key-based redaction on the **export copy** (v1.3.0+) |
+
+## Redaction profiles (share-safe exports)
+
+Profiles apply to the **exported copy** only. Original JSONL traces on disk are **not mutated**.
+
+| Profile | Typical use |
+| ------- | ------------- |
+| `local` | Default — same key-based defaults as trace writing |
+| `share` | PRs, GitHub issues, internal Slack/email threads |
+| `strict` | External or public sharing — also redacts prompt/output/message-like keys |
+
+```bash
+npx agent-inspect export <run-id> --format markdown --redaction-profile share
+npx agent-inspect export <run-id> --format html --redaction-profile strict
+npx agent-inspect export <run-id> --format openinference --redaction-profile share --validate
+```
+
+Redaction profiles are **key-based safeguards**, not compliance-grade PII detection. Always review exports manually.
+
+## Programmatic API
+
+Experimental helpers (local-only):
+
+- `exportRunTree`, `redactRunTreeForExport`
+- `exportMarkdown`, `exportHtml`, `exportOpenInference`, `exportOtlpJson`
+- `validateExport`, `validateExportContent`
+
+See [API.md](./API.md) §7.
+
+## What not to share
+
+Even with `--redaction-profile strict`, review exports for:
+
+- API keys, tokens, cookies, session IDs
+- Customer IDs, emails, phone numbers, internal hostnames
+- Full prompts, completions, tool I/O (especially with `--include-attributes`)
+- File paths that expose usernames or internal project names
+
+Prefer the smallest useful artifact — a summary or synthetic reproduction beats a full production trace.
+
+## Related docs
+
+- [CLI.md](./CLI.md) — `export` command reference
+- [SCHEMA.md](./SCHEMA.md) — trace event model and redaction notes
+- [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) — checklist before posting
+- [API.md](./API.md) — `ExportOptions`, experimental export APIs
+- [LIMITATIONS.md](./LIMITATIONS.md) — compatibility and boundary notes

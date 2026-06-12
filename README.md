@@ -20,7 +20,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.2.0**.
+Current npm release: **1.3.0** (`agent-inspect`, `@agent-inspect/langchain`; `@agent-inspect/tui` is **1.2.1** — patch-only alignment release).
 
 ```bash
 npm install agent-inspect
@@ -109,6 +109,21 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
+## What you can do today (v1.3.0)
+
+- **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
+- **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
+- **Correlate runs** with optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started` metadata.
+- **Redact before disk** with default key-based redaction, or choose `redactionProfile`: `local`, `share`, or `strict`.
+- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `diff`.
+- **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
+- **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
+- **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
+- **Optional TUI** — `view --tui` when `@agent-inspect/tui` is installed.
+- **Persisted-event foundation (v1.2.0+)** — in-memory `PersistedInspectEvent` converters; manual writing stays `schemaVersion: "0.1"`.
+
+Nothing uploads traces by default. Review exports before sharing — see [safe trace sharing](docs/SAFE-TRACE-SHARING.md).
+
 ## What the trace shows
 
 Each run produces a **JSONL** trace: `run_started` / `run_completed`, `step_started` / `step_completed`, with **nested steps**, **tool/LLM** types where you use `step.tool` / `step.llm`, and **durations** on completed steps. Failures are recorded on `step_completed` with `status: "error"` (there is no separate `step_failed` event). See [docs/SCHEMA.md](docs/SCHEMA.md).
@@ -164,31 +179,25 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 ## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.x** (current: **1.2.0**) stabilizes the **local debugging foundation**:
+**agent-inspect 1.x** (current: **1.3.0**) is the **local-first trace workbench** for TypeScript AI agents:
 
-- Instrument a run with `inspectRun` and `step`
+- Instrument runs with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
-- Inspect runs with **`list`** and **`view`**
-- Safely remove old trace files with **`clean`**
+- Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**
 
-**Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`.
+**Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
-Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` (or `true` / `yes` / `on` / `enabled`) to toggle tracing in eval or CI jobs — see [docs/API.md](docs/API.md).
+Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
-**Stable CLI workflows:** `agent-inspect list`, `agent-inspect view`, `agent-inspect clean`.
+**Shipped in 1.3.0:** correlation metadata; redaction profiles (`local` / `share` / `strict`); `export --redaction-profile`; LangChain `stream: true` metadata (chunk counts, duration — no full token capture by default).
 
-**Also included in 1.x** as local-first extensions:
+**Also in 1.x** (local-first extensions):
 
-- Structured log inspection: **`logs`**
-- Live log tailing: **`tail`**
-- Local exports: **`export`** (Markdown, HTML, OpenInference-compatible JSON, OTLP JSON — files only)
-- Local run comparison: **`diff`**
-- Optional **`@agent-inspect/langchain`** callback adapter
-- Optional **`@agent-inspect/tui`** terminal viewer
-- **Fixtures** and **recipes** for deterministic checks and adoption patterns
-- **v1.2.0** — experimental persisted-event foundation (`PersistedInspectEvent`, converters, in-memory tree bridge) for future source-agnostic local inspection. Manual trace writing remains **`schemaVersion: "0.1"`**; v0.2 is **not written by default**; CLI behavior unchanged; no vendor upload.
+- **v1.2.0** — experimental persisted-event foundation (`PersistedInspectEvent`, converters, in-memory tree bridge). Manual writing remains **`schemaVersion: "0.1"`**; v0.2 is **not written by default**.
+- Optional **`@agent-inspect/langchain`** and **`@agent-inspect/tui`**
+- **Fixtures** and **recipes** for deterministic adoption patterns
 
-**Honest boundaries:** programmatic log parsing, export, and diff APIs; LangChain and TUI programmatic surfaces; and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
+**Honest boundaries:** log parsing, export, diff, LangChain/TUI programmatic APIs, and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
 
 ## Optional packages
 
@@ -272,25 +281,15 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 
 ## Documentation
 
-- [Getting started](docs/GETTING-STARTED.md)
-- [Clean install smoke test](docs/INSTALL-SMOKE-TEST.md)
-- [API stability & experimental surfaces](docs/API.md)
-- [CLI reference](docs/CLI.md)
-- [Schema (`schemaVersion: "0.1"`)](docs/SCHEMA.md)
-- [Architecture (links to deeper design notes)](docs/ARCHITECTURE.md)
-- [Logs & tail](docs/LOGS.md)
-- [Log-to-tree quickstart](docs/LOG-TO-TREE-QUICKSTART.md)
-- [Logging playbook](docs/LOGGING-PLAYBOOK.md)
-- [Exports](docs/EXPORTS.md)
-- [Diff](docs/DIFF.md)
-- [Adapters](docs/ADAPTERS.md)
-- [Compare with other tools](docs/COMPARE.md)
-- [Security](SECURITY.md)
-- [Safe trace sharing checklist](docs/SAFE-TRACE-SHARING.md)
-- [Changelog](CHANGELOG.md) — **upcoming [1.3.0](CHANGELOG.md#130--unreleased)** on `main` (not yet on npm): correlation metadata, share-safe export profiles, LangChain streaming metadata
-- [Known issues](docs/KNOWN-ISSUES.md)
-- [Limitations](docs/LIMITATIONS.md)
-- [Screenshot checklist (planned assets)](docs/SCREENSHOTS.md)
+| Start here | Reference | Safety & boundaries |
+| ---------- | --------- | ------------------- |
+| [Getting started](docs/GETTING-STARTED.md) | [API](docs/API.md) | [Safe trace sharing](docs/SAFE-TRACE-SHARING.md) |
+| [Install smoke test](docs/INSTALL-SMOKE-TEST.md) | [CLI](docs/CLI.md) | [Security](SECURITY.md) |
+| [Log-to-tree quickstart](docs/LOG-TO-TREE-QUICKSTART.md) | [Schema](docs/SCHEMA.md) | [Limitations](docs/LIMITATIONS.md) |
+| [Logging playbook](docs/LOGGING-PLAYBOOK.md) | [Exports](docs/EXPORTS.md) | [Known issues](docs/KNOWN-ISSUES.md) |
+| [Examples](examples/README.md) | [Adapters](docs/ADAPTERS.md) | [Compare with other tools](docs/COMPARE.md) |
+
+Also: [Architecture](docs/ARCHITECTURE.md) · [Logs & tail](docs/LOGS.md) · [Diff](docs/DIFF.md) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Good first issues](GOOD-FIRST-ISSUES.md)
 
 ## Contributing
 

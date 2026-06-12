@@ -168,7 +168,7 @@ Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEv
 
 ## 12. Deprecated APIs
 
-No deprecated APIs are declared as of 1.2.0.
+No deprecated APIs are declared as of 1.3.0.
 
 ## 13. Removal / deprecation policy
 
