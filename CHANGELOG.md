@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4.0 — Unreleased
+
+### Added
+
+- Added `docs/CI-ARTIFACTS.md` and `examples/recipes/github-actions-artifact/` for CI trace artifact workflows.
+- Added `agent-inspect timeline <runId>` — chronological local run view (`--json`, `--focus slow`).
+- Added `agent-inspect stats` — local aggregate stats (`--since`, `--correlation-id`, `--group-id`, `--json`).
+- Added `agent-inspect search` — deterministic local trace search (`--status`, `--kind`, `--name`, `--tool`, `--duration`, `--json`).
+- Added core helpers: `buildRunTimeline`, `buildTraceStats`, `searchTraces`.
+
+### Notes
+
+- CI artifact upload is configured in user CI (e.g. GitHub Actions `upload-artifact`) — AgentInspect does not upload.
+- Search is exact/contains matching only — no semantic search or index database.
+- Stats/search scan local files linearly — intended for developer-machine scale.
+- No Vitest/Jest reporter package in this release.
+- Manual trace writing remains `schemaVersion: "0.1"`.
+
 ## 1.3.0
 
 Released **2026-06-12**.

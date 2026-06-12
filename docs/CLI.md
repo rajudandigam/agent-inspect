@@ -26,6 +26,9 @@ Core commands:
 - `tail` — live-tail logs into updating local trees
 - `export` — export manual traces to Markdown/HTML/OpenInference/OTLP JSON (local only)
 - `diff` — compare two manual traces (local, read-only)
+- `timeline` — chronological view of one run (local JSONL)
+- `stats` — local aggregate stats over a trace directory
+- `search` — deterministic local search over traces
 
 ## 2. Environment variables
 
@@ -250,6 +253,64 @@ Differences:
 ```
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
+
+### 6.8 `timeline`
+
+Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
+
+```bash
+agent-inspect timeline <run-id> [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--json` — structured `RunTimeline` JSON
+- `--focus slow` — show only the slowest steps by duration (top N)
+
+### 6.9 `stats`
+
+Local aggregate statistics over trace files in a directory. Read-only.
+
+```bash
+agent-inspect stats [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--since <duration>` — e.g. `7d`, `24h`
+- `--correlation-id <id>` — filter by `run_started.metadata.correlationId`
+- `--group-id <id>` — filter by `run_started.metadata.groupId`
+- `--json`
+
+### 6.10 `search`
+
+Deterministic search over local traces (substring / exact filters). No semantic search.
+
+```bash
+agent-inspect search [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--since <duration>`
+- `--status <success|error|running|unknown>`
+- `--kind <kind>` / `--type <type>` — manual step type (`llm`, `tool`, `logic`, …)
+- `--name <query>` — substring on run or step name
+- `--tool <query>` — substring on tool step name or `metadata.toolName`
+- `--duration <expr>` — e.g. `>5s`, `>=500ms`
+- `--limit <number>` — default 50
+- `--json`
+
+Examples:
+
+```bash
+npx agent-inspect search --status error --dir ./.agent-inspect
+npx agent-inspect search --kind tool --name search
+npx agent-inspect search --duration ">100ms" --json
+```
 
 ## 7. Optional TUI behavior
 

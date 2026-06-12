@@ -1,0 +1,44 @@
+# Example GitHub Actions workflow — copy to .github/workflows/agent-inspect-artifact.yml
+# AgentInspect does NOT upload anything; upload-artifact is user-controlled CI config.
+
+name: AgentInspect trace artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  traced-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm install agent-inspect
+
+      - name: Run traced fixture job
+        env:
+          AGENT_INSPECT: "1"
+          AGENT_INSPECT_TRACE_DIR: "./.agent-inspect"
+        run: npx tsx examples/recipes/github-actions-artifact/src/index.ts
+
+      - name: Export share-safe markdown artifact
+        run: |
+          npx agent-inspect list --dir ./.agent-inspect
+          npx agent-inspect export ci-fixture-agent \
+            --dir ./.agent-inspect \
+            --format markdown \
+            --redaction-profile share \
+            -o ./artifacts/trace.md
+
+      - name: Upload trace artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-inspect-traces
+          path: |
+            ./.agent-inspect
+            ./artifacts/trace.md
+          if-no-files-found: error

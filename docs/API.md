@@ -166,23 +166,33 @@ Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEv
 - v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
 - Storage dual-read and CLI integration are future work.
 
-## 12. Deprecated APIs
+## 12. Local observability helpers (v1.4.0)
 
-No deprecated APIs are declared as of 1.3.0.
+Read-only helpers for timeline, stats, and search over manual `TraceEvent` JSONL. Local files only.
 
-## 13. Removal / deprecation policy
+- **`buildRunTimeline`**, **`renderTimeline`** — chronological run view; types `RunTimeline`, `TimelineEntry`
+- **`buildTraceStats`**, **`renderTraceStats`** — directory aggregates; type `TraceStats`
+- **`searchTraces`**, **`parseDurationFilter`**, **`loadTraceMetadataList`** — deterministic search; types `TraceSearchResult`, `TraceSearchOptions`
+
+CLI wrappers: `agent-inspect timeline`, `stats`, `search` — see [CLI.md](./CLI.md).
+
+## 13. Deprecated APIs
+
+No deprecated APIs are declared as of 1.4.0.
+
+## 14. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 14. Backward compatibility policy
+## 15. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 15. Examples
+## 16. Examples
 
 ### Minimal manual trace
 

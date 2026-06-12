@@ -37,14 +37,36 @@ describe("CLI stability (v1.0 Pass 1)", () => {
 
   it("main help includes all stable commands", () => {
     const help = createCliProgram().helpInformation();
-    for (const cmd of ["list", "view", "clean", "logs", "tail", "export", "diff"]) {
+    for (const cmd of [
+      "list",
+      "view",
+      "clean",
+      "logs",
+      "tail",
+      "export",
+      "diff",
+      "timeline",
+      "stats",
+      "search",
+    ]) {
       expect(help).toContain(cmd);
     }
   });
 
   it("each command help renders", () => {
     const program = createCliProgram();
-    for (const cmd of ["list", "view", "clean", "logs", "tail", "export", "diff"]) {
+    for (const cmd of [
+      "list",
+      "view",
+      "clean",
+      "logs",
+      "tail",
+      "export",
+      "diff",
+      "timeline",
+      "stats",
+      "search",
+    ]) {
       const c = program.commands.find((x) => x.name() === cmd);
       expect(c).toBeDefined();
       expect(c!.helpInformation()).toContain(cmd);

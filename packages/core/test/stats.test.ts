@@ -1,0 +1,50 @@
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+import { extractMetadata } from "../src/trace-metadata.js";
+import { buildTraceStats } from "../src/stats.js";
+
+const fixturesDir = path.join(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../../../fixtures/traces",
+);
+
+describe("buildTraceStats", () => {
+  it("aggregates run counts and error rate", async () => {
+    const files = ["minimal-success.jsonl", "minimal-error.jsonl"];
+    const metas = await Promise.all(
+      files.map((f) => extractMetadata(path.join(fixturesDir, f))),
+    );
+    const stats = await buildTraceStats(metas, {
+      traceDir: fixturesDir,
+    });
+    expect(stats.totalRuns).toBe(2);
+    expect(stats.successCount).toBe(1);
+    expect(stats.errorCount).toBe(1);
+    expect(stats.errorRate).toBe(0.5);
+    expect(stats.totalSteps).toBeGreaterThan(0);
+  });
+
+  it("computes duration percentiles", async () => {
+    const metas = [
+      await extractMetadata(path.join(fixturesDir, "minimal-success.jsonl")),
+      await extractMetadata(path.join(fixturesDir, "tool-with-io.jsonl")),
+    ];
+    const stats = await buildTraceStats(metas, { traceDir: fixturesDir });
+    expect(stats.duration.minMs).toBeDefined();
+    expect(stats.duration.p50Ms).toBeDefined();
+    expect(stats.duration.avgMs).toBeDefined();
+  });
+
+  it("filters by correlation metadata when no match", async () => {
+    const meta = await extractMetadata(
+      path.join(fixturesDir, "minimal-success.jsonl"),
+    );
+    const stats = await buildTraceStats([meta], {
+      traceDir: fixturesDir,
+      correlationId: "no-such-correlation-id",
+    });
+    expect(stats.totalRuns).toBe(0);
+  });
+});

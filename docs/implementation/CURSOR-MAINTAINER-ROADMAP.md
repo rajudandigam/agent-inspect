@@ -47,31 +47,36 @@ AgentInspect is **not**:
 
 Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checklist: [UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT-CHECKLIST.md)
 
-### v1.3.0 — Correlation, redaction profiles, LangChain streaming (current)
+### v1.3.0 — Correlation, redaction profiles, LangChain streaming
+
+**npm status:** **Published** 2026-06-12 (`agent-inspect@1.3.0`, `@agent-inspect/langchain@1.3.0`, `@agent-inspect/tui@1.2.1`).  
+**Archive:** [V1.3.0-RELEASE-READINESS.md](./V1.3.0-RELEASE-READINESS.md)
+
+### v1.4.0 — Local observability workflow (current)
 
 **npm status:** Not published — train in progress on `main`.  
-**Guide:** [V1.3.0-IMPLEMENTATION-PLAN.md](./V1.3.0-IMPLEMENTATION-PLAN.md) · [V1.3.0-RELEASE-TRAIN.md](./V1.3.0-RELEASE-TRAIN.md)
+**Guide:** [V1.4.0-IMPLEMENTATION-PLAN.md](./V1.4.0-IMPLEMENTATION-PLAN.md) · [V1.4.0-EXECUTION-PLAN.md](./V1.4.0-EXECUTION-PLAN.md)
 
 | Chunk | Scope |
 | ----- | ----- |
-| **3A** | Correlation metadata propagation |
-| **3B** | Redaction profile presets |
-| **3C** | Share-safe export defaults |
-| **3D** | LangChain streaming design + metadata-only hooks ([#14](https://github.com/rajudandigam/agent-inspect/issues/14)) |
-| **3E** | Docs, CHANGELOG, release readiness |
+| **4A** | CI artifact recipe + [CI-ARTIFACTS.md](../CI-ARTIFACTS.md) |
+| **4B** | `timeline` CLI ([#11](https://github.com/rajudandigam/agent-inspect/issues/11)) |
+| **4C** | `stats` CLI ([#12](https://github.com/rajudandigam/agent-inspect/issues/12)) |
+| **4D** | `search` CLI (deterministic local search) |
+| **4E** | Docs, CHANGELOG, release readiness |
+
+**Out of scope for v1.4.0:** Vitest/Jest reporter packages (defer to v1.4.x/v1.5.x).
 
 ---
 
 ## 4. Next release trains
 
-Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current train:** v1.3.0 (§3 above).
+Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current train:** v1.4.0 (§3 above).
 
-### v1.4.0 — CI artifacts + timeline + stats
+### v1.4.x / v1.5.0 — Reporters + cohort
 
-- GitHub Actions trace artifact recipe ([#24](https://github.com/rajudandigam/agent-inspect/issues/24))
-- Vitest reporter; optional Jest reporter
-- `timeline` CLI ([#11](https://github.com/rajudandigam/agent-inspect/issues/11))
-- `stats` CLI ([#12](https://github.com/rajudandigam/agent-inspect/issues/12))
+- Vitest / Jest reporter packages ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)) — recipes first in v1.4.0
+- Cohort views and local `check` helpers ([#28](https://github.com/rajudandigam/agent-inspect/issues/28))
 
 ### v1.5.0 — Cohort + regression fixtures
 

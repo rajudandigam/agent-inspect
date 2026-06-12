@@ -44,6 +44,7 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [nestjs-json-logging](nestjs-json-logging) | NestJS structured JSON | `logs`, `message`/`timestamp` mapping | yes (CLI + samples) | no |
 | [retry-fallback](retry-fallback) | Primary LLM fails, fallback OK | `step.llm`, error + recovery | yes | no |
 | [parallel-tools](parallel-tools) | Sibling tools via `Promise.all` | `step.tool`, parallel siblings | yes | no |
+| [github-actions-artifact](github-actions-artifact) | CI trace + share-safe export recipe | `maybeInspectRun`, `AGENT_INSPECT=1`, export | yes | no |
 
 ## Safety
 

@@ -11,7 +11,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 ## Correlation metadata (v1.3.0)
 
-- **No CLI filter/query** by `correlationId`, `requestId`, `decisionId`, or `groupId` yet — fields are written to `run_started.metadata` and available via persisted converters; `list` / `view` / `export` filtering and `stats` grouping are future work (see [ROADMAP.md](../ROADMAP.md)).
+- **`list` / `view` / `export`** do not filter by correlation fields yet — `stats --correlation-id` / `--group-id` and `search` provide targeted read paths; full CLI filtering remains incremental.
 
 ## Persisted event model (v1.2.0 foundation)
 
@@ -47,6 +47,12 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Economics
 
 - **No cost engine**: no pricing tables, invoice-grade usage, or provider billing reconciliation.
+
+## Local observability commands (v1.4.0)
+
+- **`timeline`**, **`stats`**, and **`search`** scan local JSONL files — no database index; large directories may be slow.
+- **`search`** is deterministic exact/contains matching only — no semantic or fuzzy search.
+- **`stats`** is local file aggregation — not production fleet analytics.
 
 ## Scale
 

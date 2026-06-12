@@ -165,6 +165,35 @@ export { extractMetadata, buildRunSummary } from "./trace-metadata.js";
 export type { TraceFilterOptions } from "./trace-filter.js";
 export { filterTraces } from "./trace-filter.js";
 
+export type {
+  TimelineFocus,
+  TimelineEntry,
+  RunTimeline,
+  TimelineOptions,
+  RenderTimelineOptions,
+} from "./timeline.js";
+export { buildRunTimeline, renderTimeline } from "./timeline.js";
+
+export type {
+  DurationStats,
+  TraceStatsRankedRun,
+  TraceStatsRankedStep,
+  TraceStats,
+  TraceStatsOptions,
+} from "./stats.js";
+export { buildTraceStats, renderTraceStats } from "./stats.js";
+
+export type {
+  TraceSearchOptions,
+  TraceSearchResult,
+  ParsedDurationFilter,
+} from "./search.js";
+export {
+  parseDurationFilter,
+  searchTraces,
+  loadTraceMetadataList,
+} from "./search.js";
+
 export { isAgentInspectTrace } from "./trace-verification.js";
 
 export { parseDuration } from "./utils/duration.js";

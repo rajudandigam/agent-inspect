@@ -20,6 +20,7 @@ const RECIPES = [
   "nestjs-json-logging",
   "retry-fallback",
   "parallel-tools",
+  "github-actions-artifact",
 ];
 
 const LOG_RECIPE_FILES = {

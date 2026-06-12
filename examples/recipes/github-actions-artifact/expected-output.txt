@@ -1,0 +1,3 @@
+Trace written under /path/to/.agent-inspect
+Export share-safe artifacts with:
+  npx agent-inspect export ci-fixture-agent --dir ./.agent-inspect --format markdown --redaction-profile share

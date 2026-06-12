@@ -19,6 +19,12 @@ import type { ExportCommandOptions } from "./export.js";
 import { exportCommand } from "./export.js";
 import type { DiffCommandOptions } from "./diff.js";
 import { diffCommand } from "./diff.js";
+import type { TimelineCommandOptions } from "./timeline.js";
+import { timelineCommand } from "./timeline.js";
+import type { StatsCommandOptions } from "./stats.js";
+import { statsCommand } from "./stats.js";
+import type { SearchCommandOptions } from "./search.js";
+import { searchCommand } from "./search.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -250,6 +256,60 @@ export function createCliProgram(): Command {
     .option("--verbose", "show more left/right detail")
     .action((leftRunId: string, rightRunId: string, opts: DiffCommandOptions) => {
       runCommand(() => diffCommand(leftRunId, rightRunId, opts));
+    });
+
+  program
+    .command("timeline")
+    .description("Chronological timeline for a single run (local JSONL)")
+    .argument("<run-id>", "run id (e.g. from list output)")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print timeline as JSON")
+    .addOption(
+      new Option("--focus <mode>", "highlight slowest steps by duration").choices([
+        "slow",
+      ]),
+    )
+    .action((runId: string, opts: TimelineCommandOptions) => {
+      runCommand(() => timelineCommand(runId, opts));
+    });
+
+  program
+    .command("stats")
+    .description("Local aggregate stats over trace files (read-only)")
+    .option("--dir <path>", "trace directory")
+    .option("--since <duration>", "only include runs since a duration (e.g. 7d)")
+    .option("--correlation-id <id>", "filter by run_started.metadata.correlationId")
+    .option("--group-id <id>", "filter by run_started.metadata.groupId")
+    .option("--json", "print stats as JSON")
+    .action((opts: StatsCommandOptions) => {
+      runCommand(() => statsCommand(opts));
+    });
+
+  program
+    .command("search")
+    .description("Deterministic local search over trace files (read-only)")
+    .option("--dir <path>", "trace directory")
+    .option("--since <duration>", "only search runs since a duration")
+    .addOption(
+      new Option("--status <status>", "filter by run or step status").choices([
+        "success",
+        "error",
+        "running",
+        "unknown",
+      ]),
+    )
+    .option("--kind <kind>", "filter by step kind/type (llm, tool, logic, …)")
+    .option("--type <type>", "alias for --kind on manual trace step type")
+    .option("--name <query>", "substring match on run or step name")
+    .option("--tool <query>", "substring match on tool step name or metadata.toolName")
+    .option(
+      "--duration <expr>",
+      "duration filter on run or step (e.g. >5s, >=500ms)",
+    )
+    .option("--limit <number>", "max results (default 50)")
+    .option("--json", "print results as JSON")
+    .action((opts: SearchCommandOptions) => {
+      runCommand(() => searchCommand(opts));
     });
 
   return program;

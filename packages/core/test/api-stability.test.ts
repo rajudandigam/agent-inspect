@@ -22,6 +22,9 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.extractMetadata).toBe("function");
     expect(typeof core.buildRunSummary).toBe("function");
     expect(typeof core.filterTraces).toBe("function");
+    expect(typeof core.buildRunTimeline).toBe("function");
+    expect(typeof core.buildTraceStats).toBe("function");
+    expect(typeof core.searchTraces).toBe("function");
     expect(typeof core.isAgentInspectTrace).toBe("function");
     expect(typeof core.parseDuration).toBe("function");
     expect(typeof core.formatDuration).toBe("function");
@@ -76,6 +79,9 @@ describe("core API stability (v1.0 Pass 1)", () => {
     const _correlationWitness =
       null as unknown as core.TraceCorrelationMetadata;
     const _redactionProfileWitness = null as unknown as core.RedactionProfile;
+    const _timelineWitness = null as unknown as core.RunTimeline;
+    const _statsWitness = null as unknown as core.TraceStats;
+    const _searchWitness = null as unknown as core.TraceSearchResult;
 
     expect(_persistedTypeWitness).toBeNull();
     expect(_persistedSourceTypeWitness).toBeNull();
@@ -86,6 +92,9 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_treeBridgeOptsWitness).toBeNull();
     expect(_correlationWitness).toBeNull();
     expect(_redactionProfileWitness).toBeNull();
+    expect(_timelineWitness).toBeNull();
+    expect(_statsWitness).toBeNull();
+    expect(_searchWitness).toBeNull();
   });
 });
 
