@@ -6,7 +6,7 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "agent-inspect": "file:../../..",
+    "agent-inspect": "workspace:*",
     "tsx": "^4.19.0"
   }
 }

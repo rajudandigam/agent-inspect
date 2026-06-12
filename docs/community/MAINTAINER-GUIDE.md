@@ -9,6 +9,35 @@ Internal reference for repository maintainers. Not shipped as primary user docum
 - **`publish.yml`** — `changesets/action` opens Version Packages PRs and runs `pnpm run release` (`changeset publish`) via npm Trusted Publishing (OIDC). Requires `id-token: write` and `publish: pnpm run release` on the action step.
 - **`prepublishOnly`** runs full gate locally on `npm publish` — contributors should not publish manually without running checks.
 
+### npm Trusted Publishing
+
+Trusted Publishers are **per package** on npmjs.com — not per repo. OIDC from `publish.yml` only works for packages that have the workflow registered.
+
+Configure **each** published package:
+
+| Package | npm page |
+| ------- | -------- |
+| `agent-inspect` | https://www.npmjs.com/package/agent-inspect |
+| `@agent-inspect/langchain` | https://www.npmjs.com/package/@agent-inspect/langchain |
+| `@agent-inspect/tui` | https://www.npmjs.com/package/@agent-inspect/tui |
+
+On each package: **Settings → Trusted Publisher → GitHub Actions**
+
+- **Organization or user:** `rajudandigam`
+- **Repository:** `agent-inspect`
+- **Workflow filename:** `publish.yml` (must match `.github/workflows/publish.yml`)
+
+**Symptom:** `agent-inspect` publishes but `@agent-inspect/langchain` / `@agent-inspect/tui` fail with `E404 Not Found` on `PUT` — Trusted Publisher missing on the scoped package.
+
+**Recovery after partial publish:**
+
+1. Add Trusted Publishers on the failed scoped packages (or set repo secret `NPM_TOKEN` with publish access on all three).
+2. Re-run the **Publish** workflow on `main` (`workflow_dispatch` or push). `changeset publish` skips versions already on npm and retries the rest.
+3. Confirm versions: `npm view agent-inspect version`, `npm view @agent-inspect/langchain version`, `npm view @agent-inspect/tui version`.
+4. Create or update the GitHub Release if tags are incomplete.
+
+Scoped packages require `"publishConfig": { "access": "public" }` in their `package.json` (already set in-repo).
+
 Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
 
 **Cursor execution (v1.2.0 → v2.0 trains):** [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](../implementation/CURSOR-MAINTAINER-ROADMAP.md) · prompt stubs in [docs/implementation/prompts/](../implementation/prompts/).

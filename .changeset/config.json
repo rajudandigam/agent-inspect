@@ -3,14 +3,25 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [
+    ["agent-inspect", "@agent-inspect/langchain", "@agent-inspect/tui"]
+  ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
     "@agent-inspect/core",
     "@agent-inspect/cli",
-    "agent-inspect-example-*",
-    "agent-inspect-recipe-*"
+    "agent-inspect-example-08-langchain-adapter",
+    "agent-inspect-recipe-log4js-json-layout",
+    "agent-inspect-recipe-multi-agent-handoff",
+    "agent-inspect-recipe-nestjs-json-logging",
+    "agent-inspect-recipe-parallel-tools",
+    "agent-inspect-recipe-pino-json-logs",
+    "agent-inspect-recipe-proactive-agent-logs",
+    "agent-inspect-recipe-rag-pipeline",
+    "agent-inspect-recipe-retry-fallback",
+    "agent-inspect-recipe-tool-failure-retry",
+    "agent-inspect-recipe-winston-json-logs"
   ]
 }

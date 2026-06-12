@@ -41,17 +41,19 @@ jobs:
           pnpm run pack:smoke
           pnpm run compat:smoke
 
-      # Trusted Publishing (OIDC): on npmjs.com, set the GitHub trusted publisher workflow name to **publish.yml**
-      # (this file), matching the repo path `.github/workflows/publish.yml`. No NPM_TOKEN secret.
+      # npm Trusted Publishing (OIDC): configure on npmjs.com for EACH published package:
+      #   agent-inspect, @agent-inspect/langchain, @agent-inspect/tui
+      # Package → Settings → Trusted Publisher → GitHub Actions:
+      #   owner: rajudandigam, repo: agent-inspect, workflow: publish.yml
+      # E404 on scoped packages usually means Trusted Publisher is missing on that package.
+      # See docs/community/MAINTAINER-GUIDE.md#npm-trusted-publishing
       #
-      # Configure on npmjs.com (after the package exists):
-      # - GitHub owner: rajudandigam
-      # - Repository: agent-inspect
-      # - Workflow filename: publish.yml
+      # Optional recovery: set NPM_TOKEN (Automation token with publish on all three packages).
       - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:
           publish: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
