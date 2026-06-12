@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+### Minor Changes
+
+- 503d240: Correlation metadata, redaction profiles for share-safe exports, and LangChain streaming metadata support.
+
 ## 1.3.0 — Unreleased
 
 ### Added
