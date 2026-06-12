@@ -2,6 +2,8 @@
 
 ## 1.4.0
 
+Released **2026-06-12**.
+
 ### Added
 
 - Added `docs/CI-ARTIFACTS.md` and `examples/recipes/github-actions-artifact/` for CI trace artifact workflows.

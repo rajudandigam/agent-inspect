@@ -136,7 +136,19 @@ agent-inspect export minimal-success --dir fixtures/traces \
 
 Exports are **local-only** and do not upload anywhere. Review output before sharing — see [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
 
-## 8. Diff two runs
+## 8. Local observability (v1.4.0+)
+
+After traces exist under a directory:
+
+```bash
+agent-inspect timeline <run-id> --dir ./.agent-inspect
+agent-inspect stats --dir ./.agent-inspect --since 7d
+agent-inspect search --dir ./.agent-inspect --status error --limit 10
+```
+
+For CI artifact workflows, see [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) and [github-actions-artifact recipe](../examples/recipes/github-actions-artifact/).
+
+## 9. Diff two runs
 
 ```bash
 agent-inspect diff minimal-success minimal-error --dir fixtures/traces

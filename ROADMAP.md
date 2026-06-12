@@ -6,11 +6,19 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.3.0](CHANGELOG.md#130) (`agent-inspect`, `@agent-inspect/langchain`; `@agent-inspect/tui` **1.2.1**).
+**Current release on npm:** [1.4.0](CHANGELOG.md#140) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
 ---
 
 ## Released recently
+
+Shipped in **1.4.0** (see [CHANGELOG.md](CHANGELOG.md#140)):
+
+- **CI artifacts:** [docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md) and [github-actions-artifact recipe](examples/recipes/github-actions-artifact/).
+- **Local observability CLI:** `timeline`, `stats`, `search` — read-only over local JSONL.
+- **Core helpers:** `buildRunTimeline`, `buildTraceStats`, `searchTraces`.
+- **Linked release:** all three npm packages at **1.4.0** (resolves prior `@agent-inspect/tui` version drift).
+- **Unchanged by design:** local-first, no vendor upload, manual traces remain `schemaVersion: "0.1"`.
 
 Shipped in **1.3.0** (see [CHANGELOG.md](CHANGELOG.md#130)):
 
@@ -42,7 +50,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: **v1.4.0 implementation** — CI artifact recipe, `timeline`, `stats`, and deterministic `search` CLI (see Next). **OSS issue batch** triage continues without expanding SaaS or vendor-upload scope.
+Focus: **OSS issue batch** triage and **next train planning** (reporters, persisted-event CLI read path). No expansion of SaaS or vendor-upload scope.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -50,11 +58,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.4.0 train** | CI artifacts docs/recipe, `timeline`, `stats`, `search` — local only. Guide: [V1.4.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.4.0-IMPLEMENTATION-PLAN.md). |
+| **Next train scoping** | Vitest/Jest reporters ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)), persisted-event CLI read path, cohort helpers — see Next. |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
 
-Train archive: [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
+Train archive: [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -62,15 +70,11 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ## Next
 
-Focus: **v1.4.0** — local CI artifact workflows, `timeline`, `stats`, and `search` CLI — still no vendor sinks in core. Guide: [V1.4.0-IMPLEMENTATION-PLAN.md](docs/implementation/V1.4.0-IMPLEMENTATION-PLAN.md)
+Focus: **v1.4.x / v1.5.x** — reporters, persisted-event CLI read path, cohort helpers — still no vendor sinks in core.
 
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
-| **CI artifacts** | GitHub Actions recipe + trace export workflow polish; `AGENT_INSPECT=1` examples. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | v1.4.0 |
-| **`timeline` CLI** | Chronological run view — no dashboard. Track [#11](https://github.com/rajudandigam/agent-inspect/issues/11). | v1.4.0 |
-| **`stats` CLI** | Lightweight local aggregates (`--since`, `--dir`). Track [#12](https://github.com/rajudandigam/agent-inspect/issues/12). | v1.4.0 |
-| **`search` CLI** | Deterministic local trace search — no index DB. | v1.4.0 |
-| **CI reporters** | Vitest/Jest reporter packages — deferred; recipes/docs first. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | v1.4.x / v1.5.x |
+| **CI reporters** | Vitest/Jest reporter packages — recipes/docs shipped in v1.4.0; packages deferred. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | v1.4.x / v1.5.x |
 | **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration; `0.1` traces remain readable. | post–v1.2.0 |
 | **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.4.x |
 | **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.x |
@@ -114,8 +118,8 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 | Train | Status | Guide |
 | ----- | ------ | ----- |
 | **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
-| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
-| **v1.4.0** — CI artifacts, timeline, stats, search | **In progress** | [V1.4.0-EXECUTION-PLAN.md](docs/implementation/V1.4.0-EXECUTION-PLAN.md) |
+| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
+| **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
 | **v2.0** — Stable trace contract | Future | Same guide §4 |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

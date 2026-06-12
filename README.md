@@ -20,7 +20,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.3.0** (`agent-inspect`, `@agent-inspect/langchain`; `@agent-inspect/tui` is **1.2.1** — patch-only alignment release).
+Current npm release: **1.4.0** (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
 ```bash
 npm install agent-inspect
@@ -109,7 +109,7 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
-## What you can do today (v1.3.0)
+## What you can do today (v1.4.0)
 
 - **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
@@ -182,15 +182,17 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 ## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.x** (current: **1.3.0**) is the **local-first trace workbench** for TypeScript AI agents:
+**agent-inspect 1.x** (current: **1.4.0**) is the **local-first trace workbench** for TypeScript AI agents:
 
 - Instrument runs with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
-- Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**
+- Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**, **`timeline`**, **`stats`**, **`search`**
 
 **Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
+
+**Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
 **Shipped in 1.3.0:** correlation metadata; redaction profiles (`local` / `share` / `strict`); `export --redaction-profile`; LangChain `stream: true` metadata (chunk counts, duration — no full token capture by default).
 
@@ -264,6 +266,7 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/nestjs-json-logging](examples/recipes/nestjs-json-logging) | NestJS JSON logs |
 | [examples/recipes/retry-fallback](examples/recipes/retry-fallback) | Fallback pattern |
 | [examples/recipes/parallel-tools](examples/recipes/parallel-tools) | Parallel tools |
+| [examples/recipes/github-actions-artifact](examples/recipes/github-actions-artifact) | CI trace artifacts |
 
 **Recipes** are deterministic and require **no external services** by default. Index: [examples/README.md](examples/README.md), [examples/recipes/README.md](examples/recipes/README.md).
 
@@ -290,7 +293,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 | [Install smoke test](docs/INSTALL-SMOKE-TEST.md) | [CLI](docs/CLI.md) | [Security](SECURITY.md) |
 | [Log-to-tree quickstart](docs/LOG-TO-TREE-QUICKSTART.md) | [Schema](docs/SCHEMA.md) | [Limitations](docs/LIMITATIONS.md) |
 | [Logging playbook](docs/LOGGING-PLAYBOOK.md) | [Exports](docs/EXPORTS.md) | [Known issues](docs/KNOWN-ISSUES.md) |
-| [Examples](examples/README.md) | [Adapters](docs/ADAPTERS.md) | [Compare with other tools](docs/COMPARE.md) |
+| [CI artifacts](docs/CI-ARTIFACTS.md) | [Adapters](docs/ADAPTERS.md) | [Compare with other tools](docs/COMPARE.md) |
 
 Also: [Architecture](docs/ARCHITECTURE.md) · [Logs & tail](docs/LOGS.md) · [Diff](docs/DIFF.md) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Good first issues](GOOD-FIRST-ISSUES.md)
 

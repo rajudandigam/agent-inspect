@@ -66,7 +66,13 @@ Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UN
 
 ---
 
-## v1.3.0 train (current — see [V1.3.0-RELEASE-TRAIN.md](../implementation/V1.3.0-RELEASE-TRAIN.md))
+## v1.4.0 train (published — see [V1.4.0-RELEASE-READINESS.md](../implementation/V1.4.0-RELEASE-READINESS.md))
+
+- [x] CI artifact recipe + docs
+- [x] `timeline`, `stats`, `search` CLI
+- [x] Linked npm release at 1.4.0
+
+## v1.3.0 train (archive — see [V1.3.0-RELEASE-TRAIN.md](../implementation/V1.3.0-RELEASE-TRAIN.md))
 
 - [ ] Correlation metadata foundation
 - [ ] Redaction profiles / share-safe exports

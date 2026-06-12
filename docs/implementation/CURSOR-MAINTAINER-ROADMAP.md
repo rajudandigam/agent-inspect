@@ -52,10 +52,10 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 **npm status:** **Published** 2026-06-12 (`agent-inspect@1.3.0`, `@agent-inspect/langchain@1.3.0`, `@agent-inspect/tui@1.2.1`).  
 **Archive:** [V1.3.0-RELEASE-READINESS.md](./V1.3.0-RELEASE-READINESS.md)
 
-### v1.4.0 — Local observability workflow (current)
+### v1.4.0 — Local observability workflow
 
-**npm status:** Not published — train in progress on `main`.  
-**Guide:** [V1.4.0-IMPLEMENTATION-PLAN.md](./V1.4.0-IMPLEMENTATION-PLAN.md) · [V1.4.0-EXECUTION-PLAN.md](./V1.4.0-EXECUTION-PLAN.md)
+**npm status:** **Published** 2026-06-12 (`agent-inspect@1.4.0`, `@agent-inspect/langchain@1.4.0`, `@agent-inspect/tui@1.4.0`).  
+**Archive:** [V1.4.0-RELEASE-READINESS.md](./V1.4.0-RELEASE-READINESS.md) · [V1.4.0-EXECUTION-PLAN.md](./V1.4.0-EXECUTION-PLAN.md)
 
 | Chunk | Scope |
 | ----- | ----- |
@@ -71,7 +71,7 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 
 ## 4. Next release trains
 
-Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current train:** v1.4.0 (§3 above).
+Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current focus:** v1.4.x / v1.5.0 reporters and persisted-event CLI read path (§4 below).
 
 ### v1.4.x / v1.5.0 — Reporters + cohort
 
