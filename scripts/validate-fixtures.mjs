@@ -49,6 +49,7 @@ const REQUIRED = {
     "fixtures/logs/proactive-json.log",
     "fixtures/logs/proactive-log4js.log",
     "fixtures/logs/pino-agent-json.log",
+    "fixtures/logs/mcp-tool-call-json.log",
     "fixtures/logs/log4js-agent-json.log",
     "fixtures/logs/nestjs-agent-json.log",
     "fixtures/logs/malformed-json.log",
@@ -59,6 +60,7 @@ const REQUIRED = {
     "fixtures/configs/proactive-agent-inspect.logs.json",
     "fixtures/configs/minimal-agent-inspect.logs.json",
     "fixtures/configs/pino-agent-inspect.logs.json",
+    "fixtures/configs/mcp-tool-call-agent-inspect.logs.json",
     "fixtures/configs/log4js-agent-inspect.logs.json",
     "fixtures/configs/nestjs-agent-inspect.logs.json",
   ],
@@ -214,6 +216,7 @@ function validateJsonLog(rel) {
   }
   if (
     base === "pino-agent-json.log" ||
+    base === "mcp-tool-call-json.log" ||
     base === "nestjs-agent-json.log" ||
     base === "proactive-json.log"
   ) {

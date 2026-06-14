@@ -9,6 +9,7 @@ Text files for **v0.3 log-to-tree**, **v0.4 tail**, parser warnings, and integra
 | `proactive-json.log` | Yes | Happy-path JSON lines + `decisionId` as run key |
 | `proactive-log4js.log` | Embedded JSON in log4js-style lines | Best-effort parsing |
 | `pino-agent-json.log` | Yes | pino-shaped JSON (`time`, `msg`, `event`, `runId`) |
+| `mcp-tool-call-json.log` | Yes | MCP-inspired local tool-call start/completion/error metadata |
 | `log4js-agent-json.log` | Embedded JSON in log4js-style lines | Agent run fixture for `--format log4js` |
 | `nestjs-agent-json.log` | Yes | NestJS-shaped JSON (`message`, ISO `timestamp`, `context`) |
 | `malformed-json.log` | **No** (intentionally broken lines) | Parser skips garbage |
@@ -17,4 +18,4 @@ Text files for **v0.3 log-to-tree**, **v0.4 tail**, parser warnings, and integra
 
 ## Safety
 
-Synthetic IDs only; contact fields use `person@example.test` where needed; tokens **`Bearer fake-token`** / **`sk_test_fake`** only.
+Synthetic IDs only; contact fields use `person@example.test` where needed; tokens **`Bearer fake-token`** / **`sk_test_fake`** only. MCP-inspired fixtures are local examples, not MCP SDK integrations or protocol conformance tests.
