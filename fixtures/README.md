@@ -17,6 +17,7 @@ Canonical **deterministic** samples for tests, CI validation, and documentation.
 - No production data; no real API keys (only values like `sk_test_fake`, `Bearer fake-token`).
 - Emails use **`example.test`** only.
 - Trace failures use **`step_completed`** with `status: "error"` (never `step_failed`).
+- MCP-inspired fixtures are illustrative only: no MCP SDK dependency, no server, no network, and no protocol-compliance claim.
 
 ## Validation
 
