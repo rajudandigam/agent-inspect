@@ -2,6 +2,8 @@
 
 AgentInspect is the **local-first trace workbench** for TypeScript AI agents — understand, debug, compare, annotate, and export agent runs locally before you need a hosted observability platform.
 
+**Product loop:** framework event → local JSONL → inspect / report / diff → CI artifact → optional standards export.
+
 This public roadmap describes direction — not a delivery guarantee. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md) and [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md) for current boundaries.
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
@@ -50,7 +52,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: **OSS issue batch** triage and **next train planning** (reporters, persisted-event CLI read path). No expansion of SaaS or vendor-upload scope.
+Focus: **v1.5.0 train** (planning → implementation) — API subpath boundary, trace vocabulary, `what`/`report`, canonical dual-format read path. No expansion of SaaS or vendor-upload scope.
+
+Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones within v1.5.0**, not separate npm releases.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -58,11 +62,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Next train scoping** | Vitest/Jest reporters ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)), persisted-event CLI read path, cohort helpers — see Next. |
+| **v1.5.0 train** | Subpath exports, vocabulary RFC, `what`/`report`, unified v0.1+v0.2 CLI read path — see [V1.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.5.0-EXECUTION-PLAN.md). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
-| **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to Next/Future without delivery promises. |
+| **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
-Train archive: [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
+Execution program: [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) · state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -70,15 +74,14 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ## Next
 
-Focus: **v1.4.x / v1.5.x** — reporters, persisted-event CLI read path, cohort helpers — still no vendor sinks in core.
+Published sequence after **v1.5.0** — directional, not delivery guarantees.
 
-| Area | Intent | Direction (non-committal) |
-| ---- | ------ | ------------------------- |
-| **CI reporters** | Vitest/Jest reporter packages — recipes/docs shipped in v1.4.0; packages deferred. Track [#24](https://github.com/rajudandigam/agent-inspect/issues/24). | v1.4.x / v1.5.x |
-| **Unified persisted InspectEvent — storage/CLI** | Dual-format read helpers and CLI integration; `0.1` traces remain readable. | post–v1.2.0 |
-| **NestJS integration** | Deeper recipes or optional helper patterns beyond logging playbook. | ~v1.4.x |
-| **Decision metadata & trace-to-eval** | Recipes and metadata patterns for branching/decisions; local export for human review. Track [#13](https://github.com/rajudandigam/agent-inspect/issues/13). | ~v1.5.x |
-| **Cohort / check helpers** | Local multi-run aggregates and regression checks — not hosted eval. | ~v1.5.x |
+| Release | Area | Intent |
+| ------- | ---- | ------ |
+| **v1.6.0** | Vercel AI SDK | `@agent-inspect/ai-sdk` optional callback-style adapter (metadata-first, no vendor sink). Track [#30](https://github.com/rajudandigam/agent-inspect/issues/30). |
+| **v1.7.0** | Framework adapters | OpenAI Agents, Mastra, LangGraph — extend langchain patterns first. |
+| **v1.8.0** | CI reporters + cohort | `@agent-inspect/vitest`, `@agent-inspect/jest`; local `cohort`, `check`, `assert` helpers ([#24](https://github.com/rajudandigam/agent-inspect/issues/24), [#28](https://github.com/rajudandigam/agent-inspect/issues/28)). |
+| **v1.9.0** | Standards hardening | OpenInference / conformance fixtures ([#25](https://github.com/rajudandigam/agent-inspect/issues/25)). |
 
 ---
 
@@ -88,12 +91,10 @@ Exploratory — requires design review and explicit scope approval before implem
 
 | Area | Intent | Direction (non-committal) |
 | ---- | ------ | ------------------------- |
-| **OTel-shaped event model** | Optional alignment with OpenTelemetry-shaped events for local inspection — not a default upload pipeline. | ~v1.5.x |
-| **Standards hardening** | OpenInference / OTLP / Phoenix fixture-backed compatibility notes. Track [#25](https://github.com/rajudandigam/agent-inspect/issues/25). | ~v1.6.x |
-| **Vercel AI SDK adapter** | Optional callback-style adapter (metadata-first, no vendor sink). Track [#30](https://github.com/rajudandigam/agent-inspect/issues/30) (design). | ~v1.7.x |
-| **Experimental OTLP HTTP sink** | Opt-in, local-or-explicit-endpoint only — not a default upload pipeline. | ~v1.8.x |
+| **Explain experiment** | Opt-in natural-language trace summaries — no version until maintainer approves scope. | conditional |
+| **Experimental OTLP HTTP sink** | Opt-in, local-or-explicit-endpoint only — not a default upload pipeline. | post-v2 exploratory |
 | **Optional cassette / replay research** | Exploratory only if community demand appears — not a default replay engine. | TBD |
-| **Stable v2 trace contract** | Major-version evolution if additive `0.1` constraints become insufficient; migration guide required. | v2.0 |
+| **v2.0.0 stable contract** | Stable API reset, unified write format; `schemaVersion: "0.1"` traces remain readable; migration guide required. | v2.0 |
 
 ---
 
@@ -118,9 +119,10 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 | Train | Status | Guide |
 | ----- | ------ | ----- |
 | **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
-| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
+| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
 | **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
-| **v2.0** — Stable trace contract | Future | Same guide §4 |
+| **v1.5.0** — API boundary, what/report, dual-format read | **In progress (planning)** | [V1.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.5.0-EXECUTION-PLAN.md) |
+| **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.
 

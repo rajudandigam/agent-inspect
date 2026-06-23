@@ -2,8 +2,9 @@
 
 How maintainers use Cursor to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.
 
-**Audience:** Repository maintainers and Cursor sessions executing maintainer-owned work.  
-**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Design:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md)  
+**Audience:** Repository maintainers and Cursor sessions executing maintainer-owned work.
+**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Execution program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
+**Design:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md)
 **Historical/private notes:** `docs-local/` (if present) — not required for contributors.
 
 ---
@@ -71,35 +72,47 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 
 ## 4. Next release trains
 
-Trains are **directional** — not delivery guarantees. See [ROADMAP.md](../../ROADMAP.md). **Current focus:** v1.4.x / v1.5.0 reporters and persisted-event CLI read path (§4 below).
+Trains are **directional** — not delivery guarantees. Canonical ordering: [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
 
-### v1.4.x / v1.5.0 — Reporters + cohort
+**Current train:** v1.5.0 (planning) — [V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
 
-- Vitest / Jest reporter packages ([#24](https://github.com/rajudandigam/agent-inspect/issues/24)) — recipes first in v1.4.0
-- Cohort views and local `check` helpers ([#28](https://github.com/rajudandigam/agent-inspect/issues/28))
+Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones inside v1.5.0**, not separate npm releases.
 
-### v1.5.0 — Cohort + regression fixtures
+### v1.5.0 — API boundary, inspect/report, dual-format read
 
-- Cohort views (local aggregates across runs)
-- `check` / `assert` style local eval helpers (not hosted eval platform)
-- Multi-run regression fixtures ([#28](https://github.com/rajudandigam/agent-inspect/issues/28))
+| Milestone | Scope |
+| --------- | ----- |
+| **M1** | Public API inventory + non-breaking subpath exports |
+| **M2** | Trace vocabulary RFC + token metadata decision |
+| **M3** | `what` / `report` CLI + adoption recipes |
+| **M4** | Canonical v0.1+v0.2 read path; migrate inspection commands |
 
-### v1.6.0 — Logging bridges
+**Out of scope:** Vitest/Jest reporters, cohort/check/assert, AI SDK, framework adapters.
 
-- NestJS / logging bridge recipes and optional packages
-- Optional `pino` / `log4js` / `winston` helper packages (if justified)
+### v1.6.0 — Vercel AI SDK
 
-### v1.7.0+ — Adapters + standards
+- `@agent-inspect/ai-sdk` optional adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30))
 
-- Vercel AI SDK adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30) design)
-- Standards hardening (OpenInference / Phoenix fixtures)
-- Experimental OTLP HTTP sink (opt-in, explicit endpoint only)
+### v1.7.0 — Framework adapters
+
+- OpenAI Agents, Mastra, LangGraph (extend `@agent-inspect/langchain` patterns first)
+
+### v1.8.0 — Reporters + cohort
+
+- `@agent-inspect/vitest`, `@agent-inspect/jest` ([#24](https://github.com/rajudandigam/agent-inspect/issues/24))
+- `cohort`, `check`, `assert` local helpers ([#28](https://github.com/rajudandigam/agent-inspect/issues/28))
+
+### v1.9.0 — Standards hardening
+
+- OpenInference / conformance fixtures ([#25](https://github.com/rajudandigam/agent-inspect/issues/25))
 
 ### v2.0 — Stable trace contract
 
-- Stable persisted trace contract and public adapter/reporter/exporter/sink APIs
-- Migration guide from v1.x
-- Conformance test suite as contract gate
+- Stable persisted trace contract and public adapter/reporter/exporter APIs
+- Unified write format; `schemaVersion: "0.1"` remains readable
+- Migration guide from v1.x; conformance test suite as contract gate
+
+**Post-v2 exploratory:** OTLP HTTP sink (opt-in, explicit endpoint only) — not in v1.9.0 scope.
 
 ---
 
@@ -112,7 +125,7 @@ Every maintainer Cursor prompt **must** include:
 3. **In-scope** — explicit allowed work for this chunk.
 4. **Out-of-scope** — explicit forbidden work (other trains, publish, schema breaks).
 5. **Tests to add** — named test files or behaviors.
-6. **Validation commands** — from §8 below, matched to change type.
+6. **Validation commands** — from §8 below or [ROADMAP-EXECUTION-V1.5-TO-V2.md §8](./ROADMAP-EXECUTION-V1.5-TO-V2.md#8-validation-matrix), matched to change type.
 7. **Final report** — files changed, validation results, confirmations, next step.
 8. **No publish / no version bump** unless the prompt explicitly says otherwise.
 
