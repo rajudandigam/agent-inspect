@@ -67,6 +67,26 @@ describe("package conditional type exports (manifest)", () => {
     expectDualConditionalExport(exports["."], "agent-inspect");
   });
 
+  it("root agent-inspect exposes v1.5 subpath conditional types", () => {
+    const { exports } = readPkgExports("package.json");
+    for (const subpath of ["advanced", "persisted", "logs", "exporters", "diff"]) {
+      const entry = exports[`./${subpath}`];
+      expect(entry, `exports["./${subpath}"]`).toBeDefined();
+      expect(entry?.import?.types, `${subpath} import.types`).toMatch(
+        new RegExp(`/${subpath}\\.d\\.ts$`),
+      );
+      expect(entry?.import?.default, `${subpath} import.default`).toMatch(
+        new RegExp(`/${subpath}\\.mjs$`),
+      );
+      expect(entry?.require?.types, `${subpath} require.types`).toMatch(
+        new RegExp(`/${subpath}\\.d\\.cts$`),
+      );
+      expect(entry?.require?.default, `${subpath} require.default`).toMatch(
+        new RegExp(`/${subpath}\\.cjs$`),
+      );
+    }
+  });
+
   it("@agent-inspect/core exposes import/require conditional types", () => {
     const { exports } = readPkgExports("packages/core/package.json");
     expectDualConditionalExport(exports["."], "@agent-inspect/core");

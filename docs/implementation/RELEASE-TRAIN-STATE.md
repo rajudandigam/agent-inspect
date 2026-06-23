@@ -5,31 +5,26 @@
 ```yaml
 baselineVersion: "1.4.0"
 currentTrain: "v1.5.0"
-currentChunk: 1
+currentChunk: 2
 trainStatus: "in_progress"
 branch: "main"
 lastConfirmedCommit: "00d13b6"
-lastValidationLevel: "docs"
-completedChunks: [1]
+lastValidationLevel: "export"
+completedChunks: [1, 2]
 openBlockers: []
 pendingManualGate: "B"
-nextAction: "Review Chunk 1 (API-BOUNDARY-V1.5.md), commit, begin Chunk 2 (subpath exports)"
-updatedAt: "2026-06-04T12:00:00.000Z"
+nextAction: "Review Chunk 2 (subpath exports), commit, begin Chunk 3 (trace vocabulary RFC)"
+updatedAt: "2026-06-04T16:30:00.000Z"
 ```
 
-## Gate A — complete
+## Chunk 2 — complete (pending Gate B commit)
 
-- Planning docs committed: `00d13b6` — `docs: align execution roadmap through v2`
-- Branch: `main` (confirmed — no train branch)
+**Deliverable:** Non-breaking subpath exports (`./advanced`, `./persisted`, `./logs`, `./exporters`, `./diff`)
+**Suggested commit:** `feat(v1.5): add non-breaking package subpath exports`
 
-## Chunk 1 — complete (pending Gate B commit)
+## Next: Chunk 3
 
-**Deliverable:** [API-BOUNDARY-V1.5.md](./API-BOUNDARY-V1.5.md) — full export inventory + subpath design
-**Suggested commit:** `docs(v1.5): inventory root exports and subpath boundary design`
-
-## Next: Chunk 2
-
-[Non-breaking subpath exports](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-2--non-breaking-subpath-exports) — implement `package.json` exports map per API-BOUNDARY-V1.5.md §4.
+[Trace vocabulary + schema decision](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-3--trace-vocabulary--schema-decision)
 
 **Program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md)
 **Train plan:** [release-trains/V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)

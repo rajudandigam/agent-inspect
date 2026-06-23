@@ -83,4 +83,24 @@ describe.skipIf(!distPresent)("consumer compatibility fixtures", () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("ts-jest-node16:ok");
   });
+
+  it("subpath-esm fixture imports all v1.5 subpaths", () => {
+    const dir = installFixture("subpath-esm");
+    const result = spawnSync(process.execPath, ["smoke.mjs"], {
+      cwd: dir,
+      encoding: "utf-8",
+    });
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("subpath-esm:ok");
+  });
+
+  it("subpath-cjs fixture requires all v1.5 subpaths", () => {
+    const dir = installFixture("subpath-cjs");
+    const result = spawnSync(process.execPath, ["smoke.cjs"], {
+      cwd: dir,
+      encoding: "utf-8",
+    });
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("subpath-cjs:ok");
+  });
 });

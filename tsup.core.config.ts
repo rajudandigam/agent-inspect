@@ -1,7 +1,18 @@
 import { defineConfig } from "tsup";
 
+const subpathEntries = {
+  advanced: "packages/core/src/entries/advanced.ts",
+  persisted: "packages/core/src/entries/persisted.ts",
+  logs: "packages/core/src/entries/logs.ts",
+  exporters: "packages/core/src/entries/exporters.ts",
+  diff: "packages/core/src/entries/diff.ts",
+} as const;
+
 export default defineConfig({
-  entry: ["packages/core/src/index.ts"],
+  entry: {
+    index: "packages/core/src/index.ts",
+    ...subpathEntries,
+  },
   outDir: "packages/core/dist",
   format: ["esm", "cjs"],
   outExtension({ format }) {

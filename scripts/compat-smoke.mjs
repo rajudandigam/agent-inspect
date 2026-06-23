@@ -159,6 +159,14 @@ try {
     env: { ...process.env, AGENT_INSPECT_TSC_BIN: tscBin },
   });
 
+  const subpathEsmDir = path.join(tmpRoot, "subpath-esm");
+  installFixture("subpath-esm", subpathEsmDir, tgzPath);
+  run("subpath-esm", process.execPath, ["smoke.mjs"], { cwd: subpathEsmDir });
+
+  const subpathCjsDir = path.join(tmpRoot, "subpath-cjs");
+  installFixture("subpath-cjs", subpathCjsDir, tgzPath);
+  run("subpath-cjs", process.execPath, ["smoke.cjs"], { cwd: subpathCjsDir });
+
   const binDir = path.join(tmpRoot, "cli-bin");
   mkdirSync(binDir, { recursive: true });
   writeFileSync(
@@ -190,7 +198,7 @@ try {
   }
 
   console.log(
-    "[compat:smoke] OK: bundled CJS, ESM/CJS consumers, jest-cjs pattern, ts-jest Node16 compile, CLI help",
+    "[compat:smoke] OK: bundled CJS, ESM/CJS consumers, subpath ESM/CJS, jest-cjs pattern, ts-jest Node16 compile, CLI help",
   );
 } finally {
   if (!keep) {

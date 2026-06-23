@@ -1,0 +1,5 @@
+{
+  "name": "subpath-cjs-consumer",
+  "private": true,
+  "type": "commonjs"
+}

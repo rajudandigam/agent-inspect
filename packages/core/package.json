@@ -17,6 +17,56 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./advanced": {
+      "import": {
+        "types": "./dist/advanced.d.ts",
+        "default": "./dist/advanced.mjs"
+      },
+      "require": {
+        "types": "./dist/advanced.d.cts",
+        "default": "./dist/advanced.cjs"
+      }
+    },
+    "./persisted": {
+      "import": {
+        "types": "./dist/persisted.d.ts",
+        "default": "./dist/persisted.mjs"
+      },
+      "require": {
+        "types": "./dist/persisted.d.cts",
+        "default": "./dist/persisted.cjs"
+      }
+    },
+    "./logs": {
+      "import": {
+        "types": "./dist/logs.d.ts",
+        "default": "./dist/logs.mjs"
+      },
+      "require": {
+        "types": "./dist/logs.d.cts",
+        "default": "./dist/logs.cjs"
+      }
+    },
+    "./exporters": {
+      "import": {
+        "types": "./dist/exporters.d.ts",
+        "default": "./dist/exporters.mjs"
+      },
+      "require": {
+        "types": "./dist/exporters.d.cts",
+        "default": "./dist/exporters.cjs"
+      }
+    },
+    "./diff": {
+      "import": {
+        "types": "./dist/diff.d.ts",
+        "default": "./dist/diff.mjs"
+      },
+      "require": {
+        "types": "./dist/diff.d.cts",
+        "default": "./dist/diff.cjs"
+      }
     }
   },
   "files": ["dist"],
