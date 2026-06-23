@@ -5,32 +5,31 @@
 ```yaml
 baselineVersion: "1.4.0"
 currentTrain: "v1.5.0"
-currentChunk: null
-trainStatus: "planning"
-branch: null
-lastConfirmedCommit: "cecc37d"
+currentChunk: 1
+trainStatus: "in_progress"
+branch: "main"
+lastConfirmedCommit: "00d13b6"
 lastValidationLevel: "docs"
-completedChunks: []
+completedChunks: [1]
 openBlockers: []
-pendingManualGate: "A"
-nextAction: "Maintainer reviews planning docs, commits, confirms branch for v1.5.0"
-updatedAt: "2026-06-04T00:00:00.000Z"
+pendingManualGate: "B"
+nextAction: "Review Chunk 1 (API-BOUNDARY-V1.5.md), commit, begin Chunk 2 (subpath exports)"
+updatedAt: "2026-06-04T12:00:00.000Z"
 ```
 
-## Gate A — pending
+## Gate A — complete
 
-**Program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md)  
+- Planning docs committed: `00d13b6` — `docs: align execution roadmap through v2`
+- Branch: `main` (confirmed — no train branch)
+
+## Chunk 1 — complete (pending Gate B commit)
+
+**Deliverable:** [API-BOUNDARY-V1.5.md](./API-BOUNDARY-V1.5.md) — full export inventory + subpath design
+**Suggested commit:** `docs(v1.5): inventory root exports and subpath boundary design`
+
+## Next: Chunk 2
+
+[Non-breaking subpath exports](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-2--non-breaking-subpath-exports) — implement `package.json` exports map per API-BOUNDARY-V1.5.md §4.
+
+**Program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md)
 **Train plan:** [release-trains/V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
-
-### Maintainer actions
-
-1. Review the three new planning docs + roadmap diffs
-2. Manually commit on chosen branch (suggested message: `docs: align execution roadmap through v2`)
-3. Manually push
-4. Confirm resulting commit hash — update `lastConfirmedCommit` above
-5. Confirm branch name for v1.5.0 implementation (default: `main`)
-
-### After Gate A confirmation
-
-- Set `trainStatus: "in_progress"`, `pendingManualGate: "B"`, `currentChunk: 1`
-- Begin [V1.5.0 Chunk 1](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-1--public-api-inventory--boundary-design)

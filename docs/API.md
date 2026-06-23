@@ -9,6 +9,8 @@ AgentInspect is a **local-first execution-tree debugger**. It is not a SaaS, not
 - **Stable**: intended to be compatible across v1.x. Breaking changes require v2.0.
 - **Experimental**: available for adoption, but subject to refinement (including naming/shape changes) before a future stability declaration. Experimental APIs may change in v1.x.
 
+**v1.5.0 subpath exports (planned):** [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md) inventories the root surface and proposes additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`). Root `"."` imports remain valid through v1.x.
+
 Notes:
 
 - The core guarantee of v1.x is **stable local debugging**: manual tracing + CLI inspection.
