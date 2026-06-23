@@ -54,6 +54,8 @@ This document states what AgentInspect **does not** provide today. It complement
 - **`search`** is deterministic exact/contains matching only — no semantic or fuzzy search.
 - **`stats`** is local file aggregation — not production fleet analytics.
 
+Visual demos: [SCREENSHOTS.md](./SCREENSHOTS.md) · [CLI.md](./CLI.md)
+
 ## Scale
 
 - Designed for **developer machines** and **inner-loop debugging**, not petabyte log warehouses.

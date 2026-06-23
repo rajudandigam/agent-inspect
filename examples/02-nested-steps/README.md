@@ -8,6 +8,8 @@ The `plan-trip` step contains an LLM-shaped step and a parse step.
 
 Hotel search and finalization are root-level sibling steps.
 
+![Nested execution tree](../../docs/assets/demos/execution-tree.gif)
+
 ## Run
 
 From the repo root:

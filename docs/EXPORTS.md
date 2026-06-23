@@ -23,6 +23,19 @@ Full flags: [CLI.md](./CLI.md) §6.6.
 
 All formats are **compatibility-oriented** for local inspection and handoff — not guaranteed to match every vendor schema version.
 
+### Markdown export
+
+![Export a run to Markdown locally](assets/demos/markdown-export.gif)
+
+```bash
+agent-inspect export minimal-success --dir fixtures/traces --format markdown
+```
+
+### HTML, OpenInference, OTLP
+
+- **HTML:** export writes a local file; a rendered-report visual is pending re-record ([RECORDING.md](./assets/demos/RECORDING.md)). Use `agent-inspect export <run-id> --format html -o report.html` and open the file locally.
+- **OpenInference / OTLP JSON:** compatibility-oriented shapes for local handoff — validate with `--validate` before sharing. No dedicated GIF; see format tables below.
+
 ## Common options
 
 | Flag | Notes |

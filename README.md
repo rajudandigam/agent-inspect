@@ -10,6 +10,8 @@ The tool starts with **manual traces** and **existing structured logs**, and ext
 
 **No account. No cloud upload. No dashboard required.**
 
+**Visual demos:** [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) — curated terminal recordings (synthetic fixtures only).
+
 ## Why agent-inspect exists
 
 AI agents are no longer single function calls. They plan, call tools, invoke LLMs, branch, retry, fail, and run work in parallel. **Console logs are flat**; reconstructing causality from a wall of lines is slow and error-prone.
@@ -128,6 +130,10 @@ Nothing uploads traces by default. Review exports before sharing — see [safe t
 
 Each run produces a **JSONL** trace: `run_started` / `run_completed`, `step_started` / `step_completed`, with **nested steps**, **tool/LLM** types where you use `step.tool` / `step.llm`, and **durations** on completed steps. Failures are recorded on `step_completed` with `status: "error"` (there is no separate `step_failed` event). See [docs/SCHEMA.md](docs/SCHEMA.md).
 
+![Nested execution tree from a local JSONL trace](https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/demos/execution-tree.gif)
+
+*Synthetic demo — [examples/02-nested-steps](examples/02-nested-steps/README.md). More visuals: [SCREENSHOTS.md](docs/SCREENSHOTS.md).*
+
 ## Works with structured logs you already have
 
 Many production systems already emit **line-delimited JSON** or text logs with embedded JSON (e.g. via **pino**, **winston**, **log4js**, **NestJS** loggers, job runners, or custom event streams). agent-inspect can turn those into **local grouped timelines/trees** without wrapping every function.
@@ -152,6 +158,8 @@ npx agent-inspect logs ./agent.log --config agent-inspect.logs.json
 - **Flat timeline by default**; nesting when parent relationships are explicit or configured.
 - **Confidence labels** (`explicit`, `correlated`, `heuristic`, `unknown`) describe how attribution was inferred.
 
+**Visual:** JSON log → tree recording is [documented in SCREENSHOTS.md](docs/SCREENSHOTS.md#json-logs--tree) (re-record pending; command above is the canonical flow).
+
 More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](docs/LOG-TO-TREE-QUICKSTART.md) · [docs/LOGGING-PLAYBOOK.md](docs/LOGGING-PLAYBOOK.md) (pino, log4js, NestJS).
 
 ## CLI at a glance
@@ -168,6 +176,10 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `timeline` | Chronological view of one run |
 | `stats` | Local aggregates over a trace directory |
 | `search` | Deterministic search over local traces |
+
+![Timeline with slow-step focus for one run](https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/demos/timeline.gif)
+
+*Synthetic demo — `agent-inspect timeline` on [fixtures/traces](fixtures/traces). Gallery: [SCREENSHOTS.md](docs/SCREENSHOTS.md).*
 
 Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
@@ -294,6 +306,7 @@ For a detailed comparison, see [Compare with other tools](docs/COMPARE.md).
 | [Log-to-tree quickstart](docs/LOG-TO-TREE-QUICKSTART.md) | [Schema](docs/SCHEMA.md) | [Limitations](docs/LIMITATIONS.md) |
 | [Logging playbook](docs/LOGGING-PLAYBOOK.md) | [Exports](docs/EXPORTS.md) | [Known issues](docs/KNOWN-ISSUES.md) |
 | [CI artifacts](docs/CI-ARTIFACTS.md) | [Adapters](docs/ADAPTERS.md) | [Compare with other tools](docs/COMPARE.md) |
+| [Visual demos](docs/SCREENSHOTS.md) | [Examples](examples/README.md) | |
 
 Also: [Architecture](docs/ARCHITECTURE.md) · [Logs & tail](docs/LOGS.md) · [Diff](docs/DIFF.md) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Good first issues](GOOD-FIRST-ISSUES.md)
 

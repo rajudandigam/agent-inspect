@@ -8,6 +8,8 @@ This example shows the `observe()` top-level wrapper for agent-like objects.
 
 Manual `step()`, `step.tool()`, and `step.llm()` calls add internal execution-tree detail.
 
+![observe() wrapper tracing an agent-like object](../../docs/assets/demos/observe-wrapper.gif)
+
 ## Run
 
 From the repo root:

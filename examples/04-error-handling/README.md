@@ -10,6 +10,8 @@ agent-inspect records the failed step.
 
 The original error still bubbles out of `inspectRun()`.
 
+![Failed step in the execution tree](../../docs/assets/demos/error-handling.gif)
+
 ## Run
 
 From the repo root:

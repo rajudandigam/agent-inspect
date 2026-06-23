@@ -268,6 +268,8 @@ Options:
 - `--json` — structured `RunTimeline` JSON
 - `--focus slow` — show only the slowest steps by duration (top N)
 
+![Timeline with slow-step focus](../assets/demos/timeline.gif)
+
 ### 6.9 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
@@ -283,6 +285,10 @@ Options:
 - `--correlation-id <id>` — filter by `run_started.metadata.correlationId`
 - `--group-id <id>` — filter by `run_started.metadata.groupId`
 - `--json`
+
+![Directory-level stats over local traces](../assets/demos/stats.gif)
+
+Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
 ### 6.10 `search`
 
@@ -311,6 +317,8 @@ npx agent-inspect search --status error --dir ./.agent-inspect
 npx agent-inspect search --kind tool --name search
 npx agent-inspect search --duration ">100ms" --json
 ```
+
+![Search traces by status error](../assets/demos/search.gif)
 
 ## 7. Optional TUI behavior
 

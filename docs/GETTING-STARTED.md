@@ -2,6 +2,8 @@
 
 AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agents. It helps you produce and inspect an execution tree of steps, safely and deterministically, without uploading data anywhere.
 
+**Visual demos:** [SCREENSHOTS.md](./SCREENSHOTS.md)
+
 ## 1. Install
 
 ```bash
@@ -57,6 +59,10 @@ await maybeInspectRun("eval-case-42", async () => {
 ```bash
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
+
+![Env-gated tracing with maybeInspectRun](../assets/demos/env-gated-tracing.gif)
+
+*When `AGENT_INSPECT` is unset, no trace files are written.*
 
 Enable tokens: `1`, `true`, `yes`, `on`, `enabled` (case-insensitive). Explicit `enabled: true | false` in options overrides the env var.
 

@@ -8,6 +8,8 @@ Three tool steps run in parallel under one parent.
 
 They share the same parent step id in the trace without corrupting each other.
 
+![Parallel tool steps under one parent](../../docs/assets/demos/parallel-execution.gif)
+
 ## Run
 
 From the repo root:

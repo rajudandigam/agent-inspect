@@ -6,6 +6,8 @@ Answer the v0.3 spike question:
 
 > Does a local log-to-tree view help understand a real agent run faster than raw logs?
 
+**Visual demo:** JSON logs → tree recording is pending re-record — see [docs/SCREENSHOTS.md](../../docs/SCREENSHOTS.md#json-logs--tree) and [docs/LOGS.md](../../docs/LOGS.md).
+
 ## Why this exists
 
 Real agent systems often already emit logs, but those logs are flat. This spike tests whether we can render a trustworthy local grouped timeline (flat by default) that is easier to understand than raw logs **without inventing structure**.

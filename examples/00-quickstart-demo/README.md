@@ -2,6 +2,10 @@
 
 This folder is a minimal runnable demo for AgentInspect.
 
+![Quickstart: install, run, list, and view](../../docs/assets/demos/quickstart.gif)
+
+More visuals: [docs/SCREENSHOTS.md](../../docs/SCREENSHOTS.md)
+
 ### Run
 
 ```bash

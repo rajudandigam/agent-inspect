@@ -17,6 +17,12 @@ npx agent-inspect export <run-id> --format html --redaction-profile strict
 
 Original trace files under `.agent-inspect-runs/` are **not modified** by export redaction.
 
+### Default redaction before disk
+
+![Sensitive metadata keys redacted in trace output](../assets/demos/redaction.gif)
+
+Manual traces redact common sensitive keys **before disk** by default. Pass `redact: false` only when you accept the risk locally.
+
 ## Before sharing
 
 - Use **`--redaction-profile share`** for PR/issue attachments; use **`strict`** when sharing outside your team.

@@ -10,6 +10,14 @@ Notes:
 - `diff` is read-only and does **not** rerun agents; “differences” do not necessarily imply failure (command errors do).
 - `diff` reads local trace files only. It is useful for local debugging, but it is not production APM or hosted observability.
 
+![Diff comparing a success run and an error run](assets/demos/diff-runs.gif)
+
+```bash
+agent-inspect diff minimal-success minimal-error --dir fixtures/traces
+```
+
+More visuals: [SCREENSHOTS.md](./SCREENSHOTS.md).
+
 ## CLI examples
 
 The examples below use the checked-in fixture traces, so they are safe to copy and run locally:

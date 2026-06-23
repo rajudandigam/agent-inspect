@@ -51,6 +51,10 @@ npx agent-inspect view <run-id> --dir ./.agent-inspect
 npx agent-inspect export <run-id> --format markdown --redaction-profile share
 ```
 
+![LangChain callback with persist true writing inspectable JSONL](../assets/demos/langchain-persistence.gif)
+
+*Synthetic demo — [examples/08-langchain-adapter](../../examples/08-langchain-adapter/README.md).*
+
 **Persistence model (Strategy A):**
 
 1. **Standalone session** — one AgentInspect run per callback instance until the root LangChain run completes.
@@ -120,6 +124,8 @@ Full API: [API.md](./API.md) §9.
 npm install agent-inspect @agent-inspect/tui
 npx agent-inspect view <run-id> --tui
 ```
+
+![Optional Ink TUI viewer for a local trace](../assets/demos/tui-viewer.gif)
 
 Requires an interactive terminal. See [API.md](./API.md) §10.
 
