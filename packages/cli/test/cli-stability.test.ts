@@ -48,6 +48,7 @@ describe("CLI stability (v1.0 Pass 1)", () => {
       "timeline",
       "stats",
       "search",
+      "what",
     ]) {
       expect(help).toContain(cmd);
     }
@@ -66,6 +67,7 @@ describe("CLI stability (v1.0 Pass 1)", () => {
       "timeline",
       "stats",
       "search",
+      "what",
     ]) {
       const c = program.commands.find((x) => x.name() === cmd);
       expect(c).toBeDefined();

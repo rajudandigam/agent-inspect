@@ -29,6 +29,7 @@ Core commands:
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
 - `search` — deterministic local search over traces
+- `what` — concise summary of a single run (local JSONL)
 
 ## 2. Environment variables
 
@@ -319,6 +320,35 @@ npx agent-inspect search --duration ">100ms" --json
 ```
 
 ![Search traces by status error](../assets/demos/search.gif)
+
+### 6.11 `what`
+
+Concise human-readable summary of one manual trace run. Read-only; uses local v0.1 JSONL (v0.2 dual-read lands in v1.5.0 Chunks 7–8). Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
+
+```bash
+agent-inspect what <run-id> [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--json` — structured `RunWhatSummary` JSON
+- `--no-correlation` — omit correlation ids from human output
+
+Example:
+
+```bash
+npx agent-inspect what minimal-success --dir fixtures/traces
+```
+
+Sample output:
+
+```
+What: minimal-success
+Status: success · Duration: 120ms · Steps: 1 (1 logic)
+Outcome: Completed successfully.
+Slowest: plan (100ms, logic)
+```
 
 ## 7. Optional TUI behavior
 

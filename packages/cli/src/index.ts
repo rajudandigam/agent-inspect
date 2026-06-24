@@ -25,6 +25,8 @@ import type { StatsCommandOptions } from "./stats.js";
 import { statsCommand } from "./stats.js";
 import type { SearchCommandOptions } from "./search.js";
 import { searchCommand } from "./search.js";
+import type { WhatCommandOptions } from "./what.js";
+import { whatCommand } from "./what.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -310,6 +312,17 @@ export function createCliProgram(): Command {
     .option("--json", "print results as JSON")
     .action((opts: SearchCommandOptions) => {
       runCommand(() => searchCommand(opts));
+    });
+
+  program
+    .command("what")
+    .description("Concise human-readable summary of a single run (local JSONL)")
+    .argument("<run-id>", "run id (e.g. from list output)")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print structured summary as JSON")
+    .option("--no-correlation", "omit correlation metadata from human output")
+    .action((runId: string, opts: WhatCommandOptions) => {
+      runCommand(() => whatCommand(runId, opts));
     });
 
   return program;

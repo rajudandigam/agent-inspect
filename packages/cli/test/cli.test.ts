@@ -20,6 +20,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("tail");
     expect(names).toContain("export");
     expect(names).toContain("diff");
+    expect(names).toContain("what");
   });
 
   it("help output mentions agent-inspect, list, and view", () => {
@@ -102,5 +103,14 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--duration-threshold");
     expect(help).toContain("--focus");
     expect(help).toContain("--check");
+  });
+
+  it("what help mentions key options", () => {
+    const program = createCliProgram();
+    const cmd = program.commands.find((c) => c.name() === "what");
+    expect(cmd).toBeDefined();
+    const help = cmd!.helpInformation();
+    expect(help).toContain("--json");
+    expect(help).toContain("--no-correlation");
   });
 });
