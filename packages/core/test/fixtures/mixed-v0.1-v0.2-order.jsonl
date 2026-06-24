@@ -1,0 +1,3 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000000000,"runId":"mixed-order","name":"mixed-order","startTime":1700000000000}
+{"schemaVersion":"0.2","eventId":"mixed-tool","runId":"mixed-order","kind":"TOOL","name":"middle-tool","status":"ok","timestamp":"2023-11-14T22:13:20.010Z","startedAt":"2023-11-14T22:13:20.010Z","endedAt":"2023-11-14T22:13:20.020Z","durationMs":10,"confidence":"explicit","source":{"type":"manual"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000000030,"runId":"mixed-order","status":"success","endTime":1700000000030,"durationMs":30}

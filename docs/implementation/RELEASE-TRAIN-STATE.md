@@ -9,10 +9,10 @@ currentTrain: "v1.5.1"
 trainStatus: "in_progress"
 branch: "main"
 lastValidationLevel: "runtime"
-completedChunks: [1]
-currentChunk: 2
-pendingManualGate: "MANUAL GATE 1: v1.5.1 completion review"
-nextAction: "Review the v1.5.1 completion audit and explicitly authorize Chunk 2; do not start v1.6"
+completedChunks: [1, 2]
+currentChunk: 3
+pendingManualGate: "Gate B: maintainer review and commit hash for Chunk 2"
+nextAction: "Review and commit Chunk 2, then provide the commit hash before authorizing Chunk 3; do not start v1.6"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```

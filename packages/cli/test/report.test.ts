@@ -80,6 +80,44 @@ describe("report CLI", () => {
     expect(String(parsed.content)).toContain("# AgentInspect Report:");
   });
 
+  it("applies strict redaction to the complete report", async () => {
+    const events = [
+      {
+        schemaVersion: "0.1",
+        event: "run_started",
+        timestamp: 1,
+        runId: "strict-report",
+        name: "strict-report",
+        startTime: 1,
+        metadata: { correlationId: "cli-correlation-secret" },
+      },
+      {
+        schemaVersion: "0.1",
+        event: "run_completed",
+        timestamp: 2,
+        runId: "strict-report",
+        status: "error",
+        endTime: 2,
+        durationMs: 1,
+        error: { message: "cli-error-secret" },
+      },
+    ];
+    await writeFile(
+      path.join(tmpDir, "strict-report.jsonl"),
+      events.map((event) => JSON.stringify(event)).join("\n"),
+    );
+
+    await reportCommand("strict-report", {
+      dir: tmpDir,
+      format: "markdown",
+      redactionProfile: "strict",
+    });
+    const out = logSpy.mock.calls.flat().join("\n");
+    expect(out).toContain("[REDACTED]");
+    expect(out).not.toContain("cli-correlation-secret");
+    expect(out).not.toContain("cli-error-secret");
+  });
+
   it("rejects unsupported format", async () => {
     await reportCommand("x", { format: "pdf" });
     expect(process.exitCode).toBe(1);

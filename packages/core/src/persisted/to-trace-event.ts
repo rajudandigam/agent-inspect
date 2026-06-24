@@ -71,12 +71,16 @@ function mapPersistedStatusToRunStatus(
   }
 }
 
-function mapPersistedError(error: PersistedInspectEvent["error"]): ErrorInfo | undefined {
+function mapPersistedError(
+  error: PersistedInspectEvent["error"],
+  attributes: Record<string, unknown> | undefined,
+): ErrorInfo | undefined {
   if (!error?.message) return undefined;
   const out: ErrorInfo = { message: error.message };
   const stack =
-    typeof error.name === "string" && error.name.length > 0
-      ? error.name
+    typeof attributes?.errorStack === "string" &&
+    attributes.errorStack.length > 0
+      ? attributes.errorStack
       : undefined;
   if (stack) {
     out.stack = stack;
@@ -198,7 +202,7 @@ function fromLegacyRunCompleted(event: PersistedInspectEvent): TraceEvent {
     endTime,
     durationMs: event.durationMs ?? Math.max(0, endTime - timestamp),
   };
-  const error = mapPersistedError(event.error);
+  const error = mapPersistedError(event.error, event.attributes);
   if (error) out.error = error;
   return out;
 }
@@ -234,7 +238,7 @@ function fromLegacyStepCompleted(event: PersistedInspectEvent): TraceEvent {
     endTime,
     durationMs: event.durationMs ?? Math.max(0, endTime - timestamp),
   };
-  const error = mapPersistedError(event.error);
+  const error = mapPersistedError(event.error, event.attributes);
   if (error) out.error = error;
   return out;
 }
@@ -268,7 +272,7 @@ function fromNativeRun(event: PersistedInspectEvent): TraceEvent[] {
       endTime,
       durationMs: event.durationMs ?? Math.max(0, endTime - startTime),
     };
-    const error = mapPersistedError(event.error);
+    const error = mapPersistedError(event.error, event.attributes);
     if (error) completed.error = error;
     out.push(completed);
   }
@@ -325,7 +329,7 @@ function fromNativeStep(event: PersistedInspectEvent): TraceEvent[] {
       endTime,
       durationMs: event.durationMs ?? Math.max(0, endTime - startTime),
     };
-    const error = mapPersistedError(event.error);
+    const error = mapPersistedError(event.error, event.attributes);
     if (error) completed.error = error;
     out.push(completed);
   }

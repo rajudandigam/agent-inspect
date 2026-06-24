@@ -1,4 +1,4 @@
-import { persistedInspectEventsToTraceEvents } from "./persisted/to-trace-event.js";
+import { persistedInspectEventToTraceEvents } from "./persisted/to-trace-event.js";
 import { isPersistedInspectEvent } from "./types/persisted-inspect-event.js";
 import type { PersistedInspectEvent } from "./types/persisted-inspect-event.js";
 import { isTraceEvent } from "./types.js";
@@ -79,6 +79,7 @@ export function parseTraceJsonl(
       if (isPersistedInspectEvent(parsed)) {
         sourceEventCount += 1;
         persisted.push(parsed);
+        traceEvents.push(...persistedInspectEventToTraceEvents(parsed));
       } else {
         emitWarning("Skipped invalid persisted inspect event line in trace file");
       }
@@ -94,15 +95,12 @@ export function parseTraceJsonl(
     );
   }
 
-  const converted = persisted.length > 0 ? persistedInspectEventsToTraceEvents(persisted) : [];
-  const events = [...traceEvents, ...converted];
-
   let format: TraceJsonlFormat = "empty";
   if (saw01 && saw02) format = "mixed";
   else if (saw01) format = "0.1";
   else if (saw02) format = "0.2";
 
-  return { format, sourceEventCount, events, persisted };
+  return { format, sourceEventCount, events: traceEvents, persisted };
 }
 
 /**

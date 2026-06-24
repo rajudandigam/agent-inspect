@@ -55,7 +55,7 @@ function stepStarted(type: StepType): TraceEvent {
   };
 }
 
-function stepCompleted(): TraceEvent {
+function stepCompleted(): Extract<TraceEvent, { event: "step_completed" }> {
   return {
     schemaVersion: "0.1",
     event: "step_completed",
@@ -110,6 +110,55 @@ describe("persistedInspectEventToTraceEvents", () => {
     expect(completed && completed.event === "step_completed" ? completed.status : undefined).toBe(
       "error",
     );
+    expect(
+      completed && completed.event === "step_completed"
+        ? completed.error
+        : undefined,
+    ).toEqual({ message: "request failed (synthetic fixture)" });
+  });
+
+  it("does not map persisted error name or code to legacy stack", () => {
+    const persisted = {
+      schemaVersion: "0.2" as const,
+      eventId: "native-error",
+      runId: "run-error",
+      kind: "TOOL" as const,
+      name: "native-error",
+      status: "error" as const,
+      timestamp: "2023-11-14T22:13:20.000Z",
+      durationMs: 1,
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      error: { name: "TypeError", message: "boom", code: "E_SYNTHETIC" },
+    };
+
+    const completed = persistedInspectEventToTraceEvents(persisted).find(
+      (event) => event.event === "step_completed",
+    );
+    expect(completed?.event).toBe("step_completed");
+    if (completed?.event === "step_completed") {
+      expect(completed.error).toEqual({ message: "boom" });
+      expect(completed.error?.stack).toBeUndefined();
+    }
+  });
+
+  it("round-trips a real legacy attributes.errorStack", () => {
+    const failed: TraceEvent = {
+      ...stepCompleted(),
+      status: "error",
+      error: { message: "boom", stack: "Error: boom\n  at synthetic" },
+    };
+    const persisted = traceEventToPersistedInspectEvent(failed);
+    const [back] = persistedInspectEventToTraceEvents(persisted);
+
+    expect(persisted.attributes?.errorStack).toBe("Error: boom\n  at synthetic");
+    expect(back?.event).toBe("step_completed");
+    if (back?.event === "step_completed") {
+      expect(back.error).toEqual({
+        message: "boom",
+        stack: "Error: boom\n  at synthetic",
+      });
+    }
   });
 
   it("converts single persisted row via traceEventToPersistedInspectEvent", () => {

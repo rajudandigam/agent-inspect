@@ -5,7 +5,10 @@ import { exportHtml } from "./exporters/html-exporter.js";
 import { exportMarkdown } from "./exporters/markdown-exporter.js";
 import { escapeHtml, escapeMarkdown } from "./exporters/helpers.js";
 import { manualTraceEventsToRunTree } from "./exporters/manual-trace-adapter.js";
-import { redactRunTreeForExport } from "./exporters/redact-export.js";
+import {
+  redactRunTreeForExport,
+  redactTraceEventsForReport,
+} from "./exporters/redact-export.js";
 import { buildRunTimeline, renderTimeline } from "./timeline.js";
 import { buildRunWhatSummary, renderRunWhat } from "./what.js";
 
@@ -73,12 +76,15 @@ export function buildRunReport(
   options: ReportOptions,
 ): ReportResult {
   const profile = options.redactionProfile ?? "local";
-  const whatSummary = buildRunWhatSummary(events);
+  const safeEvents = redactTraceEventsForReport(events, {
+    redactionProfile: profile,
+  });
+  const whatSummary = buildRunWhatSummary(safeEvents);
   const whatText = renderRunWhat(whatSummary, {
     correlation: options.correlation !== false,
   });
-  const timelineText = renderTimeline(buildRunTimeline(events));
-  const tree = resolveTree(events, profile);
+  const timelineText = renderTimeline(buildRunTimeline(safeEvents));
+  const tree = resolveTree(safeEvents, profile);
 
   const exportOpts = {
     includeMetadata: false,

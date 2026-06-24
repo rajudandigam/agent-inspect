@@ -347,7 +347,7 @@ export function createCliProgram(): Command {
     .addOption(
       new Option(
         "--redaction-profile <profile>",
-        "redaction profile for tree section: local, share, strict (default: local)",
+        "redaction profile for entire report: local, share, strict (default: local)",
       ).choices(["local", "share", "strict"]),
     )
     .action((runId: string, opts: ReportCommandOptions) => {

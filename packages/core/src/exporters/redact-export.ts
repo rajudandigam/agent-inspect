@@ -5,7 +5,7 @@ import {
   resolveRedactionProfile,
   truncateStringForProfile,
 } from "../redaction-profiles.js";
-import type { RedactionProfile } from "../types.js";
+import type { ErrorInfo, RedactionProfile, TraceEvent } from "../types.js";
 
 export interface RedactRunTreeForExportOptions {
   redactionProfile?: RedactionProfile;
@@ -138,6 +138,113 @@ function redactEventAttributes(
   }
 
   return bounded;
+}
+
+function redactErrorInfo(
+  error: ErrorInfo | undefined,
+  redactor: Redactor,
+  maxMetadataValueLength: number,
+  maxPreviewLength: number,
+): ErrorInfo | undefined {
+  if (error === undefined) return undefined;
+
+  const record = redactEventAttributes(
+    { error },
+    redactor,
+    maxMetadataValueLength,
+    maxPreviewLength,
+  );
+  const redacted = record?.error;
+  if (!isRecord(redacted) || typeof redacted.message !== "string") {
+    return undefined;
+  }
+
+  return {
+    message: redacted.message,
+    ...(typeof redacted.stack === "string" ? { stack: redacted.stack } : {}),
+  };
+}
+
+/**
+ * Returns structured trace-event copies that are safe to use across every report section.
+ * Profile redaction and bounds are applied before any human-readable rendering.
+ */
+export function redactTraceEventsForReport(
+  events: readonly TraceEvent[],
+  options?: RedactRunTreeForExportOptions,
+): TraceEvent[] {
+  const profile = options?.redactionProfile ?? "local";
+  if (profile === "local") {
+    return deepClone(events) as TraceEvent[];
+  }
+
+  const resolved = resolveRedactionProfile(profile);
+  const { maxMetadataValueLength, maxPreviewLength } = applyProfileMetadataCaps(
+    2000,
+    500,
+    resolved,
+  );
+  const redactor = new Redactor({ extraKeys: resolved.extraKeys });
+
+  return events.map((event): TraceEvent => {
+    switch (event.event) {
+      case "run_started":
+        return {
+          ...event,
+          name: truncateStringForProfile(
+            event.name,
+            "name",
+            maxMetadataValueLength,
+            maxPreviewLength,
+          ),
+          ...(event.metadata !== undefined
+            ? {
+                metadata: redactEventAttributes(
+                  event.metadata,
+                  redactor,
+                  maxMetadataValueLength,
+                  maxPreviewLength,
+                ),
+              }
+            : {}),
+        };
+      case "step_started":
+        return {
+          ...event,
+          name: truncateStringForProfile(
+            event.name,
+            "name",
+            maxMetadataValueLength,
+            maxPreviewLength,
+          ),
+          ...(event.metadata !== undefined
+            ? {
+                metadata: redactEventAttributes(
+                  event.metadata,
+                  redactor,
+                  maxMetadataValueLength,
+                  maxPreviewLength,
+                ),
+              }
+            : {}),
+        };
+      case "run_completed":
+      case "step_completed":
+        return {
+          ...event,
+          ...(event.error !== undefined
+            ? {
+                error: redactErrorInfo(
+                  event.error,
+                  redactor,
+                  maxMetadataValueLength,
+                  maxPreviewLength,
+                ),
+              }
+            : {}),
+        };
+    }
+  });
 }
 
 /**

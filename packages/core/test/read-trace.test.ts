@@ -54,4 +54,56 @@ describe("parseTraceJsonl", () => {
     expect(sourceEventCount).toBe(2);
     expect(events.length).toBeGreaterThanOrEqual(2);
   });
+
+  it("preserves source-row order and adjacent one-to-many expansion", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "fixtures/mixed-v0.1-v0.2-order.jsonl",
+    );
+    const raw = await readFile(fixture, "utf-8");
+    const { format, sourceEventCount, events, persisted } = parseTraceJsonl(raw, {
+      validate: validateEvent,
+      warnings: false,
+    });
+
+    expect(format).toBe("mixed");
+    expect(sourceEventCount).toBe(3);
+    expect(persisted.map((event) => event.eventId)).toEqual(["mixed-tool"]);
+    expect(events.map((event) => event.event)).toEqual([
+      "run_started",
+      "step_started",
+      "step_completed",
+      "run_completed",
+    ]);
+    expect(
+      events.map((event) =>
+        event.event === "step_started" ? event.name : event.event,
+      ),
+    ).toEqual([
+      "run_started",
+      "middle-tool",
+      "step_completed",
+      "run_completed",
+    ]);
+  });
+
+  it("keeps valid mixed rows in place when an invalid line is skipped", () => {
+    const raw = [
+      '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"r","name":"first","startTime":1}',
+      "not-json",
+      '{"schemaVersion":"0.2","eventId":"middle","runId":"r","kind":"TOOL","name":"middle","status":"running","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"manual"}}',
+      '{"schemaVersion":"0.1","event":"run_completed","timestamp":3,"runId":"r","status":"success","endTime":3,"durationMs":2}',
+    ].join("\n");
+    const { sourceEventCount, events } = parseTraceJsonl(raw, {
+      validate: validateEvent,
+      warnings: false,
+    });
+
+    expect(sourceEventCount).toBe(3);
+    expect(events.map((event) => event.event)).toEqual([
+      "run_started",
+      "step_started",
+      "run_completed",
+    ]);
+  });
 });
