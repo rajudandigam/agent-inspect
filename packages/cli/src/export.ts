@@ -5,10 +5,11 @@ import type { ExportFormat, ExportOptions, RedactionProfile } from "@agent-inspe
 import {
   exportRunTree,
   manualTraceEventsToRunTree,
-  readTraceEvents,
   resolveTraceDir,
   validateExport,
 } from "@agent-inspect/core";
+
+import { readRunTraceEvents } from "./read-run.js";
 
 export interface ExportCommandOptions {
   dir?: string;
@@ -74,7 +75,8 @@ export async function exportCommand(
   const traceDir = resolveTraceDir({ dir: options.dir });
   let events;
   try {
-    events = await readTraceEvents(id, traceDir);
+    const result = await readRunTraceEvents(id, traceDir);
+    events = result?.events ?? [];
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[AgentInspect] export failed: ${msg}`);

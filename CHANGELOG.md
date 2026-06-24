@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.5.0
+
+**Draft — not yet released.** Maintainer: finalize date and publish via Gate D (changeset + `changeset publish`).
+
+### Added
+
+- Added non-breaking package subpath exports: `agent-inspect/advanced`, `/persisted`, `/logs`, `/exporters`, `/diff` (root `"."` export unchanged).
+- Added `agent-inspect what <runId>` — concise local run summary (`--json`, `--no-correlation`).
+- Added `agent-inspect report <runId>` — markdown/HTML inspection report (`what` + timeline + execution tree).
+- Added core helpers: `buildRunWhatSummary`, `renderRunWhat`, `buildRunReport`.
+- Added canonical dual-format read path: `parseTraceJsonl`, `persistedInspectEventToTraceEvents`; `readTraceEvents` accepts v0.1 and v0.2 JSONL.
+- Added [TRACE-VOCABULARY-V1.5.md](docs/proposals/TRACE-VOCABULARY-V1.5.md) RFC and `fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl`.
+- Added [what-report-inspect recipe](examples/recipes/what-report-inspect/) and CI artifact updates for `what`/`report`.
+
+### Changed
+
+- Inspection CLI commands (`view`, `timeline`, `stats`, `search`, `diff`, `export`, `what`, `report`) use shared dual-format read path (v0.1 + v0.2).
+
+### Notes
+
+- Manual trace writing remains `schemaVersion: "0.1"`.
+- v0.2 read is normalization for inspection — not a write-path switch.
+- Token fields in reports are user-supplied metadata only; core does not count tokens.
+- No vendor upload, hosted dashboard, or cost engine.
+- Linked release aligns `@agent-inspect/tui` with `agent-inspect` and `@agent-inspect/langchain` (all **1.5.0**).
+
 ## 1.4.0
 
 Released **2026-06-12**.

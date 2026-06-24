@@ -10,6 +10,8 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Current release on npm:** [1.4.0](CHANGELOG.md#140) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
+**Next release (ready on `main`, not yet published):** [1.5.0](CHANGELOG.md#150) — API subpaths, `what`/`report`, dual-format read. See [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md).
+
 ---
 
 ## Released recently
@@ -52,9 +54,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-Focus: **v1.5.0 train** (planning → implementation) — API subpath boundary, trace vocabulary, `what`/`report`, canonical dual-format read path. No expansion of SaaS or vendor-upload scope.
+**v1.5.0 train — implementation complete; ready for maintainer publish (Gate D).**
 
-Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones within v1.5.0**, not separate npm releases.
+Delivered on `main`: API subpath boundary, trace vocabulary RFC, `what`/`report` CLI, canonical v0.1+v0.2 read path, adoption recipes. See [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) and [CHANGELOG.md](CHANGELOG.md#150).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 

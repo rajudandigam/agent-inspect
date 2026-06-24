@@ -2,10 +2,11 @@ import type { DiffOptions } from "@agent-inspect/core";
 import {
   diffTraceEvents,
   parseDuration,
-  readTraceEvents,
   renderRunDiff,
   resolveTraceDir,
 } from "@agent-inspect/core";
+
+import { readRunTraceEvents } from "./read-run.js";
 
 export interface DiffCommandOptions {
   dir?: string;
@@ -91,8 +92,10 @@ export async function diffCommand(
   let leftEvents;
   let rightEvents;
   try {
-    leftEvents = await readTraceEvents(leftId, traceDir);
-    rightEvents = await readTraceEvents(rightId, traceDir);
+    const leftResult = await readRunTraceEvents(leftId, traceDir);
+    const rightResult = await readRunTraceEvents(rightId, traceDir);
+    leftEvents = leftResult?.events ?? [];
+    rightEvents = rightResult?.events ?? [];
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[AgentInspect] diff failed: ${msg}`);

@@ -71,6 +71,13 @@ export {
   persistedInspectEventsToInspectEvents,
 } from "./persisted/to-inspect-event.js";
 
+export type { PersistedToTraceEventOptions } from "./persisted/to-trace-event.js";
+
+export {
+  persistedInspectEventToTraceEvents,
+  persistedInspectEventsToTraceEvents,
+} from "./persisted/to-trace-event.js";
+
 export type { PersistedTreeBridgeOptions } from "./persisted/tree-bridge.js";
 
 export {
@@ -156,6 +163,14 @@ export {
   listTraceFiles,
   getRunIdFromTraceFileName,
 } from "./storage.js";
+
+export type {
+  TraceJsonlFormat,
+  ParseTraceJsonlResult,
+  ParseTraceJsonlOptions,
+} from "./read-trace.js";
+
+export { parseTraceJsonl, unknownTraceFormatMessage } from "./read-trace.js";
 
 export type { TraceDirectoryOptions } from "./trace-directory.js";
 export { TraceDirectory, resolveTraceDir } from "./trace-directory.js";

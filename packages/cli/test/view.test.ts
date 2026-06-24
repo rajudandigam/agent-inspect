@@ -12,8 +12,7 @@ vi.mock("@agent-inspect/tui", () => ({
   runTraceViewer: mockRunTraceViewer,
 }));
 
-import * as core from "@agent-inspect/core";
-
+import * as readRun from "../src/read-run.js";
 import { view } from "../src/view.js";
 
 function jsonl(...lines: string[]): string {
@@ -348,9 +347,9 @@ describe("view", () => {
     errSpy.mockRestore();
   });
 
-  it("sets exit code when readTraceEvents fails unexpectedly", async () => {
+  it("sets exit code when readRunTraceEvents fails unexpectedly", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.spyOn(core, "readTraceEvents").mockRejectedValueOnce(new Error("io"));
+    vi.spyOn(readRun, "readRunTraceEvents").mockRejectedValueOnce(new Error("io"));
     await view("run_x", { dir: traceDir });
     expect(process.exitCode).toBe(1);
     expect(errSpy.mock.calls.some((c) => String(c[0]).includes("view failed"))).toBe(

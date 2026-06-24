@@ -8,6 +8,7 @@ import {
   prepareTraceEventForDisk,
   resolveTraceSafetyOptions,
 } from "./trace-event-safety.js";
+import { parseTraceJsonl } from "./read-trace.js";
 import {
   ensureTraceDir,
   FALLBACK_TRACE_DIR,
@@ -212,38 +213,24 @@ export async function readTraceFile(
   }
 }
 
-/** Parses JSONL into validated {@link TraceEvent} rows; invalid lines are skipped with a warning. */
+/**
+ * Parses JSONL into validated {@link TraceEvent} rows (v0.1 native or v0.2 normalized).
+ * Invalid lines are skipped with a warning.
+ */
 export async function readTraceEvents(
   runId: string,
   traceDir: string,
 ): Promise<TraceEvent[]> {
-  const out: TraceEvent[] = [];
   try {
     const raw = await readTraceFile(runId, traceDir);
     if (raw === undefined) {
-      return out;
+      return [];
     }
-    const lines = raw.split("\n");
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed === "") continue;
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(trimmed) as unknown;
-      } catch {
-        warn("Skipped invalid JSON line in trace file");
-        continue;
-      }
-      if (validateEvent(parsed)) {
-        out.push(parsed);
-      } else {
-        warn("Skipped invalid trace event line in trace file");
-      }
-    }
+    return parseTraceJsonl(raw, { validate: validateEvent }).events;
   } catch (e) {
     warn("Failed to read trace events", e);
+    return [];
   }
-  return out;
 }
 
 /**

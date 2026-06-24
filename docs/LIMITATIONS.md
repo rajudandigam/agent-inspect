@@ -17,7 +17,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 - **v0.2 is not the default persisted trace file format.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL.
 - **CLI commands** (`list`, `view`, `export`, `diff`, `logs`, `tail`) still primarily operate on current v0.1 trace and log paths.
-- **v0.2 read/write integration** (dual-format storage, CLI consumption) is future work — v1.2.0 ships in-memory converters and canonical fixtures only.
+- **v0.2 read integration** — inspection CLI reads v0.2 JSONL via dual-format normalization (v1.5.0). Default **write** path remains v0.1; `list` metadata for v0.2-only files may be limited.
 
 ## LangChain streaming (v1.3.0)
 

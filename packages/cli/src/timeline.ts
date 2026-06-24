@@ -1,9 +1,10 @@
 import {
   buildRunTimeline,
-  readTraceEvents,
   renderTimeline,
   resolveTraceDir,
 } from "@agent-inspect/core";
+
+import { readRunTraceEvents } from "./read-run.js";
 
 export interface TimelineCommandOptions {
   dir?: string;
@@ -26,7 +27,8 @@ export async function timelineCommand(
   const traceDir = resolveTraceDir({ dir: options.dir });
   let events;
   try {
-    events = await readTraceEvents(id, traceDir);
+    const result = await readRunTraceEvents(id, traceDir);
+    events = result?.events ?? [];
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[AgentInspect] timeline failed: ${msg}`);

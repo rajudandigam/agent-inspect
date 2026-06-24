@@ -3,13 +3,15 @@ import {
   formatTimestamp,
   getIndent,
   getTraceFilePath,
-  readTraceEvents,
   renderErrorLine,
   renderStepLine,
   buildRunSummary,
   extractMetadata,
   resolveTraceDir,
 } from "@agent-inspect/core";
+
+import { readRunTraceEvents } from "./read-run.js";
+
 import type {
   ErrorInfo,
   RunCompletedEvent,
@@ -269,7 +271,8 @@ export async function view(
 
     const traceDir = resolveTraceDir({ dir: options.dir });
 
-    const events = await readTraceEvents(id, traceDir);
+    const result = await readRunTraceEvents(id, traceDir);
+    const events = result?.events ?? [];
     if (events.length === 0) {
       console.log(`Run not found: ${id}`);
       console.log(`Trace directory: ${traceDir}`);

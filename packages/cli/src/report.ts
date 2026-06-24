@@ -4,9 +4,10 @@ import path from "node:path";
 import type { RedactionProfile, ReportFormat } from "@agent-inspect/core";
 import {
   buildRunReport,
-  readTraceEvents,
   resolveTraceDir,
 } from "@agent-inspect/core";
+
+import { readRunTraceEvents } from "./read-run.js";
 
 export interface ReportCommandOptions {
   dir?: string;
@@ -66,7 +67,8 @@ export async function reportCommand(
   const traceDir = resolveTraceDir({ dir: options.dir });
   let events;
   try {
-    events = await readTraceEvents(id, traceDir);
+    const result = await readRunTraceEvents(id, traceDir);
+    events = result?.events ?? [];
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error(`[AgentInspect] report failed: ${msg}`);
