@@ -7,6 +7,10 @@ import type { TraceEvent } from "../src/types.js";
 import { extractMetadata, buildRunSummary } from "../src/trace-metadata.js";
 
 const ts = 1_700_000_000_000;
+const repoRoot = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../../..",
+);
 
 function runStarted(runId = "run_a", name = "n"): TraceEvent {
   return {
@@ -142,6 +146,26 @@ describe("extractMetadata", () => {
     expect(meta.eventCount).toBe(2);
     expect(meta.status).toBe("success");
   });
+
+  it("extracts equivalent metadata from native v0.1 and v0.2 fixtures", async () => {
+    const v01 = await extractMetadata(
+      path.join(repoRoot, "fixtures/traces/dual-format-parity.jsonl"),
+    );
+    const v02 = await extractMetadata(
+      path.join(repoRoot, "fixtures/traces-v0.2/dual-format-parity.jsonl"),
+    );
+
+    for (const meta of [v01, v02]) {
+      expect(meta.runId).toBe("run_dual_format_parity");
+      expect(meta.name).toBe("dual-format-parity");
+      expect(meta.status).toBe("success");
+      expect(meta.startedAt).toBe(1_700_000_100_000);
+      expect(meta.endedAt).toBe(1_700_000_101_000);
+      expect(meta.durationMs).toBe(1000);
+    }
+    expect(v01.eventCount).toBe(4);
+    expect(v02.eventCount).toBe(2);
+  });
 });
 
 describe("buildRunSummary", () => {
@@ -171,4 +195,3 @@ describe("buildRunSummary", () => {
     expect(s.longestStep?.durationMs).toBe(50);
   });
 });
-

@@ -25,6 +25,7 @@ const REQUIRED = {
     "fixtures/traces/tool-with-io.jsonl",
     "fixtures/traces/long-running.jsonl",
     "fixtures/traces/error-recovery.jsonl",
+    "fixtures/traces/dual-format-parity.jsonl",
   ],
   tracesV02: [
     "fixtures/traces-v0.2/manual-basic.jsonl",
@@ -32,6 +33,7 @@ const REQUIRED = {
     "fixtures/traces-v0.2/log-derived-basic.jsonl",
     "fixtures/traces-v0.2/adapter-langchain-like.jsonl",
     "fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
+    "fixtures/traces-v0.2/dual-format-parity.jsonl",
   ],
   logs: [
     "fixtures/logs/proactive-json.log",

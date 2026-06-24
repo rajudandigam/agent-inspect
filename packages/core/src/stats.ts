@@ -1,10 +1,7 @@
-import { readFile } from "node:fs/promises";
-
 import type { RunStartedEvent, TraceEvent, TraceMetadata } from "./types.js";
 import { buildRunSummary } from "./trace-metadata.js";
 import { filterTraces } from "./trace-filter.js";
-import { readTraceEvents } from "./storage.js";
-import { isTraceEvent } from "./types.js";
+import { readTraceEventsFromFile } from "./storage.js";
 import { formatDuration } from "./utils.js";
 
 export interface DurationStats {
@@ -72,19 +69,10 @@ async function readRunStartedMetadata(
   filePath: string,
 ): Promise<Record<string, unknown> | undefined> {
   try {
-    const raw = await readFile(filePath, "utf-8");
-    for (const line of raw.split(/\r?\n/)) {
-      const trimmed = line.trim();
-      if (trimmed === "") continue;
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(trimmed) as unknown;
-      } catch {
-        continue;
-      }
-      if (!isTraceEvent(parsed)) continue;
-      if (parsed.event !== "run_started") continue;
-      const rs = parsed as RunStartedEvent;
+    const events = await readTraceEventsFromFile(filePath);
+    for (const event of events) {
+      if (event.event !== "run_started") continue;
+      const rs = event as RunStartedEvent;
       if (rs.metadata && typeof rs.metadata === "object") {
         return rs.metadata as Record<string, unknown>;
       }
@@ -162,7 +150,7 @@ export async function buildTraceStats(
     }
 
     try {
-      const events = await readTraceEvents(m.runId, options.traceDir);
+      const events = await readTraceEventsFromFile(m.filePath);
       if (events.length === 0) continue;
       const summary = buildRunSummary(events);
       totalSteps += summary.totalSteps;

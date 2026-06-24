@@ -222,13 +222,29 @@ export async function readTraceEvents(
   traceDir: string,
 ): Promise<TraceEvent[]> {
   try {
-    const raw = await readTraceFile(runId, traceDir);
-    if (raw === undefined) {
-      return [];
-    }
-    return parseTraceJsonl(raw, { validate: validateEvent }).events;
+    const filePath = getTraceFilePath(runId, traceDir);
+    return await readTraceEventsFromFile(filePath);
   } catch (e) {
     warn("Failed to read trace events", e);
+    return [];
+  }
+}
+
+/**
+ * Reads and normalizes trace events from an exact file path.
+ * Used by directory scans where the embedded run id may differ from the basename.
+ */
+export async function readTraceEventsFromFile(
+  filePath: string,
+): Promise<TraceEvent[]> {
+  try {
+    const raw = await readFile(filePath, "utf-8");
+    return parseTraceJsonl(raw, { validate: validateEvent }).events;
+  } catch (e) {
+    if (e && typeof e === "object" && "code" in e && e.code === "ENOENT") {
+      return [];
+    }
+    warn("Failed to read trace events from file", e);
     return [];
   }
 }

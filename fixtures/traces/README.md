@@ -21,6 +21,7 @@ Small **manual trace** files consumed by list/view/export/diff and compatibility
 | `tool-with-io.jsonl` | Tool step with bounded input/output previews in metadata |
 | `long-running.jsonl` | Many sequential steps (~90 lines) for perf/smoke |
 | `error-recovery.jsonl` | Failed step then fallback success; run completes successfully |
+| `dual-format-parity.jsonl` | v0.1 half of list/stats/search parity coverage; embedded run id differs from filename |
 
 ## Feature mapping
 

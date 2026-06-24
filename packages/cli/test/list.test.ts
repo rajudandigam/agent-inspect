@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -285,6 +285,30 @@ describe("list", () => {
     const raw = String(logSpy.mock.calls[0]?.[0] ?? "");
     const parsed = JSON.parse(raw) as unknown[];
     expect(Array.isArray(parsed)).toBe(true);
+    logSpy.mockRestore();
+  });
+
+  it("lists v0.2 metadata from the embedded run", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
+    );
+    await cp(fixture, path.join(traceDir, "dual-format-parity.jsonl"));
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await list({ dir: traceDir, json: true });
+
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0])) as Array<
+      Record<string, unknown>
+    >;
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0]).toMatchObject({
+      runId: "run_dual_format_parity",
+      name: "dual-format-parity",
+      status: "success",
+      durationMs: 1000,
+      eventCount: 2,
+    });
     logSpy.mockRestore();
   });
 

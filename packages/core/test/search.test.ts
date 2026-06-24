@@ -9,6 +9,10 @@ const fixturesDir = path.join(
   path.dirname(new URL(import.meta.url).pathname),
   "../../../fixtures/traces",
 );
+const fixturesV02Dir = path.join(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../../../fixtures/traces-v0.2",
+);
 
 describe("searchTraces", () => {
   it("parses duration filters", () => {
@@ -58,5 +62,41 @@ describe("searchTraces", () => {
     const a = await searchTraces(metas, { traceDir: fixturesDir, limit: 10 });
     const b = await searchTraces(metas, { traceDir: fixturesDir, limit: 10 });
     expect(a).toEqual(b);
+  });
+
+  it("matches v0.1 and v0.2 step searches using exact file paths", async () => {
+    const v01Meta = await extractMetadata(
+      path.join(fixturesDir, "dual-format-parity.jsonl"),
+    );
+    const v02Meta = await extractMetadata(
+      path.join(fixturesV02Dir, "dual-format-parity.jsonl"),
+    );
+    const options = {
+      status: "success" as const,
+      kind: "tool",
+      tool: "fixture-search",
+      duration: ">=500ms",
+    };
+
+    const v01 = await searchTraces([v01Meta], {
+      traceDir: fixturesDir,
+      ...options,
+    });
+    const v02 = await searchTraces([v02Meta], {
+      traceDir: fixturesV02Dir,
+      ...options,
+    });
+
+    for (const results of [v01, v02]) {
+      expect(results).toHaveLength(1);
+      expect(results[0]).toMatchObject({
+        runId: "run_dual_format_parity",
+        runName: "dual-format-parity",
+        runStatus: "success",
+        stepName: "fixture-search",
+        stepType: "tool",
+        durationMs: 500,
+      });
+    }
   });
 });

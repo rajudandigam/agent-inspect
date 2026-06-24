@@ -1,7 +1,7 @@
 import type { StepCompletedEvent, StepStartedEvent, TraceEvent } from "./types.js";
 import { extractMetadata } from "./trace-metadata.js";
 import { filterTraces as filterTraceMetas } from "./trace-filter.js";
-import { readTraceEvents } from "./storage.js";
+import { readTraceEventsFromFile } from "./storage.js";
 import type { TraceMetadata, StepType } from "./types.js";
 import { parseDuration } from "./utils/duration.js";
 
@@ -122,7 +122,7 @@ export async function searchTraces(
 
     let events: TraceEvent[] = [];
     try {
-      events = await readTraceEvents(m.runId, options.traceDir);
+      events = await readTraceEventsFromFile(m.filePath);
     } catch {
       continue;
     }

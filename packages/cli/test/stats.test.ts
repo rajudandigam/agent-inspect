@@ -49,4 +49,28 @@ describe("stats CLI", () => {
     expect(parsed.totalRuns).toBe(1);
     expect(typeof parsed.errorRate).toBe("number");
   });
+
+  it("aggregates v0.2 run metadata and steps", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
+    );
+    await cp(fixture, path.join(tmpDir, "dual-format-parity.jsonl"));
+
+    await statsCommand({
+      dir: tmpDir,
+      correlationId: "corr_fixture_001",
+      groupId: "group_fixture_001",
+      json: true,
+    });
+
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
+    expect(parsed).toMatchObject({
+      totalRuns: 1,
+      successCount: 1,
+      totalSteps: 1,
+      totalToolSteps: 1,
+    });
+    expect(parsed.slowestRuns[0]?.runId).toBe("run_dual_format_parity");
+  });
 });

@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { Command, Option } from "commander";
+import { version as packageVersion } from "../../../package.json";
 
 import type { ListOptions } from "./list.js";
 import { list } from "./list.js";
@@ -41,7 +42,7 @@ export function runCommand(action: () => Promise<void>): void {
 export function createCliProgram(): Command {
   const program = new Command("agent-inspect")
     .description("Local-first execution-tree debugger for AI agents")
-    .version("1.0.0");
+    .version(packageVersion);
 
   program
     .command("list")

@@ -3,13 +3,22 @@
  * Uses only Node built-ins. Run from repo root: pnpm run pack:smoke
  */
 import { execSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const keep = process.env.AGENT_INSPECT_KEEP_SMOKE_DIR === "true";
+const expectedVersion = JSON.parse(
+  readFileSync(path.join(root, "package.json"), "utf8"),
+).version;
 
 function assertHelp(label, stdout, stderr, status) {
   const combined = `${stdout}\n${stderr}`;
@@ -145,6 +154,20 @@ try {
     process.exit(1);
   }
 
+  const binVersion = spawnSync(binPath, ["--version"], {
+    cwd: tmpRoot,
+    encoding: "utf8",
+  });
+  if (
+    binVersion.status !== 0 ||
+    binVersion.stdout.trim() !== expectedVersion
+  ) {
+    console.error(
+      `[pack:smoke] CLI version mismatch: expected ${expectedVersion}, got ${binVersion.stdout.trim() || "<empty>"}\n${binVersion.stderr}`,
+    );
+    process.exit(1);
+  }
+
   const binHelp = spawnSync(binPath, ["--help"], {
     cwd: tmpRoot,
     encoding: "utf8",
@@ -166,7 +189,7 @@ try {
   assertHelp("npx --no-install agent-inspect --help", npxNoInstall.stdout, npxNoInstall.stderr, npxNoInstall.status);
 
   console.log(
-    "[pack:smoke] OK: tarball install, ESM import, CJS require, and local bin / npm exec / npx --no-install --help",
+    `[pack:smoke] OK: tarball install, ESM import, CJS require, CLI ${expectedVersion}, and local bin / npm exec / npx --no-install --help`,
   );
 } finally {
   if (!keep) {

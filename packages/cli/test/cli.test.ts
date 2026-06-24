@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { version as packageVersion } from "../../../package.json";
 
 import { createCliProgram } from "../src/index.js";
 
 describe("@agent-inspect/cli", () => {
+  it("reports the public root package version", () => {
+    expect(createCliProgram().version()).toBe(packageVersion);
+  });
+
   it("exposes the program name and description", () => {
     const program = createCliProgram();
     expect(program.name()).toBe("agent-inspect");

@@ -9,6 +9,8 @@ export type TraceJsonlFormat = "0.1" | "0.2" | "mixed" | "empty";
 
 export interface ParseTraceJsonlResult {
   format: TraceJsonlFormat;
+  /** Count of valid source JSONL rows before any one-to-many normalization. */
+  sourceEventCount: number;
   events: TraceEvent[];
   persisted: PersistedInspectEvent[];
 }
@@ -26,6 +28,8 @@ function detectLineFormat(parsed: unknown): "0.1" | "0.2" | "unknown" {
 
 export interface ParseTraceJsonlOptions {
   validate?: (value: unknown) => value is TraceEvent;
+  /** Emit parse warnings through the standard AgentInspect warning channel (default true). */
+  warnings?: boolean;
 }
 
 /**
@@ -37,8 +41,12 @@ export function parseTraceJsonl(
   options: ParseTraceJsonlOptions = {},
 ): ParseTraceJsonlResult {
   const validate = options.validate ?? isTraceEvent;
+  const emitWarning = (message: string): void => {
+    if (options.warnings !== false) warn(message);
+  };
   const persisted: PersistedInspectEvent[] = [];
   const traceEvents: TraceEvent[] = [];
+  let sourceEventCount = 0;
   let saw01 = false;
   let saw02 = false;
 
@@ -50,7 +58,7 @@ export function parseTraceJsonl(
     try {
       parsed = JSON.parse(trimmed) as unknown;
     } catch {
-      warn("Skipped invalid JSON line in trace file");
+      emitWarning("Skipped invalid JSON line in trace file");
       continue;
     }
 
@@ -58,9 +66,10 @@ export function parseTraceJsonl(
     if (format === "0.1") {
       saw01 = true;
       if (validate(parsed)) {
+        sourceEventCount += 1;
         traceEvents.push(parsed);
       } else {
-        warn("Skipped invalid trace event line in trace file");
+        emitWarning("Skipped invalid trace event line in trace file");
       }
       continue;
     }
@@ -68,18 +77,21 @@ export function parseTraceJsonl(
     if (format === "0.2") {
       saw02 = true;
       if (isPersistedInspectEvent(parsed)) {
+        sourceEventCount += 1;
         persisted.push(parsed);
       } else {
-        warn("Skipped invalid persisted inspect event line in trace file");
+        emitWarning("Skipped invalid persisted inspect event line in trace file");
       }
       continue;
     }
 
-    warn("Skipped trace line with unknown schemaVersion");
+    emitWarning("Skipped trace line with unknown schemaVersion");
   }
 
   if (saw01 && saw02) {
-    warn("Trace file mixes schemaVersion 0.1 and 0.2 lines; normalizing all rows");
+    emitWarning(
+      "Trace file mixes schemaVersion 0.1 and 0.2 lines; normalizing all rows",
+    );
   }
 
   const converted = persisted.length > 0 ? persistedInspectEventsToTraceEvents(persisted) : [];
@@ -90,7 +102,7 @@ export function parseTraceJsonl(
   else if (saw01) format = "0.1";
   else if (saw02) format = "0.2";
 
-  return { format, events, persisted };
+  return { format, sourceEventCount, events, persisted };
 }
 
 /**

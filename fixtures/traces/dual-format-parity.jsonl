@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000100000,"runId":"run_dual_format_parity","name":"dual-format-parity","startTime":1700000100000,"metadata":{"correlationId":"corr_fixture_001","groupId":"group_fixture_001"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000100100,"runId":"run_dual_format_parity","stepId":"tool_parity","name":"fixture-search","type":"tool","startTime":1700000100100,"metadata":{"toolName":"fixture-search"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000100600,"runId":"run_dual_format_parity","stepId":"tool_parity","status":"success","endTime":1700000100600,"durationMs":500}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000101000,"runId":"run_dual_format_parity","status":"success","endTime":1700000101000,"durationMs":1000}

@@ -17,6 +17,7 @@ const REQUIRED_TRACES = [
   "fixtures/traces/tool-with-io.jsonl",
   "fixtures/traces/long-running.jsonl",
   "fixtures/traces/error-recovery.jsonl",
+  "fixtures/traces/dual-format-parity.jsonl",
 ];
 
 describe("canonical fixtures", () => {

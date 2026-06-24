@@ -1,4 +1,4 @@
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import type {
@@ -13,19 +13,16 @@ import type {
   StepType,
   StepStatus,
 } from "./types.js";
-import { readFile } from "node:fs/promises";
-import { isTraceEvent } from "./types.js";
+import { parseTraceJsonl } from "./read-trace.js";
 
 function isFiniteNumber(v: unknown): v is number {
   return typeof v === "number" && Number.isFinite(v);
 }
 
-function safeParseJson(line: string): unknown | undefined {
-  try {
-    return JSON.parse(line) as unknown;
-  } catch {
-    return undefined;
-  }
+function parseIsoToMs(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 export async function extractMetadata(
@@ -40,9 +37,8 @@ export async function extractMetadata(
   }
 
   const raw = await readFile(filePath, "utf-8");
-  const lines = raw.split(/\r?\n/);
+  const parsedTrace = parseTraceJsonl(raw, { warnings: false });
 
-  let eventCount = 0;
   let runId: string | undefined;
   let name: string | undefined;
   let startedAt: number | undefined;
@@ -53,21 +49,41 @@ export async function extractMetadata(
   let hasRunCompleted = false;
   let runCompletedStatus: "success" | "error" | undefined;
   let anyStepError = false;
-  let anyKnownEvent = false;
+  const anyKnownEvent = parsedTrace.sourceEventCount > 0;
+  let persistedStatus: TraceMetadataStatus | undefined;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed === "") continue;
-    const parsed = safeParseJson(trimmed);
-    if (!parsed) continue;
-    if (!isTraceEvent(parsed)) continue;
+  const persistedRun = parsedTrace.persisted.find(
+    (event) => event.kind === "RUN",
+  );
+  if (persistedRun) {
+    runId = persistedRun.runId;
+    if (persistedRun.name.trim() !== "") {
+      name = persistedRun.name;
+    }
+    startedAt =
+      parseIsoToMs(persistedRun.startedAt) ??
+      parseIsoToMs(persistedRun.timestamp);
+    endedAt = parseIsoToMs(persistedRun.endedAt);
+    if (isFiniteNumber(persistedRun.durationMs)) {
+      explicitDurationMs = persistedRun.durationMs;
+      if (endedAt === undefined && startedAt !== undefined) {
+        endedAt = startedAt + persistedRun.durationMs;
+      }
+    }
+    if (persistedRun.status === "ok") persistedStatus = "success";
+    else if (persistedRun.status === "error") persistedStatus = "error";
+    else if (persistedRun.status === "running") persistedStatus = "running";
+    else if (persistedRun.status === "unknown") persistedStatus = "unknown";
+  } else {
+    runId = parsedTrace.persisted[0]?.runId;
+  }
 
-    const e = parsed as TraceEvent;
-    anyKnownEvent = true;
-    eventCount += 1;
-
-    if (runId === undefined && typeof (e as any).runId === "string") {
-      runId = (e as any).runId as string;
+  for (const e of parsedTrace.events) {
+    if (
+      runId === undefined &&
+      typeof (e as { runId?: unknown }).runId === "string"
+    ) {
+      runId = (e as { runId: string }).runId;
     }
 
     if (e.event === "run_started") {
@@ -103,11 +119,16 @@ export async function extractMetadata(
   const resolvedRunId = runId ?? runIdFromFile;
 
   let status: TraceMetadataStatus = "unknown";
-  if (hasRunCompleted && (runCompletedStatus === "success" || runCompletedStatus === "error")) {
+  if (
+    hasRunCompleted &&
+    (runCompletedStatus === "success" || runCompletedStatus === "error")
+  ) {
     status = runCompletedStatus;
   } else if (anyStepError) {
     // If run_completed is missing, but at least one step failed, treat as error.
     status = "error";
+  } else if (persistedStatus !== undefined) {
+    status = persistedStatus;
   } else if (hasRunStarted && !hasRunCompleted) {
     status = "running";
   } else if (anyKnownEvent) {
@@ -133,7 +154,7 @@ export async function extractMetadata(
     startedAt,
     endedAt,
     durationMs,
-    eventCount,
+    eventCount: parsedTrace.sourceEventCount,
     filePath,
     fileSize: stats.size,
     createdAt: stats.birthtime,
@@ -283,4 +304,3 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
   void startedAt;
   return summary;
 }
-

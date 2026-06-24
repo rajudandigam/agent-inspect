@@ -53,4 +53,31 @@ describe("search CLI", () => {
     const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
     expect(Array.isArray(parsed)).toBe(true);
   });
+
+  it("finds v0.2 runs and steps by normalized metadata", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
+    );
+    await cp(fixture, path.join(tmpDir, "dual-format-parity.jsonl"));
+
+    await searchCommand({
+      dir: tmpDir,
+      status: "success",
+      kind: "tool",
+      tool: "fixture-search",
+      duration: ">=500ms",
+      json: true,
+    });
+
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0]).toMatchObject({
+      runId: "run_dual_format_parity",
+      runStatus: "success",
+      stepName: "fixture-search",
+      stepType: "tool",
+      durationMs: 500,
+    });
+  });
 });

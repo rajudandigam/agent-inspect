@@ -13,8 +13,11 @@ describe("parseTraceJsonl", () => {
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
-    const { format, events } = parseTraceJsonl(raw, { validate: validateEvent });
+    const { format, sourceEventCount, events } = parseTraceJsonl(raw, {
+      validate: validateEvent,
+    });
     expect(format).toBe("0.1");
+    expect(sourceEventCount).toBe(4);
     expect(events).toHaveLength(4);
   });
 
@@ -24,8 +27,11 @@ describe("parseTraceJsonl", () => {
       "../../../fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
-    const { format, events, persisted } = parseTraceJsonl(raw, { validate: validateEvent });
+    const { format, sourceEventCount, events, persisted } = parseTraceJsonl(raw, {
+      validate: validateEvent,
+    });
     expect(format).toBe("0.2");
+    expect(sourceEventCount).toBe(3);
     expect(persisted.length).toBeGreaterThan(0);
     const llm = events.find(
       (e) => e.event === "step_started" && e.type === "llm",
@@ -41,8 +47,11 @@ describe("parseTraceJsonl", () => {
       '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"r","name":"n","startTime":1}',
       '{"schemaVersion":"0.2","eventId":"e","runId":"r","kind":"RUN","name":"n","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"manual"}}',
     ].join("\n");
-    const { format, events } = parseTraceJsonl(raw, { validate: validateEvent });
+    const { format, sourceEventCount, events } = parseTraceJsonl(raw, {
+      validate: validateEvent,
+    });
     expect(format).toBe("mixed");
+    expect(sourceEventCount).toBe(2);
     expect(events.length).toBeGreaterThanOrEqual(2);
   });
 });
