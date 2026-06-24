@@ -1,3 +1,6 @@
 Trace written under /path/to/.agent-inspect
-Export share-safe artifacts with:
+Quick summary:
+  npx agent-inspect what ci-fixture-agent --dir ./.agent-inspect
+Share-safe artifacts:
   npx agent-inspect export ci-fixture-agent --dir ./.agent-inspect --format markdown --redaction-profile share
+  npx agent-inspect report ci-fixture-agent --dir ./.agent-inspect --format html --redaction-profile share -o ./artifacts/report.html

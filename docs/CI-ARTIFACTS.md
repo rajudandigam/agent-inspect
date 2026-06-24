@@ -9,7 +9,8 @@ AgentInspect helps you **write and export traces locally** in CI. Uploading arti
 3. Set `AGENT_INSPECT_TRACE_DIR` (default `.agent-inspect`).
 4. Run your job/tests.
 5. Export share-safe copies: `agent-inspect export <run-id> --redaction-profile share`.
-6. Upload files with your CI artifact step.
+6. Optional **v1.5 inspection reports**: `agent-inspect what <run-id>` and `agent-inspect report <run-id> --format html`.
+7. Upload files with your CI artifact step.
 
 ## Environment variables
 
@@ -29,6 +30,23 @@ npx agent-inspect export <run-id> --dir ./.agent-inspect \
 ```
 
 Formats: `markdown`, `html`, `openinference`, `otlp-json` — all local files only.
+
+## What and report (v1.5)
+
+For quick human review in CI logs or local debugging:
+
+```bash
+npx agent-inspect what <run-id> --dir ./.agent-inspect
+```
+
+For a fuller inspection artifact (what + timeline + execution tree):
+
+```bash
+npx agent-inspect report <run-id> --dir ./.agent-inspect \
+  --format html --redaction-profile share -o ./artifacts/report.html
+```
+
+Recipe: [examples/recipes/what-report-inspect](../examples/recipes/what-report-inspect/README.md)
 
 ## GitHub Actions example
 
@@ -50,6 +68,8 @@ Sample workflow: [workflow-example.yml](../examples/recipes/github-actions-artif
 ```bash
 npx agent-inspect list --dir ./.agent-inspect
 npx agent-inspect view <run-id> --dir ./.agent-inspect
+npx agent-inspect what <run-id> --dir ./.agent-inspect
+npx agent-inspect report <run-id> --dir ./.agent-inspect --format markdown
 npx agent-inspect timeline <run-id> --dir ./.agent-inspect
 npx agent-inspect stats --dir ./.agent-inspect
 npx agent-inspect search --dir ./.agent-inspect --status error

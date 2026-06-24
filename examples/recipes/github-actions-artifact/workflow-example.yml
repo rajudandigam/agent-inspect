@@ -28,11 +28,17 @@ jobs:
       - name: Export share-safe markdown artifact
         run: |
           npx agent-inspect list --dir ./.agent-inspect
+          npx agent-inspect what ci-fixture-agent --dir ./.agent-inspect
           npx agent-inspect export ci-fixture-agent \
             --dir ./.agent-inspect \
             --format markdown \
             --redaction-profile share \
             -o ./artifacts/trace.md
+          npx agent-inspect report ci-fixture-agent \
+            --dir ./.agent-inspect \
+            --format html \
+            --redaction-profile share \
+            -o ./artifacts/report.html
 
       - name: Upload trace artifacts
         uses: actions/upload-artifact@v4
@@ -41,4 +47,5 @@ jobs:
           path: |
             ./.agent-inspect
             ./artifacts/trace.md
+            ./artifacts/report.html
           if-no-files-found: error

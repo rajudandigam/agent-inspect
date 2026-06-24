@@ -117,7 +117,7 @@ AGENT_INSPECT=1 node eval-runner.mjs
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
 - **Correlate runs** with optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started` metadata.
 - **Redact before disk** with default key-based redaction, or choose `redactionProfile`: `local`, `share`, or `strict`.
-- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `diff`, `timeline`, `stats`, `search`.
+- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
 - **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
 - **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
@@ -176,6 +176,8 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `timeline` | Chronological view of one run |
 | `stats` | Local aggregates over a trace directory |
 | `search` | Deterministic search over local traces |
+| `what` | Concise summary of one run |
+| `report` | Markdown/HTML inspection report (what + timeline + tree) |
 
 ![Timeline with slow-step focus for one run](https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/demos/timeline.gif)
 

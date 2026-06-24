@@ -30,6 +30,16 @@ npx agent-inspect export ci-fixture-agent \
   --redaction-profile share
 ```
 
+Summarize locally with **v1.5** commands:
+
+```bash
+npx agent-inspect what ci-fixture-agent --dir ./.agent-inspect
+npx agent-inspect report ci-fixture-agent --dir ./.agent-inspect \
+  --format html --redaction-profile share -o ./artifacts/report.html
+```
+
+See also [what-report-inspect](../what-report-inspect/README.md) for a focused adoption walkthrough.
+
 ## GitHub Actions
 
 See `workflow-example.yml` — copy into `.github/workflows/` and adjust paths for your repo layout.

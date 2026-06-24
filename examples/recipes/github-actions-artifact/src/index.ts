@@ -29,7 +29,14 @@ await maybeInspectRun(
 );
 
 console.log(`Trace written under ${path.resolve(traceDir)}`);
-console.log("Export share-safe artifacts with:");
+console.log("Quick summary:");
+console.log(
+  `  npx agent-inspect what ci-fixture-agent --dir ${traceDir}`,
+);
+console.log("Share-safe artifacts:");
 console.log(
   `  npx agent-inspect export ci-fixture-agent --dir ${traceDir} --format markdown --redaction-profile share`,
+);
+console.log(
+  `  npx agent-inspect report ci-fixture-agent --dir ${traceDir} --format html --redaction-profile share -o ./artifacts/report.html`,
 );

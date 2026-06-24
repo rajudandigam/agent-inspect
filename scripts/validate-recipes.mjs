@@ -21,6 +21,7 @@ const RECIPES = [
   "retry-fallback",
   "parallel-tools",
   "github-actions-artifact",
+  "what-report-inspect",
 ];
 
 const LOG_RECIPE_FILES = {
