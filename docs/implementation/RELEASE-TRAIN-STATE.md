@@ -5,26 +5,26 @@
 ```yaml
 baselineVersion: "1.4.0"
 currentTrain: "v1.5.0"
-currentChunk: 2
+currentChunk: 3
 trainStatus: "in_progress"
 branch: "main"
-lastConfirmedCommit: "00d13b6"
-lastValidationLevel: "export"
-completedChunks: [1, 2]
+lastConfirmedCommit: "9305eda"
+lastValidationLevel: "docs"
+completedChunks: [1, 2, 3]
 openBlockers: []
 pendingManualGate: "B"
-nextAction: "Review Chunk 2 (subpath exports), commit, begin Chunk 3 (trace vocabulary RFC)"
-updatedAt: "2026-06-04T16:30:00.000Z"
+nextAction: "Review Chunk 3 (TRACE-VOCABULARY-V1.5.md), commit, begin Chunk 4 (what command)"
+updatedAt: "2026-06-04T17:00:00.000Z"
 ```
 
-## Chunk 2 — complete (pending Gate B commit)
+## Chunk 3 — complete (pending Gate B commit)
 
-**Deliverable:** Non-breaking subpath exports (`./advanced`, `./persisted`, `./logs`, `./exporters`, `./diff`)
-**Suggested commit:** `feat(v1.5): add non-breaking package subpath exports`
+**Deliverable:** [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md) + `fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl`
+**Suggested commit:** `docs(v1.5): trace vocabulary RFC and token metadata decision`
 
-## Next: Chunk 3
+## Next: Chunk 4
 
-[Trace vocabulary + schema decision](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-3--trace-vocabulary--schema-decision)
+[`what` command](./release-trains/V1.5.0-EXECUTION-PLAN.md#chunk-4--what-command)
 
 **Program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md)
 **Train plan:** [release-trains/V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)

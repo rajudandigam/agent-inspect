@@ -31,6 +31,7 @@ const REQUIRED = {
     "fixtures/traces-v0.2/manual-tool-error.jsonl",
     "fixtures/traces-v0.2/log-derived-basic.jsonl",
     "fixtures/traces-v0.2/adapter-langchain-like.jsonl",
+    "fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
   ],
   logs: [
     "fixtures/logs/proactive-json.log",

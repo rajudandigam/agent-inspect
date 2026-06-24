@@ -142,6 +142,8 @@ Unknown status must **not** be treated as success.
 - Readers should ignore unknown fields where safe.
 - Breaking schema changes require a major version.
 
+**v1.5 vocabulary (kinds, token metadata, streaming attributes):** [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md)
+
 ## 8. Malformed lines
 
 Manual trace reading:
