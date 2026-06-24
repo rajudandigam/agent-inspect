@@ -27,6 +27,7 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.searchTraces).toBe("function");
     expect(typeof core.buildRunWhatSummary).toBe("function");
     expect(typeof core.renderRunWhat).toBe("function");
+    expect(typeof core.buildRunReport).toBe("function");
     expect(typeof core.isAgentInspectTrace).toBe("function");
     expect(typeof core.parseDuration).toBe("function");
     expect(typeof core.formatDuration).toBe("function");

@@ -177,6 +177,9 @@ export { buildRunTimeline, renderTimeline } from "./timeline.js";
 export type { RunWhatSummary, RenderWhatOptions } from "./what.js";
 export { buildRunWhatSummary, renderRunWhat } from "./what.js";
 
+export type { ReportFormat, ReportOptions, ReportResult } from "./report.js";
+export { buildRunReport } from "./report.js";
+
 export type {
   DurationStats,
   TraceStatsRankedRun,

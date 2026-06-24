@@ -30,6 +30,7 @@ Core commands:
 - `stats` — local aggregate stats over a trace directory
 - `search` — deterministic local search over traces
 - `what` — concise summary of a single run (local JSONL)
+- `report` — markdown or HTML inspection report for a single run
 
 ## 2. Environment variables
 
@@ -348,6 +349,31 @@ What: minimal-success
 Status: success · Duration: 120ms · Steps: 1 (1 logic)
 Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
+```
+
+### 6.12 `report`
+
+Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. Read-only over v0.1 JSONL. Distinct from `export` (which targets shareable tree snapshots and standards formats).
+
+```bash
+agent-inspect report <run-id> [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--format <markdown|html>` — default `markdown`
+- `-o, --output <path>` — write to file
+- `--json` — JSON wrapper (includes `content` when writing to stdout)
+- `--include-attributes` — bounded attributes in tree section
+- `--no-errors` — omit error details from tree section
+- `--no-correlation` — omit correlation ids from what section
+- `--redaction-profile <local|share|strict>` — tree section redaction (default `local`)
+
+Example:
+
+```bash
+npx agent-inspect report minimal-success --dir fixtures/traces --format html -o report.html
 ```
 
 ## 7. Optional TUI behavior

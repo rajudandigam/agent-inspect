@@ -27,6 +27,8 @@ import type { SearchCommandOptions } from "./search.js";
 import { searchCommand } from "./search.js";
 import type { WhatCommandOptions } from "./what.js";
 import { whatCommand } from "./what.js";
+import type { ReportCommandOptions } from "./report.js";
+import { reportCommand } from "./report.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -323,6 +325,32 @@ export function createCliProgram(): Command {
     .option("--no-correlation", "omit correlation metadata from human output")
     .action((runId: string, opts: WhatCommandOptions) => {
       runCommand(() => whatCommand(runId, opts));
+    });
+
+  program
+    .command("report")
+    .description("Generate markdown or HTML inspection report for a single run")
+    .argument("<run-id>", "run id (e.g. from list output)")
+    .option("--dir <path>", "trace directory")
+    .addOption(
+      new Option("--format <format>", "report format (default: markdown)").choices([
+        "markdown",
+        "html",
+      ]),
+    )
+    .option("-o, --output <path>", "write report to file (creates parent dirs)")
+    .option("--json", "emit JSON wrapper (includes content when writing to stdout)")
+    .option("--include-attributes", "include bounded step attributes in tree section")
+    .option("--no-errors", "omit error details from tree section")
+    .option("--no-correlation", "omit correlation metadata from what section")
+    .addOption(
+      new Option(
+        "--redaction-profile <profile>",
+        "redaction profile for tree section: local, share, strict (default: local)",
+      ).choices(["local", "share", "strict"]),
+    )
+    .action((runId: string, opts: ReportCommandOptions) => {
+      runCommand(() => reportCommand(runId, opts));
     });
 
   return program;
