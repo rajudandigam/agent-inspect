@@ -1,5 +1,16 @@
 # @agent-inspect/langchain
 
+## 1.5.0
+
+### Minor Changes
+
+- Non-breaking subpath exports, `what` and `report` CLI commands, and canonical dual-format trace read path (v0.1 + v0.2 JSONL).
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@1.5.0
+
 ## 1.4.0
 
 ### Minor Changes

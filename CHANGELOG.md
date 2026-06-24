@@ -2,7 +2,7 @@
 
 ## 1.5.0
 
-**Draft — not yet released.** Maintainer: finalize date and publish via Gate D (changeset + `changeset publish`).
+Released **2026-06-24**.
 
 ### Added
 

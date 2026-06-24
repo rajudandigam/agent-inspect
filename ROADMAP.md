@@ -8,13 +8,20 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.4.0](CHANGELOG.md#140) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
-
-**Next release (ready on `main`, not yet published):** [1.5.0](CHANGELOG.md#150) — API subpaths, `what`/`report`, dual-format read. See [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md).
+**Current release on npm:** [1.5.0](CHANGELOG.md#150) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
 ---
 
 ## Released recently
+
+Shipped in **1.5.0** (see [CHANGELOG.md](CHANGELOG.md#150)):
+
+- **API subpaths:** non-breaking `agent-inspect/advanced`, `/persisted`, `/logs`, `/exporters`, `/diff` (root export unchanged).
+- **Inspection CLI:** `what`, `report` — concise summaries and markdown/HTML reports from local JSONL.
+- **Dual-format read:** inspection commands read v0.1 and v0.2 JSONL via normalization.
+- **Adoption:** [what-report-inspect recipe](examples/recipes/what-report-inspect/) and CI artifact updates.
+- **Linked release:** all three npm packages at **1.5.0**.
+- **Unchanged by design:** local-first, no vendor upload, manual traces remain `schemaVersion: "0.1"`.
 
 Shipped in **1.4.0** (see [CHANGELOG.md](CHANGELOG.md#140)):
 
@@ -54,9 +61,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.5.0 train — implementation complete; ready for maintainer publish (Gate D).**
-
-Delivered on `main`: API subpath boundary, trace vocabulary RFC, `what`/`report` CLI, canonical v0.1+v0.2 read path, adoption recipes. See [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) and [CHANGELOG.md](CHANGELOG.md#150).
+**v1.6.0 train** — next scope per [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md). v1.5.0 published **2026-06-24**.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 

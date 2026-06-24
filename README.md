@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.4.0** (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
+Current npm release: **1.5.0** (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
 ```bash
 npm install agent-inspect
@@ -111,7 +111,7 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
-## What you can do today (v1.4.0)
+## What you can do today (v1.5.0)
 
 - **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
@@ -196,7 +196,7 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 ## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.x** (current: **1.4.0**) is the **local-first trace workbench** for TypeScript AI agents:
+**agent-inspect 1.x** (current: **1.5.0**) is the **local-first trace workbench** for TypeScript AI agents:
 
 - Instrument runs with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
@@ -205,6 +205,8 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 **Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
+
+**Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
