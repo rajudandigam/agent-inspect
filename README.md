@@ -111,18 +111,19 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
-## What you can do today (v1.5.0)
+## Stable and release-candidate capabilities (1.x)
 
 - **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
 - **Correlate runs** with optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started` metadata.
 - **Redact before disk** with default key-based redaction, or choose `redactionProfile`: `local`, `share`, or `strict`.
-- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
+- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `open`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
 - **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
 - **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
 - **Optional TUI** — `view --tui` when `@agent-inspect/tui` is installed.
 - **Persisted-event foundation (v1.2.0+)** — in-memory `PersistedInspectEvent` converters; manual writing stays `schemaVersion: "0.1"`.
+- **v1.6.0 release-candidate APIs on `main`** — experimental `agent-inspect/writers`, `agent-inspect/readers`, `createInspector()`, and `agent-inspect open` for local AgentInspect/OpenInference/OTLP ingestion.
 
 Nothing uploads traces by default. Review exports before sharing — see [safe trace sharing](docs/SAFE-TRACE-SHARING.md).
 
@@ -172,6 +173,7 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `logs` | Turn existing structured logs into a local tree/timeline |
 | `tail` | Watch structured logs while the app runs |
 | `export` | Write Markdown / HTML / OpenInference-compatible JSON / OTLP JSON **locally** |
+| `open` | Read AgentInspect JSONL, OpenInference JSON, or OTLP JSON locally |
 | `diff` | Compare two local runs (read-only) |
 | `timeline` | Chronological view of one run |
 | `stats` | Local aggregates over a trace directory |
@@ -206,9 +208,11 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
+**Prepared for v1.6.0 on `main`:** experimental writer subpath (`agent-inspect/writers`), isolated `createInspector()` API via `agent-inspect/advanced`, local trace readers via `agent-inspect/readers`, OpenInference/OTLP JSON readers, universal `agent-inspect open`, and deterministic [runtime-and-ingestion recipe](examples/recipes/runtime-and-ingestion/). These remain local-only and do not add upload behavior.
+
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
-**Planning after 1.5.0:** v1.6 focuses on runtime foundation and universal local trace ingestion before new framework adapters. See [ROADMAP.md](ROADMAP.md).
+**Roadmap beyond current release work:** future work continues from the local runtime and universal ingestion foundation before broadening framework adapters. See [ROADMAP.md](ROADMAP.md).
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
@@ -285,6 +289,8 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/retry-fallback](examples/recipes/retry-fallback) | Fallback pattern |
 | [examples/recipes/parallel-tools](examples/recipes/parallel-tools) | Parallel tools |
 | [examples/recipes/github-actions-artifact](examples/recipes/github-actions-artifact) | CI trace artifacts |
+| [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
+| [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |
 
 **Recipes** are deterministic and require **no external services** by default. Index: [examples/README.md](examples/README.md), [examples/recipes/README.md](examples/recipes/README.md).
 

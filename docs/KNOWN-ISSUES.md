@@ -12,6 +12,13 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 - **OpenInference** and **OTLP JSON** exports are **compatibility-oriented** and **experimental**. Validate against your target collector or backend before relying on them.
 - Exports generate **strings/files locally** only—there is **no** automatic upload.
 
+## Readers and `open`
+
+- **OpenInference** and **OTLP JSON** readers are **compatibility-oriented** and **experimental**. They normalize local JSON payloads into AgentInspect inspection trees and may warn on unsupported semantic fields.
+- `agent-inspect open` requires `--run <run-id>` when input contains multiple runs. It does not pick an arbitrary run silently.
+- Format detection is conservative. Use `--format agent-inspect-jsonl`, `--format openinference-json`, or `--format otlp-json` for known local inputs.
+- Standards JSON readers summarize bounded prompt/output-like attributes; they do not make raw prompt/output capture a default AgentInspect behavior.
+
 ## Integrations
 
 - **Vendor sinks** (hosted dashboards, Langfuse/Braintrust/New Relic/Datadog native uploads, OTLP gRPC streaming, etc.) are **not implemented** in the core packages described here.

@@ -19,6 +19,14 @@ This document states what AgentInspect **does not** provide today. It complement
 - **Dual-format inspection is a read path, not a write migration.** `list`, `view`, `timeline`, `stats`, `search`, `diff`, `export`, `what`, and `report` read v0.1/v0.2 trace files through normalization where applicable. `logs` and `tail` remain structured-log ingestion commands, not v0.2 writers.
 - **Default write path remains v0.1.** v0.2 fixtures and converters are available for adapters and migration testing, but AgentInspect does not automatically rewrite traces.
 
+## Runtime writers and universal readers (v1.6)
+
+- **Experimental APIs:** `agent-inspect/writers`, `agent-inspect/readers`, and `createInspector()` are available for local adoption, but their experimental contracts may be refined in v1.x.
+- **Explicit writer ownership:** `createInspector()` does not print terminal lifecycle output or implicitly choose a disk writer. Use `fileWriter()` / `bufferedFileWriter()` / custom writers when persistence is desired.
+- **No standards upload:** OpenInference and OTLP JSON support is local read/export compatibility only. There is no OTLP gRPC/HTTP streaming sink, collector client, or hosted ingestion behavior.
+- **Conservative detection:** `agent-inspect open` does not silently accept arbitrary JSON. Unsupported or ambiguous inputs produce errors/warnings rather than guessed traces.
+- **Large inputs:** reader inputs are bounded and read into local memory. This is not a database index or production log warehouse.
+
 ## LangChain streaming (v1.3.0)
 
 - **Metadata-focused only** — `stream: true` records chunk counts, timing, and optional bounded previews; it is **not** a replay/cassette system.

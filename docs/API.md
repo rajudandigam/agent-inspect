@@ -9,12 +9,14 @@ AgentInspect is a **local-first execution-tree debugger**. It is not a SaaS, not
 - **Stable**: intended to be compatible across v1.x. Breaking changes require v2.0.
 - **Experimental**: available for adoption, but subject to refinement (including naming/shape changes) before a future stability declaration. Experimental APIs may change in v1.x.
 
-**v1.5.0 subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
+**1.x subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
 
 ```ts
 import { inspectRun, step } from "agent-inspect";
 import { parseLogsToTrees } from "agent-inspect/logs";
 import { exportMarkdown } from "agent-inspect/exporters";
+import { memoryWriter } from "agent-inspect/writers";
+import { openTrace } from "agent-inspect/readers";
 ```
 
 Notes:
@@ -193,7 +195,7 @@ Read-only helpers for concise inspection summaries and local reports:
 
 Report redaction profiles are key-based safeguards applied to the complete rendered report input, not only to the tree section. Review generated reports before sharing; this is not compliance-grade DLP.
 
-## 14. Experimental trace writers (v1.6 planning)
+## 14. Experimental trace writers (v1.6)
 
 Trace writers are the first slice of the v1.6 runtime foundation. They are experimental during v1.x and intended for tests, adapters, and future `createInspector` work.
 
@@ -225,7 +227,7 @@ import type {
 
 No network writer or vendor sink exists in this package.
 
-## 15. Experimental inspector API/runtime (v1.6 planning)
+## 15. Experimental inspector API/runtime (v1.6)
 
 `createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
 

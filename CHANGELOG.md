@@ -11,6 +11,13 @@ Internal corrective and roadmap-planning work on `main`. No package version, cha
 - Added experimental `createInspector()` public instance API for isolated local tracing with explicit writers.
 - Added experimental `agent-inspect/readers` subpath with the `TraceReader` contract, deterministic format detection, `readTrace()`, and `openTrace()` for future local ingestion readers.
 - Added the default AgentInspect JSONL reader behind `readTrace()` / `openTrace()` for v0.1, v0.2, and mixed local trace files.
+- Added local OpenInference JSON and OTLP JSON readers behind `agent-inspect/readers`.
+- Added `agent-inspect open` for local AgentInspect JSONL, OpenInference JSON, OTLP JSON, directory, and stdin ingestion through the canonical reader pipeline.
+- Added deterministic runtime/universal-ingestion recipe coverage for memory writer, buffered writer, `createInspector()`, explicit formats, stdin, and safe shutdown.
+
+### Changed
+
+- Shared inspection commands now route AgentInspect JSONL loading through the canonical reader pipeline where compatible.
 
 ### Fixed
 

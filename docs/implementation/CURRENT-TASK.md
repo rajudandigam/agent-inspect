@@ -4,49 +4,46 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "14-release-readiness"
+chunk: "v1.6.0-release-preparation"
 status: "ready"
-dependsOn: "13-recipes-and-documentation"
+dependsOn: "14-release-readiness"
 ```
 
 ## Goal
 
-Prepare v1.6.0 release-readiness evidence and user-facing documentation updates without publishing.
+Prepare exactly v1.6.0 release metadata after the release-readiness gate has passed.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 14 only
-- directly related README/API/CLI/schema/limitations/known-issues/changelog/package/export docs and tests only
+- `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md`
+- package manifests, changelog, release metadata, and directly related validation scripts only
 
 ## In scope
 
-1. Create or update `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md` with exact validation evidence.
-2. Update README/API/CLI/schema/limitations/known-issues documentation as needed for v1.6.0.
-3. Update Unreleased changelog entries for v1.6.0 readiness without converting them to released notes unless explicitly authorized during release preparation.
-4. Verify package/export matrix documentation for the v1.6.0 public and experimental subpaths.
-5. Capture performance and size evidence from the required validation commands.
-6. Update release-train state when validation is complete.
+1. Update package versions consistently to `1.6.0` according to the repository release process.
+2. Create or update changeset/version metadata only if the existing repository process requires it for a release-preparation commit.
+3. Convert `CHANGELOG.md` Unreleased v1.6.0 entries into a `1.6.0` release heading dated 2026-06-25.
+4. Update README/current-release references that should say 1.6.0 after version preparation.
+5. Run the full release gate again.
+6. Update release-train state and readiness notes with release-preparation evidence.
 
 ## Out of scope
 
-- Implementing new runtime, reader, writer, CLI, or schema behavior
-- Public schema breaking changes
-- new root/core dependencies
-- network upload behavior or hosted ingestion
+- npm publish unless credentials/process are available and validation is fully green
+- git tag or GitHub release unless the repository process and credentials are available and safe
+- new runtime, reader, writer, CLI, or schema behavior
+- new dependencies
 - changing Node support policy
-- publishing to npm
-- tagging or creating a GitHub release
-- version changes or changesets until release-readiness validation is green and the release-preparation step is explicitly reached
+- any version other than exactly `1.6.0`
 
 ## Acceptance criteria
 
-- Release-readiness evidence lists exact commands and outcomes.
-- User-facing docs accurately describe v1.6.0 local runtime, reader, writer, and CLI capabilities.
-- Package/export matrix matches manifests and built subpaths.
-- Validation is green or any blocker is documented without committing unsafe release changes.
-- No npm publish, tag, GitHub release, or version/change metadata is created during readiness documentation.
+- Package metadata, changelog, and user-facing current-version docs consistently reflect `1.6.0`.
+- Full release gate passes after version preparation.
+- No publish, tag, or GitHub release occurs unless explicitly safe under the repository process.
+- Release-train state reflects whether release preparation is complete and whether publish was skipped.
 
 ## Full gate
 
@@ -70,9 +67,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-docs: prepare v1.6.0 release readiness
+chore: prepare v1.6.0 release
 ```
 
 ## Stop condition
 
-Stop after chunk 14 release-readiness documentation, validation, state/task updates, commit, and push if release-preparation requires version changes, changesets, tags, or publishing credentials. Do not publish unless the repository release process is available, validation is fully green, and publishing is safe.
+Stop after release-preparation validation, state updates, commit, and push if npm publish, tagging, or GitHub release creation is unavailable or unsafe. Do not publish without fully green validation and safe credentials/process.

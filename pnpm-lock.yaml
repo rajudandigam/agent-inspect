@@ -139,6 +139,15 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/runtime-and-ingestion:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/tool-failure-retry:
     dependencies:
       agent-inspect:

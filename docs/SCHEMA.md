@@ -241,7 +241,17 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 
 Programmatic helpers: see [API.md](./API.md) §11 (experimental persisted-event foundation).
 
-## 15. Migration notes
+## 15. v1.6 local reader/writer compatibility
+
+v1.6 adds experimental writer and reader surfaces without changing the stable manual trace schema:
+
+- `inspectRun()` / `step()` continue to write `schemaVersion: "0.1"` JSONL by default.
+- `createInspector()` can write explicit v0.2 `PersistedInspectEvent` rows when configured with a writer such as `fileWriter()` or `bufferedFileWriter()`.
+- `agent-inspect/readers` and `agent-inspect open` read local AgentInspect JSONL, OpenInference JSON, and OTLP JSON inputs through compatibility adapters.
+- OpenInference and OTLP JSON inputs are **not** a third AgentInspect persisted schema. They are local read formats normalized into inspection trees with warnings and unsupported-field reporting.
+- Reader and writer APIs perform no network upload and do not mutate source files.
+
+## 16. Migration notes
 
 - Minor releases may add optional fields/events, but must keep existing v0.1 traces readable.
 - v0.1 → v0.2 write migration guides are future work. v1.x inspection readers are dual-format; the default manual writer remains v0.1.
