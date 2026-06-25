@@ -4,14 +4,14 @@
 
 ```yaml
 train: "v1.7.0"
-chunk: "v1.7-openai-agents-adapter-scaffold"
+chunk: "v1.7-langgraph-adapter-boundary"
 status: "ready"
-dependsOn: "v1.7-openai-agents-tracing-rfc"
+dependsOn: "v1.7-openai-agents-adapter-scaffold"
 ```
 
 ## Goal
 
-Scaffold the optional `@agent-inspect/openai-agents` adapter only under the local-only boundary defined by `OPENAI-AGENTS-JS-TRACING.md`.
+Decide whether LangGraph support belongs in the existing `@agent-inspect/langchain` adapter boundary or requires a separate optional package.
 
 ## Read first
 
@@ -19,33 +19,31 @@ Scaffold the optional `@agent-inspect/openai-agents` adapter only under the loca
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.7-TO-V3.md`
 - `docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md`
-- `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
-- directly related package scaffold/build/test files only
+- directly related LangChain adapter docs/source/tests
+- current official LangGraph/LangChain callback docs only if needed
 
 ## In scope
 
-1. Add an optional private workspace package scaffold for `@agent-inspect/openai-agents` if it remains dependency-isolated.
-2. Expose only experimental no-upload/local-only placeholder APIs needed for package smoke.
-3. Add build/test/tsup/vitest/package-smoke wiring for the scaffold.
-4. Document that runtime mapping is not implemented until a later chunk and examples must use `setTraceProcessors()` replacement.
+1. Inspect the current `@agent-inspect/langchain` callback surface and docs.
+2. Decide whether LangGraph can be supported through existing LangChain callbacks without a new package.
+3. Document fixture and compatibility requirements for future LangGraph coverage.
+4. Preserve optional dependency isolation and avoid root/core dependencies.
 
 ## Out of scope
 
-- runtime span/trace mapping
-- OpenAI network calls, provider calls, or default backend export
-- `addTraceProcessor()` examples as a default path
-- root/core dependency on OpenAI Agents, OpenTelemetry, AI SDK, LangGraph, or LangChain
+- LangGraph runtime code or fixtures beyond a docs decision
+- new package scaffold unless the decision proves it is required
 - package version changes
 - changesets
 - publishing
+- root/core dependencies on LangGraph, LangChain, OpenTelemetry, AI SDK, or OpenAI Agents
 
 ## Acceptance criteria
 
-- The scaffold builds and typechecks.
-- Package smoke verifies the package remains private and dependency-isolated.
-- No default upload behavior or processor auto-install occurs on import.
-- Focused validation and required chunk gate pass.
+- The decision is documented in the relevant adapter/API/proposal or implementation docs.
+- Future fixture requirements are explicit and no-network/local-only.
+- Focused docs validation and required chunk gate pass.
 
 ## Stop condition
 
-Stop if the scaffold requires root/core dependencies, runtime network behavior, default backend export, or an implementation beyond safe package boundaries.
+Stop if the decision requires a new dependency in root/core, a public schema change, network behavior, or runtime implementation beyond the boundary decision.

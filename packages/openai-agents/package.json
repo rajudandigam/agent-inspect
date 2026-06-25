@@ -1,0 +1,49 @@
+{
+  "name": "@agent-inspect/openai-agents",
+  "version": "1.6.0",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "description": "Optional OpenAI Agents JS tracing processor integration for AgentInspect local traces",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/openai-agents"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.openai-agents.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "peerDependencies": {
+    "@openai/agents": "^0.12.0"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

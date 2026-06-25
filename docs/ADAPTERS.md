@@ -179,6 +179,28 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ---
 
+## OpenAI Agents JS (`@agent-inspect/openai-agents`)
+
+**Status:** scaffolded for v1.7 train — optional workspace package; runtime mapping is not implemented yet.
+
+The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Future examples must install the AgentInspect processor by replacing processors:
+
+```ts
+import { setTraceProcessors } from "@openai/agents";
+import { agentInspectProcessor } from "@agent-inspect/openai-agents";
+
+setTraceProcessors([
+  agentInspectProcessor({
+    traceDir: "./.agent-inspect",
+    capture: "metadata-only",
+  }),
+]);
+```
+
+Do not use `addTraceProcessor()` as the default AgentInspect path; that preserves the OpenAI default exporter in server runtimes. The scaffold does not auto-install a processor, does not upload, and does not add OpenAI Agents dependencies to root/core.
+
+---
+
 ## Future adapters (not shipped)
 
 Direction only — see [ROADMAP.md](../ROADMAP.md):

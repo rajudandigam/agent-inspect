@@ -24,6 +24,10 @@ const aiSdkEntry = fileURLToPath(
   new URL("./packages/ai-sdk/src/index.ts", import.meta.url),
 );
 
+const openAiAgentsEntry = fileURLToPath(
+  new URL("./packages/openai-agents/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -40,6 +44,7 @@ export default defineConfig({
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
       "@agent-inspect/ai-sdk": aiSdkEntry,
+      "@agent-inspect/openai-agents": openAiAgentsEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -53,6 +58,7 @@ export default defineConfig({
       "agent-inspect",
       "agent-inspect/writers",
       "@agent-inspect/ai-sdk",
+      "@agent-inspect/openai-agents",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],

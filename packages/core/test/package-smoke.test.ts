@@ -9,6 +9,7 @@ const repoRoot = path.resolve(testDir, "../../..");
 const coreDistDir = path.join(repoRoot, "packages", "core", "dist");
 const cliDistDir = path.join(repoRoot, "packages", "cli", "dist");
 const aiSdkDistDir = path.join(repoRoot, "packages", "ai-sdk", "dist");
+const openAiAgentsDistDir = path.join(repoRoot, "packages", "openai-agents", "dist");
 
 const coreMjs = path.join(coreDistDir, "index.mjs");
 const coreCjs = path.join(coreDistDir, "index.cjs");
@@ -19,6 +20,10 @@ const aiSdkMjs = path.join(aiSdkDistDir, "index.mjs");
 const aiSdkCjs = path.join(aiSdkDistDir, "index.cjs");
 const aiSdkDts = path.join(aiSdkDistDir, "index.d.ts");
 const aiSdkDcts = path.join(aiSdkDistDir, "index.d.cts");
+const openAiAgentsMjs = path.join(openAiAgentsDistDir, "index.mjs");
+const openAiAgentsCjs = path.join(openAiAgentsDistDir, "index.cjs");
+const openAiAgentsDts = path.join(openAiAgentsDistDir, "index.d.ts");
+const openAiAgentsDcts = path.join(openAiAgentsDistDir, "index.d.cts");
 
 const distPresent =
   existsSync(coreMjs) &&
@@ -32,6 +37,12 @@ const aiSdkDistPresent =
   existsSync(aiSdkCjs) &&
   existsSync(aiSdkDts) &&
   existsSync(aiSdkDcts);
+
+const openAiAgentsDistPresent =
+  existsSync(openAiAgentsMjs) &&
+  existsSync(openAiAgentsCjs) &&
+  existsSync(openAiAgentsDts) &&
+  existsSync(openAiAgentsDcts);
 
 type DualExportEntry = {
   import?: { types?: string; default?: string };
@@ -118,6 +129,35 @@ describe("package manifest (experimental AI SDK adapter)", () => {
   });
 });
 
+describe("package manifest (experimental OpenAI Agents adapter)", () => {
+  it("keeps the optional package private and dependency-isolated until release readiness", () => {
+    const raw = readFileSync(
+      path.join(repoRoot, "packages", "openai-agents", "package.json"),
+      "utf-8",
+    );
+    const pkg = JSON.parse(raw) as Record<string, unknown>;
+
+    expect(pkg.name).toBe("@agent-inspect/openai-agents");
+    expect(pkg.private).toBe(true);
+    expect(pkg.sideEffects).toBe(false);
+
+    const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
+    const rootExport = exportsField?.["."];
+    expect(rootExport).toBeDefined();
+    expect(rootExport?.import?.types).toContain("index.d.ts");
+    expect(rootExport?.import?.default).toContain("index.mjs");
+    expect(rootExport?.require?.types).toContain("index.d.cts");
+    expect(rootExport?.require?.default).toContain("index.cjs");
+
+    const peerDependencies = pkg.peerDependencies as Record<string, string> | undefined;
+    expect(peerDependencies?.["@openai/agents"]).toBe("^0.12.0");
+
+    const dependencies = pkg.dependencies as Record<string, string> | undefined;
+    expect(dependencies?.["agent-inspect"]).toBe("workspace:*");
+    expect(dependencies?.["@openai/agents"]).toBeUndefined();
+  });
+});
+
 describe("package dist outputs", () => {
   it.skipIf(!distPresent)(
     "built core and CLI artifacts exist (run pnpm build first)",
@@ -137,6 +177,16 @@ describe("package dist outputs", () => {
       expect(existsSync(aiSdkCjs)).toBe(true);
       expect(existsSync(aiSdkDts)).toBe(true);
       expect(existsSync(aiSdkDcts)).toBe(true);
+    },
+  );
+
+  it.skipIf(!openAiAgentsDistPresent)(
+    "built OpenAI Agents adapter artifacts exist (run pnpm build first)",
+    () => {
+      expect(existsSync(openAiAgentsMjs)).toBe(true);
+      expect(existsSync(openAiAgentsCjs)).toBe(true);
+      expect(existsSync(openAiAgentsDts)).toBe(true);
+      expect(existsSync(openAiAgentsDcts)).toBe(true);
     },
   );
 });
