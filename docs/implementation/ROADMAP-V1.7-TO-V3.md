@@ -118,7 +118,7 @@ Current planning RFCs:
 
 - [AI-SDK-INTEGRATION.md](../proposals/AI-SDK-INTEGRATION.md)
 - [OPENAI-AGENTS-JS-TRACING.md](../proposals/OPENAI-AGENTS-JS-TRACING.md)
-- LangGraph support decision note (planned in v1.7 chunk 8)
+- [LANGGRAPH-ADAPTER-BOUNDARY.md](../proposals/LANGGRAPH-ADAPTER-BOUNDARY.md)
 - [INSPECTOR-RUNTIME.md](../proposals/INSPECTOR-RUNTIME.md)
 - [TRACE-WRITER.md](../proposals/TRACE-WRITER.md)
 - [TRACE-READER.md](../proposals/TRACE-READER.md)

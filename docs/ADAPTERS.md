@@ -162,6 +162,14 @@ Full API: [API.md](./API.md) §9.
 
 [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md)
 
+### LangGraph boundary
+
+LangGraph support is expected to ride through this same `@agent-inspect/langchain` callback boundary first. A dedicated LangGraph package is deferred until no-network fixtures prove that LangGraph exposes important lifecycle data unavailable through LangChain callbacks.
+
+Future LangGraph examples must keep the same safety defaults: explicit callback installation, metadata-only capture, no raw prompt/output/tool payload capture by default, no hosted sink, and local persistence only when `persist: true` is set.
+
+Decision note: [LANGGRAPH-ADAPTER-BOUNDARY.md](./proposals/LANGGRAPH-ADAPTER-BOUNDARY.md).
+
 ---
 
 ## TUI (`@agent-inspect/tui`)
