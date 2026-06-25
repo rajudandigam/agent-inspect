@@ -24,6 +24,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("logs");
     expect(names).toContain("tail");
     expect(names).toContain("export");
+    expect(names).toContain("open");
     expect(names).toContain("diff");
     expect(names).toContain("what");
     expect(names).toContain("report");
@@ -39,6 +40,7 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("logs");
     expect(help).toContain("tail");
     expect(help).toContain("export");
+    expect(help).toContain("open");
     expect(help).toContain("diff");
   });
 
@@ -109,6 +111,17 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--duration-threshold");
     expect(help).toContain("--focus");
     expect(help).toContain("--check");
+  });
+
+  it("open help mentions key options", () => {
+    const program = createCliProgram();
+    const cmd = program.commands.find((c) => c.name() === "open");
+    expect(cmd).toBeDefined();
+    const help = cmd!.helpInformation();
+    expect(help).toContain("--format");
+    expect(help).toContain("--json");
+    expect(help).toContain("--diagnostics");
+    expect(help).toContain("--run");
   });
 
   it("what help mentions key options", () => {

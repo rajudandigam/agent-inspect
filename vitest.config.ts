@@ -9,6 +9,9 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = fileURLToPath(
   new URL("./packages/core/src/index.ts", import.meta.url),
 );
+const coreReadersEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/readers.ts", import.meta.url),
+);
 
 const langchainEntry = fileURLToPath(
   new URL("./packages/langchain/src/index.ts", import.meta.url),
@@ -23,6 +26,7 @@ export default defineConfig({
   resolve: {
     // In-repo tests run before build; point workspace imports at source.
     alias: {
+      "@agent-inspect/core/readers": coreReadersEntry,
       "@agent-inspect/core": coreEntry,
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
@@ -34,6 +38,7 @@ export default defineConfig({
     // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
     noExternal: [
       "@agent-inspect/core",
+      "@agent-inspect/core/readers",
       "agent-inspect",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",

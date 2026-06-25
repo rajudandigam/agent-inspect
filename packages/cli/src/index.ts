@@ -30,6 +30,8 @@ import type { WhatCommandOptions } from "./what.js";
 import { whatCommand } from "./what.js";
 import type { ReportCommandOptions } from "./report.js";
 import { reportCommand } from "./report.js";
+import type { OpenCommandOptions } from "./open.js";
+import { openCommand } from "./open.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -227,6 +229,24 @@ export function createCliProgram(): Command {
     )
     .action((runId: string, opts: ExportCommandOptions) => {
       runCommand(() => exportCommand(runId, opts));
+    });
+
+  program
+    .command("open")
+    .description("Open any supported local trace through the reader pipeline")
+    .argument("[input]", "trace file, directory, or - for stdin")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--json", "print result as JSON")
+    .option("--diagnostics", "print reader warnings and unsupported fields")
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .action((input: string | undefined, opts: OpenCommandOptions) => {
+      runCommand(() => openCommand(input, opts));
     });
 
   program
