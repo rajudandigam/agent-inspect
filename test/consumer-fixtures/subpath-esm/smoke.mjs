@@ -3,6 +3,7 @@ import { exportMarkdown } from "agent-inspect/exporters";
 import { diffTraceEvents } from "agent-inspect/diff";
 import { isPersistedInspectEvent } from "agent-inspect/persisted";
 import {
+  createInspector,
   createInspectorRuntime,
   resolveRedactionProfile,
 } from "agent-inspect/advanced";
@@ -19,6 +20,7 @@ const checks = [
   exportMarkdown,
   diffTraceEvents,
   isPersistedInspectEvent,
+  createInspector,
   createInspectorRuntime,
   resolveRedactionProfile,
   bufferedFileWriter,

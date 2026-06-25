@@ -38,6 +38,7 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.LiveLogAccumulator).toBe("function");
     expect(typeof core.exportRunTree).toBe("function");
     expect(typeof core.diffTraceEvents).toBe("function");
+    expect(typeof core.createInspector).toBe("function");
     expect(typeof core.createInspectorRuntime).toBe("function");
     expect(typeof core.bufferedFileWriter).toBe("function");
     expect(typeof core.compositeWriter).toBe("function");
@@ -94,6 +95,17 @@ describe("core API stability (v1.0 Pass 1)", () => {
     const _inspectorRuntimeWitness = null as unknown as core.InspectorRuntime;
     const _inspectorRuntimeOptionsWitness =
       null as unknown as core.InspectorRuntimeOptions;
+    const _inspectorWitness = null as unknown as core.Inspector;
+    const _createInspectorOptionsWitness =
+      null as unknown as core.CreateInspectorOptions;
+    const _inspectorCaptureOptionsWitness =
+      null as unknown as core.InspectorCaptureOptions;
+    const _inspectorObserveOptionsWitness =
+      null as unknown as core.InspectorObserveOptions;
+    const _inspectorRunOptionsWitness =
+      null as unknown as core.InspectorRunOptions;
+    const _inspectorStepOptionsWitness =
+      null as unknown as core.InspectorStepOptions;
     const _bufferedFileWriterOptionsWitness =
       null as unknown as core.BufferedFileWriterOptions;
     const _compositeWriterOptionsWitness =
@@ -116,6 +128,12 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_searchWitness).toBeNull();
     expect(_inspectorRuntimeWitness).toBeNull();
     expect(_inspectorRuntimeOptionsWitness).toBeNull();
+    expect(_inspectorWitness).toBeNull();
+    expect(_createInspectorOptionsWitness).toBeNull();
+    expect(_inspectorCaptureOptionsWitness).toBeNull();
+    expect(_inspectorObserveOptionsWitness).toBeNull();
+    expect(_inspectorRunOptionsWitness).toBeNull();
+    expect(_inspectorStepOptionsWitness).toBeNull();
     expect(_bufferedFileWriterOptionsWitness).toBeNull();
     expect(_compositeWriterOptionsWitness).toBeNull();
     expect(_fileWriterOptionsWitness).toBeNull();

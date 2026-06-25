@@ -15,6 +15,17 @@ export {
 } from "../context.js";
 
 export type {
+  CreateInspectorOptions,
+  Inspector,
+  InspectorCaptureOptions,
+  InspectorObserveOptions,
+  InspectorRunOptions,
+  InspectorStepOptions,
+} from "../inspector.js";
+
+export { createInspector } from "../inspector.js";
+
+export type {
   InspectorRuntime,
   InspectorRuntimeContext,
   InspectorRuntimeDiagnostics,

@@ -17,11 +17,12 @@ completedChunks:
   - "v1.6 buffered file writer"
   - "v1.6 composite writer"
   - "v1.6 runtime inspector contract"
-currentChunk: "v1.6 createInspector API"
+  - "v1.6 createInspector API"
+currentChunk: "v1.6 reader abstraction"
 pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Proceed to the createInspector API chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
+nextAction: "Proceed to the reader abstraction chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
 publishedAt: "2026-06-24"
-updatedAt: "2026-06-24"
+updatedAt: "2026-06-25"
 ```
 
 **Active roadmap:** [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md)

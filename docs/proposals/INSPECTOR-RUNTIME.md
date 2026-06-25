@@ -1,6 +1,6 @@
 # Inspector runtime proposal
 
-**Status:** partially implemented for v1.6.0; the low-level instance-scoped runtime primitive is complete on `main`, and public `createInspector()` remains next.
+**Status:** partially implemented for v1.6.0; the low-level instance-scoped runtime primitive and public experimental `createInspector()` API are complete on `main`.
 **Scope:** experimental instance API and runtime isolation.
 **Non-goals:** no breaking change to existing global APIs; no default network writer; no v2 schema switch.
 
@@ -34,7 +34,9 @@ await inspector.flush();
 
 ## Implemented runtime foundation
 
-`createInspectorRuntime()` is available as an experimental low-level primitive. It owns instance-specific async context, writer lifecycle hooks, diagnostics, disabled passthrough, nested step context, and cross-instance isolation. It intentionally does not yet implement the public `createInspector()` convenience API.
+`createInspectorRuntime()` is available as an experimental low-level primitive. It owns instance-specific async context, writer lifecycle hooks, diagnostics, disabled passthrough, nested step context, and cross-instance isolation.
+
+`createInspector()` is available as the experimental public instance API on top of that runtime. It records v0.2 persisted inspect events to the explicitly supplied writer, preserves application return values and errors, supports nested `step`/`tool`/`llm` calls, supports `observe()`, and exposes deterministic `flush()`/`close()` lifecycle methods. It does not add a default network writer or vendor sink.
 
 ## Contract
 

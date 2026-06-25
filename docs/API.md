@@ -225,17 +225,39 @@ import type {
 
 No network writer or vendor sink exists in this package.
 
-## 15. Experimental inspector runtime (v1.6 planning)
+## 15. Experimental inspector API/runtime (v1.6 planning)
 
-`createInspectorRuntime()` is the low-level isolation primitive for the forthcoming `createInspector()` API. It owns an instance-specific async context, optional writer, diagnostics, and `flush()`/`close()` lifecycle hooks.
+`createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes deterministic `flush()`/`close()` lifecycle hooks.
 
 Import from `agent-inspect/advanced`:
 
 ```ts
-import { createInspectorRuntime } from "agent-inspect/advanced";
+import { createInspector } from "agent-inspect/advanced";
+import { memoryWriter } from "agent-inspect/writers";
+
+const writer = memoryWriter();
+const inspector = createInspector({ writer });
+
+await inspector.run("support-agent", async () => {
+  await inspector.step("plan", async () => "ok");
+  await inspector.tool("retrieve-policy", async () => "policy");
+  return inspector.llm("fixture-model", async () => "done");
+});
+
+await inspector.flush();
 ```
 
-This API is experimental during v1.x. Most users should wait for `createInspector()` rather than building directly on the runtime primitive.
+Public methods:
+
+- **`run(name, fn, options?)`**: starts an isolated run context and writes run lifecycle events.
+- **`step(name, fn, options?)`**: writes nested step lifecycle events when called inside the same inspector's run context; outside a context it passes through.
+- **`tool(name, fn, options?)`** / **`llm(name, fn, options?)`**: convenience wrappers that set `type` and metadata.
+- **`observe(name, fn, options?)`**: returns an async wrapper that records the function call as an inspector step.
+- **`flush()`** / **`close()`**: delegate to the configured writer through the runtime.
+
+`createInspectorRuntime()` is also available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()`.
+
+These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
 ## 16. Deprecated APIs
 

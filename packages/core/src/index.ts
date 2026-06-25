@@ -220,6 +220,17 @@ export { isAgentInspectTrace } from "./trace-verification.js";
 export { parseDuration } from "./utils/duration.js";
 
 export type {
+  CreateInspectorOptions,
+  Inspector,
+  InspectorCaptureOptions,
+  InspectorObserveOptions,
+  InspectorRunOptions,
+  InspectorStepOptions,
+} from "./inspector.js";
+
+export { createInspector } from "./inspector.js";
+
+export type {
   InspectorRuntime,
   InspectorRuntimeContext,
   InspectorRuntimeDiagnostics,
