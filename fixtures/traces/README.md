@@ -17,7 +17,7 @@ Small **manual trace** files consumed by list/view/export/diff and compatibility
 | `minimal-error.jsonl` | Failed step + failed run |
 | `nested-3-levels.jsonl` | Three nested steps via explicit `parentId` |
 | `parallel-siblings.jsonl` | Multiple root-level steps (ordering) |
-| `llm-with-tokens.jsonl` | LLM step with token metadata |
+| `llm-with-tokens.jsonl` | LLM step with input/output/total/cached token metadata |
 | `tool-with-io.jsonl` | Tool step with bounded input/output previews in metadata |
 | `long-running.jsonl` | Many sequential steps (~90 lines) for perf/smoke |
 | `error-recovery.jsonl` | Failed step then fallback success; run completes successfully |

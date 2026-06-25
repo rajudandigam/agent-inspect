@@ -41,7 +41,9 @@ function runCompleted(): TraceEvent {
   };
 }
 
-function stepStarted(type: StepType): TraceEvent {
+function stepStarted(
+  type: StepType,
+): Extract<TraceEvent, { event: "step_started" }> {
   return {
     schemaVersion: "0.1",
     event: "step_started",
@@ -83,7 +85,7 @@ describe("persistedInspectEventToTraceEvents", () => {
     expect(llm && llm.event === "step_started" ? llm.type : undefined).toBe("llm");
     expect(
       llm && llm.event === "step_started" ? llm.metadata?.tokens : undefined,
-    ).toEqual({ input: 5, output: 2 });
+    ).toEqual({ input: 5, output: 2, total: 7 });
   });
 
   it("converts native v0.2 manual-basic fixture rows", async () => {
@@ -166,5 +168,33 @@ describe("persistedInspectEventToTraceEvents", () => {
     const back = persistedInspectEventToTraceEvents(persisted);
     expect(back).toHaveLength(1);
     expect(back[0]?.event).toBe("step_started");
+  });
+
+  it("preserves supplied total and cached usage during normalization", () => {
+    const persisted = traceEventToPersistedInspectEvent(
+      {
+        ...stepStarted("llm"),
+        metadata: {
+          tokens: { input: 5, output: 2, total: 20, cached: 3 },
+        },
+      },
+    );
+    const [back] = persistedInspectEventToTraceEvents(persisted);
+
+    expect(persisted.tokenUsage).toEqual({
+      input: 5,
+      output: 2,
+      total: 20,
+      cached: 3,
+    });
+    expect(back?.event).toBe("step_started");
+    if (back?.event === "step_started") {
+      expect(back.metadata?.tokens).toEqual({
+        input: 5,
+        output: 2,
+        total: 20,
+        cached: 3,
+      });
+    }
   });
 });

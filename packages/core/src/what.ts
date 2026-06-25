@@ -29,6 +29,8 @@ export interface RunWhatSummary {
   totalTokens?: {
     input: number;
     output: number;
+    total?: number;
+    cached?: number;
   };
   correlation?: TraceCorrelationMetadata;
   failedStepNames: string[];
@@ -162,9 +164,17 @@ export function renderRunWhat(
   );
 
   if (summary.totalTokens) {
-    lines.push(
-      `Tokens: ${summary.totalTokens.input} in / ${summary.totalTokens.output} out`,
-    );
+    const tokenParts = [
+      `${summary.totalTokens.input} in`,
+      `${summary.totalTokens.output} out`,
+    ];
+    if (summary.totalTokens.total !== undefined) {
+      tokenParts.push(`${summary.totalTokens.total} total`);
+    }
+    if (summary.totalTokens.cached !== undefined) {
+      tokenParts.push(`${summary.totalTokens.cached} cached`);
+    }
+    lines.push(`Tokens: ${tokenParts.join(" / ")}`);
   }
 
   if (showCorrelation && summary.correlation) {

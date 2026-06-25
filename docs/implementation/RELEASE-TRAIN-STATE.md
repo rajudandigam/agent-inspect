@@ -11,8 +11,8 @@ branch: "main"
 lastValidationLevel: "runtime"
 completedChunks: [1, 2]
 currentChunk: 3
-pendingManualGate: "Gate B: maintainer review and commit hash for Chunk 2"
-nextAction: "Review and commit Chunk 2, then provide the commit hash before authorizing Chunk 3; do not start v1.6"
+pendingManualGate: "Chunk 3 validation: pnpm pack:smoke was blocked before execution by the Codex usage limit"
+nextAction: "Run pnpm pack:smoke; if green, review and commit Chunk 3 before authorizing Chunk 4; do not start v1.6"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```

@@ -13,6 +13,7 @@ import type {
   PersistedInspectEvent,
   PersistedTokenUsage,
 } from "../types/persisted-inspect-event.js";
+import { normalizeTokenUsage } from "./token-usage.js";
 
 export interface TraceEventToPersistedOptions {
   /**
@@ -127,33 +128,7 @@ function mapErrorInfo(
 function mapTokenUsageFromMetadata(
   metadata: StepMetadata | undefined,
 ): PersistedTokenUsage | undefined {
-  const tokens = metadata?.tokens;
-  if (!tokens || typeof tokens !== "object") {
-    return undefined;
-  }
-
-  const input =
-    typeof tokens.input === "number" && Number.isFinite(tokens.input) && tokens.input >= 0
-      ? tokens.input
-      : undefined;
-  const output =
-    typeof tokens.output === "number" &&
-    Number.isFinite(tokens.output) &&
-    tokens.output >= 0
-      ? tokens.output
-      : undefined;
-
-  if (input === undefined && output === undefined) {
-    return undefined;
-  }
-
-  const usage: PersistedTokenUsage = {};
-  if (input !== undefined) usage.input = input;
-  if (output !== undefined) usage.output = output;
-  if (input !== undefined && output !== undefined) {
-    usage.total = input + output;
-  }
-  return usage;
+  return normalizeTokenUsage(metadata?.tokens);
 }
 
 function compactAttributes(

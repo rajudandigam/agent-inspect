@@ -62,6 +62,11 @@ describe("what CLI", () => {
     await whatCommand("llm-with-tokens", { dir: tmpDir, json: true });
     const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
     expect(parsed.runId).toBe("llm-with-tokens");
-    expect(parsed.totalTokens).toEqual({ input: 1200, output: 356 });
+    expect(parsed.totalTokens).toEqual({
+      input: 1200,
+      output: 356,
+      total: 1556,
+      cached: 240,
+    });
   });
 });

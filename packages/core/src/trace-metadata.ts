@@ -169,7 +169,13 @@ type StepAgg = {
   parentId?: string;
   tokensInput?: number;
   tokensOutput?: number;
+  tokensTotal?: number;
+  tokensCached?: number;
 };
+
+function isNonNegativeFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
 
 export function buildRunSummary(events: TraceEvent[]): RunSummary {
   const started = events.find(
@@ -214,9 +220,19 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
         status: "running",
         parentId: s.parentId,
         tokensInput:
-          typeof s.metadata?.tokens?.input === "number" ? s.metadata.tokens.input : undefined,
+          isNonNegativeFiniteNumber(s.metadata?.tokens?.input)
+            ? s.metadata.tokens.input
+            : undefined,
         tokensOutput:
-          typeof s.metadata?.tokens?.output === "number" ? s.metadata.tokens.output : undefined,
+          isNonNegativeFiniteNumber(s.metadata?.tokens?.output)
+            ? s.metadata.tokens.output
+            : undefined,
+        tokensTotal: isNonNegativeFiniteNumber(s.metadata?.tokens?.total)
+          ? s.metadata.tokens.total
+          : undefined,
+        tokensCached: isNonNegativeFiniteNumber(s.metadata?.tokens?.cached)
+          ? s.metadata.tokens.cached
+          : undefined,
       });
     }
   }
@@ -241,7 +257,11 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
 
   let totalTokensInput = 0;
   let totalTokensOutput = 0;
-  let hasAnyTokens = false;
+  let totalTokensTotal = 0;
+  let totalTokensCached = 0;
+  let tokenBearingSteps = 0;
+  let stepsWithKnownTotal = 0;
+  let hasCachedTokens = false;
 
   const depthCache = new Map<string, number>();
   const computeDepth = (stepId: string): number => {
@@ -276,10 +296,28 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
       }
     }
 
-    if (typeof s.tokensInput === "number" || typeof s.tokensOutput === "number") {
-      hasAnyTokens = true;
-      if (typeof s.tokensInput === "number") totalTokensInput += s.tokensInput;
-      if (typeof s.tokensOutput === "number") totalTokensOutput += s.tokensOutput;
+    if (
+      s.tokensInput !== undefined ||
+      s.tokensOutput !== undefined ||
+      s.tokensTotal !== undefined ||
+      s.tokensCached !== undefined
+    ) {
+      tokenBearingSteps += 1;
+      if (s.tokensInput !== undefined) totalTokensInput += s.tokensInput;
+      if (s.tokensOutput !== undefined) totalTokensOutput += s.tokensOutput;
+
+      if (s.tokensTotal !== undefined) {
+        totalTokensTotal += s.tokensTotal;
+        stepsWithKnownTotal += 1;
+      } else if (s.tokensInput !== undefined && s.tokensOutput !== undefined) {
+        totalTokensTotal += s.tokensInput + s.tokensOutput;
+        stepsWithKnownTotal += 1;
+      }
+
+      if (s.tokensCached !== undefined) {
+        totalTokensCached += s.tokensCached;
+        hasCachedTokens = true;
+      }
     }
   }
 
@@ -295,8 +333,17 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
     errorSteps,
     maxDepth,
     ...(longestStep ? { longestStep } : {}),
-    ...(hasAnyTokens
-      ? { totalTokens: { input: totalTokensInput, output: totalTokensOutput } }
+    ...(tokenBearingSteps > 0
+      ? {
+          totalTokens: {
+            input: totalTokensInput,
+            output: totalTokensOutput,
+            ...(stepsWithKnownTotal === tokenBearingSteps
+              ? { total: totalTokensTotal }
+              : {}),
+            ...(hasCachedTokens ? { cached: totalTokensCached } : {}),
+          },
+        }
       : {}),
   };
 

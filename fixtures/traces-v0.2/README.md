@@ -10,7 +10,7 @@ Canonical **deterministic** samples for the experimental `PersistedInspectEvent`
 | `manual-tool-error.jsonl` | Manual trace with tool `status: "error"` and safe `error.message` |
 | `log-derived-basic.jsonl` | Log-derived events (`source.type: "json-log"`, `source.name: "pino"`) |
 | `adapter-langchain-like.jsonl` | Adapter-shaped events (`source.type: "adapter"`, `source.name: "langchain"`) |
-| `llm-tokens-and-streaming.jsonl` | LLM `tokenUsage` + streaming `attributes` (see [TRACE-VOCABULARY-V1.5.md](../../docs/proposals/TRACE-VOCABULARY-V1.5.md)) |
+| `llm-tokens-and-streaming.jsonl` | LLM input/output/total/cached `tokenUsage` + streaming `attributes` (see [TRACE-VOCABULARY-V1.5.md](../../docs/proposals/TRACE-VOCABULARY-V1.5.md)) |
 | `dual-format-parity.jsonl` | v0.2 half of list/stats/search parity coverage; embedded run id differs from filename |
 
 ## Rules

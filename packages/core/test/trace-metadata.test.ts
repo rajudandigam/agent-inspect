@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 
-import type { TraceEvent } from "../src/types.js";
+import type { TokenMetadata, TraceEvent } from "../src/types.js";
 import { extractMetadata, buildRunSummary } from "../src/trace-metadata.js";
 
 const ts = 1_700_000_000_000;
@@ -36,7 +36,13 @@ function runCompleted(runId = "run_a", status: "success" | "error" = "success"):
   } as TraceEvent;
 }
 
-function stepStarted(runId: string, stepId: string, type: any, parentId?: string): TraceEvent {
+function stepStarted(
+  runId: string,
+  stepId: string,
+  type: any,
+  parentId?: string,
+  tokens?: TokenMetadata,
+): TraceEvent {
   return {
     schemaVersion: "0.1",
     event: "step_started",
@@ -47,6 +53,7 @@ function stepStarted(runId: string, stepId: string, type: any, parentId?: string
     name: stepId,
     type,
     startTime: ts + 1,
+    ...(tokens !== undefined ? { metadata: { tokens } } : {}),
   };
 }
 
@@ -193,5 +200,44 @@ describe("buildRunSummary", () => {
     expect(s.maxDepth).toBe(2);
     expect(s.longestStep?.name).toBe("tool1");
     expect(s.longestStep?.durationMs).toBe(50);
+  });
+
+  it("aggregates supplied and derived totals without adding cached twice", () => {
+    const events: TraceEvent[] = [
+      runStarted(),
+      stepStarted("run_a", "llm1", "llm", undefined, {
+        input: 10,
+        output: 5,
+        total: 20,
+        cached: 2,
+      }),
+      stepStarted("run_a", "llm2", "llm", undefined, {
+        input: 3,
+        output: 2,
+        cached: 1,
+      }),
+      runCompleted(),
+    ];
+
+    expect(buildRunSummary(events).totalTokens).toEqual({
+      input: 13,
+      output: 7,
+      total: 25,
+      cached: 3,
+    });
+  });
+
+  it("omits aggregate total when partial usage cannot resolve every step", () => {
+    const events: TraceEvent[] = [
+      runStarted(),
+      stepStarted("run_a", "partial-input", "llm", undefined, { input: 4 }),
+      stepStarted("run_a", "known-total", "llm", undefined, { total: 10 }),
+      runCompleted(),
+    ];
+
+    expect(buildRunSummary(events).totalTokens).toEqual({
+      input: 4,
+      output: 0,
+    });
   });
 });

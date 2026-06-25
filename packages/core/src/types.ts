@@ -32,6 +32,8 @@ export interface ErrorInfo {
 export interface TokenMetadata {
   input?: number;
   output?: number;
+  total?: number;
+  cached?: number;
 }
 
 /** Arbitrary structured fields for a step; safe extensions use string keys. */
@@ -117,6 +119,10 @@ export interface RunSummary {
   totalTokens?: {
     input: number;
     output: number;
+    /** Present only when every token-bearing step has a supplied or derivable total. */
+    total?: number;
+    /** Sum of supplied cached counts; cached is not added to total. */
+    cached?: number;
   };
 }
 

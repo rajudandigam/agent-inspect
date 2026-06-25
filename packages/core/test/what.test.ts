@@ -42,7 +42,12 @@ describe("buildRunWhatSummary", () => {
     const events = await loadFixtureTrace("llm-with-tokens");
     const summary = buildRunWhatSummary(events as any);
     expect(summary.llmSteps).toBe(1);
-    expect(summary.totalTokens).toEqual({ input: 1200, output: 356 });
+    expect(summary.totalTokens).toEqual({
+      input: 1200,
+      output: 356,
+      total: 1556,
+      cached: 240,
+    });
   });
 });
 
@@ -58,7 +63,9 @@ describe("renderRunWhat", () => {
   it("renders token line when present", async () => {
     const events = await loadFixtureTrace("llm-with-tokens");
     const text = renderRunWhat(buildRunWhatSummary(events as any));
-    expect(text).toContain("Tokens: 1200 in / 356 out");
+    expect(text).toContain(
+      "Tokens: 1200 in / 356 out / 1556 total / 240 cached",
+    );
   });
 });
 

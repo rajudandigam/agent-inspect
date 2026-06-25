@@ -39,7 +39,7 @@ describe("isPersistedInspectEvent", () => {
           inputSummary: { preview: "in" },
           outputSummary: { preview: "out" },
           error: { message: "failed", name: "Error", code: "E_FAIL" },
-          tokenUsage: { input: 10, output: 5, total: 15 },
+          tokenUsage: { input: 10, output: 5, total: 15, cached: 2 },
           trace: {
             traceId: "trace-1",
             spanId: "span-1",
@@ -172,6 +172,16 @@ describe("isPersistedInspectEvent", () => {
     expect(
       isPersistedInspectEvent(
         minimalEvent({ tokenUsage: { output: NaN } }),
+      ),
+    ).toBe(false);
+    expect(
+      isPersistedInspectEvent(
+        minimalEvent({ tokenUsage: { cached: -1 } }),
+      ),
+    ).toBe(false);
+    expect(
+      isPersistedInspectEvent(
+        minimalEvent({ tokenUsage: { total: Number.POSITIVE_INFINITY } }),
       ),
     ).toBe(false);
   });

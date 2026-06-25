@@ -39,6 +39,8 @@ describe("parseTraceJsonl", () => {
     expect(llm && llm.event === "step_started" ? llm.metadata?.tokens : undefined).toEqual({
       input: 1200,
       output: 356,
+      total: 1556,
+      cached: 240,
     });
   });
 

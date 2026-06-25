@@ -1,4 +1,4 @@
 {"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"llm-with-tokens","name":"llm-with-tokens","startTime":1700000001000}
-{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"llm-with-tokens","stepId":"llm_001","name":"llm:generate-answer","type":"llm","startTime":1700000001010,"metadata":{"model":"fixture-model","tokens":{"input":1200,"output":356}}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"llm-with-tokens","stepId":"llm_001","name":"llm:generate-answer","type":"llm","startTime":1700000001010,"metadata":{"model":"fixture-model","tokens":{"input":1200,"output":356,"total":1556,"cached":240}}}
 {"schemaVersion":"0.1","event":"step_completed","timestamp":1700000003054,"runId":"llm-with-tokens","stepId":"llm_001","status":"success","endTime":1700000003054,"durationMs":2044}
 {"schemaVersion":"0.1","event":"run_completed","timestamp":1700000003100,"runId":"llm-with-tokens","status":"success","endTime":1700000003100,"durationMs":2100}

@@ -28,6 +28,7 @@ export interface PersistedTokenUsage {
   input?: number;
   output?: number;
   total?: number;
+  cached?: number;
 }
 
 export interface PersistedTraceContext {
@@ -170,6 +171,7 @@ function isPersistedTokenUsage(value: unknown): value is PersistedTokenUsage {
   if (!isOptionalNonNegativeNumber(value.input)) return false;
   if (!isOptionalNonNegativeNumber(value.output)) return false;
   if (!isOptionalNonNegativeNumber(value.total)) return false;
+  if (!isOptionalNonNegativeNumber(value.cached)) return false;
   return true;
 }
 

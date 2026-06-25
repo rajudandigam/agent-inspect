@@ -114,6 +114,43 @@ describe("inspectEventToPersistedInspectEvent", () => {
     expect(persisted.tokenUsage).toEqual({ input: 10, output: 5, total: 15 });
   });
 
+  it("preserves supplied total and cached while leaving cost opaque", () => {
+    const persisted = inspectEventToPersistedInspectEvent(
+      minimalEvent({
+        attributes: {
+          tokens: {
+            input: 10,
+            output: 5,
+            total: 40,
+            cached: 3,
+            totalCostUsd: 0.01,
+          },
+        },
+      }),
+    );
+
+    expect(persisted.tokenUsage).toEqual({
+      input: 10,
+      output: 5,
+      total: 40,
+      cached: 3,
+    });
+    expect(persisted.tokenUsage).not.toHaveProperty("totalCostUsd");
+    expect(persisted.attributes?.tokens).toHaveProperty("totalCostUsd", 0.01);
+  });
+
+  it("preserves partial total-only and cached-only usage", () => {
+    const totalOnly = inspectEventToPersistedInspectEvent(
+      minimalEvent({ attributes: { tokens: { total: 9 } } }),
+    );
+    const cachedOnly = inspectEventToPersistedInspectEvent(
+      minimalEvent({ attributes: { tokens: { cached: 3 } } }),
+    );
+
+    expect(totalOnly.tokenUsage).toEqual({ total: 9 });
+    expect(cachedOnly.tokenUsage).toEqual({ cached: 3 });
+  });
+
   it("maps error from attributes.errorMessage and errorName", () => {
     const persisted = inspectEventToPersistedInspectEvent(
       minimalEvent({

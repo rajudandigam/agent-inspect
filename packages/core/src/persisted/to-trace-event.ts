@@ -100,6 +100,8 @@ function mapTokenUsageToMetadata(
     metadata.tokens = {
       ...(tokenUsage.input !== undefined ? { input: tokenUsage.input } : {}),
       ...(tokenUsage.output !== undefined ? { output: tokenUsage.output } : {}),
+      ...(tokenUsage.total !== undefined ? { total: tokenUsage.total } : {}),
+      ...(tokenUsage.cached !== undefined ? { cached: tokenUsage.cached } : {}),
     };
   }
   return Object.keys(metadata).length > 0 ? metadata : undefined;

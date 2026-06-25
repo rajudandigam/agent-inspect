@@ -164,6 +164,35 @@ describe("traceEventToPersistedInspectEvent", () => {
       expect(out.tokenUsage).toEqual({ input: 12, output: 7, total: 19 });
       expect(isPersistedInspectEvent(out)).toBe(true);
     });
+
+    it("preserves supplied total and cached instead of recomputing total", () => {
+      const out = traceEventToPersistedInspectEvent(
+        stepStarted("llm", {
+          metadata: {
+            tokens: { input: 12, output: 7, total: 50, cached: 4 },
+          },
+        }),
+      );
+
+      expect(out.tokenUsage).toEqual({
+        input: 12,
+        output: 7,
+        total: 50,
+        cached: 4,
+      });
+    });
+
+    it("preserves partial approved token usage", () => {
+      const totalOnly = traceEventToPersistedInspectEvent(
+        stepStarted("llm", { metadata: { tokens: { total: 9 } } }),
+      );
+      const cachedOnly = traceEventToPersistedInspectEvent(
+        stepStarted("llm", { metadata: { tokens: { cached: 3 } } }),
+      );
+
+      expect(totalOnly.tokenUsage).toEqual({ total: 9 });
+      expect(cachedOnly.tokenUsage).toEqual({ cached: 3 });
+    });
   });
 
   describe("step_completed", () => {

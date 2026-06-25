@@ -124,13 +124,14 @@ describe("persistedInspectEventToInspectEvent", () => {
   it("preserves tokenUsage under attributes.tokens", () => {
     const inspect = persistedInspectEventToInspectEvent(
       minimalPersisted({
-        tokenUsage: { input: 3, output: 7, total: 10 },
+        tokenUsage: { input: 3, output: 7, total: 10, cached: 2 },
       }),
     );
     expect(inspect.attributes?.tokens).toEqual({
       input: 3,
       output: 7,
       total: 10,
+      cached: 2,
     });
   });
 

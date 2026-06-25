@@ -73,7 +73,7 @@ describe("Step", () => {
       durationMs: 100,
       metadata: {
         model: "gpt-4o",
-        tokens: { input: 10, output: 20 },
+        tokens: { input: 10, output: 20, total: 30, cached: 4 },
       },
     };
 
@@ -88,7 +88,12 @@ describe("Step", () => {
     };
 
     expect(llmStep.metadata?.model).toBe("gpt-4o");
-    expect(llmStep.metadata?.tokens).toEqual({ input: 10, output: 20 });
+    expect(llmStep.metadata?.tokens).toEqual({
+      input: 10,
+      output: 20,
+      total: 30,
+      cached: 4,
+    });
     expect(toolStep.metadata?.toolName).toBe("web_search");
     expect(llmStep).not.toHaveProperty("input");
     expect(llmStep).not.toHaveProperty("output");

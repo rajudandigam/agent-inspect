@@ -6,6 +6,7 @@ import type {
   PersistedInspectEvent,
   PersistedTokenUsage,
 } from "../types/persisted-inspect-event.js";
+import { normalizeTokenUsage } from "./token-usage.js";
 
 export interface InspectEventToPersistedOptions {
   /**
@@ -111,33 +112,7 @@ function mapInspectSourceToPersisted(
 function mapTokenUsageFromAttributes(
   attributes: Record<string, unknown> | undefined,
 ): PersistedTokenUsage | undefined {
-  const tokens = attributes?.tokens;
-  if (!tokens || typeof tokens !== "object" || Array.isArray(tokens)) {
-    return undefined;
-  }
-  const rec = tokens as Record<string, unknown>;
-  const input =
-    typeof rec.input === "number" && Number.isFinite(rec.input) && rec.input >= 0
-      ? rec.input
-      : undefined;
-  const output =
-    typeof rec.output === "number" &&
-    Number.isFinite(rec.output) &&
-    rec.output >= 0
-      ? rec.output
-      : undefined;
-
-  if (input === undefined && output === undefined) {
-    return undefined;
-  }
-
-  const usage: PersistedTokenUsage = {};
-  if (input !== undefined) usage.input = input;
-  if (output !== undefined) usage.output = output;
-  if (input !== undefined && output !== undefined) {
-    usage.total = input + output;
-  }
-  return usage;
+  return normalizeTokenUsage(attributes?.tokens);
 }
 
 function mapErrorFromAttributes(

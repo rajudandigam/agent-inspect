@@ -112,7 +112,9 @@ describe("buildRunReport", () => {
   it("markdown report includes token line in what section when present", async () => {
     const events = await loadFixtureTrace("llm-with-tokens");
     const report = buildRunReport(events as any, { format: "markdown" });
-    expect(report.content).toContain("Tokens: 1200 in / 356 out");
+    expect(report.content).toContain(
+      "Tokens: 1200 in / 356 out / 1556 total / 240 cached",
+    );
   });
 
   it("deterministic markdown output for minimal-success", async () => {
