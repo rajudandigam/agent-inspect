@@ -4,10 +4,13 @@ import type {
   OnStartEvent,
   OnStepFinishEvent,
   OnStepStartEvent,
+  OnToolCallFinishEvent,
+  OnToolCallStartEvent,
   TelemetryIntegration,
 } from "ai";
 import type {
   PersistedInspectEvent,
+  PersistedInspectError,
   PersistedTokenUsage,
   RedactionProfile,
 } from "agent-inspect";
@@ -85,6 +88,12 @@ interface ActiveStep {
   startedAt: string;
 }
 
+interface ActiveTool {
+  eventId: string;
+  startedAt: string;
+  toolName: string;
+}
+
 interface ActiveRun {
   runId: string;
   eventId: string;
@@ -92,6 +101,7 @@ interface ActiveRun {
   startedAt: string;
   model?: AiSdkModelInfo;
   steps: Map<number, ActiveStep>;
+  tools: Map<string, ActiveTool>;
 }
 
 const AI_SDK_SOURCE = {
@@ -133,6 +143,41 @@ function countRecordKeys(value: unknown): number | undefined {
     return undefined;
   }
   return Object.keys(value).length;
+}
+
+function summarizeUnknown(value: unknown): Record<string, unknown> {
+  if (value === null) return { type: "null" };
+  if (Array.isArray(value)) return { type: "array", itemCount: value.length };
+
+  if (typeof value === "object") {
+    return { type: "object", keyCount: countRecordKeys(value) ?? 0 };
+  }
+  if (typeof value === "string") {
+    return { type: "string", length: value.length };
+  }
+  const valueType = typeof value;
+  if (valueType === "number" || valueType === "boolean" || valueType === "bigint") {
+    return { type: valueType };
+  }
+  if (valueType === "undefined") return { type: "undefined" };
+  return { type: "unknown" };
+}
+
+function summarizeError(error: unknown): PersistedInspectError {
+  if (error instanceof Error) {
+    return {
+      name: error.name || "Error",
+      message: error.message,
+    };
+  }
+  if (typeof error === "string") {
+    return {
+      message: error,
+    };
+  }
+  return {
+    message: "Unknown AI SDK tool error",
+  };
 }
 
 function summarizeModel(model: AiSdkModelInfo | undefined): Record<string, unknown> {
@@ -203,6 +248,7 @@ class AgentInspectAiSdkTelemetryIntegration {
       startedAt,
       model: event.model,
       steps: new Map(),
+      tools: new Map(),
     };
 
     await this.write({
@@ -312,6 +358,94 @@ class AgentInspectAiSdkTelemetryIntegration {
     });
   }
 
+  async onToolCallStart(event: OnToolCallStartEvent): Promise<void> {
+    const run = this.ensureRun(event.model, event.functionId);
+    const startedAt = nowIso();
+    const eventId = createId("event");
+    const toolCall = event.toolCall;
+    run.tools.set(toolCall.toolCallId, {
+      eventId,
+      startedAt,
+      toolName: toolCall.toolName,
+    });
+
+    const step = event.stepNumber === undefined ? undefined : run.steps.get(event.stepNumber);
+
+    await this.write({
+      schemaVersion: "0.2",
+      eventId,
+      runId: run.runId,
+      parentId: step?.eventId ?? run.eventId,
+      kind: "TOOL",
+      name: toolCall.toolName,
+      status: "running",
+      timestamp: startedAt,
+      startedAt,
+      confidence: "explicit",
+      source: AI_SDK_SOURCE,
+      attributes: {
+        ...summarizeModel(event.model),
+        functionId: event.functionId,
+        stepNumber: event.stepNumber,
+        toolCallId: toolCall.toolCallId,
+        toolName: toolCall.toolName,
+        dynamic: toolCall.dynamic === true,
+        invalid: toolCall.invalid === true,
+        providerExecuted: toolCall.providerExecuted === true,
+        messageCount: event.messages.length,
+        metadataKeyCount: countRecordKeys(event.metadata),
+        providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
+        toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+      },
+      inputSummary: summarizeUnknown(toolCall.input),
+      error: toolCall.invalid ? summarizeError(toolCall.error) : undefined,
+    });
+  }
+
+  async onToolCallFinish(event: OnToolCallFinishEvent): Promise<void> {
+    const run = this.ensureRun(event.model, event.functionId);
+    const endedAt = nowIso();
+    const toolCall = event.toolCall;
+    const activeTool =
+      run.tools.get(toolCall.toolCallId) ?? {
+        eventId: createId("event"),
+        startedAt: endedAt,
+        toolName: toolCall.toolName,
+      };
+
+    await this.write({
+      schemaVersion: "0.2",
+      eventId: createId("event"),
+      runId: run.runId,
+      parentId: activeTool.eventId,
+      kind: "TOOL",
+      name: activeTool.toolName,
+      status: event.success ? "ok" : "error",
+      timestamp: endedAt,
+      startedAt: activeTool.startedAt,
+      endedAt,
+      durationMs: event.durationMs,
+      confidence: "explicit",
+      source: AI_SDK_SOURCE,
+      attributes: {
+        ...summarizeModel(event.model),
+        functionId: event.functionId,
+        stepNumber: event.stepNumber,
+        toolCallId: toolCall.toolCallId,
+        toolName: toolCall.toolName,
+        dynamic: toolCall.dynamic === true,
+        invalid: toolCall.invalid === true,
+        providerExecuted: toolCall.providerExecuted === true,
+        messageCount: event.messages.length,
+        metadataKeyCount: countRecordKeys(event.metadata),
+        providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
+        toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+      },
+      outputSummary: event.success ? summarizeUnknown(event.output) : undefined,
+      error: event.success ? undefined : summarizeError(event.error),
+    });
+  }
+
   async onFinish(event: OnFinishEvent): Promise<void> {
     const run = this.ensureRun(event.model, event.functionId);
     const endedAt = nowIso();
@@ -363,6 +497,7 @@ class AgentInspectAiSdkTelemetryIntegration {
       startedAt,
       model,
       steps: new Map(),
+      tools: new Map(),
     };
     return this.activeRun;
   }
@@ -382,9 +517,9 @@ class AgentInspectAiSdkTelemetryIntegration {
 /**
  * Create an AgentInspect telemetry integration for the Vercel AI SDK.
  *
- * @experimental The adapter currently maps metadata-only generation and LLM
- * step lifecycle events. Tool/error/streaming hardening will land in later
- * v1.7 chunks.
+ * @experimental The adapter maps metadata-only generation, LLM step, and tool
+ * lifecycle events. Keep AI SDK telemetry configured with
+ * `recordInputs: false` and `recordOutputs: false`.
  */
 export function agentInspect(
   options: AgentInspectAiSdkOptions = {},

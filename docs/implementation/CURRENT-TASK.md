@@ -4,14 +4,14 @@
 
 ```yaml
 train: "v1.7.0"
-chunk: "v1.7-ai-sdk-tool-error-streaming"
+chunk: "v1.7-ai-sdk-recipes-docs"
 status: "ready"
-dependsOn: "v1.7-ai-sdk-metadata-integration"
+dependsOn: "v1.7-ai-sdk-tool-error-streaming"
 ```
 
 ## Goal
 
-Harden the `@agent-inspect/ai-sdk` adapter against AI SDK tool calls, errors, and streaming metadata using deterministic no-network fixtures.
+Make `@agent-inspect/ai-sdk` adoption reproducible with local, no-network recipes, package smoke coverage, and public adapter docs.
 
 ## Read first
 
@@ -21,30 +21,33 @@ Harden the `@agent-inspect/ai-sdk` adapter against AI SDK tool calls, errors, an
 - `docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md`
 - `docs/proposals/AI-SDK-INTEGRATION.md`
 - `packages/ai-sdk/src/index.ts`
-- directly related tests only
+- `packages/ai-sdk/test/api-stability.test.ts`
+- directly related docs, recipe, and smoke tests only
 
 ## In scope
 
-1. Map tool call start/finish/error metadata without raw tool inputs or outputs.
-2. Preserve AI SDK/app behavior on adapter or writer failures.
-3. Add deterministic fixtures for tool calls, tool failures, provider failures where in-scope, and streaming timing/count metadata when exposed safely.
-4. Preserve metadata-only defaults and `recordInputs: false` / `recordOutputs: false` guidance.
+1. Add a local no-network AI SDK recipe or recipe fixture.
+2. Update `docs/ADAPTERS.md`, `docs/API.md`, README, and roadmap references as needed.
+3. Add package smoke or install coverage for the optional package without publishing it.
+4. Document explicit privacy defaults: metadata-only, no upload, `recordInputs: false`, and `recordOutputs: false`.
 
 ## Out of scope
 
 - live provider calls or network tests
-- recipes/docs beyond test/API notes
-- publishing the new package
+- adapter runtime behavior beyond documentation/smoke gaps
+- OpenAI Agents JS, LangGraph, or conformance matrix work
 - package version changes
 - changesets
+- publishing the new package
 - root/core dependencies on AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, or LangChain
 
 ## Acceptance criteria
 
-- Tests cover tool start/finish/error and writer failure isolation.
-- No raw prompt, message, generated text, tool input/output, headers, or request/response body is persisted by default.
+- AI SDK docs and recipe show no-network, local-first usage.
+- Package smoke coverage includes `@agent-inspect/ai-sdk` where appropriate.
+- Privacy guidance explicitly prevents raw prompt/output/tool payload capture by default.
 - Focused validation and the required chunk gate pass.
 
 ## Stop condition
 
-Stop if implementation requires network behavior, a root/core dependency, public schema change, or default raw prompt/output/tool payload capture.
+Stop if docs or smoke coverage requires making `@agent-inspect/ai-sdk` publishable before release readiness, adding root/core dependencies, or enabling network upload behavior.
