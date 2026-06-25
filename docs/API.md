@@ -267,16 +267,20 @@ Public methods:
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
-## 16. Experimental trace readers (v1.6 planning)
+## 16. Experimental trace readers (v1.6)
 
-`agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. It includes the default AgentInspect JSONL reader for v0.1, v0.2, and mixed local trace files. OpenInference and OTLP readers are added progressively in later v1.6 chunks.
+`agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. It includes AgentInspect JSONL for v0.1, v0.2, and mixed local trace files, plus local OpenInference JSON and OTLP JSON compatibility readers.
 
 Import from `agent-inspect/readers`:
 
 ```ts
 import {
+  DEFAULT_TRACE_READERS,
+  agentInspectJsonlReader,
   detectTraceFormat,
+  openInferenceJsonReader,
   openTrace,
+  otlpJsonReader,
   readTrace,
 } from "agent-inspect/readers";
 import type { TraceReader } from "agent-inspect/readers";
@@ -286,8 +290,11 @@ import type { TraceReader } from "agent-inspect/readers";
 - **`TraceReader`**: experimental reader interface with `format`, `detect(input)`, and `read(input)`.
 - **`detectTraceFormat(input, { readers?, format? })`**: deterministic, conservative format detection. Explicit `format` acts as an override only when a matching reader is registered.
 - **`readTrace(input, { readers?, format? })`**: detects a reader and returns `TraceReadResult`; unsupported or ambiguous input throws `TraceReadError`.
-- **`openTrace(input, options?)`**: alias for `readTrace()` for the future universal open workflow.
-- **`agentInspectJsonlReader`** / **`DEFAULT_TRACE_READERS`**: built-in local AgentInspect JSONL reader registry used when no custom `readers` array is supplied.
+- **`openTrace(input, options?)`**: alias for `readTrace()` and the API path used by the universal `agent-inspect open` command.
+- **`agentInspectJsonlReader`**: built-in local AgentInspect JSONL reader for v0.1, v0.2, and mixed files/directories.
+- **`openInferenceJsonReader`**: local OpenInference JSON compatibility reader. Prompt/output-like attributes are summarized and bounded rather than stored as raw content.
+- **`otlpJsonReader`**: local OTLP/HTTP JSON trace payload reader. Resource, scope, span, status, event, and parent metadata are preserved where possible with warnings for unsupported fields.
+- **`DEFAULT_TRACE_READERS`**: ordered built-in reader registry used when no custom `readers` array is supplied.
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
 

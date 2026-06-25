@@ -15,6 +15,7 @@ const RECIPES = [
   "proactive-agent-logs",
   "retry-fallback",
   "parallel-tools",
+  "runtime-and-ingestion",
 ] as const;
 
 const SECTION_MARKERS = [

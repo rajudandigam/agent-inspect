@@ -25,6 +25,7 @@ Core commands:
 - `logs` — parse structured logs into local execution trees
 - `tail` — live-tail logs into updating local trees
 - `export` — export manual traces to Markdown/HTML/OpenInference/OTLP JSON (local only)
+- `open` — read supported local trace files, directories, or stdin through the canonical reader pipeline
 - `diff` — compare two manual traces (local, read-only)
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
@@ -192,7 +193,36 @@ npx agent-inspect export <run-id> --format markdown --redaction-profile share
 npx agent-inspect export <run-id> --format html --redaction-profile strict
 ```
 
-### 6.7 `diff`
+### 6.7 `open`
+
+Open any local trace format supported by the canonical reader pipeline. This command is read-only: it does not mutate input files, upload traces, or run agents.
+
+```bash
+agent-inspect open [input] [options]
+```
+
+`input` may be a file, directory, `-` for stdin, or omitted to read stdin.
+
+Options:
+
+- `--format <agent-inspect-jsonl|openinference-json|otlp-json>`: explicit reader format override
+- `--run <run-id>`: select a run when input contains multiple runs
+- `--json`: print structured JSON output
+- `--diagnostics`: print reader warnings and unsupported fields in human output
+
+Examples:
+
+```bash
+npx agent-inspect open fixtures/traces/minimal-success.jsonl --format agent-inspect-jsonl
+npx agent-inspect open fixtures/traces-v0.2/manual-basic.jsonl --format agent-inspect-jsonl
+npx agent-inspect open packages/core/test/fixtures/openinference-basic.json --format openinference-json
+npx agent-inspect open packages/core/test/fixtures/otlp-basic.json --format otlp-json
+cat packages/core/test/fixtures/openinference-basic.json | npx agent-inspect open - --format openinference-json --json
+```
+
+When a directory or payload contains multiple runs, `open` lists the run ids and exits until you pass `--run <run-id>`.
+
+### 6.8 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -256,7 +286,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.8 `timeline`
+### 6.9 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -272,7 +302,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.9 `stats`
+### 6.10 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -292,7 +322,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.10 `search`
+### 6.11 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -322,7 +352,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.11 `what`
+### 6.12 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -351,7 +381,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.12 `report`
+### 6.13 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 

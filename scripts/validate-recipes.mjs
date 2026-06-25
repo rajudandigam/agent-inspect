@@ -22,6 +22,7 @@ const RECIPES = [
   "parallel-tools",
   "github-actions-artifact",
   "what-report-inspect",
+  "runtime-and-ingestion",
 ];
 
 const LOG_RECIPE_FILES = {

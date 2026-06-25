@@ -1,0 +1,57 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "agent-inspect-recipe"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "recipe-scope",
+            "version": "1.6-recipe"
+          },
+          "spans": [
+            {
+              "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+              "spanId": "00f067aa0ba902b7",
+              "name": "recipe agent run",
+              "kind": "SPAN_KIND_INTERNAL",
+              "startTimeUnixNano": "1700000000000000000",
+              "endTimeUnixNano": "1700000005000000000",
+              "attributes": [
+                {
+                  "key": "agent_inspect.event_id",
+                  "value": {
+                    "stringValue": "recipe-otlp-run"
+                  }
+                },
+                {
+                  "key": "agent_inspect.run_id",
+                  "value": {
+                    "stringValue": "recipe-otlp"
+                  }
+                },
+                {
+                  "key": "agent_inspect.kind",
+                  "value": {
+                    "stringValue": "RUN"
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_OK"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

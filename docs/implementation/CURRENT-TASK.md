@@ -4,81 +4,75 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "13-recipes-and-documentation"
+chunk: "14-release-readiness"
 status: "ready"
-dependsOn: "12-shared-reader-integration"
+dependsOn: "13-recipes-and-documentation"
 ```
 
 ## Goal
 
-Add deterministic, no-network runtime and universal ingestion recipes/documentation for the v1.6 reader and writer workflows.
+Prepare v1.6.0 release-readiness evidence and user-facing documentation updates without publishing.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 13 only
-- `docs/proposals/TRACE-READER.md`
-- directly related docs, recipes, examples, and tests only
+- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 14 only
+- directly related README/API/CLI/schema/limitations/known-issues/changelog/package/export docs and tests only
 
 ## In scope
 
-1. Add deterministic no-network examples for memory writer.
-2. Add deterministic no-network examples for buffered writer.
-3. Add deterministic no-network examples for custom inspector.
-4. Add examples for opening v0.1/v0.2 traces.
-5. Add examples for opening OpenInference JSON.
-6. Add examples for opening OTLP JSON.
-7. Add stdin and explicit-format examples.
-8. Add safe shutdown with `close()` examples.
-9. Update focused docs/recipe validation and prepare release readiness task.
+1. Create or update `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md` with exact validation evidence.
+2. Update README/API/CLI/schema/limitations/known-issues documentation as needed for v1.6.0.
+3. Update Unreleased changelog entries for v1.6.0 readiness without converting them to released notes unless explicitly authorized during release preparation.
+4. Verify package/export matrix documentation for the v1.6.0 public and experimental subpaths.
+5. Capture performance and size evidence from the required validation commands.
+6. Update release-train state when validation is complete.
 
 ## Out of scope
 
-- New runtime, reader, writer, or CLI behavior
-- network examples or upload flows
-- dependency additions
-- schema changes
-- version/change/tag/publish work
+- Implementing new runtime, reader, writer, CLI, or schema behavior
+- Public schema breaking changes
+- new root/core dependencies
+- network upload behavior or hosted ingestion
+- changing Node support policy
+- publishing to npm
+- tagging or creating a GitHub release
+- version changes or changesets until release-readiness validation is green and the release-preparation step is explicitly reached
 
 ## Acceptance criteria
 
-- Recipes are deterministic, local-only, and runnable by existing validation.
-- Documentation clearly describes no-network boundaries.
-- Universal ingestion examples cover AgentInspect v0.1/v0.2, OpenInference, OTLP, stdin, and explicit format.
-- Runtime/writer examples include safe `flush()`/`close()` behavior where relevant.
+- Release-readiness evidence lists exact commands and outcomes.
+- User-facing docs accurately describe v1.6.0 local runtime, reader, writer, and CLI capabilities.
+- Package/export matrix matches manifests and built subpaths.
+- Validation is green or any blocker is documented without committing unsafe release changes.
+- No npm publish, tag, GitHub release, or version/change metadata is created during readiness documentation.
 
-## Focused validation
-
-```bash
-pnpm recipes:check
-pnpm exec vitest run \
-  packages/core/test/recipes-smoke.test.ts \
-  packages/core/test/examples-smoke.test.ts \
-  packages/cli/test/cli.test.ts
-```
-
-## Chunk gate
+## Full gate
 
 ```bash
+pnpm install --frozen-lockfile
 pnpm build
 pnpm typecheck
 pnpm test
 pnpm test:coverage
 pnpm size
+pnpm test:all
 pnpm fixtures:check
+pnpm recipes:check
 pnpm pack:smoke
+pnpm compat:smoke
+pnpm perf:baseline
+npm pack --dry-run
 git diff --check
 ```
-
-Run `pnpm recipes:check` as part of focused validation for this docs/recipes chunk.
 
 ## Proposed commit
 
 ```text
-docs: add runtime and universal ingestion recipes
+docs: prepare v1.6.0 release readiness
 ```
 
 ## Stop condition
 
-Stop after chunk 13 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start release-readiness work until chunk 13 is pushed.
+Stop after chunk 14 release-readiness documentation, validation, state/task updates, commit, and push if release-preparation requires version changes, changesets, tags, or publishing credentials. Do not publish unless the repository release process is available, validation is fully green, and publishing is safe.

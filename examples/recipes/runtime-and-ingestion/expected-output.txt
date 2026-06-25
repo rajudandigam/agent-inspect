@@ -1,0 +1,13 @@
+Runtime + ingestion recipe complete
+Memory writer events: 6
+Memory writer result: local answer
+Trace directory: <repo>/examples/recipes/runtime-and-ingestion/.agent-inspect-runs
+
+Open local AgentInspect v0.1/v0.2 traces:
+  npx agent-inspect open ./.agent-inspect-runs/legacy-v01
+  npx agent-inspect open ./.agent-inspect-runs/persisted-v02 --run runtime-ingestion-buffered-v02
+
+Open standards JSON with explicit local formats:
+  npx agent-inspect open ./fixtures/openinference.json --format openinference-json
+  npx agent-inspect open ./fixtures/otlp.json --format otlp-json
+  cat ./fixtures/openinference.json | npx agent-inspect open - --format openinference-json --json

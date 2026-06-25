@@ -1,0 +1,42 @@
+{
+  "exporter": "agent-inspect",
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "1.6-recipe",
+  "trace_id": "trace-recipe-openinference",
+  "spans": [
+    {
+      "trace_id": "trace-recipe-openinference",
+      "span_id": "span-root",
+      "name": "recipe agent run",
+      "start_time_unix_nano": "1700000000000000000",
+      "end_time_unix_nano": "1700000005000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.event_id": "recipe-run-event",
+        "agent_inspect.run_id": "recipe-openinference",
+        "agent_inspect.kind": "RUN",
+        "agent_inspect.confidence": "explicit",
+        "input.value": "fixture prompt text"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-recipe-openinference",
+      "span_id": "span-tool",
+      "parent_span_id": "span-root",
+      "name": "fixture search",
+      "start_time_unix_nano": "1700000001000000000",
+      "end_time_unix_nano": "1700000003000000000",
+      "attributes": {
+        "openinference.span.kind": "TOOL",
+        "output.value": "fixture answer text"
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ]
+}
