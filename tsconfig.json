@@ -22,8 +22,11 @@
       "@agent-inspect/core/readers": ["packages/core/src/entries/readers.ts"],
       "@agent-inspect/core/*": ["packages/core/src/*"],
       "agent-inspect": ["packages/core/src/index.ts"],
+      "agent-inspect/writers": ["packages/core/src/entries/writers.ts"],
       "@agent-inspect/langchain": ["packages/langchain/src/index.ts"],
       "@agent-inspect/langchain/*": ["packages/langchain/src/*"],
+      "@agent-inspect/ai-sdk": ["packages/ai-sdk/src/index.ts"],
+      "@agent-inspect/ai-sdk/*": ["packages/ai-sdk/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
@@ -35,6 +38,7 @@
     "tsup.core.config.ts",
     "tsup.cli.config.ts",
     "tsup.langchain.config.ts",
+    "tsup.ai-sdk.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

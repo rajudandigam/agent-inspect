@@ -32,9 +32,10 @@ completedChunks:
   - "v1.6.0 published"
   - "v1.7 planning reset"
   - "v1.7 AI SDK telemetry RFC verification"
-currentChunk: "v1.7-ai-sdk-package-scaffold"
+  - "v1.7 AI SDK package scaffold"
+currentChunk: "v1.7-ai-sdk-metadata-integration"
 pendingManualGate: "none"
-nextAction: "Scaffold @agent-inspect/ai-sdk optional package after verified RFC; do not implement runtime mapping yet"
+nextAction: "Implement AI SDK metadata-only integration for generateText and streamText with recordInputs/recordOutputs safety guidance"
 publishedAt: "2026-06-25"
 updatedAt: "2026-06-25"
 ```
