@@ -5,6 +5,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  bufferedFileWriter,
   fileWriter,
   memoryWriter,
   nullWriter,
@@ -78,6 +79,178 @@ describe("memoryWriter", () => {
 
     expect(writer.getEvents()).toEqual([]);
     expect(writer.getStats?.().writtenEvents).toBe(1);
+  });
+});
+
+describe("bufferedFileWriter", () => {
+  async function withTempDir<T>(run: (dir: string) => Promise<T>): Promise<T> {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-buffered-writer-"));
+    try {
+      return await run(dir);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  }
+
+  it("buffers events and flushes them in bounded batches", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "buffered.jsonl");
+      const writer = bufferedFileWriter({
+        filePath,
+        maxBatchSize: 2,
+        flushIntervalMs: 60_000,
+      });
+
+      await writer.write(event({ eventId: "a" }));
+      await writer.write(event({ eventId: "b" }));
+      await writer.write(event({ eventId: "c" }));
+
+      expect(writer.getStats?.()).toEqual({
+        writtenEvents: 0,
+        droppedEvents: 0,
+        flushCount: 0,
+      });
+
+      await writer.flush?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      const ids = raw
+        .trim()
+        .split("\n")
+        .map((line) => (JSON.parse(line) as PersistedInspectEvent).eventId);
+
+      expect(ids).toEqual(["a", "b", "c"]);
+      expect(writer.getStats?.()).toEqual({
+        writtenEvents: 3,
+        droppedEvents: 0,
+        flushCount: 1,
+        lastFlushAt: expect.any(String),
+      });
+    });
+  });
+
+  it("flushes automatically after the configured interval", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "auto.jsonl");
+      const writer = bufferedFileWriter({ filePath, flushIntervalMs: 5 });
+
+      await writer.write(event({ eventId: "auto" }));
+      await new Promise((resolve) => setTimeout(resolve, 25));
+      await writer.close?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      expect(JSON.parse(raw.trim()).eventId).toBe("auto");
+      expect(writer.getStats?.().writtenEvents).toBe(1);
+    });
+  });
+
+  it("drops newest events when configured queue overflow reaches the limit", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "drop-newest.jsonl");
+      const writer = bufferedFileWriter({
+        filePath,
+        maxQueueSize: 2,
+        overflow: "drop-newest",
+        flushIntervalMs: 60_000,
+      });
+
+      await writer.write(event({ eventId: "first" }));
+      await writer.write(event({ eventId: "second" }));
+      await writer.write(event({ eventId: "third" }));
+      await writer.flush?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      const ids = raw
+        .trim()
+        .split("\n")
+        .map((line) => (JSON.parse(line) as PersistedInspectEvent).eventId);
+
+      expect(ids).toEqual(["first", "second"]);
+      expect(writer.getStats?.()).toMatchObject({
+        writtenEvents: 2,
+        droppedEvents: 1,
+      });
+    });
+  });
+
+  it("drops oldest events by default when queue overflow reaches the limit", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "drop-oldest.jsonl");
+      const writer = bufferedFileWriter({
+        filePath,
+        maxQueueSize: 2,
+        flushIntervalMs: 60_000,
+      });
+
+      await writer.write(event({ eventId: "first" }));
+      await writer.write(event({ eventId: "second" }));
+      await writer.write(event({ eventId: "third" }));
+      await writer.flush?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      const ids = raw
+        .trim()
+        .split("\n")
+        .map((line) => (JSON.parse(line) as PersistedInspectEvent).eventId);
+
+      expect(ids).toEqual(["second", "third"]);
+      expect(writer.getStats?.()).toMatchObject({
+        writtenEvents: 2,
+        droppedEvents: 1,
+      });
+    });
+  });
+
+  it("isolates serialization and filesystem failures from callers", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "serialization.jsonl");
+      const writer = bufferedFileWriter({ filePath, flushIntervalMs: 60_000 });
+
+      await expect(
+        writer.write(
+          event({
+            eventId: "bad",
+            attributes: { bigint: BigInt(1) } as Record<string, unknown>,
+          }),
+        ),
+      ).resolves.toBeUndefined();
+      await writer.write(event({ eventId: "good" }));
+      await expect(writer.flush?.()).resolves.toBeUndefined();
+
+      const raw = await readFile(filePath, "utf-8");
+      expect(JSON.parse(raw.trim()).eventId).toBe("good");
+      expect(writer.getStats?.()).toMatchObject({
+        writtenEvents: 1,
+        droppedEvents: 1,
+      });
+
+      const blockingPath = path.join(dir, "not-a-directory");
+      await writeFile(blockingPath, "block");
+      const failingWriter = bufferedFileWriter({
+        filePath: path.join(blockingPath, "trace.jsonl"),
+      });
+
+      await expect(failingWriter.write(event())).resolves.toBeUndefined();
+      await expect(failingWriter.flush?.()).resolves.toBeUndefined();
+      expect(failingWriter.getStats?.()).toMatchObject({
+        writtenEvents: 0,
+        droppedEvents: 1,
+      });
+    });
+  });
+
+  it("drops writes after close", async () => {
+    await withTempDir(async (dir) => {
+      const writer = bufferedFileWriter({ filePath: path.join(dir, "closed.jsonl") });
+
+      await writer.close?.();
+      await writer.write(event());
+
+      expect(writer.getStats?.()).toMatchObject({
+        writtenEvents: 0,
+        droppedEvents: 1,
+      });
+    });
   });
 });
 

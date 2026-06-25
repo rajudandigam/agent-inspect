@@ -14,9 +14,10 @@ completedChunks:
   - "canonical-roadmap-reset"
   - "v1.6 memory-null-writers"
   - "v1.6 direct file writer"
-currentChunk: "v1.6 buffered file writer"
+  - "v1.6 buffered file writer"
+currentChunk: "v1.6 composite writer"
 pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Proceed to the buffered file writer chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
+nextAction: "Proceed to the composite writer chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```

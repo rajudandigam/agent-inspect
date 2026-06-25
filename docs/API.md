@@ -200,8 +200,14 @@ Trace writers are the first slice of the v1.6 runtime foundation. They are exper
 Import from `agent-inspect/writers`:
 
 ```ts
-import { fileWriter, memoryWriter, nullWriter } from "agent-inspect/writers";
+import {
+  bufferedFileWriter,
+  fileWriter,
+  memoryWriter,
+  nullWriter,
+} from "agent-inspect/writers";
 import type {
+  BufferedFileWriterOptions,
   FileTraceWriterOptions,
   TraceWriter,
   TraceWriterStats,
@@ -210,6 +216,7 @@ import type {
 
 - **`TraceWriter`**: async `write(event)`, optional `flush()`, optional `close()`, optional `getStats()`.
 - **`fileWriter({ dir?, filePath? })`**: appends v0.2 `PersistedInspectEvent` JSONL rows to local disk. By default it derives one file per `event.runId`; `filePath` writes all events to an explicit local file. Filesystem and serialization failures are reflected in writer stats instead of being thrown into application code.
+- **`bufferedFileWriter({ dir?, filePath?, maxQueueSize?, flushIntervalMs?, maxBatchSize?, overflow? })`**: buffers local JSONL writes with bounded queue behavior. Overflow supports `drop-oldest` and `drop-newest`; neither mode throws into application code.
 - **`memoryWriter()`**: stores cloned `PersistedInspectEvent` rows in memory for tests, adapter fixtures, and eval harnesses.
 - **`nullWriter()`**: accepts events without retaining them for disabled mode, overhead comparisons, and no-output tests.
 

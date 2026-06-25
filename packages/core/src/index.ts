@@ -224,9 +224,16 @@ export type {
   TraceWriterStats,
   MemoryTraceWriter,
   FileTraceWriterOptions,
+  BufferedFileWriterOptions,
+  BufferedFileWriterOverflowMode,
 } from "./writers/index.js";
 
-export { fileWriter, memoryWriter, nullWriter } from "./writers/index.js";
+export {
+  bufferedFileWriter,
+  fileWriter,
+  memoryWriter,
+  nullWriter,
+} from "./writers/index.js";
 
 export type {
   DiffSeverity,
