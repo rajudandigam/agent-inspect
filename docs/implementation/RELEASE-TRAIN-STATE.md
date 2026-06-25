@@ -30,9 +30,11 @@ completedChunks:
   - "chunk 13 recipes and documentation"
   - "chunk 14 release readiness"
   - "v1.6.0 published"
-currentChunk: "v1.7-planning-reset"
+  - "v1.7 planning reset"
+  - "v1.7 AI SDK telemetry RFC verification"
+currentChunk: "v1.7-ai-sdk-package-scaffold"
 pendingManualGate: "none"
-nextAction: "Prepare v1.7 execution plan and adapter RFC alignment before implementation"
+nextAction: "Scaffold @agent-inspect/ai-sdk optional package after verified RFC; do not implement runtime mapping yet"
 publishedAt: "2026-06-25"
 updatedAt: "2026-06-25"
 ```
