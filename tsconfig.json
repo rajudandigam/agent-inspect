@@ -27,6 +27,8 @@
       "@agent-inspect/langchain/*": ["packages/langchain/src/*"],
       "@agent-inspect/ai-sdk": ["packages/ai-sdk/src/index.ts"],
       "@agent-inspect/ai-sdk/*": ["packages/ai-sdk/src/*"],
+      "@agent-inspect/openai-agents": ["packages/openai-agents/src/index.ts"],
+      "@agent-inspect/openai-agents/*": ["packages/openai-agents/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
@@ -39,6 +41,7 @@
     "tsup.cli.config.ts",
     "tsup.langchain.config.ts",
     "tsup.ai-sdk.config.ts",
+    "tsup.openai-agents.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],
