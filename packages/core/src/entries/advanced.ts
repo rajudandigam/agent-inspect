@@ -15,6 +15,15 @@ export {
 } from "../context.js";
 
 export type {
+  InspectorRuntime,
+  InspectorRuntimeContext,
+  InspectorRuntimeDiagnostics,
+  InspectorRuntimeOptions,
+} from "../inspector-runtime.js";
+
+export { createInspectorRuntime } from "../inspector-runtime.js";
+
+export type {
   ResolvedRedactionProfile,
   TraceSafetyOptions,
 } from "../trace-event-safety.js";

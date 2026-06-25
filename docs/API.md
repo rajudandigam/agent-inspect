@@ -225,23 +225,35 @@ import type {
 
 No network writer or vendor sink exists in this package.
 
-## 15. Deprecated APIs
+## 15. Experimental inspector runtime (v1.6 planning)
+
+`createInspectorRuntime()` is the low-level isolation primitive for the forthcoming `createInspector()` API. It owns an instance-specific async context, optional writer, diagnostics, and `flush()`/`close()` lifecycle hooks.
+
+Import from `agent-inspect/advanced`:
+
+```ts
+import { createInspectorRuntime } from "agent-inspect/advanced";
+```
+
+This API is experimental during v1.x. Most users should wait for `createInspector()` rather than building directly on the runtime primitive.
+
+## 16. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 16. Removal / deprecation policy
+## 17. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 17. Backward compatibility policy
+## 18. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 18. Examples
+## 19. Examples
 
 ### Minimal manual trace
 

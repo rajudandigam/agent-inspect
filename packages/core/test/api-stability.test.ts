@@ -38,6 +38,7 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.LiveLogAccumulator).toBe("function");
     expect(typeof core.exportRunTree).toBe("function");
     expect(typeof core.diffTraceEvents).toBe("function");
+    expect(typeof core.createInspectorRuntime).toBe("function");
     expect(typeof core.bufferedFileWriter).toBe("function");
     expect(typeof core.compositeWriter).toBe("function");
     expect(typeof core.fileWriter).toBe("function");
@@ -90,6 +91,9 @@ describe("core API stability (v1.0 Pass 1)", () => {
     const _timelineWitness = null as unknown as core.RunTimeline;
     const _statsWitness = null as unknown as core.TraceStats;
     const _searchWitness = null as unknown as core.TraceSearchResult;
+    const _inspectorRuntimeWitness = null as unknown as core.InspectorRuntime;
+    const _inspectorRuntimeOptionsWitness =
+      null as unknown as core.InspectorRuntimeOptions;
     const _bufferedFileWriterOptionsWitness =
       null as unknown as core.BufferedFileWriterOptions;
     const _compositeWriterOptionsWitness =
@@ -110,6 +114,8 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_timelineWitness).toBeNull();
     expect(_statsWitness).toBeNull();
     expect(_searchWitness).toBeNull();
+    expect(_inspectorRuntimeWitness).toBeNull();
+    expect(_inspectorRuntimeOptionsWitness).toBeNull();
     expect(_bufferedFileWriterOptionsWitness).toBeNull();
     expect(_compositeWriterOptionsWitness).toBeNull();
     expect(_fileWriterOptionsWitness).toBeNull();

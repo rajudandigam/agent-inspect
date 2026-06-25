@@ -2,7 +2,10 @@ const { parseLogsToTrees } = require("agent-inspect/logs");
 const { exportMarkdown } = require("agent-inspect/exporters");
 const { diffTraceEvents } = require("agent-inspect/diff");
 const { isPersistedInspectEvent } = require("agent-inspect/persisted");
-const { resolveRedactionProfile } = require("agent-inspect/advanced");
+const {
+  createInspectorRuntime,
+  resolveRedactionProfile,
+} = require("agent-inspect/advanced");
 const {
   bufferedFileWriter,
   compositeWriter,
@@ -16,6 +19,7 @@ const checks = [
   exportMarkdown,
   diffTraceEvents,
   isPersistedInspectEvent,
+  createInspectorRuntime,
   resolveRedactionProfile,
   bufferedFileWriter,
   compositeWriter,

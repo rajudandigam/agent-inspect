@@ -1,6 +1,6 @@
 # Inspector runtime proposal
 
-**Status:** planning for v1.6.0.
+**Status:** partially implemented for v1.6.0; the low-level instance-scoped runtime primitive is complete on `main`, and public `createInspector()` remains next.
 **Scope:** experimental instance API and runtime isolation.
 **Non-goals:** no breaking change to existing global APIs; no default network writer; no v2 schema switch.
 
@@ -31,6 +31,10 @@ await inspector.run("support-agent", async () => {
 
 await inspector.flush();
 ```
+
+## Implemented runtime foundation
+
+`createInspectorRuntime()` is available as an experimental low-level primitive. It owns instance-specific async context, writer lifecycle hooks, diagnostics, disabled passthrough, nested step context, and cross-instance isolation. It intentionally does not yet implement the public `createInspector()` convenience API.
 
 ## Contract
 

@@ -220,6 +220,15 @@ export { isAgentInspectTrace } from "./trace-verification.js";
 export { parseDuration } from "./utils/duration.js";
 
 export type {
+  InspectorRuntime,
+  InspectorRuntimeContext,
+  InspectorRuntimeDiagnostics,
+  InspectorRuntimeOptions,
+} from "./inspector-runtime.js";
+
+export { createInspectorRuntime } from "./inspector-runtime.js";
+
+export type {
   TraceWriter,
   TraceWriterStats,
   MemoryTraceWriter,
