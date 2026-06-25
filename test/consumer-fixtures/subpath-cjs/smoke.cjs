@@ -14,9 +14,12 @@ const {
   memoryWriter,
   nullWriter,
 } = require("agent-inspect/writers");
-const { detectTraceFormat } = require("agent-inspect/readers");
+const {
+  agentInspectJsonlReader,
+  detectTraceFormat,
+} = require("agent-inspect/readers");
 
-const checks = [
+const functionChecks = [
   parseLogsToTrees,
   exportMarkdown,
   diffTraceEvents,
@@ -32,7 +35,13 @@ const checks = [
   detectTraceFormat,
 ];
 
-if (checks.some((fn) => typeof fn !== "function")) {
+const objectChecks = [agentInspectJsonlReader];
+
+if (functionChecks.some((fn) => typeof fn !== "function")) {
+  process.exit(1);
+}
+
+if (objectChecks.some((value) => typeof value !== "object" || value === null)) {
   process.exit(1);
 }
 

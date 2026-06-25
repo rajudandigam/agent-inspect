@@ -1,3 +1,9 @@
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
+
+import { parseTraceJsonl, type TraceJsonlFormat } from "../read-trace.js";
+import { traceEventsToPersistedInspectEvents } from "../persisted/from-trace-event.js";
+import { persistedInspectEventsToRunTrees } from "../persisted/tree-bridge.js";
 import type { InspectRunTree } from "../types/inspect-event.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
 
@@ -74,6 +80,11 @@ export interface TraceReadOptions {
   readers?: readonly TraceReader[];
 }
 
+interface ResolvedTraceInput {
+  content: string;
+  sourceFiles: string[];
+}
+
 export type TraceReadErrorCode =
   | "unsupported_format"
   | "ambiguous_format"
@@ -133,11 +144,192 @@ function findReaderByFormat(
   return readers.find((reader) => reader.format === format);
 }
 
+async function jsonlFilesInDirectory(dirPath: string): Promise<string[]> {
+  const entries = await readdir(dirPath, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".jsonl"))
+    .map((entry) => path.join(dirPath, entry.name))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+async function resolveInput(input: TraceInput): Promise<ResolvedTraceInput | undefined> {
+  if (input.type === "string") {
+    return { content: input.content, sourceFiles: [] };
+  }
+  if (input.type === "buffer") {
+    return { content: input.content.toString("utf-8"), sourceFiles: [] };
+  }
+  if (input.type === "file") {
+    const content = await readFile(input.path, "utf-8");
+    return { content, sourceFiles: [input.path] };
+  }
+  if (input.type === "directory") {
+    const files = await jsonlFilesInDirectory(input.path);
+    const parts = await Promise.all(
+      files.map(async (file) => (await readFile(file, "utf-8")).trimEnd()),
+    );
+    return {
+      content: parts.filter((part) => part.trim() !== "").join("\n"),
+      sourceFiles: files,
+    };
+  }
+  return undefined;
+}
+
+function detectJsonlFormat(content: string): {
+  format: TraceJsonlFormat;
+  validRows: number;
+  warnings: TraceReadWarning[];
+} {
+  let saw01 = false;
+  let saw02 = false;
+  let validRows = 0;
+  let invalidJsonRows = 0;
+  let unknownSchemaRows = 0;
+
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (trimmed === "") continue;
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(trimmed) as unknown;
+    } catch {
+      invalidJsonRows += 1;
+      continue;
+    }
+
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed) &&
+      "schemaVersion" in parsed
+    ) {
+      const version = (parsed as { schemaVersion?: unknown }).schemaVersion;
+      if (version === "0.1") {
+        saw01 = true;
+        validRows += 1;
+        continue;
+      }
+      if (version === "0.2") {
+        saw02 = true;
+        validRows += 1;
+        continue;
+      }
+    }
+
+    unknownSchemaRows += 1;
+  }
+
+  const warnings: TraceReadWarning[] = [];
+  if (invalidJsonRows > 0) {
+    warnings.push({
+      code: "invalid_jsonl_rows",
+      message: `Skipped ${invalidJsonRows} invalid JSONL row(s) during format detection.`,
+      severity: "warning",
+    });
+  }
+  if (unknownSchemaRows > 0) {
+    warnings.push({
+      code: "unknown_schema_rows",
+      message: `Skipped ${unknownSchemaRows} row(s) with unknown schemaVersion during format detection.`,
+      severity: "warning",
+    });
+  }
+
+  let format: TraceJsonlFormat = "empty";
+  if (saw01 && saw02) format = "mixed";
+  else if (saw01) format = "0.1";
+  else if (saw02) format = "0.2";
+
+  return { format, validRows, warnings };
+}
+
+function agentInspectFormatLabel(format: TraceJsonlFormat): string {
+  switch (format) {
+    case "0.1":
+      return "agent-inspect-v0.1-jsonl";
+    case "0.2":
+      return "agent-inspect-v0.2-jsonl";
+    case "mixed":
+      return "agent-inspect-mixed-jsonl";
+    default:
+      return "agent-inspect-jsonl";
+  }
+}
+
+function persistedEventsForParsedTrace(
+  parsed: ReturnType<typeof parseTraceJsonl>,
+): PersistedInspectEvent[] {
+  if (parsed.format === "0.2" && parsed.persisted.length > 0) {
+    return [...parsed.persisted];
+  }
+  return traceEventsToPersistedInspectEvents(parsed.events, {
+    sourceName: "agent-inspect-jsonl-reader",
+  });
+}
+
+export const agentInspectJsonlReader: TraceReader = {
+  format: "agent-inspect-jsonl",
+  name: "AgentInspect JSONL",
+  async detect(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) return undefined;
+    const detected = detectJsonlFormat(resolved.content);
+    if (detected.validRows === 0 || detected.format === "empty") {
+      return undefined;
+    }
+
+    return {
+      format: "agent-inspect-jsonl",
+      confidence: 0.95,
+      readerName: "AgentInspect JSONL",
+      description: agentInspectFormatLabel(detected.format),
+      warnings: detected.warnings,
+    };
+  },
+  async read(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) {
+      throw new Error("AgentInspect JSONL reader requires file, directory, string, or buffer input.");
+    }
+
+    const parsed = parseTraceJsonl(resolved.content, { warnings: false });
+    if (parsed.sourceEventCount === 0) {
+      throw new Error("No valid AgentInspect JSONL events found.");
+    }
+
+    const events = persistedEventsForParsedTrace(parsed);
+    return {
+      format: agentInspectFormatLabel(parsed.format),
+      events,
+      runs: persistedInspectEventsToRunTrees(events, { skipInvalid: true }),
+      warnings:
+        parsed.format === "mixed"
+          ? [
+              {
+                code: "mixed_agent_inspect_jsonl",
+                message:
+                  "Trace input mixes schemaVersion 0.1 and 0.2 rows; events were normalized for reading.",
+                severity: "warning",
+              },
+            ]
+          : [],
+      unsupportedFields: [],
+      sourceFiles: resolved.sourceFiles,
+    };
+  },
+};
+
+export const DEFAULT_TRACE_READERS: readonly TraceReader[] = [
+  agentInspectJsonlReader,
+];
+
 export async function detectTraceFormat(
   input: TraceInput,
   options: TraceReadOptions = {},
 ): Promise<TraceFormatDetectionResult> {
-  const readers = options.readers ?? [];
+  const readers = options.readers ?? DEFAULT_TRACE_READERS;
 
   if (options.format !== undefined) {
     const reader = findReaderByFormat(options.format, readers);
@@ -224,7 +416,7 @@ export async function readTrace(
   input: TraceInput,
   options: TraceReadOptions = {},
 ): Promise<TraceReadResult> {
-  const readers = options.readers ?? [];
+  const readers = options.readers ?? DEFAULT_TRACE_READERS;
   const detection = await detectTraceFormat(input, options);
 
   if (detection.status === "unsupported" || detection.format === undefined) {

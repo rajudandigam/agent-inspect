@@ -14,7 +14,9 @@ export type {
 } from "../readers/index.js";
 
 export {
+  DEFAULT_TRACE_READERS,
   TraceReadError,
+  agentInspectJsonlReader,
   detectTraceFormat,
   openTrace,
   readTrace,

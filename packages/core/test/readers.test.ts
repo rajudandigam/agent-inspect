@@ -1,12 +1,22 @@
+import { mkdtemp, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
   TraceReadError,
+  agentInspectJsonlReader,
   detectTraceFormat,
   openTrace,
   readTrace,
   type TraceReader,
 } from "../src/readers/index.js";
+
+const repoRoot = path.resolve(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../../..",
+);
 
 function toyReader(overrides: Partial<TraceReader> = {}): TraceReader {
   return {
@@ -207,5 +217,118 @@ describe("trace reader contract", () => {
         },
       ),
     ).rejects.toBeInstanceOf(TraceReadError);
+  });
+});
+
+describe("AgentInspect JSONL reader", () => {
+  it("detects and reads v0.1 JSONL fixtures by default", async () => {
+    const filePath = path.join(repoRoot, "fixtures/traces/minimal-success.jsonl");
+
+    const detection = await detectTraceFormat({ type: "file", path: filePath });
+    const result = await readTrace({ type: "file", path: filePath });
+
+    expect(detection).toMatchObject({
+      status: "detected",
+      format: "agent-inspect-jsonl",
+    });
+    expect(detection.candidates[0]?.description).toBe("agent-inspect-v0.1-jsonl");
+    expect(result).toMatchObject({
+      format: "agent-inspect-v0.1-jsonl",
+      sourceFiles: [filePath],
+    });
+    expect(result.events).toHaveLength(4);
+    expect(result.runs).toHaveLength(1);
+    expect(result.runs[0]?.runId).toBe("minimal-success");
+  });
+
+  it("detects and reads v0.2 JSONL fixtures by default", async () => {
+    const filePath = path.join(
+      repoRoot,
+      "fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
+    );
+
+    const detection = await detectTraceFormat({ type: "file", path: filePath });
+    const result = await openTrace({ type: "file", path: filePath });
+
+    expect(detection.candidates[0]?.description).toBe("agent-inspect-v0.2-jsonl");
+    expect(result.format).toBe("agent-inspect-v0.2-jsonl");
+    expect(result.events).toHaveLength(3);
+    expect(result.events.find((event) => event.kind === "LLM")?.tokenUsage).toEqual({
+      input: 1200,
+      output: 356,
+      total: 1556,
+      cached: 240,
+    });
+    expect(result.runs).toHaveLength(1);
+  });
+
+  it("supports buffer input", async () => {
+    const content = [
+      '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"buffer_run","name":"buffer","startTime":1}',
+      '{"schemaVersion":"0.1","event":"run_completed","timestamp":2,"runId":"buffer_run","status":"success","endTime":2,"durationMs":1}',
+    ].join("\n");
+
+    const result = await readTrace({
+      type: "buffer",
+      content: Buffer.from(content, "utf-8"),
+    });
+
+    expect(result.format).toBe("agent-inspect-v0.1-jsonl");
+    expect(result.runs[0]?.runId).toBe("buffer_run");
+  });
+
+  it("reads sorted JSONL files from a directory", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-reader-"));
+    const first = path.join(dir, "a.jsonl");
+    const second = path.join(dir, "b.jsonl");
+    await writeFile(
+      second,
+      '{"schemaVersion":"0.1","event":"run_completed","timestamp":2,"runId":"dir_run","status":"success","endTime":2,"durationMs":1}\n',
+      "utf-8",
+    );
+    await writeFile(
+      first,
+      '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"dir_run","name":"dir","startTime":1}\n',
+      "utf-8",
+    );
+
+    const result = await readTrace({ type: "directory", path: dir });
+
+    expect(result.sourceFiles).toEqual([first, second]);
+    expect(result.runs[0]?.runId).toBe("dir_run");
+  });
+
+  it("does not silently accept arbitrary JSON", async () => {
+    const detection = await detectTraceFormat({
+      type: "string",
+      content: '{"hello":"world"}',
+    });
+
+    expect(detection).toEqual({
+      status: "unsupported",
+      candidates: [],
+      warnings: [],
+    });
+    await expect(
+      readTrace({ type: "string", content: '{"hello":"world"}' }),
+    ).rejects.toMatchObject({
+      code: "unsupported_format",
+    });
+  });
+
+  it("allows explicit AgentInspect reader selection", async () => {
+    const result = await readTrace(
+      {
+        type: "string",
+        content:
+          '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"override","name":"override","startTime":1}',
+      },
+      {
+        format: agentInspectJsonlReader.format,
+      },
+    );
+
+    expect(result.events).toHaveLength(1);
+    expect(result.format).toBe("agent-inspect-v0.1-jsonl");
   });
 });

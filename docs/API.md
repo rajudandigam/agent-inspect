@@ -261,7 +261,7 @@ These APIs are experimental during v1.x. They do not add a default network write
 
 ## 16. Experimental trace readers (v1.6 planning)
 
-`agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. This chunk defines the contract and custom-reader dispatch. Built-in AgentInspect, OpenInference, and OTLP readers are added progressively in later v1.6 chunks.
+`agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. It includes the default AgentInspect JSONL reader for v0.1, v0.2, and mixed local trace files. OpenInference and OTLP readers are added progressively in later v1.6 chunks.
 
 Import from `agent-inspect/readers`:
 
@@ -279,6 +279,7 @@ import type { TraceReader } from "agent-inspect/readers";
 - **`detectTraceFormat(input, { readers?, format? })`**: deterministic, conservative format detection. Explicit `format` acts as an override only when a matching reader is registered.
 - **`readTrace(input, { readers?, format? })`**: detects a reader and returns `TraceReadResult`; unsupported or ambiguous input throws `TraceReadError`.
 - **`openTrace(input, options?)`**: alias for `readTrace()` for the future universal open workflow.
+- **`agentInspectJsonlReader`** / **`DEFAULT_TRACE_READERS`**: built-in local AgentInspect JSONL reader registry used when no custom `readers` array is supplied.
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
 

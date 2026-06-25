@@ -19,9 +19,10 @@ completedChunks:
   - "v1.6 runtime inspector contract"
   - "v1.6 createInspector API"
   - "v1.6 reader abstraction"
-currentChunk: "v1.6 consolidated v0.1/v0.2 readers"
+  - "v1.6 consolidated v0.1/v0.2 readers"
+currentChunk: "v1.6 OpenInference reader"
 pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Proceed to the consolidated v0.1/v0.2 readers chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
+nextAction: "Proceed to the OpenInference reader chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-25"
 ```

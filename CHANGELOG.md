@@ -10,6 +10,7 @@ Internal corrective and roadmap-planning work on `main`. No package version, cha
 - Added experimental `createInspectorRuntime()` as the low-level instance-scoped runtime foundation.
 - Added experimental `createInspector()` public instance API for isolated local tracing with explicit writers.
 - Added experimental `agent-inspect/readers` subpath with the `TraceReader` contract, deterministic format detection, `readTrace()`, and `openTrace()` for future local ingestion readers.
+- Added the default AgentInspect JSONL reader behind `readTrace()` / `openTrace()` for v0.1, v0.2, and mixed local trace files.
 
 ### Fixed
 

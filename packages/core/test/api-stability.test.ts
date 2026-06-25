@@ -49,6 +49,8 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.openTrace).toBe("function");
     expect(typeof core.readTrace).toBe("function");
     expect(typeof core.TraceReadError).toBe("function");
+    expect(typeof core.agentInspectJsonlReader).toBe("object");
+    expect(Array.isArray(core.DEFAULT_TRACE_READERS)).toBe(true);
   });
 
   it("key exported types remain available to typecheck", () => {
