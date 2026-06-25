@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.5.1
+## Unreleased
 
-Draft — not yet released.
+Internal corrective and roadmap-planning work on `main`. No package version, changeset, tag, or publish is implied until maintainers explicitly confirm the next minor release.
 
 ### Fixed
 
@@ -18,6 +18,7 @@ Draft — not yet released.
 - Manual trace writing remains `schemaVersion: "0.1"`.
 - v0.2 remains an experimental persisted-event foundation and dual-read input format, not the default writer.
 - No provider pricing, token counting, cost engine, vendor upload, version bump, changeset, tag, or publish is included in the implementation commits.
+- Routine corrective work is accumulated into the next minor release by default rather than published as a patch.
 
 ## 1.5.0
 

@@ -5,20 +5,26 @@
 ```yaml
 baselineVersion: "1.5.0"
 publishedVersion: "1.5.0"
-currentTrain: "v1.5.1"
-trainStatus: "ready_for_review"
+currentTrain: "v1.6.0"
+trainStatus: "planning"
 branch: "main"
-lastValidationLevel: "release-readiness"
-completedChunks: [1, 2, 3, 4]
-currentChunk: null
-pendingManualGate: "Gate C maintainer review"
-nextAction: "Review the complete v1.5.1 patch train; only after explicit Gate D authorization create a changeset/version bump/publish/tag; do not start v1.6"
+lastValidationLevel: "docs"
+completedChunks:
+  - "v1.5-internal-corrections"
+  - "canonical-roadmap-reset"
+currentChunk: "v1.6 architecture RFCs"
+pendingManualGate: "manual release confirmation before any changeset/version/publish"
+nextAction: "Proceed chunk by chunk on v1.6 planning/runtime foundation; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```
 
-**Active patch plan:** [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md)
+**Active roadmap:** [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md)
 
-**Future canonical input (inactive until v1.5.1 publication):** [CANONICAL-ROADMAP-V1.6-TO-V3.md](./CANONICAL-ROADMAP-V1.6-TO-V3.md)
+**Architecture RFC index:** [../proposals/README.md](../proposals/README.md)
+
+**Completed internal corrective plan:** [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md)
+
+**Canonical source archive:** [CANONICAL-ROADMAP-V1.6-TO-V3.md](./CANONICAL-ROADMAP-V1.6-TO-V3.md)
 
 **Historical program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md)

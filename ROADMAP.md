@@ -61,7 +61,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.5.1 corrective patch train** — active maintainer work after the v1.5.0 publication. Scope is limited to post-release correctness, safety, and documentation fixes: CLI version reporting, dual-format metadata parity, whole-report redaction, normalization fidelity, token usage vocabulary completion, and release-readiness evidence. v1.6.0 has **not** started.
+**Canonical roadmap reset + v1.6 planning** — v1.5.0 is published, and the internal v1.5 corrective fixes are complete on `main`. Routine corrective work will be accumulated into the next minor release rather than published as a patch unless maintainers explicitly authorize an emergency patch.
+
+The next minor train is **v1.6.0 runtime foundation and universal trace ingestion**: inspector instances, trace writers, trace readers, local OpenInference/OTLP ingestion, and `agent-inspect open`. See [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -69,7 +71,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.5.1 patch train** | Correct v1.5.0 post-release defects before any v1.6.0 work — see [V1.5.1-PATCH-PLAN.md](docs/implementation/release-trains/V1.5.1-PATCH-PLAN.md). |
+| **v1.6.0 planning** | Runtime/read/write architecture RFCs before implementation — see [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md) and [proposals](docs/proposals/README.md). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
@@ -85,10 +87,10 @@ Published sequence after **v1.5.0** — directional, not delivery guarantees.
 
 | Release | Area | Intent |
 | ------- | ---- | ------ |
-| **v1.6.0** | Vercel AI SDK | `@agent-inspect/ai-sdk` optional callback-style adapter (metadata-first, no vendor sink). Track [#30](https://github.com/rajudandigam/agent-inspect/issues/30). |
-| **v1.7.0** | Framework adapters | OpenAI Agents, Mastra, LangGraph — extend langchain patterns first. |
-| **v1.8.0** | CI reporters + cohort | `@agent-inspect/vitest`, `@agent-inspect/jest`; local `cohort`, `check`, `assert` helpers ([#24](https://github.com/rajudandigam/agent-inspect/issues/24), [#28](https://github.com/rajudandigam/agent-inspect/issues/28)). |
-| **v1.9.0** | Standards hardening | OpenInference / conformance fixtures ([#25](https://github.com/rajudandigam/agent-inspect/issues/25)). |
+| **v1.6.0** | Runtime foundation + universal ingestion | `createInspector`, trace writers/readers, OpenInference/OTLP local readers, universal `open`. |
+| **v1.7.0** | Framework adapters | AI SDK, OpenAI Agents, LangGraph — after v1.6 reader/writer foundation. |
+| **v1.8.0** | CI reporters + deterministic checks | `@agent-inspect/vitest`, `@agent-inspect/jest`; local `cohort`, `check`, `assert` helpers ([#24](https://github.com/rajudandigam/agent-inspect/issues/24), [#28](https://github.com/rajudandigam/agent-inspect/issues/28)). |
+| **v1.9.0** | Standards hardening + v2 freeze | OpenInference / OTLP conformance fixtures and schema 1.0 freeze ([#25](https://github.com/rajudandigam/agent-inspect/issues/25)). |
 
 ---
 
@@ -121,7 +123,7 @@ AgentInspect **complements** LangSmith, Langfuse, Braintrust, Phoenix/OpenInfere
 
 ## Maintainer release trains
 
-Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** by grouping work into trains. Do not version bump or publish per chunk.
+Maintainers ship **small validated chunks** but publish **fewer npm releases** by grouping work into trains. Do not version bump or publish per chunk.
 
 | Train | Status | Guide |
 | ----- | ------ | ----- |
@@ -129,7 +131,8 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 | **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
 | **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
 | **v1.5.0** — API boundary, what/report, dual-format read | **Released** 2026-06-24 | [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) |
-| **v1.5.1** — Corrective patch | **In progress (planning/validation)** | [V1.5.1-PATCH-PLAN.md](docs/implementation/release-trains/V1.5.1-PATCH-PLAN.md) |
+| **v1.5 corrective train** — internal fixes after v1.5.0 | **Complete on main; not a publish target by default** | [V1.5.1-RELEASE-READINESS.md](docs/implementation/V1.5.1-RELEASE-READINESS.md) |
+| **v1.6.0** — Runtime foundation + universal ingestion | **Planning** | [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

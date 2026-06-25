@@ -3,7 +3,7 @@
 How maintainers use Codex/Cursor-style maintainer sessions to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.
 
 **Audience:** Repository maintainers and maintainer-owned AI coding sessions.
-**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Execution program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
+**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Active roadmap:** [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
 **Design:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md)
 **Historical/private notes:** `docs-local/` (if present) — not required for contributors.
 
@@ -72,11 +72,13 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 
 ## 4. Current and next release trains
 
-Trains are **directional** — not delivery guarantees. Canonical ordering: [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
+Trains are **directional** — not delivery guarantees. Canonical ordering after v1.5.0 is [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
 
 **Published baseline:** v1.5.0 — [V1.5.0-RELEASE-READINESS.md](./V1.5.0-RELEASE-READINESS.md) · [V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
 
-**Current train:** v1.5.1 corrective patch — [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md)
+**Completed internal corrective train:** v1.5 corrective work — [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md). This is complete on `main` and is not a publish target by default.
+
+**Current train:** v1.6.0 runtime foundation and universal ingestion — [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md)
 
 Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones inside v1.5.0**, not separate npm releases.
 
@@ -102,12 +104,17 @@ Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milesto
 
 **Out of scope:** v1.6 implementation, changesets, version bumps, tags, publish, provider pricing, and default network behavior.
 
-### v1.6.0 — Vercel AI SDK
+### v1.6.0 — Runtime foundation and universal ingestion
 
-- `@agent-inspect/ai-sdk` optional adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30))
+- experimental inspector runtime;
+- trace writer contract;
+- trace reader contract;
+- OpenInference and OTLP JSON local readers;
+- universal `agent-inspect open`.
 
 ### v1.7.0 — Framework adapters
 
+- `@agent-inspect/ai-sdk` optional adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30))
 - OpenAI Agents, Mastra, LangGraph (extend `@agent-inspect/langchain` patterns first)
 
 ### v1.8.0 — Reporters + cohort

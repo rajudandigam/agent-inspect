@@ -1,7 +1,7 @@
 # Roadmap execution program — v1.5.0 through v2.0.0
 
 **Audience:** Repository maintainers and Cursor sessions executing maintainer-owned release trains.  
-**Status:** Active program document (created at v1.4.0 baseline).  
+**Status:** Historical program document. Superseded after v1.5.0 by [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md).
 **Companion:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md) (operational pointer only) · [CURSOR-MAINTAINER-ROADMAP.md](./CURSOR-MAINTAINER-ROADMAP.md) · public [ROADMAP.md](../../ROADMAP.md)
 
 ---
@@ -49,7 +49,7 @@ When documents disagree, resolve in this order:
 
 ---
 
-## 3. Baseline — v1.4.0 capability inventory
+## 3. Historical baseline — v1.4.0 capability inventory
 
 **Published baseline (2026-06-12):**
 
@@ -86,13 +86,13 @@ When documents disagree, resolve in this order:
 
 ## 4. Published release sequence
 
-Trains ship in order. Do not start train N+1 until train N is published and post-release verification passes.
+This historical sequence is superseded for post-v1.5.0 work. Current ordering lives in [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md). Trains still ship in order and publish only after explicit maintainer release confirmation.
 
 | Release | Primary scope |
 |---------|---------------|
 | **v1.5.0** | API subpath boundary, trace vocabulary RFC, `what`/`report`, canonical dual-format read path, token metadata on persisted events |
-| **v1.6.0** | `@agent-inspect/ai-sdk` adapter |
-| **v1.7.0** | Framework adapters: OpenAI Agents, Mastra, LangGraph (extend langchain patterns first) |
+| **v1.6.0** | Superseded: runtime foundation and universal trace ingestion now come before adapters |
+| **v1.7.0** | Framework adapters: AI SDK, OpenAI Agents, Mastra, LangGraph (extend langchain patterns first) |
 | **(conditional)** | Explain experiment — no version until maintainer approves scope |
 | **v1.8.0** | `@agent-inspect/vitest`, `@agent-inspect/jest` reporters; `cohort`, `check`, `assert` |
 | **v1.9.0** | Standards hardening (OpenInference / conformance fixtures) |

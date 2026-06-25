@@ -39,6 +39,10 @@ See [SECURITY.md](../SECURITY.md) and [LIMITATIONS.md](./LIMITATIONS.md).
 
 See [ADAPTERS.md](./ADAPTERS.md).
 
+### Architecture proposals
+
+Maintainer-owned RFCs and planning proposals are indexed in [proposals/README.md](./proposals/README.md). The active post-v1.5 roadmap is [implementation/ROADMAP-V1.6-TO-V3.md](./implementation/ROADMAP-V1.6-TO-V3.md).
+
 ### Where to read next
 
 - New users: [GETTING-STARTED.md](./GETTING-STARTED.md)

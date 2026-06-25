@@ -208,6 +208,8 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
+**Planning after 1.5.0:** v1.6 focuses on runtime foundation and universal local trace ingestion before new framework adapters. See [ROADMAP.md](ROADMAP.md).
+
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
 **Shipped in 1.3.0:** correlation metadata; redaction profiles (`local` / `share` / `strict`); `export --redaction-profile`; LangChain `stream: true` metadata (chunk counts, duration — no full token capture by default).
