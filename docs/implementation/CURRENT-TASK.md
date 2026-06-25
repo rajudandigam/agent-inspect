@@ -4,46 +4,45 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "H2-experimental-api-boundary-cleanup"
+chunk: "H3-reader-fidelity-resolved-input-detection-policy"
 status: "ready"
-dependsOn: "H1-persisted-event-safety"
+dependsOn: "H2-experimental-api-boundary-cleanup"
 ```
 
 ## Goal
 
-Tighten the experimental runtime API boundary so v1.6 does not publish misleading options or unnecessary root surface while preserving already published imports and 1.x compatibility.
+Harden the trace reader foundation before adding external formats by resolving input once, preserving native v0.2 fidelity, and making detection priority/ambiguity deterministic.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — H2 only
-- `docs/proposals/INSPECTOR-RUNTIME.md`
-- `packages/core/src/inspector.ts`
-- `packages/core/src/inspector-runtime.ts`
-- `packages/core/src/index.ts`
-- `packages/core/src/entries/advanced.ts`
-- `packages/core/src/entries/writers.ts`
-- related API/export/smoke tests only
+- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — H3 only
+- `docs/proposals/TRACE-READER.md`
+- `packages/core/src/readers/index.ts`
+- `packages/core/src/read-trace.ts`
+- directly related reader tests and fixtures only
 
 ## In scope
 
-1. Decide whether to remove or implement `capture` on `createInspector`.
-2. Remove or clearly define `traceDir` and `silent` on `createInspector`.
-3. Prefer writer-owned output configuration.
-4. Expose diagnostics without requiring broad public runtime access.
-5. Move low-level runtime symbols to `/advanced` if needed.
-6. Keep writers/readers on their subpaths.
-7. Minimize new root exports while preserving already published APIs.
-8. Update API/export/smoke tests and docs only where behavior changes.
-9. Update release-train state and prepare the next task.
+1. Resolve file/buffer/string/stdin input once before reader detection.
+2. Preserve native v0.2 rows in mixed inputs.
+3. Convert only v0.1 rows where conversion is required.
+4. Retain source identity, confidence, trace/span context, unknown attributes, and ordering.
+5. Define deterministic reader priority.
+6. Define minimum confidence and close-candidate ambiguity behavior.
+7. Apply input-size limits.
+8. Attach source-file/line warnings where possible.
+9. Avoid repeated full file reads.
+10. Update release-train state and prepare the next task.
 
 ## Out of scope
 
 - OpenInference reader
 - OTLP reader
 - `agent-inspect open`
-- reader input refactor (H3)
+- shared external reader integration
+- recipe/documentation expansion beyond reader behavior changes
 - public schema changes
 - dependency additions
 - network behavior
@@ -51,23 +50,22 @@ Tighten the experimental runtime API boundary so v1.6 does not publish misleadin
 
 ## Acceptance criteria
 
-- No existing published import breaks.
-- Root API remains as small as compatibility permits.
-- Experimental runtime APIs do not expose nonfunctional options without documentation or implementation.
-- Writer-owned output configuration remains the preferred persistence path.
-- ESM, CJS, declarations, package smoke, and subpath stability remain valid.
-- No new dependency or network path.
+- Existing v0.1 and v0.2 local traces remain readable.
+- Mixed v0.1/v0.2 input preserves native v0.2 rows and converts only v0.1 rows.
+- Reader detection is deterministic and warning-rich for ambiguity.
+- Input resolution happens once per public read/detect operation.
+- Unsupported and oversized input fails conservatively with structured errors/warnings.
+- No OpenInference, OTLP, CLI `open`, dependency, network, or schema changes.
 
 ## Focused validation
 
 ```bash
 pnpm exec vitest run \
-  packages/core/test/api-stability.test.ts \
-  packages/core/test/subpath-exports.test.ts \
-  packages/core/test/package-exports-compat.test.ts \
-  packages/core/test/package-smoke.test.ts \
-  packages/core/test/inspector.test.ts \
-  packages/core/test/inspector-runtime.test.ts
+  packages/core/test/readers.test.ts \
+  packages/core/test/read-trace.test.ts \
+  packages/core/test/persisted/to-trace-event.test.ts \
+  packages/core/test/migration/v0.1-trace-compat.test.ts \
+  packages/core/test/migration/v0.2-local-inspection-compat.test.ts
 ```
 
 ## Chunk gate
@@ -88,9 +86,9 @@ Run `pnpm compat:smoke` and `npm pack --dry-run` only when exports/package conte
 ## Proposed commit
 
 ```text
-refactor: tighten experimental runtime API boundaries
+refactor: harden trace reader input and fidelity
 ```
 
 ## Stop condition
 
-Stop after H2 implementation, validation, state/task updates, and final report. Do not commit, push, version, tag, publish, create a changeset, or start H3.
+Stop after H3 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start external reader chunks until H3 is pushed.

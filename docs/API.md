@@ -227,7 +227,7 @@ No network writer or vendor sink exists in this package.
 
 ## 15. Experimental inspector API/runtime (v1.6 planning)
 
-`createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes deterministic `flush()`/`close()` lifecycle hooks.
+`createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
 
 Import from `agent-inspect/advanced`:
 
@@ -236,7 +236,10 @@ import { createInspector } from "agent-inspect/advanced";
 import { memoryWriter } from "agent-inspect/writers";
 
 const writer = memoryWriter();
-const inspector = createInspector({ writer });
+const inspector = createInspector({
+  writer,
+  capture: { onSuccess: "metadata-only", onError: "metadata-only" },
+});
 
 await inspector.run("support-agent", async () => {
   await inspector.step("plan", async () => "ok");
@@ -253,9 +256,14 @@ Public methods:
 - **`step(name, fn, options?)`**: writes nested step lifecycle events when called inside the same inspector's run context; outside a context it passes through.
 - **`tool(name, fn, options?)`** / **`llm(name, fn, options?)`**: convenience wrappers that set `type` and metadata.
 - **`observe(name, fn, options?)`**: returns an async wrapper that records the function call as an inspector step.
+- **`getDiagnostics()`**: returns instrumentation error counts and writer stats without requiring direct runtime access.
 - **`flush()`** / **`close()`**: delegate to the configured writer through the runtime.
 
-`createInspectorRuntime()` is also available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()`.
+`capture` is explicit and metadata-only. `onSuccess: "metadata-only"` records safe type/length/key-count summaries in `outputSummary`; `onError: "metadata-only"` records thrown-value type/name summaries. It does not store raw return values, prompts, outputs, or thrown objects. Use `"none"` to disable a capture side.
+
+`traceDir` and `silent` on `createInspector()` are context metadata for compatibility with existing helpers. They do not configure persistence or terminal output. Prefer writer-owned output configuration such as `fileWriter({ dir })` or `fileWriter({ filePath })`.
+
+`createInspectorRuntime()` is also available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()` and `inspector.getDiagnostics()`. Root exports for the runtime remain available for 1.x compatibility, but new advanced usage should import from `agent-inspect/advanced`.
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 

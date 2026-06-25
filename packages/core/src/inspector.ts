@@ -27,10 +27,28 @@ export interface InspectorCaptureOptions {
 export interface CreateInspectorOptions {
   enabled?: boolean;
   writer?: TraceWriter;
+  /**
+   * Context metadata only. Does not configure writer output; use
+   * `fileWriter({ dir })` or another explicit writer for persistence paths.
+   *
+   * @experimental
+   */
   traceDir?: string;
+  /**
+   * Context metadata only for compatibility with existing terminal helpers.
+   * `createInspector()` does not print lifecycle output.
+   *
+   * @experimental
+   */
   silent?: boolean;
   metadata?: Record<string, unknown>;
   redactionProfile?: RedactionProfile;
+  /**
+   * Metadata-only summaries for persisted run/step completion rows.
+   * This never stores raw return values, prompts, outputs, or thrown objects.
+   *
+   * @experimental
+   */
   capture?: InspectorCaptureOptions;
   traceSafety?: TraceSafetyOptions;
 }
@@ -50,6 +68,12 @@ export interface InspectorStepOptions {
 export type InspectorObserveOptions = InspectorStepOptions;
 
 export interface Inspector {
+  /**
+   * Low-level runtime access is retained for v1.6 compatibility. Prefer
+   * `getDiagnostics()` unless you need advanced runtime context primitives.
+   *
+   * @experimental
+   */
   readonly runtime: InspectorRuntime;
   run<T>(
     name: string,
@@ -76,6 +100,7 @@ export interface Inspector {
     fn: TFunction,
     options?: InspectorObserveOptions,
   ): (...args: Parameters<TFunction>) => Promise<Awaited<ReturnType<TFunction>>>;
+  getDiagnostics(): ReturnType<InspectorRuntime["getDiagnostics"]>;
   flush(): Promise<void>;
   close(): Promise<void>;
 }
@@ -115,6 +140,45 @@ function toPersistedError(error: unknown): PersistedInspectError {
     return { message: error };
   }
   return { message: "Unknown error" };
+}
+
+function summarizeValue(value: unknown): Record<string, unknown> {
+  if (value === null) return { type: "null" };
+  if (Array.isArray(value)) return { type: "array", length: value.length };
+
+  if (typeof value === "string") return { type: "string", length: value.length };
+  if (typeof value === "number") {
+    return { type: "number", finite: Number.isFinite(value) };
+  }
+  if (typeof value === "bigint") return { type: "bigint" };
+  if (typeof value === "boolean") return { type: "boolean" };
+  if (typeof value === "undefined") return { type: "undefined" };
+  if (typeof value === "symbol") return { type: "symbol" };
+  if (typeof value === "function") {
+    return { type: "function", name: value.name || undefined };
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    let keyCount: number | undefined;
+    try {
+      keyCount = Object.keys(record).length;
+    } catch {
+      keyCount = undefined;
+    }
+    return {
+      type: "object",
+      constructorName: value?.constructor?.name,
+      ...(keyCount !== undefined ? { keyCount } : {}),
+    };
+  }
+  return { type: typeof value };
+}
+
+function summarizeCapturedError(error: unknown): Record<string, unknown> {
+  if (error instanceof Error) {
+    return { type: "error", name: error.name };
+  }
+  return summarizeValue(error);
 }
 
 function stepTypeToKind(type: StepType): InspectKind {
@@ -213,6 +277,9 @@ export function createInspector(
             confidence: "explicit",
             source: { type: "manual", name: "createInspector" },
             attributes: { legacyEvent: "run_completed" },
+            ...(options.capture?.onSuccess === "metadata-only"
+              ? { outputSummary: summarizeValue(result) }
+              : {}),
           });
           return result;
         } catch (error) {
@@ -230,6 +297,9 @@ export function createInspector(
             confidence: "explicit",
             source: { type: "manual", name: "createInspector" },
             attributes: { legacyEvent: "run_completed" },
+            ...(options.capture?.onError === "metadata-only"
+              ? { outputSummary: summarizeCapturedError(error) }
+              : {}),
             error: toPersistedError(error),
           });
           throw error;
@@ -301,6 +371,9 @@ export function createInspector(
             stepId,
             stepType,
           },
+          ...(options.capture?.onSuccess === "metadata-only"
+            ? { outputSummary: summarizeValue(result) }
+            : {}),
         });
         return result;
       } catch (error) {
@@ -322,6 +395,9 @@ export function createInspector(
             stepId,
             stepType,
           },
+          ...(options.capture?.onError === "metadata-only"
+            ? { outputSummary: summarizeCapturedError(error) }
+            : {}),
           error: toPersistedError(error),
         });
         throw error;
@@ -358,6 +434,9 @@ export function createInspector(
     observe(name, fn, observeOptions) {
       return async (...args) =>
         step(name, () => Promise.resolve(fn(...args)), observeOptions);
+    },
+    getDiagnostics() {
+      return runtime.getDiagnostics();
     },
     flush() {
       return runtime.flush();

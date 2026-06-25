@@ -164,6 +164,66 @@ describe("createInspector", () => {
     expect(Buffer.byteLength(JSON.stringify(started), "utf8")).toBeLessThanOrEqual(600);
   });
 
+  it("captures metadata-only success summaries when enabled", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      capture: { onSuccess: "metadata-only" },
+    });
+
+    const result = await inspector.run(
+      "captured-run",
+      async () => {
+        await inspector.step("captured-step", async () => ({ ok: true, secret: "value" }));
+        return ["a", "b"];
+      },
+      { runId: "run_capture_success" },
+    );
+
+    expect(result).toEqual(["a", "b"]);
+
+    const events = writer.getEvents();
+    const stepCompleted = events.find(
+      (event) => event.attributes?.legacyEvent === "step_completed",
+    );
+    const runCompleted = events.find(
+      (event) => event.eventId === "run_capture_success_completed",
+    );
+
+    expect(stepCompleted?.outputSummary).toEqual({
+      type: "object",
+      constructorName: "Object",
+      keyCount: 2,
+    });
+    expect(runCompleted?.outputSummary).toEqual({
+      type: "array",
+      length: 2,
+    });
+  });
+
+  it("omits capture summaries when capture is disabled", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      capture: { onSuccess: "none", onError: "none" },
+    });
+
+    await inspector.run(
+      "uncaptured-run",
+      async () => {
+        await inspector.step("uncaptured-step", async () => "secret-result");
+        return "secret-run";
+      },
+      { runId: "run_capture_none" },
+    );
+
+    const completed = writer.getEvents().filter(
+      (event) => event.attributes?.legacyEvent?.toString().endsWith("completed"),
+    );
+
+    expect(completed.every((event) => event.outputSummary === undefined)).toBe(true);
+  });
+
   it("isolates parallel branches and multiple inspector instances", async () => {
     const firstWriter = memoryWriter();
     const secondWriter = memoryWriter();
@@ -268,6 +328,37 @@ describe("createInspector", () => {
     });
   });
 
+  it("captures metadata-only error summaries without storing thrown objects", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      capture: { onError: "metadata-only" },
+    });
+    const appError = Object.assign(new TypeError("private message"), {
+      secret: "do-not-store",
+    });
+
+    await expect(
+      inspector.run(
+        "captured-error-run",
+        async () => {
+          throw appError;
+        },
+        { runId: "run_capture_error" },
+      ),
+    ).rejects.toBe(appError);
+
+    const completed = writer.getEvents().find(
+      (event) => event.eventId === "run_capture_error_completed",
+    );
+
+    expect(completed?.outputSummary).toEqual({
+      type: "error",
+      name: "TypeError",
+    });
+    expect(JSON.stringify(completed)).not.toContain("do-not-store");
+  });
+
   it("observes functions through inspector steps", async () => {
     const writer = memoryWriter();
     const inspector = createInspector({ writer });
@@ -316,7 +407,7 @@ describe("createInspector", () => {
     await expect(
       inspector.run("writer-fails", async () => "ok", { runId: "run_writer" }),
     ).resolves.toBe("ok");
-    expect(inspector.runtime.getDiagnostics()).toMatchObject({
+    expect(inspector.getDiagnostics()).toMatchObject({
       instrumentationErrors: 2,
       lastInstrumentationError: "writer failed",
     });
