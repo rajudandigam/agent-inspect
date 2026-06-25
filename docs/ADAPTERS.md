@@ -2,6 +2,54 @@
 
 AgentInspect is **framework-agnostic** at its core. Optional adapter packages integrate specific frameworks without monkey-patching, vendor sinks, or network upload.
 
+## Vercel AI SDK (`@agent-inspect/ai-sdk`)
+
+**Status:** experimental v1.7 train — optional workspace package; publication waits for v1.7 release readiness.
+
+### Install
+
+```bash
+npm install agent-inspect @agent-inspect/ai-sdk ai
+```
+
+### Local telemetry integration
+
+```ts
+import { generateText } from "ai";
+import { agentInspect } from "@agent-inspect/ai-sdk";
+
+const result = await generateText({
+  model,
+  prompt,
+  experimental_telemetry: {
+    isEnabled: true,
+    recordInputs: false,
+    recordOutputs: false,
+    integrations: [
+      agentInspect({
+        traceDir: "./.agent-inspect",
+        runName: "support-agent",
+        capture: "metadata-only",
+      }),
+    ],
+  },
+});
+```
+
+- **No monkey-patching** — pass the integration explicitly through AI SDK telemetry.
+- **No upload behavior** — the adapter writes only to an explicit local writer or `traceDir`.
+- **Metadata-only by default** — records model, finish reason, token usage, timing, and safe counts/summaries.
+- **Required safe telemetry settings** — set `recordInputs: false` and `recordOutputs: false` on every AI SDK call using this adapter.
+- **No raw payload capture by default** — prompts, messages, generated text, stream chunks, tool inputs/outputs, headers, request bodies, and response bodies are not persisted.
+
+### Local no-network recipe
+
+[examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-local-telemetry/) uses AI SDK test utilities only (`MockLanguageModelV3`, `simulateReadableStream`) and writes local v0.2 adapter events for `agent-inspect open`.
+
+Full API: [API.md](./API.md) §11.
+
+---
+
 ## LangChain.js (`@agent-inspect/langchain`)
 
 **Status:** experimental — programmatic API may evolve independently of stable core tracing.
@@ -135,7 +183,6 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 Direction only — see [ROADMAP.md](../ROADMAP.md):
 
-- **Vercel AI SDK** — optional callback-style adapter (metadata-first, no vendor sink)
 - **NestJS / logging bridges** — deeper recipes or helper patterns beyond [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)
 
 No automatic universal instrumentation. Integrations remain explicit and opt-in.

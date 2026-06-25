@@ -72,7 +72,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 **v1.7.0 framework-native adoption planning** — v1.6.0 is published, and the runtime/reader/writer foundation is available for optional adapter packages. The v1.7 train starts with RFC verification and docs alignment before any adapter runtime code lands.
 
-The next minor train is **v1.7.0 framework-native adoption**: AI SDK v6 telemetry integration, optional OpenAI Agents JS tracing processor evaluation, LangGraph support decisions, and adapter conformance fixtures. See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
+The next minor train is **v1.7.0 framework-native adoption**: AI SDK v6 telemetry integration, optional OpenAI Agents JS tracing processor evaluation, LangGraph support decisions, and adapter conformance fixtures. The AI SDK adapter work on main remains local-only and metadata-first, with `recordInputs: false` / `recordOutputs: false` examples and a no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -80,7 +80,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.7.0 planning** | Adapter RFC verification before implementation — see [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md), [V1.7.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md), and [AI-SDK-INTEGRATION.md](docs/proposals/AI-SDK-INTEGRATION.md). |
+| **v1.7.0 planning** | Adapter RFC verification and AI SDK local telemetry adoption — see [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md), [V1.7.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md), [AI-SDK-INTEGRATION.md](docs/proposals/AI-SDK-INTEGRATION.md), and [ai-sdk-local-telemetry](examples/recipes/ai-sdk-local-telemetry/). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 

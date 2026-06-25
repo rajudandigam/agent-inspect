@@ -58,6 +58,21 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/ai-sdk-local-telemetry:
+    dependencies:
+      '@agent-inspect/ai-sdk':
+        specifier: workspace:*
+        version: link:../../../packages/ai-sdk
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      ai:
+        specifier: ^6.0.210
+        version: 6.0.210(zod@4.4.3)
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/github-actions-artifact:
     dependencies:
       agent-inspect:

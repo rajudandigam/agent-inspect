@@ -1,0 +1,15 @@
+{
+  "name": "agent-inspect-recipe-ai-sdk-local-telemetry",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @agent-inspect/ai-sdk run build",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/ai-sdk": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "ai": "^6.0.210",
+    "tsx": "^4.19.0"
+  }
+}

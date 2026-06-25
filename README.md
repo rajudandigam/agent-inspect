@@ -210,6 +210,8 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.6.0:** experimental writer subpath (`agent-inspect/writers`), isolated `createInspector()` API via `agent-inspect/advanced`, local trace readers via `agent-inspect/readers`, OpenInference/OTLP JSON readers, universal `agent-inspect open`, and deterministic [runtime-and-ingestion recipe](examples/recipes/runtime-and-ingestion/). These remain local-only and do not add upload behavior. Linked release aligns all three npm packages at **1.6.0**.
 
+**In progress for 1.7.0 on main:** experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6 with a local no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). Examples keep `recordInputs: false`, `recordOutputs: false`, metadata-only capture, and no upload behavior.
+
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
 **Roadmap beyond current release work:** future work continues from the local runtime and universal ingestion foundation before broadening framework adapters. See [ROADMAP.md](ROADMAP.md).

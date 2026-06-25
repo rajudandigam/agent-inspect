@@ -150,7 +150,42 @@ Rationale: v1.x includes one official adapter and **zero production sinks**, so 
 
 - `runTraceViewer`, `loadTraceForTui`, `buildTuiTraceModel`, etc.
 
-## 11. Experimental persisted-event foundation (v1.2.0)
+## 11. Experimental `@agent-inspect/ai-sdk` APIs
+
+`@agent-inspect/ai-sdk` is an optional v1.7 adapter package for Vercel AI SDK v6 telemetry integrations. It is experimental during the v1.7 train and remains private until release readiness.
+
+Import from `@agent-inspect/ai-sdk`:
+
+```ts
+import { agentInspect } from "@agent-inspect/ai-sdk";
+```
+
+- **`agentInspect(options?)`**: returns an AI SDK `TelemetryIntegration` bound with `bindTelemetryIntegration()`.
+  - **`writer`**: optional explicit local `TraceWriter` for tests, recipes, and controlled runtime integration.
+  - **`traceDir`**: optional local directory that creates a file writer inside the adapter package.
+  - **`runName`**: optional local run name.
+  - **`capture`**: `"metadata-only"` (default) or `"preview"` (reserved for explicit bounded capture).
+  - **`redactionProfile`** and **`maxPreviewChars`**: reserved for bounded/redacted future preview behavior.
+  - **`getDiagnostics()`**: exposes isolated adapter write failures without throwing into AI SDK callbacks.
+
+Every AI SDK call using the adapter must keep telemetry local and metadata-only:
+
+```ts
+experimental_telemetry: {
+  isEnabled: true,
+  recordInputs: false,
+  recordOutputs: false,
+  integrations: [agentInspect({ traceDir: "./.agent-inspect" })],
+}
+```
+
+The adapter records local v0.2 persisted events for run, LLM step, and tool lifecycle metadata. By default it does not persist raw prompts, messages, generated text, stream chunks, tool inputs, tool outputs, headers, request bodies, response bodies, or user `experimental_context`.
+
+No network writer, OpenTelemetry exporter, provider wrapper, or global monkey-patch is part of this package.
+
+Recipe: [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-local-telemetry/).
+
+## 12. Experimental persisted-event foundation (v1.2.0)
 
 These helpers expose the **source-agnostic `PersistedInspectEvent` model** (`schemaVersion: "0.2"`). They are **local-only**, **in-memory**, and **do not change** storage write/read or CLI behavior in v1.2.0.
 
@@ -176,7 +211,7 @@ Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEv
 - v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
 - Inspection read paths normalize v0.1 and v0.2 JSONL for local CLI/API use. v0.2 remains experimental as a persisted-event foundation and is not the default writer.
 
-## 12. Local observability helpers (v1.4.0+)
+## 13. Local observability helpers (v1.4.0+)
 
 Read-only helpers for timeline, stats, and search over local JSONL traces. v0.1 manual traces remain the default writer; v0.2 persisted-event files are accepted where the shared dual-format read path is used. Local files only.
 
@@ -186,7 +221,7 @@ Read-only helpers for timeline, stats, and search over local JSONL traces. v0.1 
 
 CLI wrappers: `agent-inspect timeline`, `stats`, `search` — see [CLI.md](./CLI.md).
 
-## 13. Report and what helpers (v1.5.0+)
+## 14. Report and what helpers (v1.5.0+)
 
 Read-only helpers for concise inspection summaries and local reports:
 
@@ -195,7 +230,7 @@ Read-only helpers for concise inspection summaries and local reports:
 
 Report redaction profiles are key-based safeguards applied to the complete rendered report input, not only to the tree section. Review generated reports before sharing; this is not compliance-grade DLP.
 
-## 14. Experimental trace writers (v1.6)
+## 15. Experimental trace writers (v1.6)
 
 Trace writers are the first slice of the v1.6 runtime foundation. They are experimental during v1.x and intended for tests, adapters, and future `createInspector` work.
 
@@ -227,7 +262,7 @@ import type {
 
 No network writer or vendor sink exists in this package.
 
-## 15. Experimental inspector API/runtime (v1.6)
+## 16. Experimental inspector API/runtime (v1.6)
 
 `createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
 
@@ -269,7 +304,7 @@ Public methods:
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
-## 16. Experimental trace readers (v1.6)
+## 17. Experimental trace readers (v1.6)
 
 `agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. It includes AgentInspect JSONL for v0.1, v0.2, and mixed local trace files, plus local OpenInference JSON and OTLP JSON compatibility readers.
 
@@ -300,23 +335,23 @@ import type { TraceReader } from "agent-inspect/readers";
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
 
-## 17. Deprecated APIs
+## 18. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 18. Removal / deprecation policy
+## 19. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 19. Backward compatibility policy
+## 20. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 20. Examples
+## 21. Examples
 
 ### Minimal manual trace
 

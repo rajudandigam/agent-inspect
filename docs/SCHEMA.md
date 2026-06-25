@@ -239,7 +239,7 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 | `tokenUsage` | no | `{ input?, output?, total?, cached? }` when supplied/known |
 | `trace` | no | Optional `{ traceId?, spanId?, parentSpanId? }` for future OTel alignment |
 
-Programmatic helpers: see [API.md](./API.md) §11 (experimental persisted-event foundation).
+Programmatic helpers: see [API.md](./API.md) §12 (experimental persisted-event foundation).
 
 ## 15. v1.6 local reader/writer compatibility
 

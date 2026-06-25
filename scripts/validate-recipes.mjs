@@ -23,6 +23,7 @@ const RECIPES = [
   "github-actions-artifact",
   "what-report-inspect",
   "runtime-and-ingestion",
+  "ai-sdk-local-telemetry",
 ];
 
 const LOG_RECIPE_FILES = {
@@ -64,10 +65,16 @@ function assert(cond, msg) {
 
 function checkBannedImports(rel, text) {
   if (!/\.tsx?$/i.test(rel)) return;
+  const allowAiSdkFixture =
+    rel.startsWith(path.join("examples", "recipes", "ai-sdk-local-telemetry")) ||
+    rel.startsWith("examples/recipes/ai-sdk-local-telemetry/");
   FORBIDDEN_IMPORT_RE.lastIndex = 0;
   let m;
   while ((m = FORBIDDEN_IMPORT_RE.exec(text)) !== null) {
     const spec = m[1] ?? "";
+    if (allowAiSdkFixture && (spec === "ai" || spec === "ai/test")) {
+      continue;
+    }
     for (const p of BANNED_IMPORT_PREFIXES) {
       if (spec === p || spec.startsWith(`${p}/`)) {
         throw new Error(`Forbidden import in ${rel}: ${spec}`);
