@@ -1,0 +1,21 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": []
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "empty"
+          },
+          "spans": [
+            {
+              "name": "missing ids"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

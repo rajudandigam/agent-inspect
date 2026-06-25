@@ -20,5 +20,6 @@ export {
   detectTraceFormat,
   openInferenceJsonReader,
   openTrace,
+  otlpJsonReader,
   readTrace,
 } from "../readers/index.js";

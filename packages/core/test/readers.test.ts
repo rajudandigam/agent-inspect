@@ -10,6 +10,7 @@ import {
   detectTraceFormat,
   openInferenceJsonReader,
   openTrace,
+  otlpJsonReader,
   readTrace,
   type TraceReader,
 } from "../src/readers/index.js";
@@ -589,6 +590,209 @@ describe("OpenInference JSON reader", () => {
     expect(detection.candidates.map((candidate) => candidate.format)).toEqual([
       "openinference-json",
       "near-openinference-json",
+    ]);
+  });
+});
+
+describe("OTLP JSON reader", () => {
+  const basicFixture = path.join(
+    repoRoot,
+    "packages/core/test/fixtures/otlp-basic.json",
+  );
+  const malformedFixture = path.join(
+    repoRoot,
+    "packages/core/test/fixtures/otlp-malformed.json",
+  );
+
+  it("detects and reads OTLP JSON trace payload fixtures by default", async () => {
+    const detection = await detectTraceFormat({ type: "file", path: basicFixture });
+    const result = await readTrace({ type: "file", path: basicFixture });
+
+    expect(detection).toMatchObject({
+      status: "detected",
+      format: "otlp-json",
+      candidates: [
+        expect.objectContaining({
+          readerName: "OTLP JSON",
+          description: "OTLP JSON trace payload",
+        }),
+      ],
+    });
+    expect(result).toMatchObject({
+      format: "otlp-json",
+      sourceFiles: [basicFixture],
+      unsupportedFields: expect.arrayContaining([
+        "resourceSpans[0].scopeSpans[0].spans[1].attributes.gen_ai.prompt",
+        "resourceSpans[0].scopeSpans[0].spans[1].droppedEventsCount",
+        "resourceSpans[0].scopeSpans[0].spans[1].events[0].attributes.gen_ai.completion",
+      ]),
+    });
+    expect(result.events).toHaveLength(2);
+    expect(result.events[0]).toMatchObject({
+      eventId: "run-event",
+      runId: "run-otlp-basic",
+      kind: "RUN",
+      status: "ok",
+      durationMs: 5000,
+      confidence: "explicit",
+      source: {
+        type: "otel",
+        name: "agent-inspect-test-scope",
+        version: "1.6-fixture",
+      },
+      trace: {
+        traceId: "4bf92f3577b34da6a3ce929d0e0e4736",
+        spanId: "00f067aa0ba902b7",
+      },
+    });
+    expect(result.events[1]).toMatchObject({
+      eventId: "00f067aa0ba902b8",
+      runId: "4bf92f3577b34da6a3ce929d0e0e4736",
+      parentId: "run-event",
+      kind: "LLM",
+      tokenUsage: { input: 12, output: 7, total: 19 },
+      attributes: {
+        "gen_ai.prompt.summary": { type: "string", length: 18 },
+        "resource.service.name": "agent-inspect-fixture",
+        "scope.name": "agent-inspect-test-scope",
+        "otlp.events": [
+          expect.objectContaining({
+            name: "chunk",
+            attributes: expect.objectContaining({
+              "gen_ai.completion.summary": { type: "string", length: 18 },
+              "chunk.index": 1,
+            }),
+          }),
+        ],
+      },
+      trace: {
+        traceId: "4bf92f3577b34da6a3ce929d0e0e4736",
+        spanId: "00f067aa0ba902b8",
+        parentSpanId: "00f067aa0ba902b7",
+      },
+    });
+    expect(result.runs).toHaveLength(2);
+    expect(result.warnings.map((warning) => warning.code)).toEqual(
+      expect.arrayContaining([
+        "otlp_sensitive_attribute_summarized",
+        "otlp_span_field_not_mapped",
+      ]),
+    );
+    expect(JSON.stringify(result.events)).not.toContain("secret prompt text");
+    expect(JSON.stringify(result.events)).not.toContain("secret answer text");
+  });
+
+  it("supports raw OTLP error spans", async () => {
+    const content = JSON.stringify({
+      resourceSpans: [
+        {
+          scopeSpans: [
+            {
+              spans: [
+                {
+                  traceId: "trace-error",
+                  spanId: "span-error",
+                  parentSpanId: "span-parent",
+                  name: "tool",
+                  startTimeUnixNano: "1700000000000000000",
+                  endTimeUnixNano: "1700000001250000000",
+                  attributes: [
+                    {
+                      key: "gen_ai.operation.name",
+                      value: { stringValue: "execute_tool" },
+                    },
+                  ],
+                  status: {
+                    code: "STATUS_CODE_ERROR",
+                    message: "tool failed",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    const result = await readTrace({ type: "string", content });
+
+    expect(result.format).toBe("otlp-json");
+    expect(result.events).toEqual([
+      expect.objectContaining({
+        eventId: "span-error",
+        runId: "trace-error",
+        parentId: "span-parent",
+        kind: "TOOL",
+        status: "error",
+        durationMs: 1250,
+        error: { message: "tool failed" },
+      }),
+    ]);
+  });
+
+  it("rejects malformed OTLP documents with structured warnings", async () => {
+    const detection = await detectTraceFormat({
+      type: "file",
+      path: malformedFixture,
+    });
+
+    expect(detection).toMatchObject({
+      status: "detected",
+      format: "otlp-json",
+      warnings: expect.arrayContaining([
+        expect.objectContaining({
+          code: "otlp_invalid_span",
+          sourceFile: malformedFixture,
+        }),
+        expect.objectContaining({
+          code: "otlp_no_valid_spans",
+          sourceFile: malformedFixture,
+        }),
+      ]),
+    });
+    await expect(
+      readTrace({ type: "file", path: malformedFixture }),
+    ).rejects.toMatchObject({
+      code: "unsupported_format",
+      warnings: expect.arrayContaining([
+        expect.objectContaining({ code: "otlp_no_valid_spans" }),
+      ]),
+    });
+  });
+
+  it("supports explicit OTLP reader selection", async () => {
+    const content = await readFile(basicFixture, "utf-8");
+
+    const result = await readTrace(
+      { type: "string", content },
+      { format: otlpJsonReader.format },
+    );
+
+    expect(result.format).toBe("otlp-json");
+    expect(result.events.map((event) => event.trace?.spanId)).toEqual([
+      "00f067aa0ba902b7",
+      "00f067aa0ba902b8",
+    ]);
+  });
+
+  it("reports ambiguity when another reader closely matches an OTLP fixture", async () => {
+    const content = await readFile(basicFixture, "utf-8");
+    const nearReader = toyReader({
+      format: "near-otlp-json",
+      detect() {
+        return { format: "near-otlp-json", confidence: 0.9 };
+      },
+    });
+
+    const detection = await detectTraceFormat(
+      { type: "string", content },
+      { readers: [otlpJsonReader, nearReader] },
+    );
+
+    expect(detection.status).toBe("ambiguous");
+    expect(detection.candidates.map((candidate) => candidate.format)).toEqual([
+      "otlp-json",
+      "near-otlp-json",
     ]);
   });
 });

@@ -109,6 +109,23 @@ interface OpenInferenceMappedSpan {
   parentSpanId?: string;
 }
 
+interface OtlpDocument {
+  spans: OtlpSpanContext[];
+  confidence: number;
+  description: string;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+}
+
+interface OtlpSpanContext {
+  span: JsonRecord;
+  resourceAttributes: Record<string, unknown>;
+  scopeAttributes: Record<string, unknown>;
+  scopeName?: string;
+  scopeVersion?: string;
+  pathPrefix: string;
+}
+
 type JsonRecord = Record<string, unknown>;
 
 const DEFAULT_MAX_TRACE_INPUT_BYTES = 10 * 1024 * 1024;
@@ -116,6 +133,7 @@ const MIN_DETECTION_CONFIDENCE = 0.5;
 const AMBIGUOUS_CONFIDENCE_DELTA = 0.05;
 const resolvedInputCache = new WeakMap<TraceInput, Promise<ResolvedTraceInput | undefined>>();
 const OPENINFERENCE_READER_FORMAT = "openinference-json";
+const OTLP_READER_FORMAT = "otlp-json";
 
 const OPENINFERENCE_SPAN_KEYS = new Set([
   "trace_id",
@@ -153,7 +171,29 @@ const OPENINFERENCE_SENSITIVE_ATTRIBUTE_KEYS = [
   "reranker.input_documents",
   "reranker.output_documents",
   "document.content",
+  "gen_ai.prompt",
+  "gen_ai.completion",
+  "gen_ai.input.messages",
+  "gen_ai.output.messages",
 ];
+
+const OTLP_SPAN_KEYS = new Set([
+  "traceId",
+  "spanId",
+  "parentSpanId",
+  "name",
+  "kind",
+  "startTimeUnixNano",
+  "endTimeUnixNano",
+  "attributes",
+  "events",
+  "status",
+  "droppedAttributesCount",
+  "droppedEventsCount",
+  "droppedLinksCount",
+  "links",
+  "flags",
+]);
 
 export type TraceReadErrorCode =
   | "unsupported_format"
@@ -1074,6 +1114,713 @@ export const openInferenceJsonReader: TraceReader = {
   },
 };
 
+function parseOtlpAnyValue(
+  value: unknown,
+  field: string,
+  warnings: TraceReadWarning[],
+  unsupportedFields: string[],
+): unknown {
+  if (!isRecord(value)) {
+    unsupportedFields.push(field);
+    warnings.push({
+      code: "otlp_attribute_value_invalid",
+      message: "OTLP attribute value was not an AnyValue object.",
+      severity: "warning",
+      field,
+    });
+    return undefined;
+  }
+  if (typeof value.stringValue === "string") return value.stringValue;
+  if (typeof value.boolValue === "boolean") return value.boolValue;
+  if (typeof value.intValue === "number" && Number.isFinite(value.intValue)) {
+    return value.intValue;
+  }
+  if (typeof value.intValue === "string" && value.intValue.trim() !== "") {
+    const n = Number(value.intValue);
+    if (Number.isFinite(n)) return n;
+  }
+  if (
+    typeof value.doubleValue === "number" &&
+    Number.isFinite(value.doubleValue)
+  ) {
+    return value.doubleValue;
+  }
+  if (isRecord(value.arrayValue) && Array.isArray(value.arrayValue.values)) {
+    return value.arrayValue.values.map((item, index) =>
+      parseOtlpAnyValue(item, `${field}.arrayValue.values[${index}]`, warnings, unsupportedFields),
+    );
+  }
+  if (isRecord(value.kvlistValue) && Array.isArray(value.kvlistValue.values)) {
+    const out: Record<string, unknown> = {};
+    for (const [index, item] of value.kvlistValue.values.entries()) {
+      if (!isRecord(item) || typeof item.key !== "string") {
+        unsupportedFields.push(`${field}.kvlistValue.values[${index}]`);
+        continue;
+      }
+      out[item.key] = parseOtlpAnyValue(
+        item.value,
+        `${field}.kvlistValue.values[${index}].value`,
+        warnings,
+        unsupportedFields,
+      );
+    }
+    return out;
+  }
+  if (typeof value.bytesValue === "string") {
+    unsupportedFields.push(field);
+    warnings.push({
+      code: "otlp_bytes_value_summarized",
+      message: "OTLP bytesValue attribute was summarized instead of decoded.",
+      severity: "warning",
+      field,
+    });
+    return { type: "bytes", length: value.bytesValue.length };
+  }
+
+  unsupportedFields.push(field);
+  warnings.push({
+    code: "otlp_attribute_value_unsupported",
+    message: "OTLP attribute value used an unsupported AnyValue shape.",
+    severity: "warning",
+    field,
+  });
+  return undefined;
+}
+
+function parseOtlpAttributes(
+  value: unknown,
+  pathPrefix: string,
+): {
+  attributes: Record<string, unknown>;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const attributes: Record<string, unknown> = {};
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+
+  if (value === undefined) {
+    return { attributes, warnings, unsupportedFields };
+  }
+  if (!Array.isArray(value)) {
+    unsupportedFields.push(pathPrefix);
+    warnings.push({
+      code: "otlp_attributes_invalid",
+      message: "OTLP attributes field was not an array.",
+      severity: "warning",
+      field: pathPrefix,
+    });
+    return { attributes, warnings, unsupportedFields };
+  }
+
+  for (const [index, item] of value.entries()) {
+    const field = `${pathPrefix}[${index}]`;
+    if (!isRecord(item) || typeof item.key !== "string") {
+      unsupportedFields.push(field);
+      warnings.push({
+        code: "otlp_attribute_invalid",
+        message: "Skipped OTLP attribute without a string key.",
+        severity: "warning",
+        field,
+      });
+      continue;
+    }
+    const parsed = parseOtlpAnyValue(
+      item.value,
+      `${field}.value`,
+      warnings,
+      unsupportedFields,
+    );
+    if (parsed !== undefined) {
+      attributes[item.key] = parsed;
+    }
+  }
+
+  return { attributes, warnings, unsupportedFields };
+}
+
+function looksLikeOtlpSpan(value: unknown): value is JsonRecord {
+  return (
+    isRecord(value) &&
+    readStringField(value, ["traceId"]) !== undefined &&
+    readStringField(value, ["spanId"]) !== undefined &&
+    readStringField(value, ["name"]) !== undefined
+  );
+}
+
+function extractOtlpDocument(root: unknown): OtlpDocument | undefined {
+  if (!isRecord(root) || !Array.isArray(root.resourceSpans)) return undefined;
+
+  const spans: OtlpSpanContext[] = [];
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+
+  for (const [resourceIndex, resourceSpan] of root.resourceSpans.entries()) {
+    const resourcePath = `resourceSpans[${resourceIndex}]`;
+    if (!isRecord(resourceSpan)) {
+      unsupportedFields.push(resourcePath);
+      continue;
+    }
+
+    const resource = readRecordField(resourceSpan, "resource");
+    const resourceParsed = parseOtlpAttributes(
+      resource?.attributes,
+      `${resourcePath}.resource.attributes`,
+    );
+    warnings.push(...resourceParsed.warnings);
+    unsupportedFields.push(...resourceParsed.unsupportedFields);
+
+    if (!Array.isArray(resourceSpan.scopeSpans)) {
+      unsupportedFields.push(`${resourcePath}.scopeSpans`);
+      warnings.push({
+        code: "otlp_scope_spans_missing",
+        message: "OTLP resourceSpans entry did not contain a scopeSpans array.",
+        severity: "warning",
+        field: `${resourcePath}.scopeSpans`,
+      });
+      continue;
+    }
+
+    for (const [scopeIndex, scopeSpan] of resourceSpan.scopeSpans.entries()) {
+      const scopePath = `${resourcePath}.scopeSpans[${scopeIndex}]`;
+      if (!isRecord(scopeSpan)) {
+        unsupportedFields.push(scopePath);
+        continue;
+      }
+      const scope = readRecordField(scopeSpan, "scope");
+      const scopeParsed = parseOtlpAttributes(
+        scope?.attributes,
+        `${scopePath}.scope.attributes`,
+      );
+      warnings.push(...scopeParsed.warnings);
+      unsupportedFields.push(...scopeParsed.unsupportedFields);
+      if (!Array.isArray(scopeSpan.spans)) {
+        unsupportedFields.push(`${scopePath}.spans`);
+        warnings.push({
+          code: "otlp_spans_missing",
+          message: "OTLP scopeSpans entry did not contain a spans array.",
+          severity: "warning",
+          field: `${scopePath}.spans`,
+        });
+        continue;
+      }
+
+      for (const [spanIndex, span] of scopeSpan.spans.entries()) {
+        const spanPath = `${scopePath}.spans[${spanIndex}]`;
+        if (!looksLikeOtlpSpan(span)) {
+          unsupportedFields.push(spanPath);
+          warnings.push({
+            code: "otlp_invalid_span",
+            message: "Skipped OTLP span without required traceId, spanId, or name.",
+            severity: "warning",
+            field: spanPath,
+          });
+          continue;
+        }
+        spans.push({
+          span,
+          resourceAttributes: resourceParsed.attributes,
+          scopeAttributes: scopeParsed.attributes,
+          scopeName: readStringField(scope ?? {}, ["name"]),
+          scopeVersion: readStringField(scope ?? {}, ["version"]),
+          pathPrefix: spanPath,
+        });
+      }
+    }
+  }
+
+  if (spans.length === 0) {
+    warnings.push({
+      code: "otlp_no_valid_spans",
+      message: "OTLP JSON payload did not contain any valid spans.",
+      severity: "error",
+    });
+    return {
+      spans,
+      confidence: 0.7,
+      description: "Malformed OTLP JSON trace payload",
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  return {
+    spans,
+    confidence: 0.93,
+    description: "OTLP JSON trace payload",
+    warnings,
+    unsupportedFields,
+  };
+}
+
+function mapOtlpStatus(status: unknown): PersistedEventStatus | undefined {
+  if (!isRecord(status)) return undefined;
+  const rawCode = status.code;
+  if (typeof rawCode !== "string") return undefined;
+  switch (rawCode.toUpperCase()) {
+    case "STATUS_CODE_OK":
+    case "OK":
+      return "ok";
+    case "STATUS_CODE_ERROR":
+    case "ERROR":
+      return "error";
+    case "STATUS_CODE_UNSET":
+    case "UNSET":
+      return "unknown";
+    default:
+      return "unknown";
+  }
+}
+
+function readOtlpKind(
+  attributes: JsonRecord,
+  pathPrefix: string,
+): { kind: PersistedInspectEvent["kind"]; warnings: TraceReadWarning[] } {
+  const warnings: TraceReadWarning[] = [];
+  const agentInspectKind = attributes["agent_inspect.kind"];
+  if (
+    agentInspectKind === "RUN" ||
+    agentInspectKind === "AGENT" ||
+    agentInspectKind === "LLM" ||
+    agentInspectKind === "TOOL" ||
+    agentInspectKind === "CHAIN" ||
+    agentInspectKind === "RETRIEVER" ||
+    agentInspectKind === "DECISION" ||
+    agentInspectKind === "RESULT" ||
+    agentInspectKind === "ERROR" ||
+    agentInspectKind === "LOGIC" ||
+    agentInspectKind === "LOG"
+  ) {
+    return { kind: agentInspectKind, warnings };
+  }
+
+  const operation = attributes["gen_ai.operation.name"];
+  if (typeof operation === "string") {
+    switch (operation) {
+      case "generate_content":
+      case "chat":
+        return { kind: "LLM", warnings };
+      case "execute_tool":
+        return { kind: "TOOL", warnings };
+      case "invoke_agent":
+        return { kind: "AGENT", warnings };
+      default:
+        warnings.push({
+          code: "otlp_gen_ai_operation_semantic_loss",
+          message: `OTLP GenAI operation "${operation}" mapped to AgentInspect LOGIC.`,
+          severity: "warning",
+          field: `${pathPrefix}.attributes.gen_ai.operation.name`,
+        });
+        return { kind: "LOGIC", warnings };
+    }
+  }
+
+  warnings.push({
+    code: "otlp_kind_unknown",
+    message: "OTLP span had no AgentInspect kind or GenAI operation; mapped to LOGIC.",
+    severity: "warning",
+    field: `${pathPrefix}.attributes`,
+  });
+  return { kind: "LOGIC", warnings };
+}
+
+function readOtlpTokenUsage(attributes: JsonRecord): PersistedTokenUsage | undefined {
+  const input = attributes["gen_ai.usage.input_tokens"];
+  const output = attributes["gen_ai.usage.output_tokens"];
+  const usage: PersistedTokenUsage = {};
+  if (typeof input === "number" && Number.isFinite(input) && input >= 0) {
+    usage.input = input;
+  }
+  if (typeof output === "number" && Number.isFinite(output) && output >= 0) {
+    usage.output = output;
+  }
+  if (usage.input !== undefined && usage.output !== undefined) {
+    usage.total = usage.input + usage.output;
+  }
+  return Object.keys(usage).length > 0 ? usage : undefined;
+}
+
+function readOtlpConfidence(
+  attributes: JsonRecord,
+): PersistedInspectEvent["confidence"] {
+  return readOpenInferenceConfidence(attributes);
+}
+
+function sanitizeOtlpAttributes(
+  attributes: JsonRecord,
+  pathPrefix: string,
+): {
+  attributes: Record<string, unknown>;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const ownerPath = pathPrefix.endsWith(".attributes")
+    ? pathPrefix.slice(0, -".attributes".length)
+    : pathPrefix;
+  const sanitized = sanitizeOpenInferenceAttributes(attributes, ownerPath);
+  return {
+    ...sanitized,
+    warnings: sanitized.warnings.map((warning) =>
+      warning.code === "openinference_sensitive_attribute_summarized"
+        ? {
+            ...warning,
+            code: "otlp_sensitive_attribute_summarized",
+            message:
+              "OTLP prompt/output/document attribute(s) were summarized instead of copied verbatim.",
+          }
+        : warning,
+    ),
+  };
+}
+
+function mapOtlpEvents(
+  value: unknown,
+  pathPrefix: string,
+): {
+  events?: Record<string, unknown>[];
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+  if (value === undefined) return { warnings, unsupportedFields };
+  if (!Array.isArray(value)) {
+    unsupportedFields.push(pathPrefix);
+    warnings.push({
+      code: "otlp_events_invalid",
+      message: "OTLP events field was not an array.",
+      severity: "warning",
+      field: pathPrefix,
+    });
+    return { warnings, unsupportedFields };
+  }
+
+  const events: Record<string, unknown>[] = [];
+  for (const [index, event] of value.entries()) {
+    const eventPath = `${pathPrefix}[${index}]`;
+    if (!isRecord(event)) {
+      unsupportedFields.push(eventPath);
+      continue;
+    }
+    const parsedAttributes = parseOtlpAttributes(
+      event.attributes,
+      `${eventPath}.attributes`,
+    );
+    warnings.push(...parsedAttributes.warnings);
+    unsupportedFields.push(...parsedAttributes.unsupportedFields);
+    const sanitized = sanitizeOtlpAttributes(
+      parsedAttributes.attributes,
+      `${eventPath}.attributes`,
+    );
+    warnings.push(...sanitized.warnings);
+    unsupportedFields.push(...sanitized.unsupportedFields);
+
+    const out: Record<string, unknown> = {};
+    const name = readStringField(event, ["name"]);
+    if (name !== undefined) {
+      out.name = name;
+    }
+    const timestamp = parseUnixNanoToIso(event.timeUnixNano);
+    if (timestamp !== undefined) {
+      out.timestamp = timestamp;
+    } else if (event.timeUnixNano !== undefined) {
+      unsupportedFields.push(`${eventPath}.timeUnixNano`);
+      warnings.push({
+        code: "otlp_event_timestamp_invalid",
+        message: "OTLP event timeUnixNano could not be parsed.",
+        severity: "warning",
+        field: `${eventPath}.timeUnixNano`,
+      });
+    }
+    if (Object.keys(sanitized.attributes).length > 0) {
+      out.attributes = sanitized.attributes;
+    }
+    events.push(out);
+  }
+
+  return {
+    events: events.length > 0 ? events : undefined,
+    warnings,
+    unsupportedFields,
+  };
+}
+
+function mapOtlpSpan(context: OtlpSpanContext): OpenInferenceMappedSpan {
+  const { span, pathPrefix } = context;
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+  const parsedSpanAttributes = parseOtlpAttributes(
+    span.attributes,
+    `${pathPrefix}.attributes`,
+  );
+  warnings.push(...parsedSpanAttributes.warnings);
+  unsupportedFields.push(...parsedSpanAttributes.unsupportedFields);
+
+  const sanitizedSpanAttributes = sanitizeOtlpAttributes(
+    parsedSpanAttributes.attributes,
+    `${pathPrefix}.attributes`,
+  );
+  warnings.push(...sanitizedSpanAttributes.warnings);
+  unsupportedFields.push(...sanitizedSpanAttributes.unsupportedFields);
+
+  const attributes: Record<string, unknown> = {
+    ...sanitizedSpanAttributes.attributes,
+  };
+  for (const [key, value] of Object.entries(context.resourceAttributes)) {
+    attributes[`resource.${key}`] = value;
+  }
+  for (const [key, value] of Object.entries(context.scopeAttributes)) {
+    attributes[`scope.${key}`] = value;
+  }
+  if (context.scopeName !== undefined) {
+    attributes["scope.name"] = context.scopeName;
+  }
+  if (context.scopeVersion !== undefined) {
+    attributes["scope.version"] = context.scopeVersion;
+  }
+
+  for (const [key, value] of Object.entries(span)) {
+    if (OTLP_SPAN_KEYS.has(key)) continue;
+    unsupportedFields.push(`${pathPrefix}.${key}`);
+    if (value === null || typeof value !== "object") {
+      attributes[`otlp.${key}`] = value;
+    } else {
+      attributes[`otlp.${key}.summary`] = summarizeAttributeValue(value);
+      warnings.push({
+        code: "otlp_unsupported_field_summarized",
+        message: `Unsupported OTLP span field "${key}" was summarized.`,
+        severity: "warning",
+        field: `${pathPrefix}.${key}`,
+      });
+    }
+  }
+
+  for (const key of [
+    "droppedAttributesCount",
+    "droppedEventsCount",
+    "droppedLinksCount",
+    "links",
+  ]) {
+    if (span[key] !== undefined) {
+      unsupportedFields.push(`${pathPrefix}.${key}`);
+      warnings.push({
+        code: "otlp_span_field_not_mapped",
+        message: `OTLP span field "${key}" is not represented in AgentInspect events.`,
+        severity: "warning",
+        field: `${pathPrefix}.${key}`,
+      });
+    }
+  }
+
+  const events = mapOtlpEvents(span.events, `${pathPrefix}.events`);
+  warnings.push(...events.warnings);
+  unsupportedFields.push(...events.unsupportedFields);
+  if (events.events !== undefined) {
+    attributes["otlp.events"] = events.events;
+  }
+
+  const traceId = readStringField(span, ["traceId"]) ?? "trace-unknown";
+  const spanId = readStringField(span, ["spanId"]) ?? "span-unknown";
+  const parentSpanId = readStringField(span, ["parentSpanId"]);
+  const startedAt = readOpenInferenceTimestamp(
+    span,
+    ["startTimeUnixNano"],
+    [],
+  );
+  const endedAt = readOpenInferenceTimestamp(span, ["endTimeUnixNano"], []);
+  const timestamp = startedAt ?? "1970-01-01T00:00:00.000Z";
+  if (startedAt === undefined) {
+    unsupportedFields.push(`${pathPrefix}.startTimeUnixNano`);
+    warnings.push({
+      code: "otlp_missing_start_time",
+      message: "OTLP span is missing a valid startTimeUnixNano; using Unix epoch.",
+      severity: "warning",
+      field: `${pathPrefix}.startTimeUnixNano`,
+    });
+  }
+
+  const { kind, warnings: kindWarnings } = readOtlpKind(
+    parsedSpanAttributes.attributes,
+    pathPrefix,
+  );
+  warnings.push(...kindWarnings);
+  const status = mapOtlpStatus(span.status);
+  const tokenUsage = readOtlpTokenUsage(parsedSpanAttributes.attributes);
+  const errorMessage =
+    isRecord(span.status) && typeof span.status.message === "string"
+      ? span.status.message
+      : undefined;
+
+  const event: PersistedInspectEvent = {
+    schemaVersion: "0.2",
+    eventId:
+      typeof parsedSpanAttributes.attributes["agent_inspect.event_id"] === "string"
+        ? parsedSpanAttributes.attributes["agent_inspect.event_id"]
+        : spanId,
+    runId:
+      typeof parsedSpanAttributes.attributes["agent_inspect.run_id"] === "string"
+        ? parsedSpanAttributes.attributes["agent_inspect.run_id"]
+        : traceId,
+    kind,
+    name: readStringField(span, ["name"]) ?? spanId,
+    timestamp,
+    confidence: readOtlpConfidence(parsedSpanAttributes.attributes),
+    source: {
+      type: "otel",
+      name:
+        context.scopeName ??
+        (typeof context.resourceAttributes["service.name"] === "string"
+          ? context.resourceAttributes["service.name"]
+          : "otlp-json"),
+      ...(context.scopeVersion !== undefined
+        ? { version: context.scopeVersion }
+        : {}),
+    },
+    attributes,
+    trace: {
+      traceId,
+      spanId,
+      ...(parentSpanId !== undefined ? { parentSpanId } : {}),
+    },
+  };
+
+  if (status !== undefined) {
+    event.status = status;
+  }
+  if (startedAt !== undefined) {
+    event.startedAt = startedAt;
+  }
+  if (endedAt !== undefined) {
+    event.endedAt = endedAt;
+  }
+  const durationMs = durationBetweenIso(startedAt, endedAt);
+  if (durationMs !== undefined) {
+    event.durationMs = durationMs;
+  }
+  if (tokenUsage !== undefined) {
+    event.tokenUsage = tokenUsage;
+  }
+  if (status === "error") {
+    event.error = {
+      message: errorMessage !== undefined && errorMessage.trim() !== "" ? errorMessage : "OTLP span error",
+    };
+  }
+
+  return {
+    event,
+    warnings,
+    unsupportedFields,
+    spanId,
+    ...(parentSpanId !== undefined ? { parentSpanId } : {}),
+  };
+}
+
+function mapOtlpEventsToPersisted(document: OtlpDocument): {
+  events: PersistedInspectEvent[];
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const mapped = document.spans.map((span) => mapOtlpSpan(span));
+  const spanIdToEventId = new Map(
+    mapped.map((span) => [span.spanId, span.event.eventId] as const),
+  );
+  for (const span of mapped) {
+    if (span.parentSpanId === undefined) continue;
+    span.event.parentId = spanIdToEventId.get(span.parentSpanId) ?? span.parentSpanId;
+  }
+  return {
+    events: mapped.map((span) => span.event),
+    warnings: mapped.flatMap((span) => span.warnings),
+    unsupportedFields: mapped.flatMap((span) => span.unsupportedFields),
+  };
+}
+
+export const otlpJsonReader: TraceReader = {
+  format: OTLP_READER_FORMAT,
+  name: "OTLP JSON",
+  async detect(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) return undefined;
+
+    let parsed: unknown;
+    try {
+      parsed = parseJsonDocument(resolved.content);
+    } catch {
+      return undefined;
+    }
+
+    const document = extractOtlpDocument(parsed);
+    if (!document) return undefined;
+
+    return {
+      format: OTLP_READER_FORMAT,
+      confidence: document.confidence,
+      readerName: "OTLP JSON",
+      description: document.description,
+      warnings: attachSingleSourceFile(document.warnings, resolved),
+    };
+  },
+  async read(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) {
+      throw new TraceReadError(
+        "unsupported_format",
+        "OTLP JSON reader requires file, string, or buffer input.",
+      );
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = parseJsonDocument(resolved.content);
+    } catch {
+      throw new TraceReadError("unsupported_format", "OTLP JSON input is not valid JSON.", [
+        {
+          code: "otlp_invalid_json",
+          message: "OTLP JSON reader could not parse the input as JSON.",
+          severity: "error",
+        },
+      ]);
+    }
+
+    const document = extractOtlpDocument(parsed);
+    if (!document || document.spans.length === 0) {
+      throw new TraceReadError(
+        "unsupported_format",
+        "No valid OTLP spans found.",
+        attachSingleSourceFile(
+          document?.warnings ?? [
+            {
+              code: "otlp_no_valid_spans",
+              message: "OTLP JSON input did not contain valid spans.",
+              severity: "error",
+            },
+          ],
+          resolved,
+        ),
+      );
+    }
+
+    const mapped = mapOtlpEventsToPersisted(document);
+    const warnings = attachSingleSourceFile(
+      [...document.warnings, ...mapped.warnings],
+      resolved,
+    );
+    const unsupportedFields = [
+      ...document.unsupportedFields,
+      ...mapped.unsupportedFields,
+    ].sort((a, b) => a.localeCompare(b));
+
+    return {
+      format: OTLP_READER_FORMAT,
+      events: mapped.events,
+      runs: persistedInspectEventsToRunTrees(mapped.events, { skipInvalid: true }),
+      warnings,
+      unsupportedFields,
+      sourceFiles: resolved.sourceFiles,
+    };
+  },
+};
+
 export const agentInspectJsonlReader: TraceReader = {
   format: "agent-inspect-jsonl",
   name: "AgentInspect JSONL",
@@ -1132,6 +1879,7 @@ export const agentInspectJsonlReader: TraceReader = {
 export const DEFAULT_TRACE_READERS: readonly TraceReader[] = [
   agentInspectJsonlReader,
   openInferenceJsonReader,
+  otlpJsonReader,
 ];
 
 export async function detectTraceFormat(

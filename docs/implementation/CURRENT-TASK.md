@@ -4,62 +4,59 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "10-otlp-json-reader"
+chunk: "11-universal-agent-inspect-open"
 status: "ready"
-dependsOn: "9-openinference-json-reader"
+dependsOn: "10-otlp-json-reader"
 ```
 
 ## Goal
 
-Add a dependency-free, local OTLP JSON trace reader that maps resource/scope/span payloads into the existing reader abstraction without changing persisted schemas or adding OpenTelemetry SDK/runtime dependencies.
+Add the universal local `agent-inspect open` command backed by the canonical reader pipeline, without adding viewer/dashboard behavior or any network ingestion.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 10 only
+- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 11 only
 - `docs/proposals/TRACE-READER.md`
 - `packages/core/src/readers/index.ts`
-- directly related reader/persisted tests and fixtures only
+- directly related CLI command/source/tests only
 
 ## In scope
 
-1. Detect local OTLP JSON trace payloads deterministically.
-2. Support resource, scope, and span handling.
-3. Preserve trace IDs, span IDs, parent span IDs, status, timing, attributes, events, and ordering where possible.
-4. Map OTLP attributes/events into existing persisted inspect events and warnings without schema changes.
-5. Report unsupported fields and semantic loss through warnings and `unsupportedFields`.
-6. Add focused deterministic OTLP fixtures/tests for successful, malformed, unsupported, and ambiguous inputs.
-7. Keep the reader dependency-free, read-only, and network-free.
-8. Update release-train state and prepare the next task.
+1. Add `agent-inspect open` for file, directory, and stdin inputs.
+2. Support `--format`, `--json`, diagnostics/warnings, multiple runs, and `--run`.
+3. Use the canonical reader pipeline instead of duplicating parsing logic.
+4. For multiple runs, list runs and require `--run` rather than selecting arbitrarily.
+5. Keep output deterministic and local.
+6. Add focused CLI/core tests for file, directory, stdin, format override, JSON output, diagnostics/warnings, multiple-run selection, and errors.
+7. Update release-train state and prepare the next task.
 
 ## Out of scope
 
-- `agent-inspect open`
-- shared reader integration beyond registering the OTLP reader
-- recipe/documentation expansion beyond reader behavior
+- Viewer/dashboard UI
+- Network ingestion or upload
+- Shared reader integration for other commands (`what`, `timeline`, `report`, `diff`)
+- recipe/documentation expansion beyond command help/API behavior
 - public schema changes
 - dependency additions
-- OpenTelemetry SDK/runtime dependencies
-- network behavior
 - version/change/tag/publish work
 
 ## Acceptance criteria
 
-- OTLP JSON reads produce existing persisted inspect events and run trees.
-- Resource/scope/span attributes are retained safely and deterministically.
-- Unsupported or lossy fields are surfaced with structured warnings.
-- AgentInspect and OpenInference detection remain stable and compatible.
-- No OTel SDK dependency, network behavior, schema change, or root API change is introduced.
+- `agent-inspect open` can inspect AgentInspect, OpenInference, and OTLP local inputs through the reader layer.
+- Ambiguous, unsupported, malformed, and multi-run inputs produce clear deterministic diagnostics.
+- `--json` emits machine-readable output.
+- Human output does not silently pick an arbitrary run when multiple runs exist.
+- No new dependency, network behavior, schema change, or root API change is introduced.
 
 ## Focused validation
 
 ```bash
 pnpm exec vitest run \
-  packages/core/test/readers.test.ts \
-  packages/core/test/read-trace.test.ts \
-  packages/core/test/persisted/tree-bridge.test.ts \
-  packages/core/test/types/persisted-inspect-event.test.ts
+  packages/cli/test/cli.test.ts \
+  packages/cli/test/cli-stability.test.ts \
+  packages/core/test/readers.test.ts
 ```
 
 ## Chunk gate
@@ -75,14 +72,14 @@ pnpm pack:smoke
 git diff --check
 ```
 
-Run `pnpm compat:smoke` and `npm pack --dry-run` only when exports/package contents change.
+Run built CLI help, `pnpm compat:smoke`, and `npm pack --dry-run` because this chunk changes CLI behavior/package contents.
 
 ## Proposed commit
 
 ```text
-feat: ingest OTLP JSON traces locally
+feat: add universal trace open command
 ```
 
 ## Stop condition
 
-Stop after chunk 10 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start `agent-inspect open` work until chunk 10 is pushed.
+Stop after chunk 11 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start shared reader integration until chunk 11 is pushed.
