@@ -1,6 +1,10 @@
 import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  preparePersistedInspectEventForWrite,
+  resolveTraceSafetyOptions,
+} from "../trace-event-safety.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
 import { getTraceFilePath } from "../utils.js";
 
@@ -63,9 +67,7 @@ export interface CompositeTraceWriterOptions {
   writers: TraceWriter[];
 }
 
-function cloneEvent(event: PersistedInspectEvent): PersistedInspectEvent {
-  return structuredClone(event);
-}
+const DEFAULT_TRACE_SAFETY = resolveTraceSafetyOptions();
 
 function createInitialStats(): TraceWriterStats {
   return {
@@ -97,6 +99,12 @@ function normalizeError(error: unknown): string {
 function recordDropped(stats: TraceWriterStats, error: unknown): void {
   stats.droppedEvents += 1;
   stats.lastError = normalizeError(error);
+}
+
+function prepareWriterEvent(
+  event: PersistedInspectEvent,
+): PersistedInspectEvent | undefined {
+  return preparePersistedInspectEventForWrite(event, DEFAULT_TRACE_SAFETY);
 }
 
 function resolveFilePath(
@@ -169,7 +177,12 @@ export function memoryWriter(): MemoryTraceWriter {
 
   return {
     async write(event) {
-      events.push(cloneEvent(event));
+      const safe = prepareWriterEvent(event);
+      if (safe === undefined) {
+        recordDropped(stats, "Invalid persisted inspect event");
+        return;
+      }
+      events.push(safe);
       stats.writtenEvents += 1;
     },
     async flush() {
@@ -182,7 +195,7 @@ export function memoryWriter(): MemoryTraceWriter {
       return cloneStats(stats);
     },
     getEvents() {
-      return events.map(cloneEvent);
+      return events.map((event) => structuredClone(event));
     },
     clear() {
       events.length = 0;
@@ -241,7 +254,12 @@ export function fileWriter(options: FileTraceWriterOptions = {}): TraceWriter {
 
   return {
     write(event) {
-      return enqueue(cloneEvent(event));
+      const safe = prepareWriterEvent(event);
+      if (safe === undefined) {
+        recordDropped(stats, "Invalid persisted inspect event");
+        return Promise.resolve();
+      }
+      return enqueue(safe);
     },
     async flush() {
       await queue;
@@ -339,6 +357,12 @@ export function bufferedFileWriter(
         return;
       }
 
+      const safe = prepareWriterEvent(event);
+      if (safe === undefined) {
+        recordDropped(stats, "Invalid persisted inspect event");
+        return;
+      }
+
       if (pending.length >= maxQueueSize) {
         if (overflow === "drop-newest") {
           recordDropped(stats, "Trace writer queue overflow");
@@ -349,7 +373,7 @@ export function bufferedFileWriter(
       }
 
       try {
-        pending.push(cloneEvent(event));
+        pending.push(safe);
       } catch (error) {
         recordDropped(stats, error);
         return;
@@ -394,10 +418,16 @@ export function compositeWriter(
         return;
       }
 
+      const safe = prepareWriterEvent(event);
+      if (safe === undefined) {
+        recordDropped(stats, "Invalid persisted inspect event");
+        return;
+      }
+
       const childResults = await Promise.all(
         writers.map(async (writer) => {
           try {
-            await writer.write(cloneEvent(event));
+            await writer.write(structuredClone(safe));
             return true;
           } catch (error) {
             recordChildFailure(error);

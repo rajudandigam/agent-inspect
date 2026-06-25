@@ -6,7 +6,7 @@
 baselineVersion: "1.5.0"
 publishedVersion: "1.5.0"
 currentTrain: "v1.6.0"
-trainStatus: "planning"
+trainStatus: "in_progress"
 branch: "main"
 lastValidationLevel: "docs"
 completedChunks:
@@ -20,9 +20,9 @@ completedChunks:
   - "v1.6 createInspector API"
   - "v1.6 reader abstraction"
   - "v1.6 consolidated v0.1/v0.2 readers"
-currentChunk: "v1.6 OpenInference reader"
+currentChunk: "H1-persisted-event-safety"
 pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Proceed to the OpenInference reader chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
+nextAction: "Execute H1 persisted-event safety before OpenInference; update CURRENT-TASK.md for H2 after validation"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-25"
 ```
