@@ -1,6 +1,6 @@
 # Trace writer proposal
 
-**Status:** partially implemented for v1.6.0; `TraceWriter`, `memoryWriter`, and `nullWriter` are complete on `main`.
+**Status:** partially implemented for v1.6.0; `TraceWriter`, `fileWriter`, `memoryWriter`, and `nullWriter` are complete on `main`.
 **Scope:** local writer contract and built-in writer implementations.
 **Non-goals:** no network writer, no vendor sink, no provider pricing, no hidden telemetry.
 
@@ -62,6 +62,8 @@ Responsibilities:
 - preserve event ordering;
 - expose `flush()` and `close()`;
 - report instrumentation errors to the runtime, not application code.
+
+Implemented on `main`.
 
 ### Buffered file writer
 

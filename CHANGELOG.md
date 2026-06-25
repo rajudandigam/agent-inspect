@@ -6,7 +6,7 @@ Internal corrective and roadmap-planning work on `main`. No package version, cha
 
 ### Added
 
-- Added experimental `agent-inspect/writers` subpath with `TraceWriter`, `memoryWriter`, and `nullWriter` as the first v1.6 runtime foundation slice.
+- Added experimental `agent-inspect/writers` subpath with `TraceWriter`, `fileWriter`, `memoryWriter`, and `nullWriter` as the first v1.6 runtime foundation slice.
 
 ### Fixed
 

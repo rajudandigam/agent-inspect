@@ -3,7 +3,7 @@ import { exportMarkdown } from "agent-inspect/exporters";
 import { diffTraceEvents } from "agent-inspect/diff";
 import { isPersistedInspectEvent } from "agent-inspect/persisted";
 import { resolveRedactionProfile } from "agent-inspect/advanced";
-import { memoryWriter, nullWriter } from "agent-inspect/writers";
+import { fileWriter, memoryWriter, nullWriter } from "agent-inspect/writers";
 
 const checks = [
   parseLogsToTrees,
@@ -11,6 +11,7 @@ const checks = [
   diffTraceEvents,
   isPersistedInspectEvent,
   resolveRedactionProfile,
+  fileWriter,
   memoryWriter,
   nullWriter,
 ];
