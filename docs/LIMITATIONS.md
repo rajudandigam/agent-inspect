@@ -16,8 +16,8 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Persisted event model (v1.2.0 foundation)
 
 - **v0.2 is not the default persisted trace file format.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL.
-- **CLI commands** (`list`, `view`, `export`, `diff`, `logs`, `tail`) still primarily operate on current v0.1 trace and log paths.
-- **v0.2 read integration** — inspection CLI reads v0.2 JSONL via dual-format normalization (v1.5.0). Default **write** path remains v0.1; `list` metadata for v0.2-only files may be limited.
+- **Dual-format inspection is a read path, not a write migration.** `list`, `view`, `timeline`, `stats`, `search`, `diff`, `export`, `what`, and `report` read v0.1/v0.2 trace files through normalization where applicable. `logs` and `tail` remain structured-log ingestion commands, not v0.2 writers.
+- **Default write path remains v0.1.** v0.2 fixtures and converters are available for adapters and migration testing, but AgentInspect does not automatically rewrite traces.
 
 ## LangChain streaming (v1.3.0)
 
@@ -47,6 +47,7 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Economics
 
 - **No cost engine**: no pricing tables, invoice-grade usage, or provider billing reconciliation.
+- **Token usage is supplied metadata only**: AgentInspect may display `input`, `output`, `total`, and `cached` counts when callers/adapters provide them; core does not count tokens or infer provider billing.
 
 ## Local observability commands (v1.4.0)
 

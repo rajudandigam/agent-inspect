@@ -210,8 +210,9 @@ v1.2.0 introduces a **source-agnostic persisted event model** as an experimental
 | ----- | ---- |
 | Default write format | Manual traces still use **`schemaVersion: "0.1"`** (`run_started`, `step_started`, `step_completed`, `run_completed`). |
 | v0.2 role | Unified persisted shape for manual traces, log-derived events, adapter events, and future AI SDK / OTel mappings. |
-| v0.2 file writing | **Not enabled by default** in v1.2.0 — converters and fixtures only. |
-| v0.1 compatibility | v0.2 does **not** replace v0.1 in this release; existing `0.1` files remain canonical for CLI write/read today. |
+| v0.2 file writing | **Not enabled by default** — converters and fixtures only unless a caller writes v0.2 data explicitly. |
+| v0.1 compatibility | v0.2 does **not** replace v0.1 in v1.x; existing `0.1` files remain canonical for manual writing and continue to be readable. |
+| v0.2 read path | Inspection read paths normalize v0.1 and v0.2 JSONL for local CLI/API use. |
 | Failures | Still **no** `step_failed`; use `status: "error"` on the persisted event. |
 
 Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:check`).
@@ -235,7 +236,7 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 | `attributes` | no | Shallow metadata bag (redaction-ready) |
 | `inputSummary` / `outputSummary` | no | Truncated previews when explicitly captured |
 | `error` | no | `{ name?, message, code? }` when `status: "error"` |
-| `tokenUsage` | no | `{ input?, output?, total? }` when known |
+| `tokenUsage` | no | `{ input?, output?, total?, cached? }` when supplied/known |
 | `trace` | no | Optional `{ traceId?, spanId?, parentSpanId? }` for future OTel alignment |
 
 Programmatic helpers: see [API.md](./API.md) §11 (experimental persisted-event foundation).
@@ -243,5 +244,4 @@ Programmatic helpers: see [API.md](./API.md) §11 (experimental persisted-event 
 ## 15. Migration notes
 
 - Minor releases may add optional fields/events, but must keep existing v0.1 traces readable.
-- Migration guides (v0.1 → v0.2 file format) are future work; storage/CLI dual-read is not in the v1.2.0 foundation release.
-
+- v0.1 → v0.2 write migration guides are future work. v1.x inspection readers are dual-format; the default manual writer remains v0.1.

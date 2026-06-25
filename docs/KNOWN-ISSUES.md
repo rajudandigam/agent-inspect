@@ -31,7 +31,7 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 
 ## Cost / tokens
 
-- **Token counting** and **cost calculation** are **not** core features.
+- **Token counting** and **cost calculation** are **not** core features. Token usage fields (`input`, `output`, `total`, `cached`) are displayed only when supplied by user code, fixtures, or adapters.
 
 ## Confidence labels
 

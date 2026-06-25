@@ -324,7 +324,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ### 6.11 `what`
 
-Concise human-readable summary of one manual trace run. Read-only; uses local v0.1 JSONL (v0.2 dual-read lands in v1.5.0 Chunks 7–8). Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
+Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
 ```bash
 agent-inspect what <run-id> [options]
@@ -353,7 +353,7 @@ Slowest: plan (100ms, logic)
 
 ### 6.12 `report`
 
-Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. Read-only over v0.1 JSONL. Distinct from `export` (which targets shareable tree snapshots and standards formats).
+Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 
 ```bash
 agent-inspect report <run-id> [options]
@@ -365,10 +365,10 @@ Options:
 - `--format <markdown|html>` — default `markdown`
 - `-o, --output <path>` — write to file
 - `--json` — JSON wrapper (includes `content` when writing to stdout)
-- `--include-attributes` — bounded attributes in tree section
-- `--no-errors` — omit error details from tree section
+- `--include-attributes` — bounded attributes in the execution tree section
+- `--no-errors` — omit error details from the execution tree section
 - `--no-correlation` — omit correlation ids from what section
-- `--redaction-profile <local|share|strict>` — tree section redaction (default `local`)
+- `--redaction-profile <local|share|strict>` — key-based redaction profile applied to the complete report (default `local`); review output before sharing
 
 Example:
 
@@ -390,4 +390,3 @@ See:
 
 - `docs/KNOWN-ISSUES.md`
 - `docs/LIMITATIONS.md`
-

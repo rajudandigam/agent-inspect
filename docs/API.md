@@ -172,11 +172,11 @@ Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEv
 
 - Manual trace **writing** remains `schemaVersion: "0.1"`.
 - v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
-- Storage dual-read and CLI integration are future work.
+- Inspection read paths normalize v0.1 and v0.2 JSONL for local CLI/API use. v0.2 remains experimental as a persisted-event foundation and is not the default writer.
 
-## 12. Local observability helpers (v1.4.0)
+## 12. Local observability helpers (v1.4.0+)
 
-Read-only helpers for timeline, stats, and search over manual `TraceEvent` JSONL. Local files only.
+Read-only helpers for timeline, stats, and search over local JSONL traces. v0.1 manual traces remain the default writer; v0.2 persisted-event files are accepted where the shared dual-format read path is used. Local files only.
 
 - **`buildRunTimeline`**, **`renderTimeline`** — chronological run view; types `RunTimeline`, `TimelineEntry`
 - **`buildTraceStats`**, **`renderTraceStats`** — directory aggregates; type `TraceStats`
@@ -184,23 +184,32 @@ Read-only helpers for timeline, stats, and search over manual `TraceEvent` JSONL
 
 CLI wrappers: `agent-inspect timeline`, `stats`, `search` — see [CLI.md](./CLI.md).
 
-## 13. Deprecated APIs
+## 13. Report and what helpers (v1.5.0+)
+
+Read-only helpers for concise inspection summaries and local reports:
+
+- **`buildRunWhatSummary`**, **`renderRunWhat`** — summarize status, duration, step counts, correlation metadata, slowest step, errors, and supplied token usage.
+- **`buildRunReport`** — render Markdown or HTML reports from local trace events.
+
+Report redaction profiles are key-based safeguards applied to the complete rendered report input, not only to the tree section. Review generated reports before sharing; this is not compliance-grade DLP.
+
+## 14. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 14. Removal / deprecation policy
+## 15. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 15. Backward compatibility policy
+## 16. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 16. Examples
+## 17. Examples
 
 ### Minimal manual trace
 
@@ -214,4 +223,3 @@ await inspectRun("demo-agent", async () => {
   return { plan, hits, answer };
 });
 ```
-

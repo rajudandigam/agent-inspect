@@ -6,13 +6,13 @@
 baselineVersion: "1.5.0"
 publishedVersion: "1.5.0"
 currentTrain: "v1.5.1"
-trainStatus: "in_progress"
+trainStatus: "ready_for_review"
 branch: "main"
-lastValidationLevel: "runtime"
-completedChunks: [1, 2]
-currentChunk: 3
-pendingManualGate: "Chunk 3 validation: pnpm pack:smoke was blocked before execution by the Codex usage limit"
-nextAction: "Run pnpm pack:smoke; if green, review and commit Chunk 3 before authorizing Chunk 4; do not start v1.6"
+lastValidationLevel: "release-readiness"
+completedChunks: [1, 2, 3, 4]
+currentChunk: null
+pendingManualGate: "Gate C maintainer review"
+nextAction: "Review the complete v1.5.1 patch train; only after explicit Gate D authorization create a changeset/version bump/publish/tag; do not start v1.6"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```

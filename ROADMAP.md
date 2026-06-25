@@ -61,7 +61,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.6.0 train** — next scope per [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md). v1.5.0 published **2026-06-24**.
+**v1.5.1 corrective patch train** — active maintainer work after the v1.5.0 publication. Scope is limited to post-release correctness, safety, and documentation fixes: CLI version reporting, dual-format metadata parity, whole-report redaction, normalization fidelity, token usage vocabulary completion, and release-readiness evidence. v1.6.0 has **not** started.
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -69,7 +69,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.5.0 train** | Subpath exports, vocabulary RFC, `what`/`report`, unified v0.1+v0.2 CLI read path — see [V1.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.5.0-EXECUTION-PLAN.md). |
+| **v1.5.1 patch train** | Correct v1.5.0 post-release defects before any v1.6.0 work — see [V1.5.1-PATCH-PLAN.md](docs/implementation/release-trains/V1.5.1-PATCH-PLAN.md). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
@@ -128,7 +128,8 @@ Maintainers ship **small Cursor PR chunks** but publish **fewer npm releases** b
 | **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
 | **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
 | **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
-| **v1.5.0** — API boundary, what/report, dual-format read | **In progress (planning)** | [V1.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.5.0-EXECUTION-PLAN.md) |
+| **v1.5.0** — API boundary, what/report, dual-format read | **Released** 2026-06-24 | [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) |
+| **v1.5.1** — Corrective patch | **In progress (planning/validation)** | [V1.5.1-PATCH-PLAN.md](docs/implementation/release-trains/V1.5.1-PATCH-PLAN.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

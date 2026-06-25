@@ -1,8 +1,8 @@
-# Cursor Maintainer Roadmap Execution Guide
+# Maintainer Roadmap Execution Guide
 
-How maintainers use Cursor to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.
+How maintainers use Codex/Cursor-style maintainer sessions to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.
 
-**Audience:** Repository maintainers and Cursor sessions executing maintainer-owned work.
+**Audience:** Repository maintainers and maintainer-owned AI coding sessions.
 **Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Execution program:** [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
 **Design:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md)
 **Historical/private notes:** `docs-local/` (if present) — not required for contributors.
@@ -30,7 +30,7 @@ AgentInspect is **not**:
 
 | Principle | Rule |
 | --------- | ---- |
-| **Small chunks** | Each Cursor session targets one PR-sized slice (types, one converter, one CLI path, docs-only). |
+| **Small chunks** | Each maintainer session targets one PR-sized slice (types, one converter, one CLI path, docs-only). |
 | **Do not publish every chunk** | Merge chunks to `main`; accumulate until a **release train** is coherent. |
 | **Release trains** | Group related chunks into one npm version (e.g. all v1.2.0 foundation pieces). |
 | **Publish gate** | Publish only after the train passes **release-train readiness** validation (below). |
@@ -70,11 +70,13 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 
 ---
 
-## 4. Next release trains
+## 4. Current and next release trains
 
 Trains are **directional** — not delivery guarantees. Canonical ordering: [ROADMAP-EXECUTION-V1.5-TO-V2.md](./ROADMAP-EXECUTION-V1.5-TO-V2.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
 
-**Current train:** v1.5.0 (planning) — [V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
+**Published baseline:** v1.5.0 — [V1.5.0-RELEASE-READINESS.md](./V1.5.0-RELEASE-READINESS.md) · [V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
+
+**Current train:** v1.5.1 corrective patch — [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md)
 
 Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones inside v1.5.0**, not separate npm releases.
 
@@ -88,6 +90,17 @@ Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milesto
 | **M4** | Canonical v0.1+v0.2 read path; migrate inspection commands |
 
 **Out of scope:** Vitest/Jest reporters, cohort/check/assert, AI SDK, framework adapters.
+
+### v1.5.1 — Corrective patch before v1.6.0
+
+| Chunk | Scope |
+| ----- | ----- |
+| **1** | CLI version and dual-format metadata parity |
+| **2** | Whole-report redaction and normalization fidelity |
+| **3** | Token vocabulary completion (`input`, `output`, `total`, `cached`) |
+| **4** | Documentation, release-readiness evidence, and final regression gate |
+
+**Out of scope:** v1.6 implementation, changesets, version bumps, tags, publish, provider pricing, and default network behavior.
 
 ### v1.6.0 — Vercel AI SDK
 
@@ -118,7 +131,7 @@ Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milesto
 
 ## 5. Cursor prompt rules
 
-Every maintainer Cursor prompt **must** include:
+Every maintainer implementation prompt **must** include:
 
 1. **Read first** — list of files to read before editing (README, relevant proposal, affected `packages/` paths).
 2. **Phase 0 audit** — report current state (version, existing types, tests, docs) **before** edits.

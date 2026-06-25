@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.5.1
+
+Draft — not yet released.
+
+### Fixed
+
+- Corrects the published CLI version path so `agent-inspect --version` reports the public package version.
+- Makes `list`, `stats`, and `search` use the canonical dual-format read path for v0.1 and v0.2 trace files.
+- Applies `report --redaction-profile share|strict` to the complete report, not only the execution tree section.
+- Preserves mixed v0.1/v0.2 source ordering during normalization.
+- Preserves error stack fidelity when converting persisted v0.2 events; `error.name` is no longer mapped to v0.1 `stack`.
+- Preserves supported token usage fields across converters and inspection summaries: `input`, `output`, `total`, and `cached`.
+
+### Notes
+
+- Manual trace writing remains `schemaVersion: "0.1"`.
+- v0.2 remains an experimental persisted-event foundation and dual-read input format, not the default writer.
+- No provider pricing, token counting, cost engine, vendor upload, version bump, changeset, tag, or publish is included in the implementation commits.
+
 ## 1.5.0
 
 Released **2026-06-24**.

@@ -1,8 +1,8 @@
 # Trace vocabulary — v1.5.0 RFC
 
-**Status:** Accepted for v1.5.0 train (Chunk 3) — design only; no write-path or validator changes in this chunk  
+**Status:** Accepted for v1.5.0; corrected by v1.5.1 to include additive `total`/`cached` token usage semantics
 **Audience:** Maintainers, adapter authors, CLI/report implementers  
-**Baseline:** `agent-inspect@1.4.0` + v1.5.0 Chunks 1–2  
+**Baseline:** `agent-inspect@1.5.0`; v1.5.1 corrective patch for token vocabulary completion
 **Related:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UNIFIED-PERSISTED-INSPECT-EVENT.md) · [SCHEMA.md](../SCHEMA.md) · [API-BOUNDARY-V1.5.md](../implementation/API-BOUNDARY-V1.5.md)
 
 This RFC freezes the **canonical vocabulary** for inspection, `what`/`report`, and dual-format read (Chunks 4–8). It does **not** change manual trace writing (`schemaVersion: "0.1"`) or ship new runtime types in Chunk 3.
@@ -27,7 +27,7 @@ Without a single RFC, `what`/`report`, stats, and dual-read risk inconsistent la
 
 - **One canonical kind enum** for inspection output: `InspectKind` (already in core).
 - **Explicit `StepType` → `InspectKind` mapping** for v0.1 read/conversion (documented, not changed in types).
-- **Token metadata shape** on v0.2 `PersistedInspectEvent` — **affirm existing** `PersistedTokenUsage`; document v0.1 bridge.
+- **Token metadata shape** on v0.1 and v0.2 — optional `input`, `output`, `total`, and `cached` counts where supplied.
 - **Streaming LLM metadata** in `attributes` (not new top-level fields) — aligns with `@agent-inspect/langchain` `stream: true`.
 - **Fixture samples** for token + streaming on v0.2 JSONL.
 - **Explicit deferral list** for v2.0 and v1.9.0 standards work.
@@ -38,7 +38,7 @@ Without a single RFC, `what`/`report`, stats, and dual-read risk inconsistent la
 - No CLI write path switch to v0.2.
 - No cost / pricing fields, no token **counting** in core, no billing semantics.
 - No OpenInference / OTLP field alignment (v1.9.0).
-- No `cache_tokens`, `reasoning_tokens`, or provider-specific token breakdown (defer §8).
+- No provider-specific token breakdowns such as reasoning-token families (defer §8). The generic `cached` count is additive v1.5.1 vocabulary, not a provider-specific billing field.
 - No automatic migration of on-disk v0.1 files.
 
 ---
@@ -122,12 +122,14 @@ On `step_started.metadata`:
 interface TokenMetadata {
   input?: number;   // prompt / input tokens
   output?: number;  // completion / output tokens
+  total?: number;   // supplied total, or input + output when derived by a reader
+  cached?: number;  // cached/reused input tokens when supplied; not added to total again
 }
 ```
 
 - Stored under `metadata.tokens` (see [SCHEMA.md](../SCHEMA.md)).
 - Example fixture: `fixtures/traces/llm-with-tokens.jsonl`.
-- **v1.5:** No change to v0.1 write shape. Document only.
+- **v1.5.1 correction:** `total` and `cached` are optional additive fields. Manual traces remain v0.1; readers/converters preserve supported supplied counts and derive `total` only when absent and both `input` and `output` are present.
 
 ### 6.3 v0.2 persisted events
 
@@ -138,14 +140,15 @@ interface PersistedTokenUsage {
   input?: number;
   output?: number;
   total?: number;   // MAY be input + output when both present; not required
+  cached?: number;  // cached/reused tokens when supplied; not part of total derivation
 }
 ```
 
 - **Top-level field:** `tokenUsage` (not nested in `attributes`).
-- Validator: `isPersistedInspectEvent` — non-negative numbers only (already shipped v1.2.0).
-- Converters: `metadata.tokens` ↔ `tokenUsage` (already in `from-trace-event.ts`, `from-inspect-event.ts`, `to-inspect-event.ts` mirrors `attributes.tokens`).
+- Validator: `isPersistedInspectEvent` — non-negative finite numbers only.
+- Converters: `metadata.tokens` ↔ `tokenUsage`; `attributes.tokens` is used for InspectEvent bridging.
 
-**v1.5 decision:** **Keep this shape unchanged.** No new token subfields in v1.5.
+**v1.5.1 corrective decision:** preserve supplied `input`, `output`, `total`, and `cached` across supported representations. Supplied `total` wins. Derive `total = input + output` only when `total` is absent and both components are present. `cached` is informational and must not be double-counted into `total`.
 
 ### 6.4 Streaming metadata (LLM)
 
@@ -186,7 +189,7 @@ On v0.1 `run_started.metadata`: `correlationId`, `requestId`, `decisionId`, `gro
 
 | Topic | Target | Rationale |
 |-------|--------|-----------|
-| `cache_tokens`, `reasoning_tokens`, provider breakdown | v2.0 or v1.9.0 | Standards alignment first; avoid partial vendor shapes |
+| Provider-specific token breakdowns such as reasoning tokens | v2.0 or v1.9.0 | Standards alignment first; avoid partial vendor shapes |
 | Cost / USD fields | **Never in core** (product boundary) | Not an observability billing engine |
 | OTel `trace` block population | v1.9.0 | `PersistedTraceContext` exists; fill via standards hardening |
 | New `InspectKind` values | v2.0 only | Breaking for exporters and fixtures |
@@ -214,7 +217,7 @@ New canonical sample: **`fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl`**
 | Line | Demonstrates |
 |------|----------------|
 | `RUN` | Manual source, explicit confidence |
-| `LLM` + `tokenUsage` | Full input/output/total (mirrors `llm-with-tokens.jsonl` v0.1 intent) |
+| `LLM` + `tokenUsage` | Full input/output/total/cached (mirrors `llm-with-tokens.jsonl` v0.1 intent) |
 | `LLM` + streaming `attributes` | `stream`, `chunkCount`, `streamDurationMs` without `tokenUsage` |
 
 Existing fixtures remain valid:
@@ -230,10 +233,11 @@ Validation: `pnpm fixtures:check` after `pnpm build`.
 
 - [x] RFC published (this document)
 - [x] v1.5 vs deferral table explicit (§8)
-- [x] Token shape affirmed — no type changes required
+- [x] Token shape affirmed in v1.5.0; corrected additively in v1.5.1 for `total` and `cached`
 - [x] v0.2 fixture added for token + streaming samples
-- [ ] Chunk 7–8: converters copy correlation into RUN `attributes` (implementation)
-- [ ] Chunk 4–5: `what`/`report` reference this RFC in docs
+- [x] Chunk 7–8: converters copy correlation into RUN `attributes` (implementation)
+- [x] Chunk 4–5: `what`/`report` reference this RFC in docs
+- [x] v1.5.1: converters/readers/summaries preserve supported token counts without adding cost semantics
 
 ---
 
