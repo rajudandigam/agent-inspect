@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { extractCorrelationMetadata } from "./correlation-metadata.js";
 import type { ExecutionContext, TraceCorrelationMetadata } from "./types.js";
 import {
+  preparePersistedInspectEventForWrite,
   resolveTraceSafetyOptions,
   type TraceSafetyOptions,
 } from "./trace-event-safety.js";
@@ -182,7 +183,12 @@ export function createInspectorRuntime(
     async write(event) {
       if (!enabled || closed || !options.writer) return;
       try {
-        await options.writer.write(event);
+        const safe = preparePersistedInspectEventForWrite(event, traceSafety);
+        if (safe === undefined) {
+          recordInstrumentationError("Invalid persisted inspect event");
+          return;
+        }
+        await options.writer.write(safe);
       } catch (error) {
         recordInstrumentationError(error);
       }

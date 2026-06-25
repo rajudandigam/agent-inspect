@@ -117,6 +117,53 @@ describe("createInspector", () => {
     });
   });
 
+  it("bounds oversized persisted metadata without changing application results", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      traceSafety: {
+        redactEnabled: true,
+        redactionProfile: "local",
+        profileExtraKeys: [],
+        maxMetadataValueLength: 400,
+        maxPreviewLength: 120,
+        maxEventBytes: 600,
+      },
+    });
+
+    const result = await inspector.run(
+      "oversized-safe-run",
+      async () => "ok",
+      {
+        runId: "run_oversized",
+        metadata: {
+          ...Object.fromEntries(
+            Array.from({ length: 30 }, (_, index) => [
+              `outputPreview${index}`,
+              "x".repeat(10_000),
+            ]),
+          ),
+          password: "secret",
+        },
+      },
+    );
+
+    const started = writer.getEvents().find(
+      (event) => event.eventId === "run_oversized_started",
+    );
+
+    expect(result).toBe("ok");
+    expect(started).toMatchObject({
+      schemaVersion: "0.2",
+      runId: "run_oversized",
+      attributes: {
+        truncated: true,
+        reason: "maxEventBytes",
+      },
+    });
+    expect(Buffer.byteLength(JSON.stringify(started), "utf8")).toBeLessThanOrEqual(600);
+  });
+
   it("isolates parallel branches and multiple inspector instances", async () => {
     const firstWriter = memoryWriter();
     const secondWriter = memoryWriter();
@@ -184,6 +231,41 @@ describe("createInspector", () => {
         }),
       ]),
     );
+  });
+
+  it("rethrows application errors unchanged when persisted error details are bounded", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      traceSafety: {
+        redactEnabled: true,
+        redactionProfile: "strict",
+        profileExtraKeys: ["message"],
+        maxMetadataValueLength: 32,
+        maxPreviewLength: 16,
+        maxEventBytes: 800,
+      },
+    });
+    const appError = new Error("secret ".repeat(1_000));
+
+    await expect(
+      inspector.run(
+        "bounded-error-run",
+        async () => {
+          throw appError;
+        },
+        { runId: "run_bounded_error" },
+      ),
+    ).rejects.toBe(appError);
+
+    const completed = writer.getEvents().find(
+      (event) => event.eventId === "run_bounded_error_completed",
+    );
+
+    expect(completed?.error).toEqual({
+      name: "Error",
+      message: "[REDACTED]",
+    });
   });
 
   it("observes functions through inspector steps", async () => {

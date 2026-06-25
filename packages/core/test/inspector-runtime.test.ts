@@ -172,6 +172,53 @@ describe("createInspectorRuntime", () => {
     });
   });
 
+  it("prepares unsafe persisted events and records invalid writes as diagnostics", async () => {
+    const writer = memoryWriter();
+    const runtime = createInspectorRuntime({
+      writer,
+      traceSafety: resolveTraceSafetyOptions({
+        redactionProfile: "strict",
+        maxMetadataValueLength: 64,
+        maxPreviewLength: 32,
+      }),
+    });
+    const invalid = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error("proxy get failed");
+        },
+      },
+    ) as PersistedInspectEvent;
+
+    await expect(
+      runtime.write(
+        event({
+          attributes: {
+            fn: () => "ignored",
+            token: "secret-token",
+          },
+          inputSummary: {
+            prompt: "sensitive prompt",
+          },
+        }),
+      ),
+    ).resolves.toBeUndefined();
+    await expect(runtime.write(invalid)).resolves.toBeUndefined();
+
+    expect(writer.getEvents()[0]).toMatchObject({
+      attributes: {
+        fn: "[Function]",
+        token: "[REDACTED]",
+      },
+      inputSummary: "[REDACTED]",
+    });
+    expect(runtime.getDiagnostics()).toMatchObject({
+      instrumentationErrors: 1,
+      lastInstrumentationError: "Invalid persisted inspect event",
+    });
+  });
+
   it("isolates writer failures from callers", async () => {
     const failingWriter: TraceWriter = {
       async write() {

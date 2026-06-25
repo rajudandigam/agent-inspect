@@ -7,7 +7,7 @@ import type {
 } from "./types/persisted-inspect-event.js";
 import type { RedactionProfile, StepMetadata, StepType } from "./types.js";
 import {
-  prepareMetadataForDisk,
+  preparePersistedInspectEventForWrite,
   resolveTraceSafetyOptions,
   type TraceSafetyOptions,
 } from "./trace-event-safety.js";
@@ -132,26 +132,6 @@ function stepTypeToKind(type: StepType): InspectKind {
   }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function preparePersistedEventForWrite(
-  event: PersistedInspectEvent,
-  traceSafety: TraceSafetyOptions,
-): PersistedInspectEvent {
-  const metadata = event.attributes?.metadata;
-  if (!isRecord(metadata)) return event;
-
-  return {
-    ...event,
-    attributes: {
-      ...event.attributes,
-      metadata: prepareMetadataForDisk(metadata, traceSafety),
-    },
-  };
-}
-
 export function createInspector(
   options: CreateInspectorOptions = {},
 ): Inspector {
@@ -167,7 +147,10 @@ export function createInspector(
   });
 
   async function write(event: PersistedInspectEvent): Promise<void> {
-    await runtime.write(preparePersistedEventForWrite(event, traceSafety));
+    const safe = preparePersistedInspectEventForWrite(event, traceSafety);
+    if (safe !== undefined) {
+      await runtime.write(safe);
+    }
   }
 
   async function run<T>(

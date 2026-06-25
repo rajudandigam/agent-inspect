@@ -13,6 +13,7 @@ import {
   type TraceWriter,
   type TraceWriterStats,
 } from "../../src/writers/index.js";
+import { DEFAULT_MAX_EVENT_BYTES } from "../../src/trace-event-safety.js";
 import type { PersistedInspectEvent } from "../../src/types/persisted-inspect-event.js";
 
 function event(overrides: Partial<PersistedInspectEvent> = {}): PersistedInspectEvent {
@@ -80,6 +81,57 @@ describe("memoryWriter", () => {
 
     expect(writer.getEvents()).toEqual([]);
     expect(writer.getStats?.().writtenEvents).toBe(1);
+  });
+
+  it("prepares unsafe persisted fields before storing events", async () => {
+    const writer = memoryWriter();
+
+    await writer.write(
+      event({
+        attributes: {
+          password: "secret",
+          bigint: BigInt(1),
+          fn: () => "ignored",
+          sym: Symbol("ignored"),
+        },
+        inputSummary: { prompt: "hello", apiKey: "secret-key" },
+      }),
+    );
+
+    expect(writer.getEvents()[0]).toMatchObject({
+      attributes: {
+        password: "[REDACTED]",
+        bigint: "1n",
+        fn: "[Function]",
+        sym: "[Symbol]",
+      },
+      inputSummary: {
+        prompt: "hello",
+        apiKey: "[REDACTED]",
+      },
+    });
+  });
+
+  it("drops invalid uncloneable inputs without blocking later healthy writes", async () => {
+    const writer = memoryWriter();
+    const invalid = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error("proxy get failed");
+        },
+      },
+    ) as PersistedInspectEvent;
+
+    await expect(writer.write(invalid)).resolves.toBeUndefined();
+    await writer.write(event({ eventId: "healthy" }));
+
+    expect(writer.getEvents().map((stored) => stored.eventId)).toEqual(["healthy"]);
+    expect(writer.getStats?.()).toMatchObject({
+      writtenEvents: 1,
+      droppedEvents: 1,
+      lastError: "Invalid persisted inspect event",
+    });
   });
 });
 
@@ -202,19 +254,20 @@ describe("bufferedFileWriter", () => {
     });
   });
 
-  it("isolates serialization and filesystem failures from callers", async () => {
+  it("isolates invalid input and filesystem failures from callers", async () => {
     await withTempDir(async (dir) => {
       const filePath = path.join(dir, "serialization.jsonl");
       const writer = bufferedFileWriter({ filePath, flushIntervalMs: 60_000 });
+      const invalid = new Proxy(
+        {},
+        {
+          get() {
+            throw new Error("proxy get failed");
+          },
+        },
+      ) as PersistedInspectEvent;
 
-      await expect(
-        writer.write(
-          event({
-            eventId: "bad",
-            attributes: { bigint: BigInt(1) } as Record<string, unknown>,
-          }),
-        ),
-      ).resolves.toBeUndefined();
+      await expect(writer.write(invalid)).resolves.toBeUndefined();
       await writer.write(event({ eventId: "good" }));
       await expect(writer.flush?.()).resolves.toBeUndefined();
 
@@ -426,17 +479,90 @@ describe("fileWriter", () => {
     });
   });
 
-  it("drops serialization failures without poisoning later writes", async () => {
+  it("writes JSON-safe BigInt fields and circular truncation markers", async () => {
     await withTempDir(async (dir) => {
-      const filePath = path.join(dir, "serialization.jsonl");
+      const filePath = path.join(dir, "safe-values.jsonl");
+      const writer = fileWriter({ filePath });
+      const circular: Record<string, unknown> = { value: "kept" };
+      circular.self = circular;
+
+      await writer.write(
+        event({
+          attributes: {
+            bigint: BigInt(9),
+            circular,
+          },
+        }),
+      );
+      await writer.flush?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      const row = JSON.parse(raw.trim()) as PersistedInspectEvent;
+
+      expect(row.attributes).toMatchObject({
+        bigint: "9n",
+        circular: {
+          value: "kept",
+          self: "[Circular]",
+        },
+      });
+      expect(writer.getStats?.()).toMatchObject({
+        writtenEvents: 1,
+        droppedEvents: 0,
+      });
+    });
+  });
+
+  it("degrades oversized persisted events to schema-valid bounded rows", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "oversized.jsonl");
       const writer = fileWriter({ filePath });
 
       await writer.write(
         event({
-          eventId: "bad",
-          attributes: { bigint: BigInt(1) } as Record<string, unknown>,
+          attributes: Object.fromEntries(
+            Array.from({ length: 240 }, (_, index) => [
+              `outputPreview${index}`,
+              "x".repeat(DEFAULT_MAX_EVENT_BYTES),
+            ]),
+          ),
+          error: {
+            name: "LargeError",
+            message: "boom".repeat(DEFAULT_MAX_EVENT_BYTES),
+          },
         }),
       );
+      await writer.flush?.();
+
+      const raw = await readFile(filePath, "utf-8");
+      const line = raw.trim();
+      const row = JSON.parse(line) as PersistedInspectEvent;
+
+      expect(Buffer.byteLength(line, "utf8")).toBeLessThanOrEqual(
+        DEFAULT_MAX_EVENT_BYTES,
+      );
+      expect(row).toMatchObject({
+        schemaVersion: "0.2",
+        eventId: "event_1",
+        runId: "run_1",
+        attributes: {
+          truncated: true,
+          reason: "maxEventBytes",
+        },
+      });
+    });
+  });
+
+  it("drops invalid inputs without poisoning later writes", async () => {
+    await withTempDir(async (dir) => {
+      const filePath = path.join(dir, "serialization.jsonl");
+      const writer = fileWriter({ filePath });
+      const invalid = {
+        ...event({ eventId: "bad" }),
+        schemaVersion: "0.3",
+      } as unknown as PersistedInspectEvent;
+
+      await writer.write(invalid);
       await writer.write(event({ eventId: "good" }));
       await writer.close?.();
 
