@@ -5,6 +5,7 @@ import { isPersistedInspectEvent } from "agent-inspect/persisted";
 import { resolveRedactionProfile } from "agent-inspect/advanced";
 import {
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,
@@ -17,6 +18,7 @@ const checks = [
   isPersistedInspectEvent,
   resolveRedactionProfile,
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,

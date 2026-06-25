@@ -202,12 +202,14 @@ Import from `agent-inspect/writers`:
 ```ts
 import {
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,
 } from "agent-inspect/writers";
 import type {
   BufferedFileWriterOptions,
+  CompositeTraceWriterOptions,
   FileTraceWriterOptions,
   TraceWriter,
   TraceWriterStats,
@@ -217,6 +219,7 @@ import type {
 - **`TraceWriter`**: async `write(event)`, optional `flush()`, optional `close()`, optional `getStats()`.
 - **`fileWriter({ dir?, filePath? })`**: appends v0.2 `PersistedInspectEvent` JSONL rows to local disk. By default it derives one file per `event.runId`; `filePath` writes all events to an explicit local file. Filesystem and serialization failures are reflected in writer stats instead of being thrown into application code.
 - **`bufferedFileWriter({ dir?, filePath?, maxQueueSize?, flushIntervalMs?, maxBatchSize?, overflow? })`**: buffers local JSONL writes with bounded queue behavior. Overflow supports `drop-oldest` and `drop-newest`; neither mode throws into application code.
+- **`compositeWriter([...writers])`**: fans out events to multiple explicit local/custom writers. A failing child writer does not prevent other children from receiving events; failures are reflected in composite stats.
 - **`memoryWriter()`**: stores cloned `PersistedInspectEvent` rows in memory for tests, adapter fixtures, and eval harnesses.
 - **`nullWriter()`**: accepts events without retaining them for disabled mode, overhead comparisons, and no-output tests.
 

@@ -1,6 +1,6 @@
 # Trace writer proposal
 
-**Status:** partially implemented for v1.6.0; `TraceWriter`, `fileWriter`, `bufferedFileWriter`, `memoryWriter`, and `nullWriter` are complete on `main`.
+**Status:** implemented for v1.6.0 writer primitives; `TraceWriter`, `fileWriter`, `bufferedFileWriter`, `compositeWriter`, `memoryWriter`, and `nullWriter` are complete on `main`.
 **Scope:** local writer contract and built-in writer implementations.
 **Non-goals:** no network writer, no vendor sink, no provider pricing, no hidden telemetry.
 
@@ -93,6 +93,8 @@ Implemented on `main`.
 Use for file plus memory observer, file plus explicit custom writer, and future multi-destination local workflows.
 
 One failing child writer must not prevent other child writers from receiving events. Failures should be surfaced through diagnostics/stats.
+
+Implemented on `main`.
 
 ## Safety requirements
 

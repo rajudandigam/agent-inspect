@@ -5,6 +5,7 @@ const { isPersistedInspectEvent } = require("agent-inspect/persisted");
 const { resolveRedactionProfile } = require("agent-inspect/advanced");
 const {
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,
@@ -17,6 +18,7 @@ const checks = [
   isPersistedInspectEvent,
   resolveRedactionProfile,
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,

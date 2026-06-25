@@ -59,6 +59,10 @@ export interface BufferedFileWriterOptions extends FileTraceWriterOptions {
   overflow?: BufferedFileWriterOverflowMode;
 }
 
+export interface CompositeTraceWriterOptions {
+  writers: TraceWriter[];
+}
+
 function cloneEvent(event: PersistedInspectEvent): PersistedInspectEvent {
   return structuredClone(event);
 }
@@ -362,6 +366,76 @@ export function bufferedFileWriter(
       await drain(true);
       closed = true;
       clearTimer();
+    },
+    getStats() {
+      return cloneStats(stats);
+    },
+  };
+}
+
+export function compositeWriter(
+  writersOrOptions: TraceWriter[] | CompositeTraceWriterOptions,
+): TraceWriter {
+  const stats = createInitialStats();
+  const writers = Array.isArray(writersOrOptions)
+    ? [...writersOrOptions]
+    : [...writersOrOptions.writers];
+  let closed = false;
+
+  const recordChildFailure = (error: unknown): void => {
+    stats.droppedEvents += 1;
+    stats.lastError = normalizeError(error);
+  };
+
+  return {
+    async write(event) {
+      if (closed) {
+        recordDropped(stats, "Trace writer is closed");
+        return;
+      }
+
+      const childResults = await Promise.all(
+        writers.map(async (writer) => {
+          try {
+            await writer.write(cloneEvent(event));
+            return true;
+          } catch (error) {
+            recordChildFailure(error);
+            return false;
+          }
+        }),
+      );
+
+      if (childResults.some(Boolean)) {
+        stats.writtenEvents += 1;
+      } else {
+        recordDropped(stats, "No composite trace writer accepted the event");
+      }
+    },
+    async flush() {
+      await Promise.all(
+        writers.map(async (writer) => {
+          try {
+            await writer.flush?.();
+          } catch (error) {
+            stats.lastError = normalizeError(error);
+          }
+        }),
+      );
+      markFlush(stats);
+    },
+    async close() {
+      if (closed) return;
+      await Promise.all(
+        writers.map(async (writer) => {
+          try {
+            await writer.close?.();
+          } catch (error) {
+            stats.lastError = normalizeError(error);
+          }
+        }),
+      );
+      closed = true;
     },
     getStats() {
       return cloneStats(stats);

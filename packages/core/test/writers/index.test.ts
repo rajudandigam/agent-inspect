@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   bufferedFileWriter,
+  compositeWriter,
   fileWriter,
   memoryWriter,
   nullWriter,
@@ -250,6 +251,88 @@ describe("bufferedFileWriter", () => {
         writtenEvents: 0,
         droppedEvents: 1,
       });
+    });
+  });
+});
+
+describe("compositeWriter", () => {
+  it("fans out cloned events to every child writer", async () => {
+    const first = memoryWriter();
+    const second = memoryWriter();
+    const writer = compositeWriter([first, second]);
+    const source = event({ eventId: "fanout" });
+
+    await writer.write(source);
+    source.attributes = { changed: true };
+    await writer.flush?.();
+    await writer.close?.();
+
+    expect(first.getEvents()).toEqual([
+      expect.objectContaining({
+        eventId: "fanout",
+        attributes: { nested: { value: "original" } },
+      }),
+    ]);
+    expect(second.getEvents()).toEqual(first.getEvents());
+    expect(writer.getStats?.()).toEqual({
+      writtenEvents: 1,
+      droppedEvents: 0,
+      flushCount: 1,
+      lastFlushAt: expect.any(String),
+    });
+  });
+
+  it("continues writing to healthy children when one child throws", async () => {
+    const healthy = memoryWriter();
+    const failing: TraceWriter = {
+      async write() {
+        throw new Error("child write failed");
+      },
+      async flush() {
+        throw new Error("child flush failed");
+      },
+      async close() {
+        throw new Error("child close failed");
+      },
+    };
+    const writer = compositeWriter({ writers: [failing, healthy] });
+
+    await expect(writer.write(event({ eventId: "kept" }))).resolves.toBeUndefined();
+    await expect(writer.flush?.()).resolves.toBeUndefined();
+    await expect(writer.close?.()).resolves.toBeUndefined();
+
+    expect(healthy.getEvents().map((stored) => stored.eventId)).toEqual(["kept"]);
+    expect(writer.getStats?.()).toMatchObject({
+      writtenEvents: 1,
+      droppedEvents: 1,
+      flushCount: 1,
+      lastError: expect.any(String),
+    });
+  });
+
+  it("drops events when no child writer accepts them", async () => {
+    const writer = compositeWriter([]);
+
+    await writer.write(event());
+
+    expect(writer.getStats?.()).toMatchObject({
+      writtenEvents: 0,
+      droppedEvents: 1,
+      lastError: "No composite trace writer accepted the event",
+    });
+  });
+
+  it("drops writes after close", async () => {
+    const child = memoryWriter();
+    const writer = compositeWriter([child]);
+
+    await writer.close?.();
+    await writer.write(event());
+
+    expect(child.getEvents()).toEqual([]);
+    expect(writer.getStats?.()).toMatchObject({
+      writtenEvents: 0,
+      droppedEvents: 1,
     });
   });
 });
