@@ -22,6 +22,7 @@
     "agent-inspect-recipe-rag-pipeline",
     "agent-inspect-recipe-retry-fallback",
     "agent-inspect-recipe-tool-failure-retry",
-    "agent-inspect-recipe-winston-json-logs"
+    "agent-inspect-recipe-winston-json-logs",
+    "@agent-inspect/openai-agents"
   ]
 }
