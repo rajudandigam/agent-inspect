@@ -131,6 +131,49 @@ describe("trace reader contract", () => {
     ]);
   });
 
+  it("reports ambiguity when top candidates are close in confidence", async () => {
+    const first = toyReader({
+      format: "first",
+      detect() {
+        return { format: "first", confidence: 0.91 };
+      },
+    });
+    const second = toyReader({
+      format: "second",
+      detect() {
+        return { format: "second", confidence: 0.88 };
+      },
+    });
+
+    const detection = await detectTraceFormat(
+      { type: "string", content: "toy" },
+      { readers: [first, second] },
+    );
+
+    expect(detection.status).toBe("ambiguous");
+    expect(detection.warnings.map((warning) => warning.code)).toContain(
+      "ambiguous_format_candidates",
+    );
+  });
+
+  it("ignores low-confidence candidates", async () => {
+    const reader = toyReader({
+      detect() {
+        return { format: "toy-json", confidence: 0.2 };
+      },
+    });
+
+    const detection = await detectTraceFormat(
+      { type: "string", content: "toy" },
+      { readers: [reader] },
+    );
+
+    expect(detection.status).toBe("unsupported");
+    expect(detection.warnings).toEqual([
+      expect.objectContaining({ code: "low_confidence_candidates" }),
+    ]);
+  });
+
   it("reads with the detected reader and preserves detection warnings", async () => {
     const reader = toyReader({
       detect() {
@@ -330,5 +373,52 @@ describe("AgentInspect JSONL reader", () => {
 
     expect(result.events).toHaveLength(1);
     expect(result.format).toBe("agent-inspect-v0.1-jsonl");
+  });
+
+  it("preserves native v0.2 rows when reading mixed AgentInspect JSONL", async () => {
+    const content = [
+      '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"mixed_reader","name":"mixed","startTime":1}',
+      '{"schemaVersion":"0.2","eventId":"native_tool","runId":"mixed_reader","kind":"TOOL","name":"native-tool","status":"running","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"adapter","name":"native"},"attributes":{"custom":{"kept":true}},"trace":{"traceId":"trace-1","spanId":"span-1"}}',
+      '{"schemaVersion":"0.1","event":"run_completed","timestamp":2,"runId":"mixed_reader","status":"success","endTime":2,"durationMs":1}',
+    ].join("\n");
+
+    const result = await readTrace({ type: "string", content });
+
+    expect(result.format).toBe("agent-inspect-mixed-jsonl");
+    expect(result.warnings.map((warning) => warning.code)).toContain(
+      "mixed_agent_inspect_jsonl",
+    );
+    expect(result.events.map((event) => event.eventId)).toEqual([
+      expect.stringContaining("run_started"),
+      "native_tool",
+      expect.stringContaining("run_completed"),
+    ]);
+    expect(result.events[1]).toMatchObject({
+      eventId: "native_tool",
+      source: { type: "adapter", name: "native" },
+      attributes: { custom: { kept: true } },
+      trace: { traceId: "trace-1", spanId: "span-1" },
+    });
+  });
+
+  it("returns structured warnings for oversized input", async () => {
+    const oversized = "x".repeat(10 * 1024 * 1024 + 1);
+
+    const detection = await detectTraceFormat({
+      type: "string",
+      content: oversized,
+    });
+
+    expect(detection).toMatchObject({
+      status: "unsupported",
+      warnings: [expect.objectContaining({ code: "input_too_large" })],
+    });
+
+    await expect(
+      readTrace({ type: "string", content: oversized }),
+    ).rejects.toMatchObject({
+      code: "unsupported_format",
+      warnings: [expect.objectContaining({ code: "input_too_large" })],
+    });
   });
 });

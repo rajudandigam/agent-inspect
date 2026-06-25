@@ -2,7 +2,10 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { parseTraceJsonl, type TraceJsonlFormat } from "../read-trace.js";
-import { traceEventsToPersistedInspectEvents } from "../persisted/from-trace-event.js";
+import {
+  traceEventToPersistedInspectEvent,
+  traceEventsToPersistedInspectEvents,
+} from "../persisted/from-trace-event.js";
 import { persistedInspectEventsToRunTrees } from "../persisted/tree-bridge.js";
 import type { InspectRunTree } from "../types/inspect-event.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
@@ -85,6 +88,11 @@ interface ResolvedTraceInput {
   sourceFiles: string[];
 }
 
+const DEFAULT_MAX_TRACE_INPUT_BYTES = 10 * 1024 * 1024;
+const MIN_DETECTION_CONFIDENCE = 0.5;
+const AMBIGUOUS_CONFIDENCE_DELTA = 0.05;
+const resolvedInputCache = new WeakMap<TraceInput, Promise<ResolvedTraceInput | undefined>>();
+
 export type TraceReadErrorCode =
   | "unsupported_format"
   | "ambiguous_format"
@@ -137,6 +145,18 @@ function collectWarnings(
   return candidates.flatMap((candidate) => candidate.warnings ?? []);
 }
 
+function attachSingleSourceFile(
+  warnings: readonly TraceReadWarning[],
+  resolved: ResolvedTraceInput,
+): TraceReadWarning[] {
+  if (resolved.sourceFiles.length !== 1) return [...warnings];
+  const [sourceFile] = resolved.sourceFiles;
+  return warnings.map((warning) => ({
+    ...warning,
+    sourceFile: warning.sourceFile ?? sourceFile,
+  }));
+}
+
 function findReaderByFormat(
   format: string,
   readers: readonly TraceReader[],
@@ -153,14 +173,42 @@ async function jsonlFilesInDirectory(dirPath: string): Promise<string[]> {
 }
 
 async function resolveInput(input: TraceInput): Promise<ResolvedTraceInput | undefined> {
+  const cached = resolvedInputCache.get(input);
+  if (cached) return cached;
+
+  const promise = resolveInputUncached(input);
+  resolvedInputCache.set(input, promise);
+  return promise;
+}
+
+function assertInputWithinBounds(content: string, sourceFile?: string): void {
+  const bytes = Buffer.byteLength(content, "utf8");
+  if (bytes <= DEFAULT_MAX_TRACE_INPUT_BYTES) return;
+  throw new TraceReadError("unsupported_format", "Trace input exceeds the local reader size limit.", [
+    {
+      code: "input_too_large",
+      message: `Trace input is ${bytes} bytes; max is ${DEFAULT_MAX_TRACE_INPUT_BYTES} bytes.`,
+      severity: "error",
+      ...(sourceFile !== undefined ? { sourceFile } : {}),
+    },
+  ]);
+}
+
+async function resolveInputUncached(
+  input: TraceInput,
+): Promise<ResolvedTraceInput | undefined> {
   if (input.type === "string") {
+    assertInputWithinBounds(input.content);
     return { content: input.content, sourceFiles: [] };
   }
   if (input.type === "buffer") {
-    return { content: input.content.toString("utf-8"), sourceFiles: [] };
+    const content = input.content.toString("utf-8");
+    assertInputWithinBounds(content);
+    return { content, sourceFiles: [] };
   }
   if (input.type === "file") {
     const content = await readFile(input.path, "utf-8");
+    assertInputWithinBounds(content, input.path);
     return { content, sourceFiles: [input.path] };
   }
   if (input.type === "directory") {
@@ -168,8 +216,10 @@ async function resolveInput(input: TraceInput): Promise<ResolvedTraceInput | und
     const parts = await Promise.all(
       files.map(async (file) => (await readFile(file, "utf-8")).trimEnd()),
     );
+    const content = parts.filter((part) => part.trim() !== "").join("\n");
+    assertInputWithinBounds(content, input.path);
     return {
-      content: parts.filter((part) => part.trim() !== "").join("\n"),
+      content,
       sourceFiles: files,
     };
   }
@@ -186,8 +236,12 @@ function detectJsonlFormat(content: string): {
   let validRows = 0;
   let invalidJsonRows = 0;
   let unknownSchemaRows = 0;
+  let firstInvalidJsonLine: number | undefined;
+  let firstUnknownSchemaLine: number | undefined;
 
+  let lineNumber = 0;
   for (const line of content.split(/\r?\n/)) {
+    lineNumber += 1;
     const trimmed = line.trim();
     if (trimmed === "") continue;
 
@@ -196,6 +250,7 @@ function detectJsonlFormat(content: string): {
       parsed = JSON.parse(trimmed) as unknown;
     } catch {
       invalidJsonRows += 1;
+      firstInvalidJsonLine ??= lineNumber;
       continue;
     }
 
@@ -219,6 +274,7 @@ function detectJsonlFormat(content: string): {
     }
 
     unknownSchemaRows += 1;
+    firstUnknownSchemaLine ??= lineNumber;
   }
 
   const warnings: TraceReadWarning[] = [];
@@ -227,6 +283,7 @@ function detectJsonlFormat(content: string): {
       code: "invalid_jsonl_rows",
       message: `Skipped ${invalidJsonRows} invalid JSONL row(s) during format detection.`,
       severity: "warning",
+      ...(firstInvalidJsonLine !== undefined ? { line: firstInvalidJsonLine } : {}),
     });
   }
   if (unknownSchemaRows > 0) {
@@ -234,6 +291,7 @@ function detectJsonlFormat(content: string): {
       code: "unknown_schema_rows",
       message: `Skipped ${unknownSchemaRows} row(s) with unknown schemaVersion during format detection.`,
       severity: "warning",
+      ...(firstUnknownSchemaLine !== undefined ? { line: firstUnknownSchemaLine } : {}),
     });
   }
 
@@ -264,6 +322,15 @@ function persistedEventsForParsedTrace(
   if (parsed.format === "0.2" && parsed.persisted.length > 0) {
     return [...parsed.persisted];
   }
+  if (parsed.format === "mixed" && parsed.rows.length > 0) {
+    return parsed.rows.map((row, index) => {
+      if (row.format === "0.2") return row.event;
+      return traceEventToPersistedInspectEvent(row.event, {
+        eventIndex: index,
+        sourceName: "agent-inspect-jsonl-reader",
+      });
+    });
+  }
   return traceEventsToPersistedInspectEvents(parsed.events, {
     sourceName: "agent-inspect-jsonl-reader",
   });
@@ -285,7 +352,7 @@ export const agentInspectJsonlReader: TraceReader = {
       confidence: 0.95,
       readerName: "AgentInspect JSONL",
       description: agentInspectFormatLabel(detected.format),
-      warnings: detected.warnings,
+      warnings: attachSingleSourceFile(detected.warnings, resolved),
     };
   },
   async read(input) {
@@ -306,14 +373,17 @@ export const agentInspectJsonlReader: TraceReader = {
       runs: persistedInspectEventsToRunTrees(events, { skipInvalid: true }),
       warnings:
         parsed.format === "mixed"
-          ? [
-              {
-                code: "mixed_agent_inspect_jsonl",
-                message:
-                  "Trace input mixes schemaVersion 0.1 and 0.2 rows; events were normalized for reading.",
-                severity: "warning",
-              },
-            ]
+          ? attachSingleSourceFile(
+              [
+                {
+                  code: "mixed_agent_inspect_jsonl",
+                  message:
+                    "Trace input mixes schemaVersion 0.1 and 0.2 rows; events were normalized for reading.",
+                  severity: "warning",
+                },
+              ],
+              resolved,
+            )
           : [],
       unsupportedFields: [],
       sourceFiles: resolved.sourceFiles,
@@ -372,6 +442,10 @@ export async function detectTraceFormat(
         candidates.push(normalizeCandidate(reader, candidate));
       }
     } catch (error) {
+      if (error instanceof TraceReadError) {
+        warnings.push(...error.warnings);
+        continue;
+      }
       warnings.push({
         code: "reader_detect_failed",
         message:
@@ -383,9 +457,21 @@ export async function detectTraceFormat(
     }
   }
 
-  const sorted = sortCandidates(candidates);
+  const sorted = sortCandidates(
+    candidates.filter((candidate) => candidate.confidence >= MIN_DETECTION_CONFIDENCE),
+  );
   const candidateWarnings = collectWarnings(sorted);
-  const allWarnings = [...warnings, ...candidateWarnings];
+  const lowConfidenceWarnings: TraceReadWarning[] =
+    candidates.length > sorted.length
+      ? [
+          {
+            code: "low_confidence_candidates",
+            message: `Ignored ${candidates.length - sorted.length} low-confidence format candidate(s).`,
+            severity: "info",
+          },
+        ]
+      : [];
+  const allWarnings = [...warnings, ...candidateWarnings, ...lowConfidenceWarnings];
 
   if (sorted.length === 0) {
     return {
@@ -396,11 +482,21 @@ export async function detectTraceFormat(
   }
 
   const [best, second] = sorted;
-  if (second !== undefined && second.confidence === best.confidence) {
+  if (
+    second !== undefined &&
+    best.confidence - second.confidence <= AMBIGUOUS_CONFIDENCE_DELTA
+  ) {
     return {
       status: "ambiguous",
       candidates: sorted,
-      warnings: allWarnings,
+      warnings: [
+        ...allWarnings,
+        {
+          code: "ambiguous_format_candidates",
+          message: `Top trace format candidates are within ${AMBIGUOUS_CONFIDENCE_DELTA} confidence.`,
+          severity: "warning",
+        },
+      ],
     };
   }
 
@@ -451,6 +547,13 @@ export async function readTrace(
       warnings: [...detection.warnings, ...result.warnings],
     };
   } catch (error) {
+    if (error instanceof TraceReadError) {
+      throw new TraceReadError(
+        error.code,
+        error.message,
+        [...detection.warnings, ...error.warnings],
+      );
+    }
     throw new TraceReadError(
       "reader_failed",
       error instanceof Error && error.message.trim() !== ""

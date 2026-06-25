@@ -7,12 +7,18 @@ import { warn } from "./utils.js";
 
 export type TraceJsonlFormat = "0.1" | "0.2" | "mixed" | "empty";
 
+export type ParsedTraceJsonlRow =
+  | { format: "0.1"; event: TraceEvent; sourceLine: number }
+  | { format: "0.2"; event: PersistedInspectEvent; sourceLine: number };
+
 export interface ParseTraceJsonlResult {
   format: TraceJsonlFormat;
   /** Count of valid source JSONL rows before any one-to-many normalization. */
   sourceEventCount: number;
   events: TraceEvent[];
   persisted: PersistedInspectEvent[];
+  /** Valid source rows in JSONL order, before cross-version normalization. */
+  rows: ParsedTraceJsonlRow[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -46,11 +52,14 @@ export function parseTraceJsonl(
   };
   const persisted: PersistedInspectEvent[] = [];
   const traceEvents: TraceEvent[] = [];
+  const rows: ParsedTraceJsonlRow[] = [];
   let sourceEventCount = 0;
   let saw01 = false;
   let saw02 = false;
+  let lineNumber = 0;
 
   for (const line of raw.split(/\r?\n/)) {
+    lineNumber += 1;
     const trimmed = line.trim();
     if (trimmed === "") continue;
 
@@ -68,6 +77,7 @@ export function parseTraceJsonl(
       if (validate(parsed)) {
         sourceEventCount += 1;
         traceEvents.push(parsed);
+        rows.push({ format: "0.1", event: parsed, sourceLine: lineNumber });
       } else {
         emitWarning("Skipped invalid trace event line in trace file");
       }
@@ -79,6 +89,7 @@ export function parseTraceJsonl(
       if (isPersistedInspectEvent(parsed)) {
         sourceEventCount += 1;
         persisted.push(parsed);
+        rows.push({ format: "0.2", event: parsed, sourceLine: lineNumber });
         traceEvents.push(...persistedInspectEventToTraceEvents(parsed));
       } else {
         emitWarning("Skipped invalid persisted inspect event line in trace file");
@@ -100,7 +111,7 @@ export function parseTraceJsonl(
   else if (saw01) format = "0.1";
   else if (saw02) format = "0.2";
 
-  return { format, sourceEventCount, events: traceEvents, persisted };
+  return { format, sourceEventCount, events: traceEvents, persisted, rows };
 }
 
 /**

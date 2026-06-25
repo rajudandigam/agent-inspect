@@ -49,12 +49,14 @@ describe("parseTraceJsonl", () => {
       '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"r","name":"n","startTime":1}',
       '{"schemaVersion":"0.2","eventId":"e","runId":"r","kind":"RUN","name":"n","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"manual"}}',
     ].join("\n");
-    const { format, sourceEventCount, events } = parseTraceJsonl(raw, {
+    const { format, sourceEventCount, events, rows } = parseTraceJsonl(raw, {
       validate: validateEvent,
     });
     expect(format).toBe("mixed");
     expect(sourceEventCount).toBe(2);
     expect(events.length).toBeGreaterThanOrEqual(2);
+    expect(rows.map((row) => row.format)).toEqual(["0.1", "0.2"]);
+    expect(rows.map((row) => row.sourceLine)).toEqual([1, 2]);
   });
 
   it("preserves source-row order and adjacent one-to-many expansion", async () => {
@@ -63,7 +65,7 @@ describe("parseTraceJsonl", () => {
       "fixtures/mixed-v0.1-v0.2-order.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
-    const { format, sourceEventCount, events, persisted } = parseTraceJsonl(raw, {
+    const { format, sourceEventCount, events, persisted, rows } = parseTraceJsonl(raw, {
       validate: validateEvent,
       warnings: false,
     });
@@ -71,6 +73,7 @@ describe("parseTraceJsonl", () => {
     expect(format).toBe("mixed");
     expect(sourceEventCount).toBe(3);
     expect(persisted.map((event) => event.eventId)).toEqual(["mixed-tool"]);
+    expect(rows.map((row) => row.format)).toEqual(["0.1", "0.2", "0.1"]);
     expect(events.map((event) => event.event)).toEqual([
       "run_started",
       "step_started",
