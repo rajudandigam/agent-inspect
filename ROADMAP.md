@@ -70,9 +70,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.7.0 framework-native adoption planning** — v1.6.0 is published, and the runtime/reader/writer foundation is available for optional adapter packages. The v1.7 train starts with RFC verification and docs alignment before any adapter runtime code lands.
+**v1.7.0 framework-native adoption release readiness** — v1.6.0 is published, and the runtime/reader/writer foundation is available for optional adapter packages. The v1.7 train has landed the AI SDK adapter work and is moving through the Changesets release path.
 
-The next minor train is **v1.7.0 framework-native adoption**: AI SDK v6 telemetry integration, optional OpenAI Agents JS tracing processor evaluation, LangGraph support decisions, and adapter conformance fixtures. The AI SDK adapter work on main remains local-only and metadata-first, with `recordInputs: false` / `recordOutputs: false` examples and a no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
+The next minor release is **v1.7.0 framework-native adoption**: AI SDK v6 telemetry integration, OpenAI Agents JS tracing processor evaluation, LangGraph support decisions, and adapter conformance fixtures. The AI SDK adapter work on main remains local-only and metadata-first, with `recordInputs: false` / `recordOutputs: false` examples and a no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -141,7 +141,7 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v1.5.0** — API boundary, what/report, dual-format read | **Released** 2026-06-24 | [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) |
 | **v1.5 corrective train** — internal fixes after v1.5.0 | **Complete on main; not a publish target by default** | [V1.5.1-RELEASE-READINESS.md](docs/implementation/V1.5.1-RELEASE-READINESS.md) |
 | **v1.6.0** — Runtime foundation + universal ingestion | **Released** 2026-06-25 | [V1.6.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md) |
-| **v1.7.0** — Framework-native adoption | **Planning** | [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md) |
+| **v1.7.0** — Framework-native adoption | **Release readiness** | [V1.7.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

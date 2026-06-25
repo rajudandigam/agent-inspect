@@ -4,46 +4,46 @@
 
 ```yaml
 train: "v1.7.0"
-chunk: "v1.7-release-readiness"
-status: "ready"
-dependsOn: "v1.7-adapter-conformance-fixture-matrix"
+chunk: "v1.7-changesets-release-pr"
+status: "pending-automation"
+dependsOn: "v1.7-release-readiness"
 ```
 
 ## Goal
 
-Prepare the v1.7 release-readiness gate after all approved adapter chunks land.
+Allow the repository Changesets workflow to create the v1.7 Version Packages PR, validate that PR, and merge it only if CI remains green and package metadata is safe.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/ROADMAP-V1.7-TO-V3.md`
 - `docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md`
-- `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md`
-- directly related README/API/CLI/SCHEMA/LIMITATIONS/KNOWN-ISSUES/CHANGELOG/package metadata files only
+- `docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md`
+- `.github/workflows/publish.yml`
+- `.changeset/config.json`
 
 ## In scope
 
-1. Align README/API/CLI/SCHEMA/LIMITATIONS/KNOWN-ISSUES/CHANGELOG as needed for v1.7.
-2. Create `docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md` with exact validation evidence.
-3. Run the required release-readiness gate.
-4. Decide whether package/version/changelog release-preparation changes are safe under the existing Changesets workflow.
+1. Confirm the Changesets action opens a v1.7 Version Packages PR from the pushed changeset.
+2. Confirm the PR bumps the linked public package set to `1.7.0`: `agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/ai-sdk`.
+3. Confirm `@agent-inspect/openai-agents` remains private and unpublished.
+4. Validate the PR checks before merge.
+5. After merge, confirm the publish workflow publishes v1.7.0 and creates package tags/releases.
 
 ## Out of scope
 
-- publishing from the local machine
-- creating git tags or GitHub releases manually
-- live provider calls, network upload behavior, hosted sinks
-- runtime implementation beyond the completed chunks
-- root/core dependencies on AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, or LangChain
+- local `npm publish`, `pnpm publish`, or `changeset publish`
+- manual tag or GitHub release creation
+- package implementation changes beyond release automation fixes
+- default network upload behavior or hosted sinks
 
 ## Acceptance criteria
 
-- Release-readiness evidence exists and matches executed commands.
-- Package/version strategy is documented.
-- Full release gate and package smoke checks pass.
-- State file records whether release preparation is pending or complete.
+- Existing public packages report `1.7.0` on npm.
+- New `@agent-inspect/ai-sdk` package reports `1.7.0` on npm.
+- `@agent-inspect/openai-agents` remains unpublished/private.
+- Release train state records v1.7.0 as published.
 
 ## Stop condition
 
-Stop if validation fails for a reason outside current scope, package metadata is unsafe, publishing credentials are required locally, or release preparation would conflict with the repository's auto-publish Changesets workflow.
+Stop if the Version Packages PR contains unexpected package bumps, CI fails for a reason outside release automation scope, npm Trusted Publishing is missing for the new `@agent-inspect/ai-sdk` package, or local publishing credentials would be required.

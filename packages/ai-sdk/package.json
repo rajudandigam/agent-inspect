@@ -3,7 +3,6 @@
   "version": "1.6.0",
   "license": "MIT",
   "type": "module",
-  "private": true,
   "description": "Optional Vercel AI SDK telemetry integration for AgentInspect local traces",
   "repository": {
     "type": "git",

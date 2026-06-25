@@ -27,6 +27,14 @@ This document states what AgentInspect **does not** provide today. It complement
 - **Conservative detection:** `agent-inspect open` does not silently accept arbitrary JSON. Unsupported or ambiguous inputs produce errors/warnings rather than guessed traces.
 - **Large inputs:** reader inputs are bounded and read into local memory. This is not a database index or production log warehouse.
 
+## Framework adapters (v1.7)
+
+- **AI SDK integration is explicit telemetry wiring.** Use `@agent-inspect/ai-sdk` through AI SDK `experimental_telemetry.integrations`; AgentInspect does not wrap providers, patch fetch, or enable telemetry globally.
+- **AI SDK privacy settings are caller-owned.** Examples set `recordInputs: false` and `recordOutputs: false`; leaving those enabled in user code can cause the AI SDK telemetry layer to include richer data before AgentInspect receives events.
+- **OpenAI Agents JS support is scaffold-only.** `@agent-inspect/openai-agents` documents the safe `setTraceProcessors()` boundary but does not map runtime spans yet and is not part of the v1.7 published package set.
+- **LangGraph support is a boundary decision, not a separate package.** Initial support is expected through `@agent-inspect/langchain` callbacks unless no-network fixtures prove a separate package is needed.
+- **No root/core adapter dependencies.** AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, and LangChain remain outside the root/core runtime dependency graph.
+
 ## LangChain streaming (v1.3.0)
 
 - **Metadata-focused only** — `stream: true` records chunk counts, timing, and optional bounded previews; it is **not** a replay/cassette system.
