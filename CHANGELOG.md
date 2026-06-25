@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.6.0
 
-Internal corrective and roadmap-planning work on `main`. No package version, changeset, tag, or publish is implied until maintainers explicitly confirm the next minor release.
+Released **2026-06-25**.
 
 ### Added
 
@@ -32,8 +32,8 @@ Internal corrective and roadmap-planning work on `main`. No package version, cha
 
 - Manual trace writing remains `schemaVersion: "0.1"`.
 - v0.2 remains an experimental persisted-event foundation and dual-read input format, not the default writer.
-- No provider pricing, token counting, cost engine, vendor upload, version bump, changeset, tag, or publish is included in the implementation commits.
-- Routine corrective work is accumulated into the next minor release by default rather than published as a patch.
+- No provider pricing, token counting, cost engine, vendor upload, hosted ingestion, replay, or default telemetry behavior is included.
+- This release includes corrective work accumulated after v1.5.0 plus the v1.6.0 runtime/reader foundation.
 
 ## 1.5.0
 

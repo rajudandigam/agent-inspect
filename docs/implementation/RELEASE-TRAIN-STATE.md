@@ -6,9 +6,9 @@
 baselineVersion: "1.5.0"
 publishedVersion: "1.5.0"
 currentTrain: "v1.6.0"
-trainStatus: "in_progress"
+trainStatus: "release_prepared"
 branch: "main"
-lastValidationLevel: "chunk 14 full release-readiness gate"
+lastValidationLevel: "v1.6.0 release-preparation full gate"
 completedChunks:
   - "v1.5-internal-corrections"
   - "canonical-roadmap-reset"
@@ -30,8 +30,8 @@ completedChunks:
   - "chunk 13 recipes and documentation"
   - "chunk 14 release readiness"
 currentChunk: "v1.6.0-release-preparation"
-pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Prepare v1.6.0 version/changelog release-preparation changes; run the full release gate again before any publish"
+pendingManualGate: "npm publish, git tag, and GitHub release require safe credentials/process"
+nextAction: "Publish exactly v1.6.0 only if npm credentials and repository release process are available and safe; otherwise maintainer publishes manually"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-25"
 ```

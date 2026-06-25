@@ -1,5 +1,16 @@
 # @agent-inspect/tui
 
+## 1.6.0
+
+### Minor Changes
+
+- Linked v1.6.0 release: local runtime/writer foundation, universal trace readers, `agent-inspect open`, shared reader integration, and deterministic runtime/ingestion recipes.
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@1.6.0
+
 ## 1.5.0
 
 ### Minor Changes
