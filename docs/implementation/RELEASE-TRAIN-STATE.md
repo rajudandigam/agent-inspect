@@ -3,12 +3,12 @@
 > **This file is an operational pointer only.** Git state, package manifests, and tests are authoritative.
 
 ```yaml
-baselineVersion: "1.5.0"
+baselineVersion: "1.6.0"
 publishedVersion: "1.6.0"
-currentTrain: "v1.6.0"
-trainStatus: "published"
+currentTrain: "v1.7.0"
+trainStatus: "planning"
 branch: "main"
-lastValidationLevel: "v1.6.0 CI publish workflow"
+lastValidationLevel: "docs"
 completedChunks:
   - "v1.5-internal-corrections"
   - "canonical-roadmap-reset"
@@ -29,14 +29,15 @@ completedChunks:
   - "chunk 12 shared reader integration"
   - "chunk 13 recipes and documentation"
   - "chunk 14 release readiness"
-currentChunk: "v1.6.0-published"
+  - "v1.6.0 published"
+currentChunk: "v1.7-planning-reset"
 pendingManualGate: "none"
-nextAction: "Post-release verification/monitoring; begin next train only after maintainer direction"
+nextAction: "Prepare v1.7 execution plan and adapter RFC alignment before implementation"
 publishedAt: "2026-06-25"
 updatedAt: "2026-06-25"
 ```
 
-**Active roadmap:** [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md)
+**Active roadmap:** [ROADMAP-V1.7-TO-V3.md](./ROADMAP-V1.7-TO-V3.md)
 
 **Architecture RFC index:** [../proposals/README.md](../proposals/README.md)
 

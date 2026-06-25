@@ -8,11 +8,20 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.5.0](CHANGELOG.md#150) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
+**Current release on npm:** [1.6.0](CHANGELOG.md#160) (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
 
 ---
 
 ## Released recently
+
+Shipped in **1.6.0** (see [CHANGELOG.md](CHANGELOG.md#160)):
+
+- **Runtime foundation:** experimental `agent-inspect/writers`, `createInspector()`, and low-level runtime APIs for local instance-scoped tracing.
+- **Universal local ingestion:** experimental `agent-inspect/readers`, local AgentInspect/OpenInference/OTLP readers, and `agent-inspect open`.
+- **Shared reader pipeline:** compatible inspection commands now use the canonical local read path.
+- **Adoption:** deterministic runtime/universal-ingestion recipe coverage.
+- **Linked release:** all three npm packages at **1.6.0**.
+- **Unchanged by design:** local-first, no vendor upload, manual traces remain `schemaVersion: "0.1"`.
 
 Shipped in **1.5.0** (see [CHANGELOG.md](CHANGELOG.md#150)):
 
@@ -61,9 +70,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**Canonical roadmap reset + v1.6 planning** — v1.5.0 is published, and the internal v1.5 corrective fixes are complete on `main`. Routine corrective work will be accumulated into the next minor release rather than published as a patch unless maintainers explicitly authorize an emergency patch.
+**v1.7.0 framework-native adoption planning** — v1.6.0 is published, and the runtime/reader/writer foundation is available for optional adapter packages. The v1.7 train starts with RFC verification and docs alignment before any adapter runtime code lands.
 
-The next minor train is **v1.6.0 runtime foundation and universal trace ingestion**: inspector instances, trace writers, trace readers, local OpenInference/OTLP ingestion, and `agent-inspect open`. See [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md).
+The next minor train is **v1.7.0 framework-native adoption**: AI SDK v6 telemetry integration, optional OpenAI Agents JS tracing processor evaluation, LangGraph support decisions, and adapter conformance fixtures. See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -71,7 +80,7 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.6.0 planning** | Runtime/read/write architecture RFCs before implementation — see [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md) and [proposals](docs/proposals/README.md). |
+| **v1.7.0 planning** | Adapter RFC verification before implementation — see [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md), [V1.7.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md), and [AI-SDK-INTEGRATION.md](docs/proposals/AI-SDK-INTEGRATION.md). |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
@@ -83,11 +92,10 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ## Next
 
-Published sequence after **v1.5.0** — directional, not delivery guarantees.
+Published sequence after **v1.6.0** — directional, not delivery guarantees.
 
 | Release | Area | Intent |
 | ------- | ---- | ------ |
-| **v1.6.0** | Runtime foundation + universal ingestion | `createInspector`, trace writers/readers, OpenInference/OTLP local readers, universal `open`. |
 | **v1.7.0** | Framework adapters | AI SDK, OpenAI Agents, LangGraph — after v1.6 reader/writer foundation. |
 | **v1.8.0** | CI reporters + deterministic checks | `@agent-inspect/vitest`, `@agent-inspect/jest`; local `cohort`, `check`, `assert` helpers ([#24](https://github.com/rajudandigam/agent-inspect/issues/24), [#28](https://github.com/rajudandigam/agent-inspect/issues/28)). |
 | **v1.9.0** | Standards hardening + v2 freeze | OpenInference / OTLP conformance fixtures and schema 1.0 freeze ([#25](https://github.com/rajudandigam/agent-inspect/issues/25)). |
@@ -132,7 +140,8 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
 | **v1.5.0** — API boundary, what/report, dual-format read | **Released** 2026-06-24 | [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) |
 | **v1.5 corrective train** — internal fixes after v1.5.0 | **Complete on main; not a publish target by default** | [V1.5.1-RELEASE-READINESS.md](docs/implementation/V1.5.1-RELEASE-READINESS.md) |
-| **v1.6.0** — Runtime foundation + universal ingestion | **Planning** | [ROADMAP-V1.6-TO-V3.md](docs/implementation/ROADMAP-V1.6-TO-V3.md) |
+| **v1.6.0** — Runtime foundation + universal ingestion | **Released** 2026-06-25 | [V1.6.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md) |
+| **v1.7.0** — Framework-native adoption | **Planning** | [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

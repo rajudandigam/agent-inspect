@@ -3,43 +3,53 @@
 ## Identity
 
 ```yaml
-train: "v1.6.0"
-chunk: "v1.6.0-post-publish-verification"
-status: "complete"
-dependsOn: "v1.6.0-release-preparation"
+train: "v1.7.0"
+chunk: "v1.7-planning-reset"
+status: "ready"
+dependsOn: "v1.6.0 published"
 ```
 
 ## Goal
 
-Record the completed v1.6.0 CI publish and leave the repository ready for maintainer review.
+Prepare the v1.7 execution plan and adapter documentation alignment before any adapter runtime implementation.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md`
-- package manifests and existing release scripts only
+- `docs/implementation/ROADMAP-V1.7-TO-V3.md`
+- `docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md`
+- `docs/proposals/AI-SDK-INTEGRATION.md`
+- current official AI SDK telemetry integration docs
+- current official OpenAI Agents JS tracing processor docs
 
 ## In scope
 
-1. Confirm the GitHub Actions publish workflow completed successfully for the release-preparation commit.
-2. Confirm npm registry versions for `agent-inspect`, `@agent-inspect/langchain`, and `@agent-inspect/tui` are `1.6.0`.
-3. Confirm package tags exist on `origin`.
-4. Confirm GitHub Release objects exist for all three package tags.
-5. Keep the next chunk stopped until maintainer direction.
+1. Verify current framework docs and align the v1.7 execution plan with them.
+2. Keep adapter work optional-package only.
+3. Preserve metadata-only privacy defaults:
+   - AI SDK examples and implementation must set or document `recordInputs: false` and `recordOutputs: false`.
+   - OpenAI Agents JS planning must avoid default backend export surprises and document local-only processor behavior before implementation.
+4. Keep the next implementation chunk focused on AI SDK v6 telemetry/RFC verification.
 
 ## Out of scope
 
-- any code, schema, dependency, or version changes
-- publishing any additional version
-- default telemetry/upload behavior
+- adapter runtime code
+- package scaffolds
+- new dependencies
+- package version changes
+- changesets
+- publish/tag/release work
+- network upload behavior
+- root/core dependencies on AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, or LangChain
 
 ## Acceptance criteria
 
-- Publish workflow success is recorded with evidence.
-- npm versions, package tags, and GitHub Release objects are verified.
-- Release-train state is updated to published.
+- Public roadmap names v1.6.0 as the current published release and v1.7.0 as Now.
+- Maintainer roadmap and release-train state point at v1.7.0.
+- `V1.7.0-EXECUTION-PLAN.md` exists with chunked implementation order.
+- Validation passes: `pnpm typecheck`, `pnpm test`, `git diff --check`.
 
 ## Stop condition
 
-Stop before beginning any next release train or broad follow-up work.
+Stop before implementing AI SDK, OpenAI Agents JS, LangGraph, package scaffolds, dependencies, or schema/API changes.

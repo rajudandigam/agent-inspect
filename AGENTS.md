@@ -20,7 +20,7 @@ Use this order:
 4. `docs/implementation/CURRENT-TASK.md`
 5. active release plan
 6. relevant RFC under `docs/proposals/`
-7. `docs/implementation/ROADMAP-V1.6-TO-V3.md`
+7. `docs/implementation/ROADMAP-V1.7-TO-V3.md`
 8. public `ROADMAP.md`
 9. historical implementation docs
 
