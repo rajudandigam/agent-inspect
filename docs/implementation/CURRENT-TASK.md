@@ -4,14 +4,14 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "v1.6.0-publish-decision"
-status: "ready"
+chunk: "v1.6.0-post-publish-verification"
+status: "complete"
 dependsOn: "v1.6.0-release-preparation"
 ```
 
 ## Goal
 
-Publish exactly v1.6.0 only if npm credentials, tagging, and GitHub release creation are available and safe.
+Record the completed v1.6.0 CI publish and leave the repository ready for maintainer review.
 
 ## Read first
 
@@ -22,23 +22,24 @@ Publish exactly v1.6.0 only if npm credentials, tagging, and GitHub release crea
 
 ## In scope
 
-1. Verify whether npm publish credentials are available and safe.
-2. If safe and fully authenticated, publish exactly `agent-inspect@1.6.0`, `@agent-inspect/langchain@1.6.0`, and `@agent-inspect/tui@1.6.0` using the repository release process.
-3. If publish succeeds, create the v1.6.0 git tag/GitHub release according to the established process.
-4. If publish/tag/release is unavailable or unsafe, stop and leave state for maintainer publish.
+1. Confirm the GitHub Actions publish workflow completed successfully for the release-preparation commit.
+2. Confirm npm registry versions for `agent-inspect`, `@agent-inspect/langchain`, and `@agent-inspect/tui` are `1.6.0`.
+3. Confirm package tags exist on `origin`.
+4. Confirm GitHub Release objects exist for all three package tags.
+5. Keep the next chunk stopped until maintainer direction.
 
 ## Out of scope
 
 - any code, schema, dependency, or version changes
-- publishing any version other than `1.6.0`
+- publishing any additional version
 - default telemetry/upload behavior
 
 ## Acceptance criteria
 
-- Either publish/tag/release succeeds with evidence, or the blocker is recorded clearly for the maintainer.
-- No partial publish is attempted if credentials/process are unclear.
-- Release-train state is updated after a successful publish or documented stop.
+- Publish workflow success is recorded with evidence.
+- npm versions, package tags, and GitHub Release objects are verified.
+- Release-train state is updated to published.
 
 ## Stop condition
 
-Stop if npm authentication, OTP, package ownership, tag creation, or GitHub release creation is unavailable or unsafe.
+Stop before beginning any next release train or broad follow-up work.

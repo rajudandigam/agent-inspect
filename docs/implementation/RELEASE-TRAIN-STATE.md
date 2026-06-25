@@ -4,11 +4,11 @@
 
 ```yaml
 baselineVersion: "1.5.0"
-publishedVersion: "1.5.0"
+publishedVersion: "1.6.0"
 currentTrain: "v1.6.0"
-trainStatus: "release_prepared"
+trainStatus: "published"
 branch: "main"
-lastValidationLevel: "v1.6.0 release-preparation full gate"
+lastValidationLevel: "v1.6.0 CI publish workflow"
 completedChunks:
   - "v1.5-internal-corrections"
   - "canonical-roadmap-reset"
@@ -29,10 +29,10 @@ completedChunks:
   - "chunk 12 shared reader integration"
   - "chunk 13 recipes and documentation"
   - "chunk 14 release readiness"
-currentChunk: "v1.6.0-release-preparation"
-pendingManualGate: "npm publish, git tag, and GitHub release require safe credentials/process"
-nextAction: "Publish exactly v1.6.0 only if npm credentials and repository release process are available and safe; otherwise maintainer publishes manually"
-publishedAt: "2026-06-24"
+currentChunk: "v1.6.0-published"
+pendingManualGate: "none"
+nextAction: "Post-release verification/monitoring; begin next train only after maintainer direction"
+publishedAt: "2026-06-25"
 updatedAt: "2026-06-25"
 ```
 
