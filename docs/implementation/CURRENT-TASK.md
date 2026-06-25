@@ -4,53 +4,53 @@
 
 ```yaml
 train: "v1.6.0"
-chunk: "9-openinference-json-reader"
+chunk: "10-otlp-json-reader"
 status: "ready"
-dependsOn: "H3-reader-fidelity-resolved-input-detection-policy"
+dependsOn: "9-openinference-json-reader"
 ```
 
 ## Goal
 
-Add a dependency-free, local OpenInference JSON reader that ingests documented span/document shapes into the existing reader abstraction without changing persisted schemas or runtime behavior.
+Add a dependency-free, local OTLP JSON trace reader that maps resource/scope/span payloads into the existing reader abstraction without changing persisted schemas or adding OpenTelemetry SDK/runtime dependencies.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 9 only
+- `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` — chunk 10 only
 - `docs/proposals/TRACE-READER.md`
 - `packages/core/src/readers/index.ts`
 - directly related reader/persisted tests and fixtures only
 
 ## In scope
 
-1. Detect canonical OpenInference JSON inputs deterministically.
-2. Support local JSON only, including array/object shapes justified by fixtures.
-3. Preserve trace IDs, span IDs, parent IDs, names, timestamps, source/confidence, ordering, and unknown attributes where possible.
-4. Report unsupported fields and semantic loss through warnings and `unsupportedFields`.
-5. Keep malformed and ambiguous inputs conservative and warning-rich.
-6. Add focused fixtures/tests for successful, malformed, unsupported, and ambiguous OpenInference inputs.
+1. Detect local OTLP JSON trace payloads deterministically.
+2. Support resource, scope, and span handling.
+3. Preserve trace IDs, span IDs, parent span IDs, status, timing, attributes, events, and ordering where possible.
+4. Map OTLP attributes/events into existing persisted inspect events and warnings without schema changes.
+5. Report unsupported fields and semantic loss through warnings and `unsupportedFields`.
+6. Add focused deterministic OTLP fixtures/tests for successful, malformed, unsupported, and ambiguous inputs.
 7. Keep the reader dependency-free, read-only, and network-free.
 8. Update release-train state and prepare the next task.
 
 ## Out of scope
 
-- OTLP reader
 - `agent-inspect open`
-- shared reader integration beyond registering the OpenInference reader
+- shared reader integration beyond registering the OTLP reader
 - recipe/documentation expansion beyond reader behavior
 - public schema changes
 - dependency additions
+- OpenTelemetry SDK/runtime dependencies
 - network behavior
 - version/change/tag/publish work
 
 ## Acceptance criteria
 
-- OpenInference JSON reads produce existing persisted inspect events and run trees.
-- Unknown attributes are retained safely without raw prompt/output capture by default.
-- Unsupported or lossy fields are surfaced with deterministic warnings.
-- AgentInspect v0.1/v0.2 detection remains stable and compatible.
-- No OpenInference runtime dependency, OTel dependency, network behavior, schema change, or root API change is introduced.
+- OTLP JSON reads produce existing persisted inspect events and run trees.
+- Resource/scope/span attributes are retained safely and deterministically.
+- Unsupported or lossy fields are surfaced with structured warnings.
+- AgentInspect and OpenInference detection remain stable and compatible.
+- No OTel SDK dependency, network behavior, schema change, or root API change is introduced.
 
 ## Focused validation
 
@@ -80,9 +80,9 @@ Run `pnpm compat:smoke` and `npm pack --dry-run` only when exports/package conte
 ## Proposed commit
 
 ```text
-feat: ingest OpenInference traces locally
+feat: ingest OTLP JSON traces locally
 ```
 
 ## Stop condition
 
-Stop after chunk 9 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start OTLP or `open` work until chunk 9 is pushed.
+Stop after chunk 10 implementation, validation, state/task updates, commit, and push. Do not version, tag, publish, create a changeset, or start `agent-inspect open` work until chunk 10 is pushed.

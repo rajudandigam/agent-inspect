@@ -8,7 +8,11 @@ import {
 } from "../persisted/from-trace-event.js";
 import { persistedInspectEventsToRunTrees } from "../persisted/tree-bridge.js";
 import type { InspectRunTree } from "../types/inspect-event.js";
-import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
+import type {
+  PersistedEventStatus,
+  PersistedInspectEvent,
+  PersistedTokenUsage,
+} from "../types/persisted-inspect-event.js";
 
 export type TraceInput =
   | { type: "file"; path: string }
@@ -88,10 +92,68 @@ interface ResolvedTraceInput {
   sourceFiles: string[];
 }
 
+interface OpenInferenceDocument {
+  spans: JsonRecord[];
+  confidence: number;
+  description: string;
+  version?: string;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+}
+
+interface OpenInferenceMappedSpan {
+  event: PersistedInspectEvent;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+  spanId: string;
+  parentSpanId?: string;
+}
+
+type JsonRecord = Record<string, unknown>;
+
 const DEFAULT_MAX_TRACE_INPUT_BYTES = 10 * 1024 * 1024;
 const MIN_DETECTION_CONFIDENCE = 0.5;
 const AMBIGUOUS_CONFIDENCE_DELTA = 0.05;
 const resolvedInputCache = new WeakMap<TraceInput, Promise<ResolvedTraceInput | undefined>>();
+const OPENINFERENCE_READER_FORMAT = "openinference-json";
+
+const OPENINFERENCE_SPAN_KEYS = new Set([
+  "trace_id",
+  "traceId",
+  "span_id",
+  "spanId",
+  "parent_span_id",
+  "parentSpanId",
+  "name",
+  "start_time_unix_nano",
+  "startTimeUnixNano",
+  "end_time_unix_nano",
+  "endTimeUnixNano",
+  "start_time",
+  "startTime",
+  "end_time",
+  "endTime",
+  "attributes",
+  "status",
+  "kind",
+  "span_kind",
+  "spanKind",
+]);
+
+const OPENINFERENCE_SENSITIVE_ATTRIBUTE_KEYS = [
+  "input.value",
+  "output.value",
+  "input.mime_type",
+  "output.mime_type",
+  "llm.input_messages",
+  "llm.output_messages",
+  "llm.prompts",
+  "llm.completions",
+  "retrieval.documents",
+  "reranker.input_documents",
+  "reranker.output_documents",
+  "document.content",
+];
 
 export type TraceReadErrorCode =
   | "unsupported_format"
@@ -143,6 +205,27 @@ function collectWarnings(
   candidates: readonly TraceFormatCandidate[],
 ): TraceReadWarning[] {
   return candidates.flatMap((candidate) => candidate.warnings ?? []);
+}
+
+function dedupeWarnings(
+  warnings: readonly TraceReadWarning[],
+): TraceReadWarning[] {
+  const seen = new Set<string>();
+  const out: TraceReadWarning[] = [];
+  for (const warning of warnings) {
+    const key = [
+      warning.code,
+      warning.message,
+      warning.severity ?? "",
+      warning.sourceFile ?? "",
+      warning.line ?? "",
+      warning.field ?? "",
+    ].join("\u0000");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(warning);
+  }
+  return out;
 }
 
 function attachSingleSourceFile(
@@ -336,6 +419,661 @@ function persistedEventsForParsedTrace(
   });
 }
 
+function isRecord(value: unknown): value is JsonRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function readStringField(
+  record: JsonRecord,
+  keys: readonly string[],
+): string | undefined {
+  for (const key of keys) {
+    const value = record[key];
+    if (isNonEmptyString(value)) return value;
+  }
+  return undefined;
+}
+
+function readRecordField(
+  record: JsonRecord,
+  key: string,
+): JsonRecord | undefined {
+  const value = record[key];
+  return isRecord(value) ? value : undefined;
+}
+
+function parseJsonDocument(content: string): unknown {
+  return JSON.parse(content) as unknown;
+}
+
+function looksLikeOpenInferenceSpan(value: unknown): value is JsonRecord {
+  if (!isRecord(value)) return false;
+  const attributes = readRecordField(value, "attributes");
+  return (
+    readStringField(value, ["trace_id", "traceId"]) !== undefined &&
+    readStringField(value, ["span_id", "spanId"]) !== undefined &&
+    (readStringField(value, ["name"]) !== undefined ||
+      attributes?.["openinference.span.kind"] !== undefined)
+  );
+}
+
+function extractOpenInferenceDocument(root: unknown): OpenInferenceDocument | undefined {
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+
+  if (Array.isArray(root)) {
+    const spans = root.filter(looksLikeOpenInferenceSpan);
+    if (spans.length === 0) return undefined;
+    if (spans.length !== root.length) {
+      warnings.push({
+        code: "openinference_skipped_items",
+        message: "Skipped non-span item(s) in OpenInference span array.",
+        severity: "warning",
+      });
+    }
+    return {
+      spans,
+      confidence: 0.82,
+      description: "OpenInference span array",
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  if (!isRecord(root)) return undefined;
+
+  const rootFormat = root.format;
+  const rootCompatibility = root.compatibility;
+  const version =
+    typeof root.version === "string" && root.version.trim() !== ""
+      ? root.version
+      : undefined;
+
+  if (Array.isArray(root.spans)) {
+    const spans = root.spans.filter(looksLikeOpenInferenceSpan);
+    if (spans.length === 0 && (rootFormat === "openinference" || rootCompatibility === "openinference-compatible")) {
+      warnings.push({
+        code: "openinference_no_valid_spans",
+        message: "OpenInference document did not contain any valid spans.",
+        severity: "error",
+      });
+      return {
+        spans,
+        confidence: 0.7,
+        description: "Malformed OpenInference document",
+        version,
+        warnings,
+        unsupportedFields,
+      };
+    }
+    if (spans.length === 0) return undefined;
+    if (spans.length !== root.spans.length) {
+      warnings.push({
+        code: "openinference_skipped_spans",
+        message: "Skipped invalid OpenInference span item(s).",
+        severity: "warning",
+      });
+    }
+    return {
+      spans,
+      confidence:
+        rootFormat === "openinference" || rootCompatibility === "openinference-compatible"
+          ? 0.9
+          : 0.84,
+      description:
+        rootFormat === "openinference" || rootCompatibility === "openinference-compatible"
+          ? "OpenInference document"
+          : "OpenInference spans document",
+      version,
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  if (Array.isArray(root.data)) {
+    const spans = root.data.filter(looksLikeOpenInferenceSpan);
+    if (spans.length === 0) return undefined;
+    if (spans.length !== root.data.length) {
+      warnings.push({
+        code: "openinference_skipped_data_items",
+        message: "Skipped non-span item(s) in OpenInference data array.",
+        severity: "warning",
+      });
+    }
+    return {
+      spans,
+      confidence: 0.8,
+      description: "OpenInference data document",
+      version,
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  if (looksLikeOpenInferenceSpan(root)) {
+    return {
+      spans: [root],
+      confidence: 0.76,
+      description: "OpenInference single span",
+      version,
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  if (rootFormat === "openinference" || rootCompatibility === "openinference-compatible") {
+    warnings.push({
+      code: "openinference_missing_spans",
+      message: "OpenInference document is missing a spans array.",
+      severity: "error",
+    });
+    return {
+      spans: [],
+      confidence: 0.7,
+      description: "Malformed OpenInference document",
+      version,
+      warnings,
+      unsupportedFields,
+    };
+  }
+
+  return undefined;
+}
+
+function parseUnixNanoToIso(value: unknown): string | undefined {
+  if (typeof value === "bigint" && value >= 0n) {
+    return new Date(Number(value / 1_000_000n)).toISOString();
+  }
+  if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    return new Date(Math.floor(value / 1_000_000)).toISOString();
+  }
+  if (typeof value === "string" && /^\d+$/.test(value)) {
+    return new Date(Number(BigInt(value) / 1_000_000n)).toISOString();
+  }
+  return undefined;
+}
+
+function parseIsoTime(value: unknown): string | undefined {
+  if (!isNonEmptyString(value)) return undefined;
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return undefined;
+  return new Date(ms).toISOString();
+}
+
+function readOpenInferenceTimestamp(
+  span: JsonRecord,
+  nanoKeys: readonly string[],
+  isoKeys: readonly string[],
+): string | undefined {
+  for (const key of nanoKeys) {
+    const iso = parseUnixNanoToIso(span[key]);
+    if (iso !== undefined) return iso;
+  }
+  for (const key of isoKeys) {
+    const iso = parseIsoTime(span[key]);
+    if (iso !== undefined) return iso;
+  }
+  return undefined;
+}
+
+function durationBetweenIso(startedAt?: string, endedAt?: string): number | undefined {
+  if (startedAt === undefined || endedAt === undefined) return undefined;
+  const startMs = Date.parse(startedAt);
+  const endMs = Date.parse(endedAt);
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs < startMs) {
+    return undefined;
+  }
+  return endMs - startMs;
+}
+
+function isSensitiveOpenInferenceAttribute(key: string): boolean {
+  return OPENINFERENCE_SENSITIVE_ATTRIBUTE_KEYS.some(
+    (sensitiveKey) =>
+      key === sensitiveKey ||
+      key.startsWith(`${sensitiveKey}.`) ||
+      key.endsWith(".message.content") ||
+      key.endsWith(".document.content"),
+  );
+}
+
+function summarizeAttributeValue(value: unknown): Record<string, unknown> {
+  if (typeof value === "string") {
+    return { type: "string", length: value.length };
+  }
+  if (typeof value === "number") {
+    return { type: "number", finite: Number.isFinite(value) };
+  }
+  if (typeof value === "boolean") {
+    return { type: "boolean" };
+  }
+  if (Array.isArray(value)) {
+    return { type: "array", length: value.length };
+  }
+  if (isRecord(value)) {
+    return { type: "object", keyCount: Object.keys(value).length };
+  }
+  if (value === null) {
+    return { type: "null" };
+  }
+  return { type: typeof value };
+}
+
+function sanitizeOpenInferenceAttributes(
+  attributes: JsonRecord,
+  pathPrefix: string,
+): {
+  attributes: Record<string, unknown>;
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const out: Record<string, unknown> = {};
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+  const summarizedKeys: string[] = [];
+
+  for (const [key, value] of Object.entries(attributes)) {
+    if (isSensitiveOpenInferenceAttribute(key)) {
+      summarizedKeys.push(key);
+      out[`${key}.summary`] = summarizeAttributeValue(value);
+      unsupportedFields.push(`${pathPrefix}.attributes.${key}`);
+      continue;
+    }
+    out[key] = value;
+  }
+
+  if (summarizedKeys.length > 0) {
+    out["openinference.summarized_attributes"] = summarizedKeys;
+    warnings.push({
+      code: "openinference_sensitive_attribute_summarized",
+      message:
+        "OpenInference prompt/output/document attribute(s) were summarized instead of copied verbatim.",
+      severity: "warning",
+    });
+  }
+
+  return { attributes: out, warnings, unsupportedFields };
+}
+
+function mapOpenInferenceKind(
+  span: JsonRecord,
+  attributes: JsonRecord,
+  pathPrefix: string,
+): { kind: PersistedInspectEvent["kind"]; warnings: TraceReadWarning[] } {
+  const warnings: TraceReadWarning[] = [];
+  const agentInspectKind = attributes["agent_inspect.kind"];
+  if (
+    agentInspectKind === "RUN" ||
+    agentInspectKind === "AGENT" ||
+    agentInspectKind === "LLM" ||
+    agentInspectKind === "TOOL" ||
+    agentInspectKind === "CHAIN" ||
+    agentInspectKind === "RETRIEVER" ||
+    agentInspectKind === "DECISION" ||
+    agentInspectKind === "RESULT" ||
+    agentInspectKind === "ERROR" ||
+    agentInspectKind === "LOGIC" ||
+    agentInspectKind === "LOG"
+  ) {
+    return { kind: agentInspectKind, warnings };
+  }
+
+  const rawKind =
+    readStringField(span, ["kind", "span_kind", "spanKind"]) ??
+    (typeof attributes["openinference.span.kind"] === "string"
+      ? attributes["openinference.span.kind"]
+      : undefined);
+  const normalized = rawKind?.toUpperCase();
+
+  switch (normalized) {
+    case "LLM":
+      return { kind: "LLM", warnings };
+    case "TOOL":
+      return { kind: "TOOL", warnings };
+    case "CHAIN":
+      return { kind: "CHAIN", warnings };
+    case "RETRIEVER":
+      return { kind: "RETRIEVER", warnings };
+    case "AGENT":
+      return { kind: "AGENT", warnings };
+    case "EMBEDDING":
+      warnings.push({
+        code: "openinference_kind_semantic_loss",
+        message: "OpenInference EMBEDDING span kind mapped to AgentInspect LLM.",
+        severity: "warning",
+        field: `${pathPrefix}.attributes.openinference.span.kind`,
+      });
+      return { kind: "LLM", warnings };
+    case "RERANKER":
+      warnings.push({
+        code: "openinference_kind_semantic_loss",
+        message: "OpenInference RERANKER span kind mapped to AgentInspect RETRIEVER.",
+        severity: "warning",
+        field: `${pathPrefix}.attributes.openinference.span.kind`,
+      });
+      return { kind: "RETRIEVER", warnings };
+    case "UNKNOWN":
+    case undefined:
+      warnings.push({
+        code: "openinference_kind_unknown",
+        message: "OpenInference span kind was missing or unknown; mapped to AgentInspect LOGIC.",
+        severity: "warning",
+        field: `${pathPrefix}.attributes.openinference.span.kind`,
+      });
+      return { kind: "LOGIC", warnings };
+    default:
+      warnings.push({
+        code: "openinference_kind_unsupported",
+        message: `Unsupported OpenInference span kind "${rawKind}" mapped to AgentInspect LOGIC.`,
+        severity: "warning",
+        field: `${pathPrefix}.attributes.openinference.span.kind`,
+      });
+      return { kind: "LOGIC", warnings };
+  }
+}
+
+function mapOpenInferenceStatus(status: unknown): PersistedEventStatus | undefined {
+  if (!isRecord(status)) return undefined;
+  const rawCode = status.code;
+  if (typeof rawCode !== "string") return undefined;
+  switch (rawCode.toUpperCase()) {
+    case "OK":
+      return "ok";
+    case "ERROR":
+      return "error";
+    case "UNSET":
+      return "unknown";
+    default:
+      return "unknown";
+  }
+}
+
+function readOpenInferenceTokenUsage(
+  attributes: JsonRecord,
+): PersistedTokenUsage | undefined {
+  const prompt = attributes["llm.token_count.prompt"];
+  const completion = attributes["llm.token_count.completion"];
+  const total = attributes["llm.token_count.total"];
+  const cached = attributes["llm.token_count.prompt_details.cache_read"];
+  const usage: PersistedTokenUsage = {};
+
+  if (typeof prompt === "number" && Number.isFinite(prompt) && prompt >= 0) {
+    usage.input = prompt;
+  }
+  if (
+    typeof completion === "number" &&
+    Number.isFinite(completion) &&
+    completion >= 0
+  ) {
+    usage.output = completion;
+  }
+  if (typeof total === "number" && Number.isFinite(total) && total >= 0) {
+    usage.total = total;
+  }
+  if (typeof cached === "number" && Number.isFinite(cached) && cached >= 0) {
+    usage.cached = cached;
+  }
+  if (usage.total === undefined && usage.input !== undefined && usage.output !== undefined) {
+    usage.total = usage.input + usage.output;
+  }
+
+  return Object.keys(usage).length > 0 ? usage : undefined;
+}
+
+function readOpenInferenceConfidence(
+  attributes: JsonRecord,
+): PersistedInspectEvent["confidence"] {
+  const confidence = attributes["agent_inspect.confidence"];
+  if (
+    confidence === "explicit" ||
+    confidence === "correlated" ||
+    confidence === "heuristic" ||
+    confidence === "unknown"
+  ) {
+    return confidence;
+  }
+  return "correlated";
+}
+
+function mapOpenInferenceSpan(
+  span: JsonRecord,
+  index: number,
+  version?: string,
+): OpenInferenceMappedSpan {
+  const pathPrefix = `spans[${index}]`;
+  const warnings: TraceReadWarning[] = [];
+  const unsupportedFields: string[] = [];
+  const rawAttributes = readRecordField(span, "attributes") ?? {};
+  const sanitized = sanitizeOpenInferenceAttributes(rawAttributes, pathPrefix);
+  warnings.push(...sanitized.warnings);
+  unsupportedFields.push(...sanitized.unsupportedFields);
+
+  const attributes: Record<string, unknown> = { ...sanitized.attributes };
+  for (const [key, value] of Object.entries(span)) {
+    if (OPENINFERENCE_SPAN_KEYS.has(key)) continue;
+    unsupportedFields.push(`${pathPrefix}.${key}`);
+    if (value === null || typeof value !== "object") {
+      attributes[`openinference.${key}`] = value;
+    } else {
+      attributes[`openinference.${key}.summary`] = summarizeAttributeValue(value);
+      warnings.push({
+        code: "openinference_unsupported_field_summarized",
+        message: `Unsupported OpenInference span field "${key}" was summarized.`,
+        severity: "warning",
+        field: `${pathPrefix}.${key}`,
+      });
+    }
+  }
+
+  const traceId = readStringField(span, ["trace_id", "traceId"]) ?? `trace-${index}`;
+  const spanId = readStringField(span, ["span_id", "spanId"]) ?? `span-${index}`;
+  const parentSpanId = readStringField(span, ["parent_span_id", "parentSpanId"]);
+  const name = readStringField(span, ["name"]) ?? spanId;
+  const startedAt = readOpenInferenceTimestamp(
+    span,
+    ["start_time_unix_nano", "startTimeUnixNano"],
+    ["start_time", "startTime"],
+  );
+  const endedAt = readOpenInferenceTimestamp(
+    span,
+    ["end_time_unix_nano", "endTimeUnixNano"],
+    ["end_time", "endTime"],
+  );
+  const timestamp = startedAt ?? "1970-01-01T00:00:00.000Z";
+
+  if (startedAt === undefined) {
+    warnings.push({
+      code: "openinference_missing_start_time",
+      message: "OpenInference span is missing a valid start time; using Unix epoch.",
+      severity: "warning",
+      field: `${pathPrefix}.start_time_unix_nano`,
+    });
+    unsupportedFields.push(`${pathPrefix}.start_time_unix_nano`);
+  }
+
+  const { kind, warnings: kindWarnings } = mapOpenInferenceKind(
+    span,
+    rawAttributes,
+    pathPrefix,
+  );
+  warnings.push(...kindWarnings);
+  const status = mapOpenInferenceStatus(span.status);
+  const tokenUsage = readOpenInferenceTokenUsage(rawAttributes);
+  const errorMessage =
+    isRecord(span.status) && typeof span.status.message === "string"
+      ? span.status.message
+      : undefined;
+
+  const event: PersistedInspectEvent = {
+    schemaVersion: "0.2",
+    eventId:
+      typeof rawAttributes["agent_inspect.event_id"] === "string"
+        ? rawAttributes["agent_inspect.event_id"]
+        : spanId,
+    runId:
+      typeof rawAttributes["agent_inspect.run_id"] === "string"
+        ? rawAttributes["agent_inspect.run_id"]
+        : traceId,
+    kind,
+    name,
+    timestamp,
+    confidence: readOpenInferenceConfidence(rawAttributes),
+    source: {
+      type: "otel",
+      name: "openinference",
+      ...(version !== undefined ? { version } : {}),
+    },
+    attributes,
+    trace: {
+      traceId,
+      spanId,
+      ...(parentSpanId !== undefined ? { parentSpanId } : {}),
+    },
+  };
+
+  if (status !== undefined) {
+    event.status = status;
+  }
+  if (startedAt !== undefined) {
+    event.startedAt = startedAt;
+  }
+  if (endedAt !== undefined) {
+    event.endedAt = endedAt;
+  }
+  const durationMs = durationBetweenIso(startedAt, endedAt);
+  if (durationMs !== undefined) {
+    event.durationMs = durationMs;
+  }
+  if (tokenUsage !== undefined) {
+    event.tokenUsage = tokenUsage;
+  }
+  if (status === "error") {
+    event.error = {
+      message: errorMessage !== undefined && errorMessage.trim() !== "" ? errorMessage : "OpenInference span error",
+    };
+  }
+
+  return {
+    event,
+    warnings,
+    unsupportedFields,
+    spanId,
+    ...(parentSpanId !== undefined ? { parentSpanId } : {}),
+  };
+}
+
+function mapOpenInferenceEvents(document: OpenInferenceDocument): {
+  events: PersistedInspectEvent[];
+  warnings: TraceReadWarning[];
+  unsupportedFields: string[];
+} {
+  const mapped = document.spans.map((span, index) =>
+    mapOpenInferenceSpan(span, index, document.version),
+  );
+  const spanIdToEventId = new Map(
+    mapped.map((span) => [span.spanId, span.event.eventId] as const),
+  );
+  for (const span of mapped) {
+    if (span.parentSpanId === undefined) continue;
+    span.event.parentId = spanIdToEventId.get(span.parentSpanId) ?? span.parentSpanId;
+  }
+
+  return {
+    events: mapped.map((span) => span.event),
+    warnings: mapped.flatMap((span) => span.warnings),
+    unsupportedFields: mapped.flatMap((span) => span.unsupportedFields),
+  };
+}
+
+export const openInferenceJsonReader: TraceReader = {
+  format: OPENINFERENCE_READER_FORMAT,
+  name: "OpenInference JSON",
+  async detect(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) return undefined;
+
+    let parsed: unknown;
+    try {
+      parsed = parseJsonDocument(resolved.content);
+    } catch {
+      return undefined;
+    }
+
+    const document = extractOpenInferenceDocument(parsed);
+    if (!document) return undefined;
+
+    return {
+      format: OPENINFERENCE_READER_FORMAT,
+      confidence: document.confidence,
+      readerName: "OpenInference JSON",
+      description: document.description,
+      warnings: attachSingleSourceFile(document.warnings, resolved),
+    };
+  },
+  async read(input) {
+    const resolved = await resolveInput(input);
+    if (!resolved) {
+      throw new TraceReadError(
+        "unsupported_format",
+        "OpenInference JSON reader requires file, string, or buffer input.",
+      );
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = parseJsonDocument(resolved.content);
+    } catch {
+      throw new TraceReadError("unsupported_format", "OpenInference JSON input is not valid JSON.", [
+        {
+          code: "openinference_invalid_json",
+          message: "OpenInference JSON reader could not parse the input as JSON.",
+          severity: "error",
+        },
+      ]);
+    }
+
+    const document = extractOpenInferenceDocument(parsed);
+    if (!document || document.spans.length === 0) {
+      throw new TraceReadError(
+        "unsupported_format",
+        "No valid OpenInference spans found.",
+        attachSingleSourceFile(
+          document?.warnings ?? [
+            {
+              code: "openinference_no_valid_spans",
+              message: "OpenInference JSON input did not contain valid spans.",
+              severity: "error",
+            },
+          ],
+          resolved,
+        ),
+      );
+    }
+
+    const mapped = mapOpenInferenceEvents(document);
+    const warnings = attachSingleSourceFile(
+      [...document.warnings, ...mapped.warnings],
+      resolved,
+    );
+    const unsupportedFields = [
+      ...document.unsupportedFields,
+      ...mapped.unsupportedFields,
+    ].sort((a, b) => a.localeCompare(b));
+
+    return {
+      format: OPENINFERENCE_READER_FORMAT,
+      events: mapped.events,
+      runs: persistedInspectEventsToRunTrees(mapped.events, { skipInvalid: true }),
+      warnings,
+      unsupportedFields,
+      sourceFiles: resolved.sourceFiles,
+    };
+  },
+};
+
 export const agentInspectJsonlReader: TraceReader = {
   format: "agent-inspect-jsonl",
   name: "AgentInspect JSONL",
@@ -393,6 +1131,7 @@ export const agentInspectJsonlReader: TraceReader = {
 
 export const DEFAULT_TRACE_READERS: readonly TraceReader[] = [
   agentInspectJsonlReader,
+  openInferenceJsonReader,
 ];
 
 export async function detectTraceFormat(
@@ -471,7 +1210,11 @@ export async function detectTraceFormat(
           },
         ]
       : [];
-  const allWarnings = [...warnings, ...candidateWarnings, ...lowConfidenceWarnings];
+  const allWarnings = dedupeWarnings([
+    ...warnings,
+    ...candidateWarnings,
+    ...lowConfidenceWarnings,
+  ]);
 
   if (sorted.length === 0) {
     return {
@@ -551,7 +1294,7 @@ export async function readTrace(
       throw new TraceReadError(
         error.code,
         error.message,
-        [...detection.warnings, ...error.warnings],
+        dedupeWarnings([...detection.warnings, ...error.warnings]),
       );
     }
     throw new TraceReadError(

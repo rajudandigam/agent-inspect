@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -8,6 +8,7 @@ import {
   TraceReadError,
   agentInspectJsonlReader,
   detectTraceFormat,
+  openInferenceJsonReader,
   openTrace,
   readTrace,
   type TraceReader,
@@ -420,5 +421,174 @@ describe("AgentInspect JSONL reader", () => {
       code: "unsupported_format",
       warnings: [expect.objectContaining({ code: "input_too_large" })],
     });
+  });
+});
+
+describe("OpenInference JSON reader", () => {
+  const basicFixture = path.join(
+    repoRoot,
+    "packages/core/test/fixtures/openinference-basic.json",
+  );
+  const malformedFixture = path.join(
+    repoRoot,
+    "packages/core/test/fixtures/openinference-malformed.json",
+  );
+
+  it("detects and reads OpenInference document fixtures by default", async () => {
+    const detection = await detectTraceFormat({ type: "file", path: basicFixture });
+    const result = await readTrace({ type: "file", path: basicFixture });
+
+    expect(detection).toMatchObject({
+      status: "detected",
+      format: "openinference-json",
+      candidates: [
+        expect.objectContaining({
+          readerName: "OpenInference JSON",
+          description: "OpenInference document",
+        }),
+      ],
+    });
+    expect(result).toMatchObject({
+      format: "openinference-json",
+      sourceFiles: [basicFixture],
+      unsupportedFields: expect.arrayContaining([
+        "spans[0].attributes.input.value",
+        "spans[0].events",
+        "spans[1].attributes.output.value",
+      ]),
+    });
+    expect(result.events).toHaveLength(2);
+    expect(result.events[0]).toMatchObject({
+      eventId: "run-event",
+      runId: "run-oi-basic",
+      kind: "RUN",
+      status: "ok",
+      durationMs: 5000,
+      confidence: "explicit",
+      source: { type: "otel", name: "openinference", version: "1.6-fixture" },
+      trace: { traceId: "trace-oi-basic", spanId: "span-root" },
+    });
+    expect(result.events[1]).toMatchObject({
+      eventId: "span-llm",
+      runId: "trace-oi-basic",
+      parentId: "run-event",
+      kind: "LLM",
+      tokenUsage: { input: 12, output: 7, total: 19 },
+      attributes: {
+        "custom.flag": true,
+        "output.value.summary": { type: "string", length: 18 },
+      },
+      trace: {
+        traceId: "trace-oi-basic",
+        spanId: "span-llm",
+        parentSpanId: "span-root",
+      },
+    });
+    expect(result.runs).toHaveLength(2);
+    expect(result.warnings.map((warning) => warning.code)).toEqual(
+      expect.arrayContaining([
+        "openinference_sensitive_attribute_summarized",
+        "openinference_unsupported_field_summarized",
+      ]),
+    );
+    expect(JSON.stringify(result.events)).not.toContain("secret prompt text");
+    expect(JSON.stringify(result.events)).not.toContain("secret answer text");
+  });
+
+  it("supports raw OpenInference span arrays", async () => {
+    const content = JSON.stringify([
+      {
+        trace_id: "trace-array",
+        span_id: "span-tool",
+        parent_span_id: "span-parent",
+        name: "search",
+        start_time: "2024-11-14T12:00:00.000Z",
+        end_time: "2024-11-14T12:00:01.250Z",
+        attributes: {
+          "openinference.span.kind": "TOOL",
+          "tool.name": "search",
+        },
+        status: { code: "ERROR", message: "tool failed" },
+      },
+    ]);
+
+    const result = await readTrace({ type: "string", content });
+
+    expect(result.format).toBe("openinference-json");
+    expect(result.events).toEqual([
+      expect.objectContaining({
+        eventId: "span-tool",
+        runId: "trace-array",
+        parentId: "span-parent",
+        kind: "TOOL",
+        status: "error",
+        durationMs: 1250,
+        error: { message: "tool failed" },
+      }),
+    ]);
+  });
+
+  it("rejects malformed OpenInference documents with structured warnings", async () => {
+    const detection = await detectTraceFormat({
+      type: "file",
+      path: malformedFixture,
+    });
+
+    expect(detection).toMatchObject({
+      status: "detected",
+      format: "openinference-json",
+      warnings: [
+        expect.objectContaining({
+          code: "openinference_no_valid_spans",
+          sourceFile: malformedFixture,
+        }),
+      ],
+    });
+    await expect(
+      readTrace({ type: "file", path: malformedFixture }),
+    ).rejects.toMatchObject({
+      code: "unsupported_format",
+      warnings: [
+        expect.objectContaining({
+          code: "openinference_no_valid_spans",
+        }),
+      ],
+    });
+  });
+
+  it("supports explicit OpenInference reader selection", async () => {
+    const content = await readFile(basicFixture, "utf-8");
+
+    const result = await readTrace(
+      { type: "string", content },
+      { format: openInferenceJsonReader.format },
+    );
+
+    expect(result.format).toBe("openinference-json");
+    expect(result.events.map((event) => event.trace?.spanId)).toEqual([
+      "span-root",
+      "span-llm",
+    ]);
+  });
+
+  it("reports ambiguity when another reader closely matches an OpenInference fixture", async () => {
+    const content = await readFile(basicFixture, "utf-8");
+    const nearReader = toyReader({
+      format: "near-openinference-json",
+      detect() {
+        return { format: "near-openinference-json", confidence: 0.88 };
+      },
+    });
+
+    const detection = await detectTraceFormat(
+      { type: "string", content },
+      { readers: [openInferenceJsonReader, nearReader] },
+    );
+
+    expect(detection.status).toBe("ambiguous");
+    expect(detection.candidates.map((candidate) => candidate.format)).toEqual([
+      "openinference-json",
+      "near-openinference-json",
+    ]);
   });
 });

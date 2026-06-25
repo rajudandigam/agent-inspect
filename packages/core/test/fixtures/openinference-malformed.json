@@ -1,0 +1,11 @@
+{
+  "format": "openinference",
+  "spans": [
+    {
+      "name": "missing trace identifiers",
+      "attributes": {
+        "openinference.span.kind": "LLM"
+      }
+    }
+  ]
+}

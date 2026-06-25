@@ -18,6 +18,7 @@ export {
   TraceReadError,
   agentInspectJsonlReader,
   detectTraceFormat,
+  openInferenceJsonReader,
   openTrace,
   readTrace,
 } from "../readers/index.js";
