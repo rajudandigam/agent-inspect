@@ -12,6 +12,9 @@ const coreEntry = fileURLToPath(
 const coreReadersEntry = fileURLToPath(
   new URL("./packages/core/src/entries/readers.ts", import.meta.url),
 );
+const coreWritersEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/writers.ts", import.meta.url),
+);
 
 const langchainEntry = fileURLToPath(
   new URL("./packages/langchain/src/index.ts", import.meta.url),
@@ -31,7 +34,9 @@ export default defineConfig({
     // In-repo tests run before build; point workspace imports at source.
     alias: {
       "@agent-inspect/core/readers": coreReadersEntry,
+      "@agent-inspect/core/writers": coreWritersEntry,
       "@agent-inspect/core": coreEntry,
+      "agent-inspect/writers": coreWritersEntry,
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
       "@agent-inspect/ai-sdk": aiSdkEntry,
@@ -44,7 +49,9 @@ export default defineConfig({
     noExternal: [
       "@agent-inspect/core",
       "@agent-inspect/core/readers",
+      "@agent-inspect/core/writers",
       "agent-inspect",
+      "agent-inspect/writers",
       "@agent-inspect/ai-sdk",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",

@@ -33,9 +33,10 @@ completedChunks:
   - "v1.7 planning reset"
   - "v1.7 AI SDK telemetry RFC verification"
   - "v1.7 AI SDK package scaffold"
-currentChunk: "v1.7-ai-sdk-metadata-integration"
+  - "v1.7 AI SDK metadata integration"
+currentChunk: "v1.7-ai-sdk-tool-error-streaming"
 pendingManualGate: "none"
-nextAction: "Implement AI SDK metadata-only integration for generateText and streamText with recordInputs/recordOutputs safety guidance"
+nextAction: "Harden AI SDK tool, error, and streaming coverage with no-network fixtures"
 publishedAt: "2026-06-25"
 updatedAt: "2026-06-25"
 ```
