@@ -193,23 +193,40 @@ Read-only helpers for concise inspection summaries and local reports:
 
 Report redaction profiles are key-based safeguards applied to the complete rendered report input, not only to the tree section. Review generated reports before sharing; this is not compliance-grade DLP.
 
-## 14. Deprecated APIs
+## 14. Experimental trace writers (v1.6 planning)
+
+Trace writers are the first slice of the v1.6 runtime foundation. They are experimental during v1.x and intended for tests, adapters, and future `createInspector` work.
+
+Import from `agent-inspect/writers`:
+
+```ts
+import { memoryWriter, nullWriter } from "agent-inspect/writers";
+import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
+```
+
+- **`TraceWriter`**: async `write(event)`, optional `flush()`, optional `close()`, optional `getStats()`.
+- **`memoryWriter()`**: stores cloned `PersistedInspectEvent` rows in memory for tests, adapter fixtures, and eval harnesses.
+- **`nullWriter()`**: accepts events without retaining them for disabled mode, overhead comparisons, and no-output tests.
+
+No network writer or vendor sink exists in this package.
+
+## 15. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 15. Removal / deprecation policy
+## 16. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 16. Backward compatibility policy
+## 17. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 17. Examples
+## 18. Examples
 
 ### Minimal manual trace
 

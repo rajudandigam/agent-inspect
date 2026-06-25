@@ -67,6 +67,16 @@
         "types": "./dist/diff.d.cts",
         "default": "./dist/diff.cjs"
       }
+    },
+    "./writers": {
+      "import": {
+        "types": "./dist/writers.d.ts",
+        "default": "./dist/writers.mjs"
+      },
+      "require": {
+        "types": "./dist/writers.d.cts",
+        "default": "./dist/writers.cjs"
+      }
     }
   },
   "files": ["dist"],

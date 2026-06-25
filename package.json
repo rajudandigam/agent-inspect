@@ -76,6 +76,16 @@
         "types": "./packages/core/dist/diff.d.cts",
         "default": "./packages/core/dist/diff.cjs"
       }
+    },
+    "./writers": {
+      "import": {
+        "types": "./packages/core/dist/writers.d.ts",
+        "default": "./packages/core/dist/writers.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/writers.d.cts",
+        "default": "./packages/core/dist/writers.cjs"
+      }
     }
   },
   "bin": {

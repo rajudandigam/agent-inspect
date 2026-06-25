@@ -3,6 +3,7 @@ const { exportMarkdown } = require("agent-inspect/exporters");
 const { diffTraceEvents } = require("agent-inspect/diff");
 const { isPersistedInspectEvent } = require("agent-inspect/persisted");
 const { resolveRedactionProfile } = require("agent-inspect/advanced");
+const { memoryWriter, nullWriter } = require("agent-inspect/writers");
 
 const checks = [
   parseLogsToTrees,
@@ -10,6 +11,8 @@ const checks = [
   diffTraceEvents,
   isPersistedInspectEvent,
   resolveRedactionProfile,
+  memoryWriter,
+  nullWriter,
 ];
 
 if (checks.some((fn) => typeof fn !== "function")) {

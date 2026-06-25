@@ -6,6 +6,7 @@ const subpathEntries = {
   logs: "packages/core/src/entries/logs.ts",
   exporters: "packages/core/src/entries/exporters.ts",
   diff: "packages/core/src/entries/diff.ts",
+  writers: "packages/core/src/entries/writers.ts",
 } as const;
 
 export default defineConfig({

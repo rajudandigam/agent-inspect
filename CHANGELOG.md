@@ -4,6 +4,10 @@
 
 Internal corrective and roadmap-planning work on `main`. No package version, changeset, tag, or publish is implied until maintainers explicitly confirm the next minor release.
 
+### Added
+
+- Added experimental `agent-inspect/writers` subpath with `TraceWriter`, `memoryWriter`, and `nullWriter` as the first v1.6 runtime foundation slice.
+
 ### Fixed
 
 - Corrects the published CLI version path so `agent-inspect --version` reports the public package version.

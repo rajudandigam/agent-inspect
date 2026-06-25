@@ -67,9 +67,16 @@ describe("package conditional type exports (manifest)", () => {
     expectDualConditionalExport(exports["."], "agent-inspect");
   });
 
-  it("root agent-inspect exposes v1.5 subpath conditional types", () => {
+  it("root agent-inspect exposes public subpath conditional types", () => {
     const { exports } = readPkgExports("package.json");
-    for (const subpath of ["advanced", "persisted", "logs", "exporters", "diff"]) {
+    for (const subpath of [
+      "advanced",
+      "persisted",
+      "logs",
+      "exporters",
+      "diff",
+      "writers",
+    ]) {
       const entry = exports[`./${subpath}`];
       expect(entry, `exports["./${subpath}"]`).toBeDefined();
       expect(entry?.import?.types, `${subpath} import.types`).toMatch(

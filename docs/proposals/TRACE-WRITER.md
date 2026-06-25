@@ -1,6 +1,6 @@
 # Trace writer proposal
 
-**Status:** planning for v1.6.0.
+**Status:** partially implemented for v1.6.0; `TraceWriter`, `memoryWriter`, and `nullWriter` are complete on `main`.
 **Scope:** local writer contract and built-in writer implementations.
 **Non-goals:** no network writer, no vendor sink, no provider pricing, no hidden telemetry.
 
@@ -45,9 +45,13 @@ interface TraceWriterStats {
 
 Use for tests, adapter fixtures, eval harnesses, and deterministic snapshots. It should expose copied events and never mutate caller-owned objects.
 
+Implemented on `main`.
+
 ### Null writer
 
 Use for disabled mode, overhead comparisons, and integration tests that should not write files.
+
+Implemented on `main`.
 
 ### Direct file writer
 

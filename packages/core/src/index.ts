@@ -220,6 +220,14 @@ export { isAgentInspectTrace } from "./trace-verification.js";
 export { parseDuration } from "./utils/duration.js";
 
 export type {
+  TraceWriter,
+  TraceWriterStats,
+  MemoryTraceWriter,
+} from "./writers/index.js";
+
+export { memoryWriter, nullWriter } from "./writers/index.js";
+
+export type {
   DiffSeverity,
   DiffKind,
   DiffPathSegment,

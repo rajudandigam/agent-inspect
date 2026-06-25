@@ -8,7 +8,14 @@ const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const coreDistDir = path.join(repoRoot, "packages", "core", "dist");
 
-const SUBPATHS = ["advanced", "persisted", "logs", "exporters", "diff"] as const;
+const SUBPATHS = [
+  "advanced",
+  "persisted",
+  "logs",
+  "exporters",
+  "diff",
+  "writers",
+] as const;
 
 type DualExportEntry = {
   import?: { types?: string; default?: string };
@@ -48,7 +55,7 @@ const distPresent = SUBPATHS.every((name) =>
 );
 
 describe("subpath exports manifest", () => {
-  it("root package.json declares all v1.5 subpaths", () => {
+  it("root package.json declares all public subpaths", () => {
     const exports = readRootExports();
     for (const subpath of SUBPATHS) {
       expectSubpathExport(exports, subpath, subpath);

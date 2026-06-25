@@ -12,9 +12,10 @@ lastValidationLevel: "docs"
 completedChunks:
   - "v1.5-internal-corrections"
   - "canonical-roadmap-reset"
-currentChunk: "v1.6 architecture RFCs"
+  - "v1.6 memory-null-writers"
+currentChunk: "v1.6 direct file writer"
 pendingManualGate: "manual release confirmation before any changeset/version/publish"
-nextAction: "Proceed chunk by chunk on v1.6 planning/runtime foundation; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
+nextAction: "Proceed to the direct file writer chunk; validate, commit, and push each chunk to main; do not publish/tag/version until explicit release confirmation"
 publishedAt: "2026-06-24"
 updatedAt: "2026-06-24"
 ```
