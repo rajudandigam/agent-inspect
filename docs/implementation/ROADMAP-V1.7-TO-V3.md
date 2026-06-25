@@ -117,7 +117,7 @@ Active proposal index: [docs/proposals/README.md](../proposals/README.md)
 Current planning RFCs:
 
 - [AI-SDK-INTEGRATION.md](../proposals/AI-SDK-INTEGRATION.md)
-- OpenAI Agents JS tracing processor RFC (planned in v1.7 chunk 6)
+- [OPENAI-AGENTS-JS-TRACING.md](../proposals/OPENAI-AGENTS-JS-TRACING.md)
 - LangGraph support decision note (planned in v1.7 chunk 8)
 - [INSPECTOR-RUNTIME.md](../proposals/INSPECTOR-RUNTIME.md)
 - [TRACE-WRITER.md](../proposals/TRACE-WRITER.md)

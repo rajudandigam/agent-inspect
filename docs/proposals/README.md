@@ -18,6 +18,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [TRACE-READER.md](./TRACE-READER.md) | v1.6.0 | Reader contract, format detection, and universal local ingestion |
 | [STABLE-SCHEMA-1.0.md](./STABLE-SCHEMA-1.0.md) | v1.9/v2.0 | Stable schema target and migration constraints |
 | [AI-SDK-INTEGRATION.md](./AI-SDK-INTEGRATION.md) | v1.7.0 | Implementation-ready replacement for the earlier issue-only AI SDK plan |
+| [OPENAI-AGENTS-JS-TRACING.md](./OPENAI-AGENTS-JS-TRACING.md) | v1.7.0 | Safe local-only OpenAI Agents JS tracing processor boundary |
 
 ## Rules
 
