@@ -15,6 +15,7 @@ const SUBPATHS = [
   "exporters",
   "diff",
   "writers",
+  "readers",
 ] as const;
 
 type DualExportEntry = {

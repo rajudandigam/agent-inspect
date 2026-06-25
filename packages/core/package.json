@@ -77,6 +77,16 @@
         "types": "./dist/writers.d.cts",
         "default": "./dist/writers.cjs"
       }
+    },
+    "./readers": {
+      "import": {
+        "types": "./dist/readers.d.ts",
+        "default": "./dist/readers.mjs"
+      },
+      "require": {
+        "types": "./dist/readers.d.cts",
+        "default": "./dist/readers.cjs"
+      }
     }
   },
   "files": ["dist"],

@@ -14,6 +14,7 @@ import {
   memoryWriter,
   nullWriter,
 } from "agent-inspect/writers";
+import { detectTraceFormat } from "agent-inspect/readers";
 
 const checks = [
   parseLogsToTrees,
@@ -28,6 +29,7 @@ const checks = [
   fileWriter,
   memoryWriter,
   nullWriter,
+  detectTraceFormat,
 ];
 
 if (checks.some((fn) => typeof fn !== "function")) {

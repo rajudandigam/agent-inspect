@@ -259,23 +259,46 @@ Public methods:
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
-## 16. Deprecated APIs
+## 16. Experimental trace readers (v1.6 planning)
+
+`agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. This chunk defines the contract and custom-reader dispatch. Built-in AgentInspect, OpenInference, and OTLP readers are added progressively in later v1.6 chunks.
+
+Import from `agent-inspect/readers`:
+
+```ts
+import {
+  detectTraceFormat,
+  openTrace,
+  readTrace,
+} from "agent-inspect/readers";
+import type { TraceReader } from "agent-inspect/readers";
+```
+
+- **`TraceInput`**: file, directory, string, buffer, or stdin input descriptor.
+- **`TraceReader`**: experimental reader interface with `format`, `detect(input)`, and `read(input)`.
+- **`detectTraceFormat(input, { readers?, format? })`**: deterministic, conservative format detection. Explicit `format` acts as an override only when a matching reader is registered.
+- **`readTrace(input, { readers?, format? })`**: detects a reader and returns `TraceReadResult`; unsupported or ambiguous input throws `TraceReadError`.
+- **`openTrace(input, options?)`**: alias for `readTrace()` for the future universal open workflow.
+
+The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
+
+## 17. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 17. Removal / deprecation policy
+## 18. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 18. Backward compatibility policy
+## 19. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 19. Examples
+## 20. Examples
 
 ### Minimal manual trace
 

@@ -86,6 +86,16 @@
         "types": "./packages/core/dist/writers.d.cts",
         "default": "./packages/core/dist/writers.cjs"
       }
+    },
+    "./readers": {
+      "import": {
+        "types": "./packages/core/dist/readers.d.ts",
+        "default": "./packages/core/dist/readers.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/readers.d.cts",
+        "default": "./packages/core/dist/readers.cjs"
+      }
     }
   },
   "bin": {

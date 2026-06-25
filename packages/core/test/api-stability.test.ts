@@ -45,6 +45,10 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(typeof core.fileWriter).toBe("function");
     expect(typeof core.memoryWriter).toBe("function");
     expect(typeof core.nullWriter).toBe("function");
+    expect(typeof core.detectTraceFormat).toBe("function");
+    expect(typeof core.openTrace).toBe("function");
+    expect(typeof core.readTrace).toBe("function");
+    expect(typeof core.TraceReadError).toBe("function");
   });
 
   it("key exported types remain available to typecheck", () => {
@@ -113,6 +117,25 @@ describe("core API stability (v1.0 Pass 1)", () => {
     const _fileWriterOptionsWitness = null as unknown as core.FileTraceWriterOptions;
     const _writerWitness = null as unknown as core.TraceWriter;
     const _writerStatsWitness = null as unknown as core.TraceWriterStats;
+    const _traceInputWitness = null as unknown as core.TraceInput;
+    const _traceReaderWitness = null as unknown as core.TraceReader;
+    const _traceReadOptionsWitness = null as unknown as core.TraceReadOptions;
+    const _traceReadResultWitness = null as unknown as core.TraceReadResult;
+    const _traceReadWarningWitness = null as unknown as core.TraceReadWarning;
+    const _traceReadWarningSeverityWitness =
+      null as unknown as core.TraceReadWarningSeverity;
+    const _traceFormatCandidateWitness =
+      null as unknown as core.TraceFormatCandidate;
+    const _traceFormatDetectionStatusWitness =
+      null as unknown as core.TraceFormatDetectionStatus;
+    const _traceFormatDetectionResultWitness =
+      null as unknown as core.TraceFormatDetectionResult;
+    const _traceReaderDetectOptionsWitness =
+      null as unknown as core.TraceReaderDetectOptions;
+    const _traceReaderReadOptionsWitness =
+      null as unknown as core.TraceReaderReadOptions;
+    const _traceReadErrorCodeWitness =
+      null as unknown as core.TraceReadErrorCode;
 
     expect(_persistedTypeWitness).toBeNull();
     expect(_persistedSourceTypeWitness).toBeNull();
@@ -139,5 +162,17 @@ describe("core API stability (v1.0 Pass 1)", () => {
     expect(_fileWriterOptionsWitness).toBeNull();
     expect(_writerWitness).toBeNull();
     expect(_writerStatsWitness).toBeNull();
+    expect(_traceInputWitness).toBeNull();
+    expect(_traceReaderWitness).toBeNull();
+    expect(_traceReadOptionsWitness).toBeNull();
+    expect(_traceReadResultWitness).toBeNull();
+    expect(_traceReadWarningWitness).toBeNull();
+    expect(_traceReadWarningSeverityWitness).toBeNull();
+    expect(_traceFormatCandidateWitness).toBeNull();
+    expect(_traceFormatDetectionStatusWitness).toBeNull();
+    expect(_traceFormatDetectionResultWitness).toBeNull();
+    expect(_traceReaderDetectOptionsWitness).toBeNull();
+    expect(_traceReaderReadOptionsWitness).toBeNull();
+    expect(_traceReadErrorCodeWitness).toBeNull();
   });
 });

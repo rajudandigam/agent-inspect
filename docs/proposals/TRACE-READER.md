@@ -1,6 +1,6 @@
 # Trace reader proposal
 
-**Status:** planning for v1.6.0.
+**Status:** partially implemented for v1.6.0; the public reader contract, custom-reader dispatch, deterministic detection helper, `readTrace()`, and `openTrace()` are complete on `main`.
 **Scope:** universal local read contract and deterministic format detection.
 **Non-goals:** no hosted ingestion, no database index, no silent arbitrary JSON acceptance.
 
@@ -50,6 +50,8 @@ interface TraceReadResult {
 - AgentInspect v0.2 JSONL.
 - OpenInference JSON.
 - OTLP/HTTP JSON trace payloads.
+
+The first implementation slice defines the contract and custom-reader dispatch only. Built-in AgentInspect v0.1/v0.2, OpenInference, and OTLP readers are separate v1.6 chunks.
 
 ## Detection rules
 

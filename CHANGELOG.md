@@ -9,6 +9,7 @@ Internal corrective and roadmap-planning work on `main`. No package version, cha
 - Added experimental `agent-inspect/writers` subpath with `TraceWriter`, `fileWriter`, `bufferedFileWriter`, `compositeWriter`, `memoryWriter`, and `nullWriter` as the first v1.6 runtime foundation slice.
 - Added experimental `createInspectorRuntime()` as the low-level instance-scoped runtime foundation.
 - Added experimental `createInspector()` public instance API for isolated local tracing with explicit writers.
+- Added experimental `agent-inspect/readers` subpath with the `TraceReader` contract, deterministic format detection, `readTrace()`, and `openTrace()` for future local ingestion readers.
 
 ### Fixed
 

@@ -14,6 +14,7 @@ const {
   memoryWriter,
   nullWriter,
 } = require("agent-inspect/writers");
+const { detectTraceFormat } = require("agent-inspect/readers");
 
 const checks = [
   parseLogsToTrees,
@@ -28,6 +29,7 @@ const checks = [
   fileWriter,
   memoryWriter,
   nullWriter,
+  detectTraceFormat,
 ];
 
 if (checks.some((fn) => typeof fn !== "function")) {
