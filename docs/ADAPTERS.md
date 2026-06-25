@@ -222,5 +222,6 @@ No automatic universal instrumentation. Integrations remain explicit and opt-in.
 ## Related docs
 
 - [API.md](./API.md) — adapter options and stability policy
+- [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md) — no-network fixture matrix and shared expectations
 - [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) — review exports before sharing
 - [LIMITATIONS.md](./LIMITATIONS.md) — LangChain streaming and metadata boundaries

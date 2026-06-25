@@ -1,0 +1,145 @@
+{
+  "$schema": "./adapter-conformance-matrix.schema.json",
+  "version": 1,
+  "updatedAt": "2026-06-25",
+  "defaults": {
+    "network": "none",
+    "upload": "none",
+    "capture": "metadata-only",
+    "rawPayloadsPersistedByDefault": false,
+    "rootCoreDependencyAllowed": false
+  },
+  "requiredSignals": [
+    "run",
+    "step",
+    "tool",
+    "llm",
+    "error",
+    "streaming",
+    "metadata-bounds"
+  ],
+  "adapters": [
+    {
+      "id": "ai-sdk",
+      "packageName": "@agent-inspect/ai-sdk",
+      "status": "implemented-experimental",
+      "fixtureScope": "packages/ai-sdk/test/api-stability.test.ts",
+      "installMode": "ai-sdk-telemetry-integration",
+      "dependencyBoundary": "optional-package-peer-dependency",
+      "requiredHostControls": [
+        "experimental_telemetry.isEnabled: true",
+        "experimental_telemetry.recordInputs: false",
+        "experimental_telemetry.recordOutputs: false"
+      ],
+      "signals": {
+        "run": "covered",
+        "step": "covered",
+        "tool": "covered",
+        "llm": "covered",
+        "error": "covered",
+        "streaming": "covered",
+        "metadata-bounds": "covered"
+      },
+      "mustNotPersist": [
+        "prompts",
+        "messages",
+        "generated_text",
+        "stream_chunks",
+        "tool_inputs",
+        "tool_outputs",
+        "headers",
+        "request_bodies",
+        "response_bodies"
+      ]
+    },
+    {
+      "id": "langchain",
+      "packageName": "@agent-inspect/langchain",
+      "status": "implemented-experimental",
+      "fixtureScope": "packages/langchain/test",
+      "installMode": "explicit-callback",
+      "dependencyBoundary": "optional-package-peer-dependency",
+      "requiredHostControls": [
+        "callbacks include AgentInspectCallback",
+        "persist is explicit when disk output is desired",
+        "capture defaults to metadata-only"
+      ],
+      "signals": {
+        "run": "covered",
+        "step": "covered",
+        "tool": "covered",
+        "llm": "covered",
+        "error": "covered",
+        "streaming": "covered",
+        "metadata-bounds": "covered"
+      },
+      "mustNotPersist": [
+        "full_prompts",
+        "full_outputs",
+        "raw_stream_tokens",
+        "unredacted_sensitive_metadata"
+      ]
+    },
+    {
+      "id": "openai-agents",
+      "packageName": "@agent-inspect/openai-agents",
+      "status": "scaffold-only",
+      "fixtureScope": "packages/openai-agents/test/api-stability.test.ts",
+      "installMode": "setTraceProcessors-replacement",
+      "dependencyBoundary": "optional-package-peer-dependency",
+      "requiredHostControls": [
+        "setTraceProcessors([agentInspectProcessor(...)])",
+        "do not use addTraceProcessor as the default path",
+        "traceIncludeSensitiveData: false when running model/provider fixtures"
+      ],
+      "signals": {
+        "run": "planned",
+        "step": "planned",
+        "tool": "planned",
+        "llm": "planned",
+        "error": "planned",
+        "streaming": "planned",
+        "metadata-bounds": "planned"
+      },
+      "mustNotPersist": [
+        "prompts",
+        "messages",
+        "generated_text",
+        "tool_inputs",
+        "tool_outputs",
+        "request_bodies",
+        "response_bodies",
+        "headers"
+      ]
+    },
+    {
+      "id": "langgraph",
+      "packageName": "@agent-inspect/langchain",
+      "status": "decision-only",
+      "fixtureScope": "future no-network LangGraph-through-LangChain fixture",
+      "installMode": "explicit-langchain-callback",
+      "dependencyBoundary": "through-existing-langchain-adapter",
+      "requiredHostControls": [
+        "callbacks include AgentInspectCallback",
+        "no hosted LangSmith tracing requirement",
+        "no separate package unless callback-surface gap is proven"
+      ],
+      "signals": {
+        "run": "planned",
+        "step": "planned",
+        "tool": "planned",
+        "llm": "planned",
+        "error": "planned",
+        "streaming": "planned",
+        "metadata-bounds": "planned"
+      },
+      "mustNotPersist": [
+        "full_graph_state",
+        "full_prompts",
+        "full_outputs",
+        "raw_stream_tokens",
+        "hosted_trace_payloads"
+      ]
+    }
+  ]
+}

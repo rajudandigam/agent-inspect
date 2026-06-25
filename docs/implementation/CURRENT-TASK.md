@@ -4,14 +4,14 @@
 
 ```yaml
 train: "v1.7.0"
-chunk: "v1.7-adapter-conformance-fixture-matrix"
+chunk: "v1.7-release-readiness"
 status: "ready"
-dependsOn: "v1.7-langgraph-adapter-boundary"
+dependsOn: "v1.7-adapter-conformance-fixture-matrix"
 ```
 
 ## Goal
 
-Create shared conformance expectations for optional framework adapters without broadening runtime scope.
+Prepare the v1.7 release-readiness gate after all approved adapter chunks land.
 
 ## Read first
 
@@ -19,33 +19,31 @@ Create shared conformance expectations for optional framework adapters without b
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.7-TO-V3.md`
 - `docs/implementation/release-trains/V1.7.0-EXECUTION-PLAN.md`
-- `docs/proposals/AI-SDK-INTEGRATION.md`
-- `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
-- `docs/proposals/LANGGRAPH-ADAPTER-BOUNDARY.md`
-- directly related adapter tests/docs only
+- `docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md`
+- directly related README/API/CLI/SCHEMA/LIMITATIONS/KNOWN-ISSUES/CHANGELOG/package metadata files only
 
 ## In scope
 
-1. Add a no-network adapter conformance fixture matrix covering run, step, tool, LLM, error, streaming, and metadata bounds expectations.
-2. Add shared conformance docs/tests where useful.
-3. Keep framework-specific fixtures dependency-isolated.
-4. Preserve metadata-only and no-upload defaults.
+1. Align README/API/CLI/SCHEMA/LIMITATIONS/KNOWN-ISSUES/CHANGELOG as needed for v1.7.
+2. Create `docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md` with exact validation evidence.
+3. Run the required release-readiness gate.
+4. Decide whether package/version/changelog release-preparation changes are safe under the existing Changesets workflow.
 
 ## Out of scope
 
-- new runtime mapping for any adapter
-- live provider calls, network calls, hosted sinks, or upload behavior
-- package version changes
-- changesets
-- publishing
+- publishing from the local machine
+- creating git tags or GitHub releases manually
+- live provider calls, network upload behavior, hosted sinks
+- runtime implementation beyond the completed chunks
 - root/core dependencies on AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, or LangChain
 
 ## Acceptance criteria
 
-- Matrix covers AI SDK, OpenAI Agents scaffold/future processor, LangChain, and LangGraph-through-LangChain expectations.
-- Tests or docs enforce package-local/no-network/privacy expectations where practical.
-- Focused validation and required chunk gate pass.
+- Release-readiness evidence exists and matches executed commands.
+- Package/version strategy is documented.
+- Full release gate and package smoke checks pass.
+- State file records whether release preparation is pending or complete.
 
 ## Stop condition
 
-Stop if conformance requires new runtime behavior, public schema change, network behavior, or root/core dependency expansion.
+Stop if validation fails for a reason outside current scope, package metadata is unsafe, publishing credentials are required locally, or release preparation would conflict with the repository's auto-publish Changesets workflow.
