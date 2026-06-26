@@ -14,6 +14,7 @@ import { diffCommand } from "../src/diff.js";
 import { clean } from "../src/clean.js";
 import { openCommand } from "../src/open.js";
 import { scanCommand, verifySafeCommand } from "../src/safety.js";
+import { artifactsCommand } from "../src/artifacts.js";
 
 function jsonl(...lines: string[]): string {
   return lines.join("\n") + "\n";
@@ -51,6 +52,7 @@ describe("CLI stability (v1.0 Pass 1)", () => {
       "check",
       "scan",
       "verify-safe",
+      "artifacts",
       "diff",
       "timeline",
       "stats",
@@ -75,6 +77,7 @@ describe("CLI stability (v1.0 Pass 1)", () => {
       "check",
       "scan",
       "verify-safe",
+      "artifacts",
       "diff",
       "timeline",
       "stats",
@@ -95,7 +98,7 @@ describe("CLI stability (v1.0 Pass 1)", () => {
     errSpy.mockRestore();
   });
 
-  it("--json output is parseable for list/view/logs/export/open/scan/verify-safe/diff when feasible", async () => {
+  it("--json output is parseable for list/view/logs/export/open/scan/verify-safe/artifacts/diff when feasible", async () => {
     const runIdA = "run_a";
     const runIdB = "run_b";
     await writeFile(
@@ -200,6 +203,15 @@ describe("CLI stability (v1.0 Pass 1)", () => {
     {
       const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
       await verifySafeCommand(runIdA, { dir: traceDir, json: true });
+      JSON.parse(String(logSpy.mock.calls[0]?.[0] ?? "null"));
+      logSpy.mockRestore();
+    }
+
+    // artifacts --json
+    {
+      const outputDir = path.join(traceDir, "artifacts");
+      const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+      await artifactsCommand(runIdA, { dir: traceDir, outputDir, json: true });
       JSON.parse(String(logSpy.mock.calls[0]?.[0] ?? "null"));
       logSpy.mockRestore();
     }

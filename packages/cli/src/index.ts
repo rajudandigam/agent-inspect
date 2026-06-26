@@ -36,6 +36,8 @@ import type { CheckCommandOptions } from "./check.js";
 import { checkCommand } from "./check.js";
 import type { SafetyCommandOptions } from "./safety.js";
 import { scanCommand, verifySafeCommand } from "./safety.js";
+import type { ArtifactsCommandOptions } from "./artifacts.js";
+import { artifactsCommand } from "./artifacts.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -332,6 +334,28 @@ export function createCliProgram(): Command {
     .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
     .action((target: string, opts: SafetyCommandOptions) => {
       runCommand(() => verifySafeCommand(target, opts));
+    });
+
+  program
+    .command("artifacts")
+    .description("Create safe local CI trace artifacts")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .requiredOption("--output-dir <path>", "directory for generated artifacts")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--baseline <trace-path-or-run-id>", "optional baseline trace for diff artifacts")
+    .option("--baseline-run <run-id>", "select a run from the baseline trace")
+    .option("--github-summary <path>", "append a safe summary to this file, e.g. GITHUB_STEP_SUMMARY")
+    .option("--json", "print deterministic JSON manifest")
+    .action((target: string, opts: ArtifactsCommandOptions) => {
+      runCommand(() => artifactsCommand(target, opts));
     });
 
   program

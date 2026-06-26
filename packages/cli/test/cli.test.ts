@@ -28,6 +28,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("check");
     expect(names).toContain("scan");
     expect(names).toContain("verify-safe");
+    expect(names).toContain("artifacts");
     expect(names).toContain("diff");
     expect(names).toContain("what");
     expect(names).toContain("report");
@@ -47,6 +48,7 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("check");
     expect(help).toContain("scan");
     expect(help).toContain("verify-safe");
+    expect(help).toContain("artifacts");
     expect(help).toContain("diff");
   });
 
@@ -152,6 +154,17 @@ describe("@agent-inspect/cli", () => {
       expect(help).toContain("--json");
       expect(help).toContain("--max-string-length");
     }
+  });
+
+  it("artifacts help mentions key options", () => {
+    const program = createCliProgram();
+    const cmd = program.commands.find((c) => c.name() === "artifacts");
+    expect(cmd).toBeDefined();
+    const help = cmd!.helpInformation();
+    expect(help).toContain("--output-dir");
+    expect(help).toContain("--baseline");
+    expect(help).toContain("--github-summary");
+    expect(help).toContain("--json");
   });
 
   it("what help mentions key options", () => {

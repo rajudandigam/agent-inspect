@@ -8,9 +8,10 @@ AgentInspect helps you **write and export traces locally** in CI. Uploading arti
 2. Enable tracing with `AGENT_INSPECT=1` and `maybeInspectRun` (or `inspectRun` when always-on is intended).
 3. Set `AGENT_INSPECT_TRACE_DIR` (default `.agent-inspect`).
 4. Run your job/tests.
-5. Export share-safe copies: `agent-inspect export <run-id> --redaction-profile share`.
-6. Optional **v1.5 inspection reports**: `agent-inspect what <run-id>` and `agent-inspect report <run-id> --format html`.
-7. Upload files with your CI artifact step.
+5. Create safe CI artifacts: `agent-inspect artifacts <run-id> --output-dir ./artifacts`.
+6. Optional legacy exports: `agent-inspect export <run-id> --redaction-profile share`.
+7. Optional inspection reports: `agent-inspect what <run-id>` and `agent-inspect report <run-id> --format html`.
+8. Upload files with your CI artifact step.
 
 ## Environment variables
 
@@ -23,6 +24,15 @@ AgentInspect helps you **write and export traces locally** in CI. Uploading arti
 ## Export before upload
 
 Prefer **`--redaction-profile share`** for internal PR/issue attachments; use **`strict`** for wider sharing.
+
+For a deterministic CI bundle with structural JSON, safe Markdown/HTML summaries, safety check output, optional baseline diff output, and optional GitHub step-summary output:
+
+```bash
+npx agent-inspect artifacts <run-id> --dir ./.agent-inspect \
+  --output-dir ./artifacts --github-summary "$GITHUB_STEP_SUMMARY"
+```
+
+This command writes local files only. It does not call GitHub APIs or upload artifacts.
 
 ```bash
 npx agent-inspect export <run-id> --dir ./.agent-inspect \
@@ -60,7 +70,7 @@ Sample workflow: [workflow-example.yml](../examples/recipes/github-actions-artif
     name: agent-inspect-traces
     path: |
       ./.agent-inspect
-      ./artifacts/trace.md
+      ./artifacts
 ```
 
 ## Inspect artifacts locally after download

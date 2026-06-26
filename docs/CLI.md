@@ -29,6 +29,7 @@ Core commands:
 - `check` — run deterministic local trace checks with stable JSON and exit codes
 - `scan` — best-effort local safety scan for trace capture risks
 - `verify-safe` — best-effort local trace safety verification
+- `artifacts` — create safe local CI trace artifact bundles and optional step summaries
 - `diff` — compare two manual traces (local, read-only)
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
@@ -77,6 +78,7 @@ Many commands support `--json` for scripting. JSON output is intended to be:
 - Redaction defaults are conservative (e.g. `authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`).
 - Exported payloads are **redacted by default** unless explicitly configured otherwise.
 - `scan` and `verify-safe` are best-effort local checks, not compliance, privacy, security, or regulatory certifications.
+- `artifacts` renders structural summaries and check evidence only; it does not include raw prompt/output bodies, request/response bodies, headers, API keys, secrets, or full tool payloads.
 
 ## 6. Command reference
 
@@ -326,7 +328,45 @@ npx agent-inspect verify-safe minimal-success --dir fixtures/traces
 npx agent-inspect verify-safe trace.jsonl --max-string-length 8192 --json
 ```
 
-### 6.10 `diff`
+### 6.10 `artifacts`
+
+Create deterministic local CI artifacts for supported trace inputs. This command is local and read-only for trace inputs: it does not rerun agents, call models, upload files, use GitHub APIs, or mutate repository state. It writes only to `--output-dir` and, when requested, a local step-summary file.
+
+```bash
+agent-inspect artifacts <trace-path-or-run-id> --output-dir <path> [options]
+```
+
+Generated files:
+
+- `trace.json`: structural trace summary only
+- `check.json`: safety check result
+- `diff.json`: baseline diff result, or `not_requested`
+- `summary.md`: safe Markdown CI summary
+- `report.html`: safe HTML CI summary
+- `manifest.json`: deterministic file/status manifest
+
+Options:
+
+- `--output-dir <path>`: required local artifact directory
+- `--dir <path>`: trace directory for run-id lookup
+- `--format <agent-inspect-jsonl|openinference-json|otlp-json>`: explicit reader format override
+- `--run <run-id>`: select a run when input contains multiple runs
+- `--baseline <trace-path-or-run-id>`: optional baseline trace for diff artifacts
+- `--baseline-run <run-id>`: select a run from the baseline trace
+- `--github-summary <path>`: append the safe Markdown summary to this file, such as `$GITHUB_STEP_SUMMARY`
+- `--json`: print deterministic `manifest.json` content
+
+The artifact command runs safety checks before rendering and only includes structural counts, statuses, bounded check findings, diagnostics, and evidence paths. Baseline diff artifacts use normalized baseline checks and also avoid raw prompt/output/tool payload values. `--github-summary` is plain local file output; AgentInspect does not call GitHub APIs or upload artifacts.
+
+Examples:
+
+```bash
+npx agent-inspect artifacts fixtures/traces-v0.2/manual-basic.jsonl --output-dir ./artifacts --json
+npx agent-inspect artifacts minimal-success --dir fixtures/traces --output-dir ./artifacts --github-summary "$GITHUB_STEP_SUMMARY"
+npx agent-inspect artifacts candidate.jsonl --baseline baseline.jsonl --output-dir ./artifacts
+```
+
+### 6.11 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -390,7 +430,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.11 `timeline`
+### 6.12 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -406,7 +446,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.12 `stats`
+### 6.13 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -426,7 +466,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.13 `search`
+### 6.14 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -456,7 +496,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.14 `what`
+### 6.15 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -485,7 +525,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.15 `report`
+### 6.16 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 
