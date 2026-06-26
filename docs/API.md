@@ -188,7 +188,7 @@ Recipe: [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-loc
 
 ## 12. Experimental `@agent-inspect/openai-agents` APIs
 
-`@agent-inspect/openai-agents` is an optional v1.7 scaffold for future OpenAI Agents JS tracing processor integration. Runtime span mapping is not implemented yet.
+`@agent-inspect/openai-agents` is an optional experimental package for OpenAI Agents JS tracing processor integration. In the v1.8 train it remains private/unpublished until the manual first-publication gate, but runtime metadata mapping is implemented locally.
 
 Import from `@agent-inspect/openai-agents`:
 
@@ -196,11 +196,16 @@ Import from `@agent-inspect/openai-agents`:
 import { agentInspectProcessor } from "@agent-inspect/openai-agents";
 ```
 
-- **`agentInspectProcessor(options?)`**: returns a local-only scaffold object with diagnostics.
+- **`agentInspectProcessor(options?)`**: returns a local-only OpenAI Agents `TracingProcessor`.
   - **`installMode`**: always `"setTraceProcessors"` to document the safe replacement install path.
-  - **`localOnly`**: always `true`; the scaffold performs no network I/O and does not install itself globally.
-  - **`writer`**, **`traceDir`**, **`workflowName`**, **`capture`**, **`redactionProfile`**, and **`maxPreviewChars`** are reserved for the later runtime mapping chunk.
-  - **`getDiagnostics()`**: exposes scaffold diagnostics and reports `runtimeMappingImplemented: false`.
+  - **`localOnly`**: always `true`; the processor performs no network I/O and does not install itself globally.
+  - **`writer`**: optional explicit local `TraceWriter` for tests, recipes, and controlled runtime integration.
+  - **`traceDir`**: optional local directory that creates a file writer inside the adapter package.
+  - **`workflowName`**: optional local run name overriding the SDK trace name.
+  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` currently emits a diagnostic and falls back to metadata-only.
+  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; when preview capture is unsupported or not selected, they emit diagnostics instead of silently doing nothing.
+  - **`getDiagnostics()`**: exposes isolated processor write, lifecycle/configuration, flush, and shutdown failures without throwing into OpenAI Agents callbacks.
+  - **`getWriterStats()`**, **`forceFlush()`**, and **`shutdown()`**: explicit writer lifecycle helpers. Failures are captured in diagnostics.
 
 Safe future usage must replace processors explicitly:
 
@@ -209,6 +214,8 @@ setTraceProcessors([agentInspectProcessor({ traceDir: "./.agent-inspect" })]);
 ```
 
 Do not use `addTraceProcessor()` as the default AgentInspect path; that leaves existing/default processors in place and can preserve backend export behavior in server runtimes.
+
+The processor records local v0.2 persisted events for trace/run, agent, generation/response, function/tool, handoff, guardrail, MCP tools, custom, transcription, and speech span metadata where safely representable. It does not persist raw prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, or hosted tool payloads by default.
 
 ## 13. Experimental persisted-event foundation (v1.2.0)
 

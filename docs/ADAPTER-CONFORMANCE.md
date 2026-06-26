@@ -20,7 +20,7 @@ The v1.7 matrix is declarative coverage guidance. v1.8 makes conformance executa
 | --- | --- | --- | --- | --- |
 | AI SDK | `@agent-inspect/ai-sdk` | implemented experimental; v1.8 correctness hardening pending | AI SDK telemetry integration | optional package peer dependency |
 | LangChain | `@agent-inspect/langchain` | implemented experimental | explicit callback | optional package peer dependency |
-| OpenAI Agents JS | `@agent-inspect/openai-agents` | scaffold only | `setTraceProcessors()` replacement | optional package peer dependency |
+| OpenAI Agents JS | `@agent-inspect/openai-agents` | implemented experimental; private until first publication gate | `setTraceProcessors()` replacement | optional package peer dependency |
 | LangGraph | `@agent-inspect/langchain` | decision only | explicit LangChain callback | existing LangChain adapter first |
 
 ## Required defaults

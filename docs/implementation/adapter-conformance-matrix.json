@@ -1,7 +1,7 @@
 {
   "$schema": "./adapter-conformance-matrix.schema.json",
   "version": 1,
-  "updatedAt": "2026-06-25",
+  "updatedAt": "2026-06-26",
   "defaults": {
     "network": "none",
     "upload": "none",
@@ -83,7 +83,7 @@
     {
       "id": "openai-agents",
       "packageName": "@agent-inspect/openai-agents",
-      "status": "scaffold-only",
+      "status": "implemented-experimental-private",
       "fixtureScope": "packages/openai-agents/test/api-stability.test.ts",
       "installMode": "setTraceProcessors-replacement",
       "dependencyBoundary": "optional-package-peer-dependency",
@@ -93,13 +93,13 @@
         "traceIncludeSensitiveData: false when running model/provider fixtures"
       ],
       "signals": {
-        "run": "planned",
-        "step": "planned",
-        "tool": "planned",
-        "llm": "planned",
-        "error": "planned",
+        "run": "covered",
+        "step": "covered",
+        "tool": "covered",
+        "llm": "covered",
+        "error": "covered",
         "streaming": "planned",
-        "metadata-bounds": "planned"
+        "metadata-bounds": "covered"
       },
       "mustNotPersist": [
         "prompts",

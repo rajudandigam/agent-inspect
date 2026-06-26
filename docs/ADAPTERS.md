@@ -192,9 +192,9 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
 
-**Status:** scaffolded in the v1.7 train — optional workspace package; runtime mapping is scheduled for v1.8 and is not implemented yet.
+**Status:** experimental v1.8 adapter — optional workspace package remains private/unpublished until the manual first-publication gate.
 
-The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Future examples must install the AgentInspect processor by replacing processors:
+The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Install the AgentInspect processor by replacing processors:
 
 ```ts
 import { setTraceProcessors } from "@openai/agents";
@@ -208,7 +208,15 @@ setTraceProcessors([
 ]);
 ```
 
-Do not use `addTraceProcessor()` as the default AgentInspect path; that preserves the OpenAI default exporter in server runtimes. The scaffold does not auto-install a processor, does not upload, and does not add OpenAI Agents dependencies to root/core.
+Do not use `addTraceProcessor()` as the default AgentInspect path; that preserves the OpenAI default exporter in server runtimes. The processor does not auto-install itself, does not upload, and does not add OpenAI Agents dependencies to root/core.
+
+- **No auto-install** — importing or constructing `agentInspectProcessor()` never calls `setTraceProcessors()` or `addTraceProcessor()`.
+- **No upload behavior** — the processor writes only to an explicit local writer or `traceDir`.
+- **Metadata-only by default** — records trace/span IDs, parentage, names, timing, status, errors, safe model/tool names, token counts, and bounded summaries.
+- **No raw payload capture by default** — prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, and hosted tool payloads are not persisted.
+- **Preview capture is not enabled yet** — `capture: "preview"`, `redactionProfile`, and `maxPreviewChars` are diagnosed through `getDiagnostics()` and do not persist raw previews.
+
+Full API: [API.md](./API.md) §12.
 
 ---
 

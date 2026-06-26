@@ -4,61 +4,59 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-5-openai-agents-tracing-processor"
+chunk: "v1.8-6-openai-agents-safety-and-recipes"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-4-optional-package-tarball-smoke"
+dependsOn: "v1.8-5-openai-agents-tracing-processor"
 ```
 
 ## Goal
 
-Replace the private OpenAI Agents scaffold placeholder with an official local-only tracing processor that maps safe metadata into AgentInspect v0.2 persisted events.
+Add deterministic no-network OpenAI Agents safety fixtures and local-only recipes that teach the safe replacement install path without enabling default upload behavior.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 5
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 6
 - `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
-- `packages/openai-agents/package.json`
 - `packages/openai-agents/src/index.ts`
 - `packages/openai-agents/test/api-stability.test.ts`
-- writer/persisted helpers only as needed for local v0.2 output
+- existing recipe structure and recipe validator
 
 ## In scope
 
-1. Implement the official OpenAI Agents `TracingProcessor`-compatible surface in `@agent-inspect/openai-agents`.
-2. Map trace/run, agent, generation, tool/function, handoff, guardrail, MCP/custom, errors, parentage, trace context, and lifecycle metadata where safely representable from processor callbacks.
-3. Preserve metadata-only default capture; summarize presence/counts/lengths instead of persisting raw prompts, messages, outputs, tool arguments, hosted tool data, or arbitrary span payloads.
-4. Accept a caller-provided `TraceWriter` or create a local file writer from `traceDir`; isolate write, flush, shutdown, clone, and summarization failures into diagnostics.
-5. Keep installation explicit and local-only: guidance and helpers must use `setTraceProcessors()` replacement behavior, never auto-install or default to `addTraceProcessor()`.
-6. Keep `@openai/agents` as an optional package peer dependency; do not add SDK dependencies to root/core.
+1. Add no-network fixtures or tests that exercise the OpenAI Agents processor through deterministic local processor calls, not provider/model execution.
+2. Add local-only recipe documentation/code showing `setTraceProcessors([agentInspectProcessor(...)])` replacement behavior.
+3. Add advanced/additional-processor documentation only with an explicit warning that `addTraceProcessor()` preserves existing/default processors.
+4. Cover sensitive-data exclusion, metadata-only summaries, writer failure isolation, `forceFlush()`, and shutdown behavior.
+5. Keep the package private and dependency-isolated; do not publish or change versions.
 
 ## Out of scope
 
-- publishing `@agent-inspect/openai-agents`, changing its `private` status, package version changes, changesets, npm publication, tags, or releases;
-- provider/model execution, OpenAI API calls, default backend export, network behavior, API keys, or credentials;
+- package version changes, changesets, npm publication, tags, releases, or changing `@agent-inspect/openai-agents` private status;
+- provider/model execution, OpenAI API calls, API keys, credentials, or default backend export;
 - preview/full raw content capture, raw chain-of-thought capture, or weaker redaction/size protections;
-- LangGraph, checks engine, recipes, or adapter conformance chunks beyond tests needed for this processor.
+- LangGraph, checks engine, reporter packages, or broader adapter conformance chunks.
 
 ## Acceptance criteria
 
-- `agentInspectProcessor(options)` returns a processor compatible with the official OpenAI Agents tracing callback shape without importing or installing global processors as a side effect;
-- local v0.2 rows preserve trace/span IDs, parent IDs, span kinds, workflow/run names, timestamps/durations/status, safe model/tool names, token counts when structured, errors, and diagnostics;
-- unsupported or ambiguous callback payloads are handled conservatively with warnings instead of fabricated relationships;
-- `forceFlush()` and shutdown are safe, idempotent, local-only, and expose failures through diagnostics/stats;
-- tests use deterministic no-network fixtures and verify no raw prompt/output/tool payload persistence by default;
-- root/core package dependencies and public root exports remain unchanged.
+- fixtures/recipes are deterministic, local-only, and require no network, provider credentials, or OpenAI account;
+- replacement examples use `setTraceProcessors([agentInspectProcessor(...)])` and explain why `addTraceProcessor()` is not the default safe path;
+- additional-processor examples, if added, are explicitly advanced and user-owned;
+- tests prove raw prompt/output/tool/custom data and trace exporter credentials are not persisted by default;
+- writer failure, flush, and shutdown behavior remains isolated and diagnostic-rich;
+- docs do not claim public npm availability before the manual first-publication gate.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/openai-agents/test/api-stability.test.ts packages/core/test/writers/index.test.ts packages/core/test/persisted/to-trace-event.test.ts packages/core/test/persisted/from-trace-event.test.ts
-pnpm pack:smoke
+pnpm exec vitest run packages/openai-agents/test/api-stability.test.ts packages/core/test/recipes-smoke.test.ts
+pnpm recipes:check
 ```
 
-Adjust the exact file list after inspecting callback shapes and writer helpers, but keep it focused on the OpenAI Agents processor boundary and package smoke behavior.
+Adjust the exact file list after inspecting recipe conventions, but keep it focused on OpenAI Agents no-network fixtures and recipe validation.
 
 ## Chunk gate
 
@@ -78,9 +76,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-feat: add local openai agents trace processor
+docs: add openai agents local tracing recipes
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan or OpenAI Agents tracing RFC, official SDK API uncertainty that requires live documentation re-verification, root/core dependency pressure, publication/versioning decisions, upload/default-backend ambiguity, raw content capture requirements, or validation failures that cannot be fixed within chunk 5 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan or OpenAI Agents tracing RFC, any fixture requiring network/provider credentials/default backend export, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 6 scope.

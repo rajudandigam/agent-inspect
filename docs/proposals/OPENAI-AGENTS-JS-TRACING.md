@@ -1,8 +1,8 @@
 # OpenAI Agents JS tracing proposal
 
-**Status:** v1.7.0 chunk 6 verified against official OpenAI Agents SDK TypeScript docs.
-**Purpose:** define the safe local-only boundary for an optional OpenAI Agents JS adapter before any runtime code lands.
-**Last verified:** 2026-06-25.
+**Status:** v1.8.0 chunk 5 runtime mapping implemented against the official OpenAI Agents SDK TypeScript processor surface.
+**Purpose:** define and preserve the safe local-only boundary for the optional OpenAI Agents JS adapter.
+**Last verified:** 2026-06-26.
 
 ## Official contract verified
 
@@ -91,9 +91,9 @@ Raw-content fields that must not be persisted by default:
 
 Preview/full capture is out of scope for the scaffold. Any future preview mode must be explicit, bounded, redacted before disk, and covered by tests.
 
-## Runtime shape for later implementation
+## Runtime shape
 
-The later adapter may expose:
+The adapter exposes:
 
 ```ts
 import type { TracingProcessor } from "@openai/agents";
@@ -112,7 +112,7 @@ Implementation expectations:
 
 ## Validation expectations
 
-Chunk 7 may scaffold the optional package because the safe boundary does not require root/core dependencies or upload behavior. The scaffold must not implement runtime mapping beyond a no-op/local diagnostic placeholder if the exact processor method shape is not installed locally.
+The v1.8 runtime mapping is implemented only after verifying the current official processor shape locally and through official docs. The package remains private until the v1.8 first-publication gate.
 
 Later runtime chunks must add deterministic no-network fixtures for:
 
