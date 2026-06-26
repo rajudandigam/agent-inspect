@@ -21,4 +21,7 @@ coverage
 tmp-export-traces/
 tmp-export-output/
 examples/recipes/**/.agent-inspect-runs/
+examples/recipes/**/.agent-inspect-baseline/
+examples/recipes/**/.agent-inspect-candidate/
+examples/recipes/**/.agent-inspect-reporter-artifacts/
 docs-local

@@ -27,7 +27,7 @@ Folders **07-live-tail**, **09-tui**, **10-standards-export**, and **11-diff-com
 
 ## Recipes (v0.9)
 
-Runnable **recipe** packages live under [**examples/recipes/**](recipes/README.md). They illustrate realistic patterns—RAG-shaped traces, retries, multi-step handoffs, structured logs, LLM fallback, and parallel tools—using **deterministic mocks only**. No API keys or external services are required by default; traces write to each recipe’s local `.agent-inspect-runs/` (ignored by git).
+Runnable **recipe** packages live under [**examples/recipes/**](recipes/README.md). They illustrate realistic patterns—RAG-shaped traces, retries, multi-step handoffs, structured logs, LLM fallback, parallel tools, deterministic CI checks/artifacts, and test-reporter artifact configuration—using **deterministic mocks only**. No API keys or external services are required by default; traces write to each recipe’s local `.agent-inspect-runs/` or similarly named ignored local trace directories.
 
 See the [recipe index](recipes/README.md) for commands and which AgentInspect features each recipe exercises.
 

@@ -60,9 +60,12 @@ Recipe: [examples/recipes/what-report-inspect](../examples/recipes/what-report-i
 
 ## GitHub Actions example
 
-Recipe: [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md)
+Recipes:
 
-Sample workflow: [workflow-example.yml](../examples/recipes/github-actions-artifact/workflow-example.yml)
+- [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for v1.8 `check`, baseline, safe artifact, and step-summary workflows.
+- [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md) for the older share-safe export artifact workflow.
+
+Sample workflows: [deterministic checks workflow](../examples/recipes/deterministic-ci-checks/workflow-example.yml), [share-safe export workflow](../examples/recipes/github-actions-artifact/workflow-example.yml)
 
 ```yaml
 - uses: actions/upload-artifact@v4

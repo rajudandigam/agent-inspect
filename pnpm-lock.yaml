@@ -82,6 +82,24 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/deterministic-ci-checks:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/test-reporter-artifacts:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/log4js-json-layout:
     dependencies:
       agent-inspect:

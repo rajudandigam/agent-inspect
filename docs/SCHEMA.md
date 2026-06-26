@@ -250,6 +250,7 @@ v1.6 adds experimental writer and reader surfaces without changing the stable ma
 - `agent-inspect/readers` and `agent-inspect open` read local AgentInspect JSONL, OpenInference JSON, and OTLP JSON inputs through compatibility adapters.
 - OpenInference and OTLP JSON inputs are **not** a third AgentInspect persisted schema. They are local read formats normalized into inspection trees with warnings and unsupported-field reporting.
 - Reader and writer APIs perform no network upload and do not mutate source files.
+- v1.8 checks, safety verification, baseline comparison, safe CI artifacts, and reporter artifacts are report layers over existing trace inputs. They do not change manual trace writing, introduce a third persisted trace model, or embed raw prompt/output/request/response/header/tool payload content in their default structural outputs.
 
 ## 16. Migration notes
 

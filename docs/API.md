@@ -443,7 +443,7 @@ The reader contract does not silently accept arbitrary JSON and does not add OTe
 
 ## 21. Experimental Checks
 
-`agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, add CLI behavior, call providers, perform network I/O, or implement baseline comparison yet.
+`agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, call providers, perform network I/O, mutate inputs, or create a new persisted schema.
 
 Import from `agent-inspect/checks`:
 
@@ -458,6 +458,8 @@ import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
 - **`TraceCheckResult`**: deterministic aggregate result with findings, evidence, summary counts, and execution diagnostics.
 
 The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this API for local reader-backed checks and deterministic JSON output; `agent-inspect artifacts` reuses the same safe findings for local CI artifact bundles and optional step-summary file output. Built-in rules operate on normalized event metadata, tree relationships, bounded summaries, token counts, and normalized baseline facts; safety and baseline findings identify event IDs and field paths rather than emitting raw prompts, outputs, secrets, headers, request/response bodies, or full tool payloads.
+
+Recipes: [deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for check/baseline/artifact workflows, and [test-reporter-artifacts](../examples/recipes/test-reporter-artifacts/README.md) for Vitest/Jest reporter configuration patterns.
 
 ## 22. Deprecated APIs
 

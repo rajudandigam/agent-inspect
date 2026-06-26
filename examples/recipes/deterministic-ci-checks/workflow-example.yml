@@ -1,0 +1,52 @@
+# Example GitHub Actions workflow for local AgentInspect checks and artifacts.
+# AgentInspect writes local files only; upload-artifact is user-owned CI config.
+
+name: AgentInspect deterministic checks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trace-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Generate local fixture traces
+        env:
+          AGENT_INSPECT_SILENT: "true"
+        run: pnpm --filter agent-inspect-recipe-deterministic-ci-checks start
+
+      - name: Check candidate trace
+        run: |
+          npx agent-inspect check ci-check-fixture \
+            --dir ./examples/recipes/deterministic-ci-checks/.agent-inspect-candidate \
+            --json
+
+      - name: Create safe artifact bundle
+        run: |
+          npx agent-inspect artifacts ci-check-fixture \
+            --dir ./examples/recipes/deterministic-ci-checks/.agent-inspect-candidate \
+            --baseline ./examples/recipes/deterministic-ci-checks/.agent-inspect-baseline \
+            --output-dir ./artifacts \
+            --github-summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload local artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-inspect-artifacts
+          path: ./artifacts
+          if-no-files-found: error

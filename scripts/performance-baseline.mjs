@@ -20,8 +20,10 @@ function warnIfSlow(label, ms, thresholdMs) {
 }
 
 let core;
+let checks;
 try {
   core = await import(pathToFileURL(path.join(root, "packages/core/dist/index.mjs")).href);
+  checks = await import(pathToFileURL(path.join(root, "packages/core/dist/checks.mjs")).href);
 } catch (e) {
   console.error("[perf:baseline] Import core dist failed. Run `pnpm build` first.\n", e);
   process.exit(1);
@@ -40,7 +42,15 @@ const {
   mergeExportDefaults,
   validateExport,
   manualTraceEventsToRunTree,
+  traceEventsToPersistedInspectEvents,
+  traceEventsToPersistedRunTrees,
 } = core;
+
+const {
+  createRunEventCountRule,
+  createRunStatusRule,
+  runTraceChecks,
+} = checks;
 
 function jsonLines(n) {
   const lines = [];
@@ -201,5 +211,30 @@ ms = elapsedMs(t0);
 const vOtlp = validateExport(otlp);
 console.log(`export otlp-json: ${ms}ms ok=${vOtlp.ok}`);
 warnIfSlow("export otlp", ms, 400);
+
+t0 = performance.now();
+const checkEvents = buildSyntheticTrace("check_one", 499);
+const checkRead = {
+  format: "agent-inspect-jsonl",
+  events: traceEventsToPersistedInspectEvents(checkEvents),
+  runs: traceEventsToPersistedRunTrees(checkEvents),
+  warnings: [],
+  unsupportedFields: [],
+  sourceFiles: ["synthetic-check-trace"],
+};
+const checkResult = runTraceChecks(
+  { read: checkRead },
+  {
+    rules: [
+      createRunStatusRule({ expected: "running", allowIncomplete: true }),
+      createRunEventCountRule({ min: 1, max: checkRead.events.length }),
+    ],
+  },
+);
+ms = elapsedMs(t0);
+console.log(
+  `run checks on ~1000-event trace: ${ms}ms status=${checkResult.status} findings=${checkResult.findings.length}`,
+);
+warnIfSlow("checks", ms, 600);
 
 console.log("\n[perf:baseline] done");

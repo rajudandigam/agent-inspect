@@ -1,0 +1,11 @@
+Deterministic CI checks recipe complete
+Check status: pass
+Findings: 0 failed, 0 warnings
+Baseline trace directory: <recipe>/.agent-inspect-baseline
+Candidate trace directory: <recipe>/.agent-inspect-candidate
+
+Run local checks:
+  npx agent-inspect check ci-check-fixture --dir <candidate> --json
+
+Create safe CI artifacts and a local GitHub step summary file:
+  npx agent-inspect artifacts ci-check-fixture --dir <candidate> --baseline <baseline> --output-dir ./artifacts --github-summary ./agent-inspect-summary.md

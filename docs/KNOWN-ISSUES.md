@@ -93,6 +93,12 @@ pnpm compat:smoke
 - Fixture pattern: [test/consumer-fixtures/jest-cjs/](../../test/consumer-fixtures/jest-cjs/).
 - Full Jest runner smoke in CI is a documented follow-up — root package does not ship Jest as a devDependency.
 
+## v1.8 pre-release adoption notes
+
+- `@agent-inspect/vitest` and `@agent-inspect/jest` are private/unpublished until the v1.8 release-readiness gate completes. The [test reporter artifact recipe](../examples/recipes/test-reporter-artifacts/README.md) documents the intended config shape without requiring those packages.
+- `agent-inspect artifacts --github-summary` writes a local step-summary file only. It does not call GitHub APIs, open PR comments, upload artifacts, or mutate repository state.
+- Baseline checks compare normalized structural facts from explicit candidate and baseline inputs. They are useful for CI regression evidence, not replay or semantic eval scoring.
+
 ### What to include in a bug report
 
 - Node.js version (`node -v`)

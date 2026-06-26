@@ -1,0 +1,7 @@
+Reporter artifact recipe complete
+Trace directory: <recipe>/.agent-inspect-runs
+Association manifest: <recipe>/.agent-inspect-reporter-artifacts/associations.json
+
+Vitest reporter config uses @agent-inspect/vitest after publication.
+Jest reporter config uses @agent-inspect/jest after publication.
+Both reporters require explicit associations or resolvers; neither reads trace contents.

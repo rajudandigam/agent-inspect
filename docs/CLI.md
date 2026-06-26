@@ -289,6 +289,8 @@ npx agent-inspect check minimal-success --dir fixtures/traces --rule run.status
 npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool search_docs --json
 ```
 
+Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
+
 ### 6.9 `scan` and `verify-safe`
 
 Run best-effort local safety verification for supported trace inputs. These commands are local and read-only: they do not rerun agents, call models, upload traces, mutate input files, or certify compliance.
@@ -365,6 +367,8 @@ npx agent-inspect artifacts fixtures/traces-v0.2/manual-basic.jsonl --output-dir
 npx agent-inspect artifacts minimal-success --dir fixtures/traces --output-dir ./artifacts --github-summary "$GITHUB_STEP_SUMMARY"
 npx agent-inspect artifacts candidate.jsonl --baseline baseline.jsonl --output-dir ./artifacts
 ```
+
+Recipe and sample workflow: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
 ### 6.11 `diff`
 

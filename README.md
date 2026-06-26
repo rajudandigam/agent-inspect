@@ -181,6 +181,8 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `search` | Deterministic search over local traces |
 | `what` | Concise summary of one run |
 | `report` | Markdown/HTML inspection report (what + timeline + tree) |
+| `check` / `scan` / `verify-safe` | Deterministic local trace checks and best-effort safety verification |
+| `artifacts` | Safe local CI artifact bundles and optional step-summary file output |
 
 ![Timeline with slow-step focus for one run](https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/demos/timeline.gif)
 
@@ -292,6 +294,8 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/retry-fallback](examples/recipes/retry-fallback) | Fallback pattern |
 | [examples/recipes/parallel-tools](examples/recipes/parallel-tools) | Parallel tools |
 | [examples/recipes/github-actions-artifact](examples/recipes/github-actions-artifact) | CI trace artifacts |
+| [examples/recipes/deterministic-ci-checks](examples/recipes/deterministic-ci-checks) | v1.8 checks, baseline, and safe CI artifacts |
+| [examples/recipes/test-reporter-artifacts](examples/recipes/test-reporter-artifacts) | v1.8 Vitest/Jest reporter artifact patterns |
 | [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
 | [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |
 

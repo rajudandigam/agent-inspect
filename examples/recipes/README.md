@@ -45,6 +45,8 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [retry-fallback](retry-fallback) | Primary LLM fails, fallback OK | `step.llm`, error + recovery | yes | no |
 | [parallel-tools](parallel-tools) | Sibling tools via `Promise.all` | `step.tool`, parallel siblings | yes | no |
 | [github-actions-artifact](github-actions-artifact) | CI trace + share-safe export recipe | `maybeInspectRun`, `AGENT_INSPECT=1`, export | yes | no |
+| [deterministic-ci-checks](deterministic-ci-checks) | v1.8 checks, baseline, safe artifacts, GitHub summary | `check`, `artifacts`, `agent-inspect/checks` | yes | no |
+| [test-reporter-artifacts](test-reporter-artifacts) | v1.8 Vitest/Jest artifact config patterns | explicit trace associations, safe reporter artifacts | yes (config-oriented) | no |
 | [what-report-inspect](what-report-inspect) | v1.5 `what` + `report` inspection workflow | `inspectRun`, `what`, `report`, token metadata | yes | no |
 | [runtime-and-ingestion](runtime-and-ingestion) | v1.6 runtime writers + universal ingestion | `createInspector`, writers, `open`, explicit formats | yes | no |
 | [ai-sdk-local-telemetry](ai-sdk-local-telemetry) | AI SDK v6 telemetry with local test mocks | `@agent-inspect/ai-sdk`, writers, `open`, metadata-only capture | yes | no |

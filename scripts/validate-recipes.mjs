@@ -21,6 +21,8 @@ const RECIPES = [
   "retry-fallback",
   "parallel-tools",
   "github-actions-artifact",
+  "deterministic-ci-checks",
+  "test-reporter-artifacts",
   "what-report-inspect",
   "runtime-and-ingestion",
   "ai-sdk-local-telemetry",

@@ -54,6 +54,12 @@ This document states what AgentInspect **does not** provide today. It complement
 - **Metadata truncation** applies to string values and nested structures; very large metadata may be replaced with a truncation marker when `maxEventBytes` is exceeded (default 64 KiB per JSONL line).
 - **Redaction is not encryption.** Local trace files remain readable on disk; treat `.agent-inspect-runs/` like any developer artifact that may contain operational data.
 
+## Checks, artifacts, and test reporters
+
+- **Checks are deterministic local rules, not compliance certification.** `check`, `scan`, and `verify-safe` surface bounded findings and diagnostics over supported local inputs; they do not prove a trace is safe for every sharing context.
+- **Safe CI artifacts are structural summaries.** They avoid raw prompt/output/request/response/header/tool payload content by default, but teams should still review generated files before sharing.
+- **Vitest/Jest reporters are optional and unpublished until release readiness in the v1.8 train.** The recipes document config patterns and explicit associations; consumers should install the packages only after publication.
+
 ## Execution semantics
 
 - **No replay / fork** of past runs from traces alone.
