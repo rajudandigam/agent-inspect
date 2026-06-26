@@ -231,6 +231,22 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     });
   });
 
+  it("diagnoses preview-only options when capture remains metadata-only", () => {
+    const integration = agentInspect({
+      redactionProfile: "strict",
+      maxPreviewChars: 8,
+    });
+
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 1,
+      flushFailures: 0,
+      closeFailures: 0,
+      lastWarning:
+        "AI SDK preview-only options have no effect in metadata-only capture: redactionProfile, maxPreviewChars.",
+    });
+  });
+
   it("records generateText run and LLM metadata without raw prompt or output text", async () => {
     const writer = memoryWriter();
     const integration = agentInspect({
@@ -363,6 +379,66 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     expect(diffTraceEvents(normalized, normalized).differences).toEqual([]);
     expectNoRawText(events, "raw user prompt");
     expectNoRawText(events, "raw generated answer");
+  });
+
+  it("falls back from preview capture with explicit diagnostics and no raw text", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "preview-fallback-fixture",
+      capture: "preview",
+      redactionProfile: "strict",
+      maxPreviewChars: 8,
+    });
+
+    await generateText({
+      model: new MockLanguageModelV3({
+        provider: "fixture-provider",
+        modelId: "preview-model",
+        doGenerate: {
+          content: [{ type: "text", text: "raw preview generated answer" }],
+          finishReason: { unified: "stop", raw: "stop" },
+          usage,
+          response: {
+            id: "response-preview",
+            modelId: "preview-model",
+            timestamp: new Date("2026-06-25T00:00:00.000Z"),
+          },
+          warnings: [],
+        },
+      }),
+      prompt: "raw preview prompt",
+      experimental_telemetry: {
+        isEnabled: true,
+        recordInputs: false,
+        recordOutputs: false,
+        integrations: [integration],
+      },
+    });
+
+    const events = writer.getEvents();
+
+    expect(events.map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+      ["LLM", "ok"],
+      ["RUN", "ok"],
+    ]);
+    expect(events[0]?.attributes).toMatchObject({
+      capture: "metadata-only",
+      requestedCapture: "preview",
+      previewCaptureSupported: false,
+      redactionProfile: "strict",
+      maxPreviewChars: 8,
+    });
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 1,
+      lastWarning:
+        "AI SDK preview capture is not supported yet; falling back to metadata-only capture. Unsupported options: capture, redactionProfile, maxPreviewChars.",
+    });
+    expectNoRawText(events, "raw preview prompt");
+    expectNoRawText(events, "raw preview generated answer");
   });
 
   it("records streamText run and LLM metadata after local stream consumption", async () => {

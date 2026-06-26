@@ -6,7 +6,7 @@ AgentInspect is **framework-agnostic** at its core. Optional adapter packages in
 
 **Status:** experimental v1.7 adapter — optional package published in the v1.7.0 linked release.
 
-Known v1.8 follow-up: lifecycle identity through canonical readers/trees, parallel integration isolation, and explicit preview/redaction behavior are being hardened before checks rely on adapter output.
+The v1.8 train has hardened lifecycle identity and parallel integration isolation. The adapter remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
 
 ### Install
 
@@ -43,6 +43,7 @@ const result = await generateText({
 - **Metadata-only by default** — records model, finish reason, token usage, timing, and safe counts/summaries.
 - **Required safe telemetry settings** — set `recordInputs: false` and `recordOutputs: false` on every AI SDK call using this adapter.
 - **No raw payload capture by default** — prompts, messages, generated text, stream chunks, tool inputs/outputs, headers, request bodies, and response bodies are not persisted.
+- **Preview capture is not enabled yet** — `capture: "preview"`, `redactionProfile`, and `maxPreviewChars` are diagnosed through `getDiagnostics()` and do not persist raw previews.
 
 ### Local no-network recipe
 

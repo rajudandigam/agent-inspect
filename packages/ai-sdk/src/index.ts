@@ -47,17 +47,26 @@ export interface AgentInspectAiSdkOptions {
   runName?: string;
 
   /**
-   * Capture policy. Defaults to metadata-only when runtime mapping lands.
+   * Capture policy. Defaults to metadata-only.
+   *
+   * @experimental `preview` is currently rejected with diagnostics and falls
+   * back to metadata-only until bounded free-text preview capture is implemented.
    */
   capture?: AgentInspectAiSdkCaptureMode;
 
   /**
-   * Redaction profile applied before local persistence in future mapping.
+   * Redaction profile for future preview capture.
+   *
+   * @experimental Currently diagnostic-only because the adapter persists
+   * metadata summaries and does not write raw preview content.
    */
   redactionProfile?: RedactionProfile;
 
   /**
-   * Bounds any future preview capture.
+   * Bounds future preview capture.
+   *
+   * @experimental Currently diagnostic-only because `preview` falls back to
+   * metadata-only capture.
    */
   maxPreviewChars?: number;
 }
@@ -154,6 +163,13 @@ function countRecordKeys(value: unknown): number | undefined {
   return Object.keys(value).length;
 }
 
+function normalizeMaxPreviewChars(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return undefined;
+  }
+  return Math.floor(value);
+}
+
 function summarizeUnknown(value: unknown): Record<string, unknown> {
   if (value === null) return { type: "null" };
   if (Array.isArray(value)) return { type: "array", itemCount: value.length };
@@ -227,6 +243,8 @@ function summarizeFinishReason(
 
 class AgentInspectAiSdkTelemetryIntegration {
   private readonly writer: TraceWriter | undefined;
+  private readonly requestedCapture: AgentInspectAiSdkCaptureMode;
+  private readonly effectiveCapture: "metadata-only" = "metadata-only";
   private readonly diagnostics: AgentInspectAiSdkDiagnostics = {
     writeFailures: 0,
     lifecycleWarnings: 0,
@@ -237,7 +255,9 @@ class AgentInspectAiSdkTelemetryIntegration {
   private suspendedReason: string | undefined;
 
   constructor(private readonly options: AgentInspectAiSdkOptions) {
+    this.requestedCapture = options.capture ?? "metadata-only";
     this.writer = options.writer ?? (options.traceDir ? fileWriter({ dir: options.traceDir }) : undefined);
+    this.recordCaptureOptionWarnings();
   }
 
   getDiagnostics(): AgentInspectAiSdkDiagnostics {
@@ -288,7 +308,15 @@ class AgentInspectAiSdkTelemetryIntegration {
           legacyEvent: "run_started",
           ...summarizeModel(event.model),
           functionId: event.functionId,
-          capture: this.options.capture ?? "metadata-only",
+          capture: this.effectiveCapture,
+          requestedCapture:
+            this.requestedCapture === this.effectiveCapture
+              ? undefined
+              : this.requestedCapture,
+          previewCaptureSupported:
+            this.requestedCapture === "preview" ? false : undefined,
+          redactionProfile: this.options.redactionProfile,
+          maxPreviewChars: normalizeMaxPreviewChars(this.options.maxPreviewChars),
           recordInputsRequired: false,
           recordOutputsRequired: false,
           toolCount: countRecordKeys(event.tools),
@@ -602,6 +630,26 @@ class AgentInspectAiSdkTelemetryIntegration {
   private recordLifecycleWarning(message: string): void {
     this.diagnostics.lifecycleWarnings += 1;
     this.diagnostics.lastWarning = message;
+  }
+
+  private recordCaptureOptionWarnings(): void {
+    const previewOnlyOptions: string[] = [];
+    if (this.requestedCapture === "preview") previewOnlyOptions.push("capture");
+    if (this.options.redactionProfile !== undefined) previewOnlyOptions.push("redactionProfile");
+    if (this.options.maxPreviewChars !== undefined) previewOnlyOptions.push("maxPreviewChars");
+
+    if (this.requestedCapture === "preview") {
+      this.recordLifecycleWarning(
+        `AI SDK preview capture is not supported yet; falling back to metadata-only capture. Unsupported options: ${previewOnlyOptions.join(", ")}.`,
+      );
+      return;
+    }
+
+    if (previewOnlyOptions.length > 0) {
+      this.recordLifecycleWarning(
+        `AI SDK preview-only options have no effect in metadata-only capture: ${previewOnlyOptions.join(", ")}.`,
+      );
+    }
   }
 
   private async write(event: PersistedInspectEvent): Promise<void> {

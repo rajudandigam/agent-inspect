@@ -164,9 +164,10 @@ import { agentInspect } from "@agent-inspect/ai-sdk";
   - **`writer`**: optional explicit local `TraceWriter` for tests, recipes, and controlled runtime integration.
   - **`traceDir`**: optional local directory that creates a file writer inside the adapter package.
   - **`runName`**: optional local run name.
-  - **`capture`**: `"metadata-only"` (default) or `"preview"` (reserved for explicit bounded capture).
-  - **`redactionProfile`** and **`maxPreviewChars`**: reserved for bounded/redacted future preview behavior.
-  - **`getDiagnostics()`**: exposes isolated adapter write failures without throwing into AI SDK callbacks.
+  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` currently emits a diagnostic and falls back to metadata-only.
+  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; when preview capture is unsupported or not selected, they emit diagnostics instead of silently doing nothing.
+  - **`getDiagnostics()`**: exposes isolated adapter write, lifecycle/configuration, flush, and close failures without throwing into AI SDK callbacks.
+  - **`getWriterStats()`**, **`flush()`**, and **`close()`**: explicit writer lifecycle helpers. Failures are captured in diagnostics.
 
 Every AI SDK call using the adapter must keep telemetry local and metadata-only:
 
@@ -179,7 +180,7 @@ experimental_telemetry: {
 }
 ```
 
-The adapter records local v0.2 persisted events for run, LLM step, and tool lifecycle metadata. By default it does not persist raw prompts, messages, generated text, stream chunks, tool inputs, tool outputs, headers, request bodies, response bodies, or user `experimental_context`.
+The adapter records local v0.2 persisted events for run, LLM step, and tool lifecycle metadata. It does not persist raw prompts, messages, generated text, stream chunks, tool inputs, tool outputs, headers, request bodies, response bodies, or user `experimental_context`. Unsupported preview capture options are explicit diagnostics and keep this metadata-only behavior.
 
 No network writer, OpenTelemetry exporter, provider wrapper, or global monkey-patch is part of this package.
 
