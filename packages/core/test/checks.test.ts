@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createBaselineRegressionRule,
   createDecisionRule,
   createGuardrailRule,
   createLlmUsageRule,
@@ -579,5 +580,127 @@ describe("built-in structure and safety checks", () => {
     expect(result.findings.every((finding) => finding.evidence.every((item) => item.path))).toBe(
       true,
     );
+  });
+});
+
+describe("built-in baseline regression checks", () => {
+  it("reports deterministic structural, tool, LLM, duration, error, retrieval, and guardrail regressions", () => {
+    const baseline = readResult([
+      persisted("event-a", { name: "root" }),
+      persisted("event-b", {
+        kind: "TOOL",
+        name: "tool:search",
+        attributes: { toolName: "search" },
+      }),
+      persisted("event-c", {
+        kind: "LLM",
+        name: "llm:gpt-a",
+        attributes: { provider: "fixture", model: "gpt-a", finishReason: "stop" },
+        tokenUsage: { input: 1, output: 2, total: 3 },
+      }),
+      persisted("event-d", { kind: "RETRIEVER", name: "retriever:kb" }),
+      persisted("event-e", {
+        kind: "LOGIC",
+        name: "guardrail:policy",
+        attributes: { guardrailName: "policy" },
+      }),
+    ]);
+    baseline.runs[0]!.durationMs = 10;
+
+    const candidate = readResult([
+      persisted("event-a", { name: "root-changed" }),
+      persisted("event-b", {
+        kind: "TOOL",
+        name: "tool:deleteUser",
+        status: "error",
+        attributes: { toolName: "deleteUser", retryCount: 2, payload: "raw tool payload" },
+      }),
+      persisted("event-c", {
+        kind: "LLM",
+        name: "llm:gpt-b",
+        attributes: {
+          provider: "other",
+          model: "gpt-b",
+          finishReason: "length",
+          prompt: "raw prompt should not leak",
+        },
+        tokenUsage: { input: 5, output: 8, total: 13 },
+      }),
+      persisted("event-d", { kind: "RETRIEVER", name: "retriever:other" }),
+      persisted("event-e", {
+        kind: "LOGIC",
+        name: "guardrail:other",
+        attributes: { guardrailName: "other" },
+      }),
+      persisted("event-f", {
+        kind: "ERROR",
+        name: "error:failure",
+        status: "error",
+        error: { name: "Error", message: "raw failure text", code: "E_FAIL" },
+      }),
+    ]);
+    candidate.runs[0]!.status = "error";
+    candidate.runs[0]!.durationMs = 30;
+
+    const result = runTraceChecks(
+      { read: candidate },
+      {
+        rules: [
+          createBaselineRegressionRule({
+            baseline: { read: baseline },
+            durationToleranceMs: 5,
+            compareFormat: true,
+          }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.every((finding) => finding.ruleId === "baseline.regression")).toBe(
+      true,
+    );
+    expect(result.findings.map((finding) => finding.message)).toEqual([
+      "Run status differs from baseline.",
+      "Run duration differs from baseline beyond tolerance.",
+      "Tree shape differs from baseline.",
+      "Event statuses differs from baseline.",
+      "LLM usage differs from baseline.",
+      "Retrieval signals differs from baseline.",
+      "Guardrail signals differs from baseline.",
+      "Error profile differs from baseline.",
+      "Tool usage differs from baseline.",
+    ]);
+    const serialized = JSON.stringify(result.findings);
+    expect(serialized).not.toContain("raw tool payload");
+    expect(serialized).not.toContain("raw prompt should not leak");
+    expect(serialized).not.toContain("raw failure text");
+  });
+
+  it("ignores nondeterministic raw prompt and output-like attributes by default", () => {
+    const baseline = readResult([
+      persisted("event-a", {
+        kind: "LLM",
+        name: "llm:gpt-a",
+        attributes: { provider: "fixture", model: "gpt-a", prompt: "baseline prompt" },
+        tokenUsage: { input: 1, output: 1, total: 2 },
+      }),
+    ]);
+    const candidate = readResult([
+      persisted("event-a", {
+        kind: "LLM",
+        name: "llm:gpt-a",
+        attributes: { provider: "fixture", model: "gpt-a", prompt: "candidate prompt" },
+        outputSummary: { text: "candidate output" },
+        tokenUsage: { input: 1, output: 1, total: 2 },
+      }),
+    ]);
+
+    const result = runTraceChecks(
+      { read: candidate },
+      { rules: [createBaselineRegressionRule({ baseline: { read: baseline } })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toEqual([]);
   });
 });

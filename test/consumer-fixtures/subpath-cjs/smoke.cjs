@@ -19,6 +19,7 @@ const {
   detectTraceFormat,
 } = require("agent-inspect/readers");
 const {
+  createBaselineRegressionRule,
   createRunStatusRule,
   createStructureOrphanRule,
   runTraceChecks,
@@ -38,6 +39,7 @@ const functionChecks = [
   memoryWriter,
   nullWriter,
   detectTraceFormat,
+  createBaselineRegressionRule,
   createRunStatusRule,
   createStructureOrphanRule,
   runTraceChecks,

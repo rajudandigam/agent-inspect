@@ -1,4 +1,5 @@
 export type {
+  BaselineRegressionRuleOptions,
   DecisionRuleOptions,
   GuardrailRuleOptions,
   LlmUsageRuleOptions,
@@ -38,6 +39,7 @@ export type {
 } from "../checks/index.js";
 
 export {
+  createBaselineRegressionRule,
   createDecisionRule,
   createGuardrailRule,
   createLlmUsageRule,

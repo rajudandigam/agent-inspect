@@ -427,6 +427,23 @@ export interface SafetyOversizedAttributeRuleOptions {
 }
 
 /**
+ * Experimental options for the built-in baseline regression rule.
+ *
+ * The baseline must already be normalized through `agent-inspect/readers` or an
+ * equivalent `TraceReadResult`; this rule does not read files or parse traces.
+ * `durationToleranceMs` defaults to `0`, meaning exact duration comparison.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface BaselineRegressionRuleOptions {
+  baseline: TraceCheckInput;
+  baselineRunId?: string;
+  durationToleranceMs?: number;
+  compareFormat?: boolean;
+}
+
+/**
  * Experimental aggregate counts for trace-check results.
  *
  * @experimental Available through `agent-inspect/checks`; the checks API may
@@ -1041,6 +1058,104 @@ function guardrailEvents(context: TraceCheckContext): PersistedInspectEvent[] {
   function finishedEvents(): PersistedInspectEvent[] {
     return context.events.filter((event) => event.status !== "running");
   }
+}
+
+function retryValue(event: PersistedInspectEvent): number {
+  return retryCount(event) ?? 0;
+}
+
+function eventDurationMs(event: PersistedInspectEvent): number | undefined {
+  if (event.durationMs !== undefined) return event.durationMs;
+  const start = eventStartMs(event);
+  const end = eventEndMs(event);
+  return start !== undefined && end !== undefined && end >= start ? end - start : undefined;
+}
+
+function treeShape(nodes: readonly InspectNode[]): string[] {
+  const lines: string[] = [];
+  const visit = (node: InspectNode, path: string) => {
+    lines.push(`${path}:${node.event.kind}:${node.event.name}:${node.event.status ?? "unknown"}`);
+    node.children.forEach((child, index) => visit(child, `${path}.${index}`));
+  };
+  nodes.forEach((node, index) => visit(node, String(index)));
+  return lines;
+}
+
+function statusShape(context: TraceCheckContext): string[] {
+  return context.events
+    .map((event) => `${event.kind}:${event.name}:${event.status ?? "unknown"}`)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function toolShape(context: TraceCheckContext): string[] {
+  return finishedEvents(context, "TOOL").map((event) =>
+    [
+      toolName(event),
+      event.status ?? "unknown",
+      retryValue(event),
+      eventDurationMs(event) ?? "unknown",
+    ].join(":"),
+  );
+}
+
+function llmShape(context: TraceCheckContext): string[] {
+  return finishedEvents(context, "LLM").map((event) =>
+    [
+      llmProvider(event) ?? "unknown",
+      llmModel(event) ?? "unknown",
+      llmFinishReason(event) ?? "unknown",
+      event.tokenUsage?.input ?? 0,
+      event.tokenUsage?.output ?? 0,
+      event.tokenUsage?.total ?? 0,
+      event.tokenUsage?.cached ?? 0,
+    ].join(":"),
+  );
+}
+
+function errorShape(context: TraceCheckContext): string[] {
+  return context.events
+    .filter((event) => event.status === "error" || event.error !== undefined)
+    .map((event) =>
+      [
+        event.kind,
+        event.name,
+        event.error?.name ?? "Error",
+        event.error?.code ?? "unknown",
+      ].join(":"),
+    )
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function retrievalShape(context: TraceCheckContext): string[] {
+  return finishedEvents(context, "RETRIEVER")
+    .map((event) =>
+      signalName(event, ["retrievalName", "retrieverName", "retriever"], ["retriever:", "retrieval:"]),
+    )
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function guardrailShape(context: TraceCheckContext): string[] {
+  return guardrailEvents(context)
+    .map((event) => signalName(event, ["guardrailName", "guardrail", "guardrailId"], ["guardrail:"]))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function firstEvidenceForKind(
+  context: TraceCheckContext,
+  kind: PersistedInspectEvent["kind"],
+  path: string,
+): TraceCheckEvidence[] {
+  const event = context.events.find((candidate) => candidate.kind === kind);
+  return event ? [eventEvidence(event, path)] : runEvidence(context.selectedRun);
+}
+
+function baselineDiffFinding(
+  message: string,
+  evidence: readonly TraceCheckEvidence[],
+  expected: unknown,
+  actual: unknown,
+): TraceCheckFinding {
+  return failFinding("baseline.regression", message, evidence, expected, actual);
 }
 
 /**
@@ -2078,6 +2193,162 @@ export function createSafetyOversizedAttributeRule(
         }
       }
       return limitFindings(findings, options.maxFindings);
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in baseline regression rule.
+ *
+ * The rule compares safe structural summaries from a normalized baseline
+ * against the candidate context. It intentionally ignores raw prompt/output,
+ * request/response body, header, and tool payload text.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createBaselineRegressionRule(
+  options: BaselineRegressionRuleOptions,
+): TraceCheckRule {
+  return {
+    id: "baseline.regression",
+    category: "baseline",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const baselineSelection = resolveSelectedRun(options.baseline, options.baselineRunId);
+      if (baselineSelection.diagnostics.length > 0 || !baselineSelection.run) {
+        return [
+          failFinding(
+            "baseline.regression",
+            "Baseline run could not be selected.",
+            runEvidence(context.selectedRun),
+            "selectable baseline run",
+            baselineSelection.diagnostics.map((item) => item.code),
+          ),
+        ];
+      }
+
+      const baselineFacts = buildFacts(options.baseline, baselineSelection.run);
+      const baselineContext: TraceCheckContext = {
+        ...baselineFacts,
+        selectedRun: baselineSelection.run,
+        sourceLabel: options.baseline.sourceLabel,
+      };
+      const findings: TraceCheckFinding[] = [];
+      const durationToleranceMs = options.durationToleranceMs ?? 0;
+
+      if (options.compareFormat && baselineContext.format !== context.format) {
+        findings.push(
+          baselineDiffFinding(
+            "Trace format differs from baseline.",
+            runEvidence(context.selectedRun),
+            baselineContext.format,
+            context.format,
+          ),
+        );
+      }
+
+      const baselineRunStatus = baselineContext.selectedRun?.status ?? "unknown";
+      const candidateRunStatus = context.selectedRun?.status ?? "unknown";
+      if (baselineRunStatus !== candidateRunStatus) {
+        findings.push(
+          baselineDiffFinding(
+            "Run status differs from baseline.",
+            runEvidence(context.selectedRun),
+            baselineRunStatus,
+            candidateRunStatus,
+          ),
+        );
+      }
+
+      const baselineDuration = baselineContext.selectedRun?.durationMs;
+      const candidateDuration = context.selectedRun?.durationMs;
+      if (
+        baselineDuration !== undefined &&
+        candidateDuration !== undefined &&
+        Math.abs(candidateDuration - baselineDuration) > durationToleranceMs
+      ) {
+        findings.push(
+          baselineDiffFinding(
+            "Run duration differs from baseline beyond tolerance.",
+            runEvidence(context.selectedRun),
+            { durationMs: baselineDuration, toleranceMs: durationToleranceMs },
+            candidateDuration,
+          ),
+        );
+      }
+
+      const comparisons = [
+        {
+          label: "Tree shape",
+          path: "tree",
+          expected: treeShape(baselineContext.rootNodes),
+          actual: treeShape(context.rootNodes),
+          evidence: runEvidence(context.selectedRun),
+        },
+        {
+          label: "Event statuses",
+          path: "status",
+          expected: statusShape(baselineContext),
+          actual: statusShape(context),
+          evidence: runEvidence(context.selectedRun),
+        },
+        {
+          label: "Tool usage",
+          path: "tool",
+          expected: toolShape(baselineContext),
+          actual: toolShape(context),
+          evidence: firstEvidenceForKind(context, "TOOL", "tool"),
+        },
+        {
+          label: "LLM usage",
+          path: "llm",
+          expected: llmShape(baselineContext),
+          actual: llmShape(context),
+          evidence: firstEvidenceForKind(context, "LLM", "llm"),
+        },
+        {
+          label: "Error profile",
+          path: "error",
+          expected: errorShape(baselineContext),
+          actual: errorShape(context),
+          evidence: firstEvidenceForKind(context, "ERROR", "error"),
+        },
+        {
+          label: "Retrieval signals",
+          path: "retrieval",
+          expected: retrievalShape(baselineContext),
+          actual: retrievalShape(context),
+          evidence: firstEvidenceForKind(context, "RETRIEVER", "retrieval"),
+        },
+        {
+          label: "Guardrail signals",
+          path: "guardrail",
+          expected: guardrailShape(baselineContext),
+          actual: guardrailShape(context),
+          evidence: guardrailEvents(context)[0]
+            ? [eventEvidence(guardrailEvents(context)[0]!, "guardrail")]
+            : runEvidence(context.selectedRun),
+        },
+      ];
+
+      for (const comparison of comparisons) {
+        if (JSON.stringify(comparison.expected) === JSON.stringify(comparison.actual)) {
+          continue;
+        }
+        findings.push(
+          baselineDiffFinding(
+            `${comparison.label} differs from baseline.`,
+            comparison.evidence.length > 0
+              ? comparison.evidence
+              : [{ runId: context.selectedRun?.runId, path: comparison.path }],
+            comparison.expected,
+            comparison.actual,
+          ),
+        );
+      }
+
+      return findings;
     },
   };
 }

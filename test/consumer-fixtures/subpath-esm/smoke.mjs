@@ -19,6 +19,7 @@ import {
   detectTraceFormat,
 } from "agent-inspect/readers";
 import {
+  createBaselineRegressionRule,
   createRunStatusRule,
   createStructureOrphanRule,
   runTraceChecks,
@@ -38,6 +39,7 @@ const functionChecks = [
   memoryWriter,
   nullWriter,
   detectTraceFormat,
+  createBaselineRegressionRule,
   createRunStatusRule,
   createStructureOrphanRule,
   runTraceChecks,

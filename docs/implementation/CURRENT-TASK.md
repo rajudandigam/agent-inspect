@@ -4,59 +4,60 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-14-baseline-regression"
+chunk: "v1.8-15-scan-and-verify-safe"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-13-check-cli-and-configuration"
+dependsOn: "v1.8-14-baseline-regression"
 ```
 
 ## Goal
 
-Add structural baseline regression checks for deterministic comparison of normalized candidate and baseline traces: tree divergence, tools, LLMs, models/providers, tokens, duration, retries, status, error paths, retrieval, and guardrails. Ignore nondeterministic text by default.
+Add best-effort local trace safety verification through `scan` and `verify-safe` with evidence and SAFE / SAFE WITH WARNINGS / UNSAFE / UNKNOWN statuses. Do not make compliance claims.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 14
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 15
 - `docs/proposals/TRACE-CHECKS.md`
-- `packages/core/src/checks/`
-- `packages/core/src/entries/checks.ts`
-- existing checks, diff/comparable, reader, and baseline-related tests/fixtures
-- CLI check implementation only if baseline selection needs API plumbing
+- existing CLI command patterns and help tests
+- existing checks and safety/redaction rules
+- existing readers and trace verification helpers
+- safety, redaction, malformed input, and CLI tests/fixtures
 
 ## In scope
 
-1. Add baseline comparison rule support through `agent-inspect/checks` without introducing a new persisted model.
-2. Compare candidate and baseline after both are normalized through reader output.
-3. Cover structural dimensions from the plan: tree shape, tools, LLMs, models/providers, tokens, duration, retries, status, error paths, retrieval, and guardrails.
-4. Exclude nondeterministic prompt/output/raw text differences by default.
-5. Emit deterministic, evidence-bearing findings with stable expected/actual summaries and no raw payload leakage.
+1. Add local `scan` and `verify-safe` behavior using existing reader/check/safety primitives where possible.
+2. Produce evidence-bearing results with statuses: SAFE, SAFE WITH WARNINGS, UNSAFE, and UNKNOWN.
+3. Detect likely secrets, unsafe capture paths, malformed/unsupported input, and safety warnings conservatively.
+4. Keep output deterministic and avoid raw prompt/output/request/response/header/API key/secret leakage.
+5. Document that results are best-effort and not compliance, privacy, security, or regulatory certification.
 6. Keep the implementation local, read-only, dependency-light, and no-network.
 
 ## Out of scope
 
 - package version changes, changesets, npm publication, tags, releases, or package publish-status changes;
-- reporter artifact generation, GitHub step-summary output, scan/verify-safe commands, or broad reporter work;
+- reporter artifact generation, GitHub step-summary output, CI reporter plumbing, or broad artifact work;
 - YAML config, provider execution, API keys, network calls, hosted telemetry/export, replay behavior, or prompt/eval hosting;
 - new framework adapter packages, pricing/provider semantics, root/core runtime dependencies, or persisted schema changes.
 
 ## Acceptance criteria
 
-- baseline checks compare normalized check facts rather than raw files or ad hoc parsing;
-- findings are deterministic and identify relevant runs/events/spans/paths without emitting raw prompts, outputs, request/response bodies, headers, API keys, secrets, or full tool payloads;
-- duration comparison uses an explicit tolerance or documented default;
-- baseline and candidate format mismatches are handled conservatively after both normalize successfully;
-- no reporter artifacts, scan/verify-safe command, new dependency, persisted schema change, provider execution, network behavior, hosted upload, release/tag/version/change changes, or raw content capture lands in this chunk.
+- `scan` and `verify-safe` operate on local trace inputs only and do not mutate inputs;
+- output includes deterministic status, evidence, warnings, and enough location context for maintainers to act;
+- unsafe/unknown conditions are conservative and warning-rich for malformed, unsupported, ambiguous, or unreadable input;
+- no output emits raw prompts, outputs, request/response bodies, headers, API keys, secrets, or full tool payloads;
+- docs and help text avoid compliance claims and describe secret detection as best-effort;
+- no reporter artifacts, GitHub integration, new dependency, persisted schema change, provider execution, network behavior, hosted upload, release/tag/version/change changes, or raw content capture lands in this chunk.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/core/test/checks.test.ts packages/core/test/diff/comparable.test.ts packages/core/test/readers.test.ts packages/core/test/package-boundaries.test.ts
+pnpm exec vitest run packages/cli/test/cli.test.ts packages/cli/test/cli-stability.test.ts packages/core/test/security-redaction.test.ts packages/core/test/trace-verification.test.ts packages/core/test/readers.test.ts
 ```
 
-Adjust the focused set after inspecting the final baseline implementation shape.
+Adjust the focused set after inspecting the final scan/verify-safe implementation shape.
 
 ## Chunk gate
 
@@ -76,9 +77,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-feat: add baseline trace regression checks
+feat: add trace safety verification
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, any decision that expands into reporter artifact generation, scan/verify-safe commands, GitHub integration, root/core dependency expansion, package publication semantics, YAML/config dependency requirements, raw content capture requirements, persisted schema changes, or validation failures that cannot be fixed within chunk 14 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, any decision that expands into reporter artifact generation, GitHub integration, compliance certification, root/core dependency expansion, package publication semantics, YAML/config dependency requirements, raw content capture requirements, persisted schema changes, or validation failures that cannot be fixed within chunk 15 scope.
