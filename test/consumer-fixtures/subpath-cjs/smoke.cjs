@@ -18,6 +18,7 @@ const {
   agentInspectJsonlReader,
   detectTraceFormat,
 } = require("agent-inspect/readers");
+const { runTraceChecks } = require("agent-inspect/checks");
 
 const functionChecks = [
   parseLogsToTrees,
@@ -33,6 +34,7 @@ const functionChecks = [
   memoryWriter,
   nullWriter,
   detectTraceFormat,
+  runTraceChecks,
 ];
 
 const objectChecks = [agentInspectJsonlReader];

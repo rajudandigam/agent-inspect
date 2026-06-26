@@ -96,6 +96,16 @@
         "types": "./packages/core/dist/readers.d.cts",
         "default": "./packages/core/dist/readers.cjs"
       }
+    },
+    "./checks": {
+      "import": {
+        "types": "./packages/core/dist/checks.d.ts",
+        "default": "./packages/core/dist/checks.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/checks.d.cts",
+        "default": "./packages/core/dist/checks.cjs"
+      }
     }
   },
   "bin": {

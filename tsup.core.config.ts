@@ -8,6 +8,7 @@ const subpathEntries = {
   diff: "packages/core/src/entries/diff.ts",
   writers: "packages/core/src/entries/writers.ts",
   readers: "packages/core/src/entries/readers.ts",
+  checks: "packages/core/src/entries/checks.ts",
 } as const;
 
 export default defineConfig({

@@ -87,6 +87,16 @@
         "types": "./dist/readers.d.cts",
         "default": "./dist/readers.cjs"
       }
+    },
+    "./checks": {
+      "import": {
+        "types": "./dist/checks.d.ts",
+        "default": "./dist/checks.mjs"
+      },
+      "require": {
+        "types": "./dist/checks.d.cts",
+        "default": "./dist/checks.cjs"
+      }
     }
   },
   "files": ["dist"],

@@ -367,16 +367,33 @@ import type { TraceReader } from "agent-inspect/readers";
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
 
-## 19. Deprecated APIs
+## 19. Experimental Checks
+
+`agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, add CLI behavior, call providers, perform network I/O, or implement rule families yet.
+
+Import from `agent-inspect/checks`:
+
+```ts
+import { runTraceChecks } from "agent-inspect/checks";
+import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
+```
+
+- **`runTraceChecks({ read }, { rules?, select?, runId? })`**: executes provided rules against a `TraceReadResult` from `agent-inspect/readers`.
+- **`TraceCheckRule`**: synchronous pure rule contract.
+- **`TraceCheckResult`**: deterministic aggregate result with findings, evidence, summary counts, and execution diagnostics.
+
+The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation.
+
+## 20. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 20. Removal / deprecation policy
+## 21. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 21. Backward compatibility policy
+## 22. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
