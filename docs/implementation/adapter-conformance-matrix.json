@@ -115,8 +115,8 @@
     {
       "id": "langgraph",
       "packageName": "@agent-inspect/langchain",
-      "status": "decision-only",
-      "fixtureScope": "future no-network LangGraph-through-LangChain fixture",
+      "status": "fixture-backed-through-langchain-callback",
+      "fixtureScope": "packages/langchain/test/langgraph-through-langchain.test.ts",
       "installMode": "explicit-langchain-callback",
       "dependencyBoundary": "through-existing-langchain-adapter",
       "requiredHostControls": [
@@ -125,13 +125,13 @@
         "no separate package unless callback-surface gap is proven"
       ],
       "signals": {
-        "run": "planned",
-        "step": "planned",
-        "tool": "planned",
-        "llm": "planned",
-        "error": "planned",
-        "streaming": "planned",
-        "metadata-bounds": "planned"
+        "run": "covered",
+        "step": "covered",
+        "tool": "covered",
+        "llm": "covered",
+        "error": "covered",
+        "streaming": "covered",
+        "metadata-bounds": "covered"
       },
       "mustNotPersist": [
         "full_graph_state",

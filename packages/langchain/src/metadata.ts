@@ -4,6 +4,11 @@ export interface TokenUsage {
   total?: number;
 }
 
+type LangGraphAlias = {
+  out: string;
+  aliases: readonly string[];
+};
+
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
@@ -139,6 +144,79 @@ export function safePreview(value: unknown, maxChars: number): string | undefine
 
 const MAX_METADATA_KEYS = 40;
 
+const LANGGRAPH_ALIASES: readonly LangGraphAlias[] = [
+  { out: "graphId", aliases: ["graphId", "graph_id", "langgraph_graph_id"] },
+  { out: "graphName", aliases: ["graphName", "graph_name", "langgraph_graph_name"] },
+  { out: "nodeId", aliases: ["nodeId", "node_id", "langgraph_node_id"] },
+  { out: "nodeName", aliases: ["nodeName", "node_name", "langgraph_node"] },
+  { out: "subgraphId", aliases: ["subgraphId", "subgraph_id", "langgraph_subgraph_id"] },
+  { out: "subgraphName", aliases: ["subgraphName", "subgraph_name", "langgraph_subgraph"] },
+  { out: "taskId", aliases: ["taskId", "task_id", "langgraph_task_id"] },
+  { out: "taskName", aliases: ["taskName", "task_name", "langgraph_task"] },
+  { out: "branch", aliases: ["branch", "branchName", "branch_name", "langgraph_branch"] },
+  { out: "branchPath", aliases: ["branchPath", "branch_path", "langgraph_path"] },
+  { out: "checkpointId", aliases: ["checkpointId", "checkpoint_id", "langgraph_checkpoint_id"] },
+  {
+    out: "checkpointNamespace",
+    aliases: ["checkpointNamespace", "checkpoint_ns", "langgraph_checkpoint_ns"],
+  },
+  { out: "threadId", aliases: ["threadId", "thread_id", "langgraph_thread_id"] },
+  { out: "sessionId", aliases: ["sessionId", "session_id", "langgraph_session_id"] },
+  { out: "retryAttempt", aliases: ["retryAttempt", "retry_attempt", "attempt"] },
+  { out: "handoffFrom", aliases: ["handoffFrom", "handoff_from", "langgraph_handoff_from"] },
+  { out: "handoffTo", aliases: ["handoffTo", "handoff_to", "langgraph_handoff_to"] },
+] as const;
+
+const LANGGRAPH_SUMMARY_ALIASES: readonly LangGraphAlias[] = [
+  { out: "checkpointSummary", aliases: ["checkpoint", "langgraph_checkpoint"] },
+  { out: "branchSummary", aliases: ["branches", "langgraph_branches", "langgraph_triggers"] },
+  { out: "taskSummary", aliases: ["tasks", "langgraph_tasks"] },
+] as const;
+
+function boundedValue(value: unknown): unknown {
+  if (value === null) return null;
+  if (typeof value === "string") return value.length <= 200 ? value : `${value.slice(0, 200)}…`;
+  if (typeof value === "number" || typeof value === "boolean") return value;
+  if (typeof value === "bigint") return value.toString();
+  if (Array.isArray(value)) {
+    const items = value.slice(0, 10).map((item) => {
+      if (item === null) return null;
+      if (typeof item === "string" || typeof item === "number" || typeof item === "boolean") {
+        return item;
+      }
+      if (typeof item === "bigint") return item.toString();
+      return summarizeValue(item);
+    });
+    return {
+      type: "array",
+      itemCount: value.length,
+      items,
+      truncated: value.length > items.length ? true : undefined,
+    };
+  }
+  return summarizeValue(value);
+}
+
+function summarizeValue(value: unknown): Record<string, unknown> {
+  if (Array.isArray(value)) return { type: "array", itemCount: value.length };
+  if (isRecord(value)) return { type: "object", keyCount: Object.keys(value).length };
+  return { type: typeof value };
+}
+
+function getAliasValue(
+  sources: readonly Record<string, unknown>[],
+  aliases: readonly string[],
+): unknown {
+  for (const source of sources) {
+    for (const alias of aliases) {
+      if (Object.prototype.hasOwnProperty.call(source, alias)) {
+        return source[alias];
+      }
+    }
+  }
+  return undefined;
+}
+
 /** Shallow plain metadata: drops functions/symbols; avoids deep nesting. Never throws. */
 export function toPlainMetadata(value: unknown): Record<string, unknown> {
   try {
@@ -174,5 +252,40 @@ export function toPlainMetadata(value: unknown): Record<string, unknown> {
     return out;
   } catch {
     return {};
+  }
+}
+
+/**
+ * Extract bounded LangGraph identity metadata from LangChain callback metadata.
+ *
+ * The helper preserves known graph/node/task/session identifiers and summarizes
+ * potentially large graph state containers instead of copying raw state.
+ */
+export function extractLangGraphMetadata(value: unknown): Record<string, unknown> | undefined {
+  try {
+    if (!isRecord(value)) return undefined;
+    const sources: Record<string, unknown>[] = [value];
+    for (const key of ["langgraph", "configurable"] as const) {
+      const nested = value[key];
+      if (isRecord(nested)) sources.push(nested);
+    }
+    const config = value.config;
+    if (isRecord(config) && isRecord(config.configurable)) {
+      sources.push(config.configurable);
+    }
+
+    const out: Record<string, unknown> = {};
+    for (const { out: outKey, aliases } of LANGGRAPH_ALIASES) {
+      const raw = getAliasValue(sources, aliases);
+      if (raw !== undefined) out[outKey] = boundedValue(raw);
+    }
+    for (const { out: outKey, aliases } of LANGGRAPH_SUMMARY_ALIASES) {
+      const raw = getAliasValue(sources, aliases);
+      if (raw !== undefined) out[outKey] = summarizeValue(raw);
+    }
+
+    return Object.keys(out).length > 0 ? out : undefined;
+  } catch {
+    return undefined;
   }
 }

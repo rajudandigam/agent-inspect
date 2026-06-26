@@ -130,6 +130,11 @@ export class LangChainTracePersistence {
       const stepId = createStepId();
       this.#lcToStepId.set(params.lcRunId, stepId);
       const parentId = this.resolveParentId(params.lcParentRunId);
+      const metadata = toStepMetadata(params.attributes);
+      if (params.lcParentRunId && !parentId) {
+        metadata.parentMapping = "unresolved";
+        metadata.unresolvedParentRunId = params.lcParentRunId;
+      }
 
       const event: TraceEvent = {
         schemaVersion: "0.1",
@@ -141,7 +146,7 @@ export class LangChainTracePersistence {
         name: params.name,
         type: kindToStepType(params.kind),
         startTime: params.startTime,
-        metadata: toStepMetadata(params.attributes),
+        metadata,
       };
 
       await this.#write(event);
@@ -165,6 +170,11 @@ export class LangChainTracePersistence {
         stepId = createStepId();
         this.#lcToStepId.set(params.lcRunId, stepId);
         const parentId = this.resolveParentId(params.lcParentRunId);
+        const metadata = toStepMetadata(params.completionAttributes);
+        if (params.lcParentRunId && !parentId) {
+          metadata.parentMapping = "unresolved";
+          metadata.unresolvedParentRunId = params.lcParentRunId;
+        }
         const startTime = params.endTime - (params.durationMs ?? 0);
         const started: TraceEvent = {
           schemaVersion: "0.1",
@@ -178,7 +188,7 @@ export class LangChainTracePersistence {
             (params.completionAttributes.kind as InspectKind | undefined) ?? "LLM",
           ),
           startTime,
-          metadata: toStepMetadata(params.completionAttributes),
+          metadata,
         };
         await this.#write(started);
       }
@@ -243,6 +253,11 @@ export class LangChainTracePersistence {
       const stepId = createStepId();
       this.#lcToStepId.set(params.lcRunId, stepId);
       const parentId = this.resolveParentId(params.lcParentRunId);
+      const metadata = toStepMetadata(params.attributes);
+      if (params.lcParentRunId && !parentId) {
+        metadata.parentMapping = "unresolved";
+        metadata.unresolvedParentRunId = params.lcParentRunId;
+      }
 
       const started: TraceEvent = {
         schemaVersion: "0.1",
@@ -254,7 +269,7 @@ export class LangChainTracePersistence {
         name: params.name,
         type: kindToStepType(params.kind),
         startTime: params.timestamp,
-        metadata: toStepMetadata(params.attributes),
+        metadata,
       };
       await this.#write(started);
 

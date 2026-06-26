@@ -19,6 +19,7 @@ import {
 } from "agent-inspect";
 
 import {
+  extractLangGraphMetadata,
   extractModelName,
   extractTokenUsage,
   safePreview,
@@ -33,7 +34,11 @@ import {
 import { LangChainTracePersistence } from "./trace-persistence.js";
 import type { AgentInspectCallbackOptions } from "./types.js";
 
-type StartEntry = { ts: number; kind: InspectKind };
+type StartEntry = { ts: number; kind: InspectKind; langGraph?: Record<string, unknown> };
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
 
 function serializedLabel(s: Serialized): string | undefined {
   if (typeof s.name === "string" && s.name.trim()) return s.name;
@@ -209,6 +214,17 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     this.#starts.set(lcRunId, { ts: Date.now(), kind });
   }
 
+  #rememberStartMetadata(lcRunId: string, attrs: Record<string, unknown>): void {
+    const start = this.#starts.get(lcRunId);
+    if (!start || !isRecord(attrs.langGraph)) return;
+    this.#starts.set(lcRunId, { ...start, langGraph: { ...attrs.langGraph } });
+  }
+
+  #attachStartMetadata(attrs: Record<string, unknown>, lcRunId: string): void {
+    const langGraph = this.#starts.get(lcRunId)?.langGraph;
+    if (langGraph && !attrs.langGraph) attrs.langGraph = { ...langGraph };
+  }
+
   #clearStart(lcRunId: string): void {
     this.#starts.delete(lcRunId);
   }
@@ -237,6 +253,8 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): void {
     if (this.#opts.capture === "none" || !metadata) return;
     attrs.metadata = this.#redactor.redactRecord(toPlainMetadata(metadata));
+    const langGraph = extractLangGraphMetadata(metadata);
+    if (langGraph) attrs.langGraph = this.#redactor.redactRecord(langGraph);
   }
 
   #applyPreview(attrs: Record<string, unknown>, previews: Record<string, unknown>): void {
@@ -342,6 +360,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     };
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    this.#rememberStartMetadata(runId, attrs);
     const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:CHAIN:start`,
@@ -367,12 +386,13 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const previews: Record<string, unknown> = {};
     if (this.#opts.capture === "preview") previews.outputPreview = outputs;
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     this.#applyPreview(attrs, previews);
     const ts = Date.now();
     this.#pushEvent({
@@ -400,13 +420,14 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const { errorName, errorMessage } = errorShape(err);
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
       errorName,
       errorMessage,
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:CHAIN:error`,
@@ -448,6 +469,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     this.#mergeMetadata(attrs, metadata);
     this.#mergeCorrelation(attrs);
     this.#applyPreview(attrs, previews);
+    this.#rememberStartMetadata(runId, attrs);
     const ts = Date.now();
     const stepName = `llm:${model ?? "llm"}`;
     this.#pushEvent({
@@ -487,6 +509,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     this.#mergeMetadata(attrs, metadata);
     this.#mergeCorrelation(attrs);
     this.#applyPreview(attrs, previews);
+    this.#rememberStartMetadata(runId, attrs);
     const ts = Date.now();
     const stepName = `llm:${model ?? "llm"}`;
     this.#pushEvent({
@@ -540,7 +563,6 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const tokens = extractTokenUsage(output);
     const model = extractModelName(output);
     const previews: Record<string, unknown> = {};
@@ -550,6 +572,8 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     };
     if (model && this.#opts.capture !== "none") attrs.model = model;
     if (tokens && this.#opts.capture !== "none") attrs.tokens = tokens;
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     this.#attachStreamMetadata(attrs, runId);
     this.#mergeCorrelation(attrs);
     this.#applyPreview(attrs, previews);
@@ -585,13 +609,14 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const { errorName, errorMessage } = errorShape(err);
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
       errorName,
       errorMessage,
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     this.#attachStreamMetadata(attrs, runId);
     this.#mergeCorrelation(attrs);
     const ts = Date.now();
@@ -638,6 +663,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     };
     this.#mergeMetadata(attrs, metadata);
     this.#applyPreview(attrs, previews);
+    this.#rememberStartMetadata(runId, attrs);
     const ts = Date.now();
     const stepName = `tool:${toolName}`;
     this.#pushEvent({
@@ -663,12 +689,13 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const previews: Record<string, unknown> = {};
     if (this.#opts.capture === "preview") previews.outputPreview = output;
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     this.#applyPreview(attrs, previews);
     const ts = Date.now();
     this.#pushEvent({
@@ -695,13 +722,14 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const { errorName, errorMessage } = errorShape(err);
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
       errorName,
       errorMessage,
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:TOOL:error`,
@@ -737,6 +765,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       retriever: rname,
     };
     this.#mergeMetadata(attrs, metadata);
+    this.#rememberStartMetadata(runId, attrs);
     const ts = Date.now();
     const stepName = `retriever:${rname}`;
     this.#pushEvent({
@@ -762,7 +791,6 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const previews: Record<string, unknown> = {};
     if (this.#opts.capture === "preview" && documents.length > 0) {
       previews.documentPreview = documents.slice(0, 3);
@@ -771,6 +799,8 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
       documentCount: documents.length,
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     this.#applyPreview(attrs, previews);
     const ts = Date.now();
     this.#pushEvent({
@@ -797,13 +827,14 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   ): Promise<void> {
     this.#ensureRoot(runId, parentRunId);
     const durationMs = this.#durationFor(runId);
-    this.#clearStart(runId);
     const { errorName, errorMessage } = errorShape(err);
     const attrs: Record<string, unknown> = {
       ...this.#baseAttrs(runId, parentRunId, tags, undefined),
       errorName,
       errorMessage,
     };
+    this.#attachStartMetadata(attrs, runId);
+    this.#clearStart(runId);
     const ts = Date.now();
     this.#pushEvent({
       eventId: `${runId}:RETRIEVER:error`,

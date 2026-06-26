@@ -4,57 +4,57 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-7-langgraph-through-langchain"
+chunk: "v1.8-8-executable-adapter-conformance"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-6-openai-agents-safety-and-recipes"
+dependsOn: "v1.8-7-langgraph-through-langchain"
 ```
 
 ## Goal
 
-Add deterministic no-network LangGraph-through-LangChain fixtures and mapping assertions for graph/node identity, subgraphs, tasks, branches, checkpoints, retries, handoffs, thread/session IDs, streaming metadata, and unknown parents where exposed by official callbacks.
+Create shared executable adapter conformance utilities and fixture assertions for success, failure, tools, multiple tools, LLM, streaming, token usage, parentage, parallelism, correlation, redaction, truncation, no-network behavior, and canonical-reader round trips.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 7
-- relevant LangChain/LangGraph RFC or proposal docs if present
-- `packages/langchain/src/agent-inspect-callback.ts`
-- `packages/langchain/test/*`
-- existing LangChain example/fixture coverage
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 8
+- `docs/ADAPTER-CONFORMANCE.md`
+- `docs/implementation/adapter-conformance-matrix.json`
+- existing adapter tests under `packages/ai-sdk/test`, `packages/openai-agents/test`, and `packages/langchain/test`
+- persisted reader/tree helpers used by current adapter tests
 
 ## In scope
 
-1. Add no-network LangGraph-shaped fixtures that exercise the existing LangChain callback integration, not real provider/model execution.
-2. Preserve explicit trace/span/run identity, parentage, ordering, unknown-parent warnings, and confidence policy.
-3. Cover graph/node/subgraph/task/branch/checkpoint/retry/handoff/thread/session metadata where available from callback shapes.
-4. Add reader/tree/report round-trip assertions only where directly needed for the new fixture semantics.
-5. Keep LangGraph support dependency-isolated through the existing LangChain adapter boundary; do not add root/core runtime dependencies.
+1. Add shared test utilities or fixtures that make adapter conformance executable without changing runtime public APIs.
+2. Assert success/failure, tools, multiple tools, LLM/token usage, streaming metadata, parentage, parallelism, correlation, redaction/truncation, no-network behavior, and canonical-reader round trips where current adapters expose those signals.
+3. Reuse existing adapter fixtures and callback/processor test shapes rather than adding provider execution.
+4. Update conformance docs/matrix only to reflect executable coverage that lands in this chunk.
+5. Keep root/core dependency boundaries unchanged.
 
 ## Out of scope
 
-- package version changes, changesets, npm publication, tags, releases, or changing package publish status;
-- real LangGraph provider/model execution, network calls, API keys, hosted tracing/export, or replay behavior;
-- new root exports unless the active plan explicitly requires them;
-- broad adapter conformance utilities, checks engine work, or reporter packages.
+- package version changes, changesets, npm publication, tags, releases, or package publish-status changes;
+- real provider/model execution, API keys, network calls, hosted telemetry/export, or replay behavior;
+- new framework adapter packages or new root exports unless the active plan explicitly requires them;
+- checks engine, reporter packages, or broad CLI feature work.
 
 ## Acceptance criteria
 
-- fixtures are deterministic, local-only, and require no network, provider credentials, LangSmith upload, or external services;
-- graph/node/task metadata is preserved as bounded safe metadata without raw prompt/output capture;
-- unknown or missing parents are represented conservatively with warnings/confidence rather than fabricated relationships;
-- existing LangChain callback behavior and public imports remain compatible;
-- docs do not imply a new LangGraph package or hosted tracing product.
+- conformance tests are deterministic, local-only, and require no network, provider credentials, or hosted tracing service;
+- shared assertions cover adapter event identity, parentage, token usage, streaming summaries, redaction/truncation, and reader round trips without duplicating parsing logic;
+- tests fail clearly with adapter/package/signal context;
+- no adapter persists raw prompts, messages, generated text, tool payloads, stream tokens, request/response bodies, headers, or hosted trace payloads by default;
+- optional package and root/core dependency boundaries remain unchanged.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/langchain/test/agent-inspect-callback.test.ts packages/langchain/test/agent-inspect-callback-streaming.test.ts packages/langchain/test/agent-inspect-callback-persistence.test.ts packages/langchain/test/metadata.test.ts
+pnpm exec vitest run packages/core/test/adapter-conformance-matrix.test.ts packages/ai-sdk/test/api-stability.test.ts packages/openai-agents/test/api-stability.test.ts packages/langchain/test/langgraph-through-langchain.test.ts packages/langchain/test/agent-inspect-callback-streaming.test.ts
 ```
 
-Adjust the exact file list after inspecting current LangChain fixture coverage, but keep the chunk focused on deterministic LangGraph-through-LangChain behavior.
+Adjust the exact file list after inspecting existing adapter fixtures, but keep the chunk focused on executable adapter conformance.
 
 ## Chunk gate
 
@@ -74,9 +74,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-feat: add langgraph trace mapping fixtures
+test: enforce adapter conformance fixtures
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, any fixture requiring network/provider credentials/default hosted export, root/core dependency expansion, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 7 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, any fixture requiring network/provider credentials/default hosted export, root/core dependency expansion, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 8 scope.

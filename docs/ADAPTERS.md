@@ -115,6 +115,16 @@ npx agent-inspect export <run-id> --format markdown --redaction-profile share
 
 Written events use `schemaVersion: "0.1"` manual trace names.
 
+### LangGraph through LangChain callbacks
+
+LangGraph-shaped callback metadata is covered through the existing `@agent-inspect/langchain` callback boundary. No separate `@agent-inspect/langgraph` package is shipped.
+
+- **Explicit callback only** — pass `new AgentInspectCallback(...)` through LangChain/LangGraph callback configuration.
+- **Bounded graph metadata** — known graph, node, subgraph, task, branch, checkpoint, retry, handoff, thread, and session identifiers are copied into `attributes.langGraph` when present.
+- **No full graph state** — checkpoint/task/branch containers are summarized by type/count; raw graph state, prompts, tool payloads, outputs, and stream tokens are not stored in `metadata-only` mode.
+- **Conservative parent mapping** — in-memory events preserve framework `parentRunId`; persisted JSONL maps parents only when the parent callback was seen, and marks unresolved parent mappings in step metadata.
+- **No hosted tracing requirement** — fixtures use structural no-network callback payloads and do not require LangSmith, provider calls, or LangGraph platform services.
+
 ### Capture modes
 
 | `capture` | Behavior |

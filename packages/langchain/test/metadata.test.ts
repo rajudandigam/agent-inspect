@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  extractLangGraphMetadata,
   extractModelName,
   extractTokenUsage,
   safePreview,
@@ -159,5 +160,42 @@ describe("toPlainMetadata", () => {
         nested: { deep: true },
       }),
     ).toEqual({ arr: "array(3)", nested: "[object]" });
+  });
+});
+
+describe("extractLangGraphMetadata", () => {
+  it("preserves known identifiers and summarizes full graph state containers", () => {
+    expect(
+      extractLangGraphMetadata({
+        langgraph: {
+          graphId: "graph-1",
+          nodeName: "router",
+          branchPath: ["__start__", "router"],
+          checkpoint: { channel_values: { secret: "raw" }, versions_seen: { router: 1 } },
+        },
+        config: {
+          configurable: {
+            thread_id: "thread-1",
+            checkpoint_ns: "router:checkpoint",
+          },
+        },
+      }),
+    ).toMatchObject({
+      graphId: "graph-1",
+      nodeName: "router",
+      branchPath: {
+        type: "array",
+        itemCount: 2,
+        items: ["__start__", "router"],
+      },
+      checkpointSummary: { type: "object", keyCount: 2 },
+      threadId: "thread-1",
+      checkpointNamespace: "router:checkpoint",
+    });
+  });
+
+  it("returns undefined when metadata has no LangGraph-shaped fields", () => {
+    expect(extractLangGraphMetadata({ userId: "fixture-user" })).toBeUndefined();
+    expect(extractLangGraphMetadata(null)).toBeUndefined();
   });
 });

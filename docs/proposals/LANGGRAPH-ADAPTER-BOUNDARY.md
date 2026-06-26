@@ -1,8 +1,8 @@
 # LangGraph adapter boundary decision
 
-**Status:** v1.7.0 chunk 8 decision.
+**Status:** v1.7.0 chunk 8 decision; v1.8 chunk 7 fixture-backed through `@agent-inspect/langchain`.
 **Purpose:** decide whether LangGraph support belongs in `@agent-inspect/langchain` or a new package.
-**Last verified:** 2026-06-25.
+**Last verified:** 2026-06-26.
 
 ## Decision
 
@@ -37,11 +37,11 @@ LangGraph support must preserve the existing LangChain adapter safety rules:
 - no default LangSmith or vendor sink configuration;
 - local JSONL persistence only when the caller opts into `persist: true`.
 
-## Future fixture requirements
+## Fixture requirements
 
-Before claiming LangGraph support publicly, add no-network fixtures that verify:
+The v1.8 fixture set in `packages/langchain/test/langgraph-through-langchain.test.ts` verifies:
 
-- callback attachment on a compiled graph invocation;
+- structural callback attachment through `AgentInspectCallback`;
 - root graph run naming and completion status;
 - node/tool/LLM callback mapping through existing parent IDs;
 - streaming metadata remains aggregate-only and stores no raw token text by default;
@@ -49,7 +49,7 @@ Before claiming LangGraph support publicly, add no-network fixtures that verify:
 - missing/unknown parent IDs remain safe and warning-rich;
 - no LangGraph, LangSmith, or hosted-service upload is required.
 
-Fixtures should prefer local fake models, fake tools, and structural callback payloads. Live provider calls, API keys, hosted LangSmith tracing, and network-dependent LangGraph platform behavior are out of scope.
+Fixtures use local structural callback payloads. Live provider calls, API keys, hosted LangSmith tracing, and network-dependent LangGraph platform behavior remain out of scope.
 
 ## Documentation stance
 
@@ -57,4 +57,4 @@ Public docs may say:
 
 > LangGraph support is expected to ride through `@agent-inspect/langchain` callback integration first. Dedicated LangGraph package work is deferred until fixtures prove a callback-surface gap.
 
-Do not advertise full LangGraph support until the fixture matrix lands.
+Do not advertise a separate LangGraph package or hosted LangGraph tracing product.
