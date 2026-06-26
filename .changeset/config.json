@@ -4,7 +4,13 @@
   "commit": false,
   "fixed": [],
   "linked": [
-    ["agent-inspect", "@agent-inspect/langchain", "@agent-inspect/tui", "@agent-inspect/ai-sdk"]
+    [
+      "agent-inspect",
+      "@agent-inspect/langchain",
+      "@agent-inspect/tui",
+      "@agent-inspect/ai-sdk",
+      "@agent-inspect/openai-agents"
+    ]
   ],
   "access": "public",
   "baseBranch": "main",
@@ -23,6 +29,7 @@
     "agent-inspect-recipe-retry-fallback",
     "agent-inspect-recipe-tool-failure-retry",
     "agent-inspect-recipe-winston-json-logs",
-    "@agent-inspect/openai-agents"
+    "@agent-inspect/vitest",
+    "@agent-inspect/jest"
   ]
 }

@@ -208,7 +208,7 @@ describe("package manifest (experimental Jest reporter)", () => {
 });
 
 describe("package manifest (experimental OpenAI Agents adapter)", () => {
-  it("keeps the optional package private and dependency-isolated until release readiness", () => {
+  it("keeps the optional package publishable and dependency-isolated", () => {
     const raw = readFileSync(
       path.join(repoRoot, "packages", "openai-agents", "package.json"),
       "utf-8",
@@ -216,8 +216,9 @@ describe("package manifest (experimental OpenAI Agents adapter)", () => {
     const pkg = JSON.parse(raw) as Record<string, unknown>;
 
     expect(pkg.name).toBe("@agent-inspect/openai-agents");
-    expect(pkg.private).toBe(true);
+    expect(pkg.private).toBeUndefined();
     expect(pkg.sideEffects).toBe(false);
+    expect(pkg.publishConfig).toEqual({ access: "public" });
 
     const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
     const rootExport = exportsField?.["."];
