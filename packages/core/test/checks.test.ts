@@ -1,11 +1,23 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createDecisionRule,
+  createGuardrailRule,
   createLlmUsageRule,
+  createRetrievalRule,
   createRunDepthRule,
   createRunDurationRule,
   createRunEventCountRule,
   createRunStatusRule,
+  createSafetyOversizedAttributeRule,
+  createSafetyRawContentRule,
+  createSafetyRedactionRule,
+  createSafetySecretPatternRule,
+  createStructureCycleRule,
+  createStructureIncompleteRule,
+  createStructureOrphanRule,
+  createStructureParallelWidthRule,
+  createStructureRelationshipRule,
   createToolFailureRule,
   createToolOrderingRule,
   createToolUsageRule,
@@ -408,5 +420,164 @@ describe("built-in run, tool, and LLM checks", () => {
       "LLM provider other-provider is not allowed.",
     ]);
     expect(JSON.stringify(result.findings)).not.toContain("raw prompt should not leak");
+  });
+});
+
+describe("built-in structure and safety checks", () => {
+  it("reports incomplete, orphan, cycle, relationship, and parallel-width failures", () => {
+    const parent = persisted("event-a", {
+      startedAt: "2026-06-26T00:00:10.000Z",
+      endedAt: "2026-06-26T00:00:20.000Z",
+      durationMs: 10_000,
+      trace: { spanId: "span-parent" },
+    });
+    const child = persisted("event-b", {
+      parentId: "event-a",
+      confidence: "heuristic",
+      startedAt: "2026-06-26T00:00:05.000Z",
+      endedAt: "2026-06-26T00:00:15.000Z",
+      durationMs: 10_000,
+      trace: { spanId: "span-child", parentSpanId: "span-other" },
+    });
+    const orphan = persisted("event-c", { parentId: "missing-parent" });
+    const selfCycle = persisted("event-d", { parentId: "event-d" });
+    const running = persisted("event-e", { status: "running" });
+    const read = readResult([parent, child, orphan, selfCycle, running]);
+    const parentNode = node(parent, 0);
+    parentNode.children = [node(child, 1), node(orphan, 1)];
+    read.runs[0]!.children = [parentNode, node(selfCycle, 0), node(running, 0)];
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createStructureIncompleteRule(),
+          createStructureOrphanRule({ allowMarkedUnresolved: false }),
+          createStructureCycleRule(),
+          createStructureRelationshipRule({
+            minConfidence: "correlated",
+            requireParentBeforeChild: true,
+            requireTraceParentSpan: true,
+          }),
+          createStructureParallelWidthRule({ maxChildren: 1, maxConcurrent: 1 }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(new Set(result.findings.map((finding) => finding.ruleId))).toEqual(
+      new Set([
+        "structure.cycle",
+        "structure.incomplete",
+        "structure.orphan",
+        "structure.parallelWidth",
+        "structure.relationship",
+      ]),
+    );
+    expect(result.findings.some((finding) => finding.evidence[0]?.path === "parentId")).toBe(true);
+    expect(JSON.stringify(result.findings)).not.toContain("missing-parent secret value");
+  });
+
+  it("reports retrieval, guardrail, and decision signal violations", () => {
+    const retrieval = persisted("event-a", {
+      kind: "RETRIEVER",
+      name: "retriever:kb",
+      attributes: { retrieverName: "kb", query: "raw retrieval query" },
+    });
+    const guardrail = persisted("event-b", {
+      kind: "LOGIC",
+      name: "guardrail:policy",
+      attributes: { guardrailName: "policy" },
+    });
+    const decision = persisted("event-c", {
+      kind: "DECISION",
+      name: "decision:route-a",
+      attributes: { decisionId: "route-a" },
+    });
+    const read = readResult([retrieval, guardrail, decision]);
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createRetrievalRule({
+            required: ["vector"],
+            forbidden: ["kb"],
+            allowed: ["vector"],
+          }),
+          createGuardrailRule({ required: ["policy"], maxCount: 0 }),
+          createDecisionRule({
+            required: ["route-b"],
+            forbidden: ["route-a"],
+            allowed: ["route-b"],
+          }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.ruleId)).toEqual([
+      "structure.decision",
+      "structure.decision",
+      "structure.decision",
+      "structure.guardrail",
+      "structure.retrieval",
+      "structure.retrieval",
+      "structure.retrieval",
+    ]);
+    expect(JSON.stringify(result.findings)).not.toContain("raw retrieval query");
+  });
+
+  it("reports redaction, raw-content, secret-pattern, and oversized-attribute findings without leaking values", () => {
+    const event = persisted("event-a", {
+      attributes: {
+        apiKey: "sk-fixtureSecretValue123456",
+        prompt: "raw prompt should-never-leak",
+        nested: {
+          token: "Bearer abcdefghijklmnop",
+          payload: { output: "secret-output-value" },
+          list: [1, 2, 3],
+        },
+      },
+      inputSummary: { safeShape: "summary only" },
+    });
+    const read = readResult([event]);
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createSafetyRedactionRule(),
+          createSafetyRawContentRule(),
+          createSafetySecretPatternRule({
+            patterns: [{ id: "fixture-secret", pattern: /should-never-leak/ }],
+          }),
+          createSafetyOversizedAttributeRule({
+            maxStringLength: 10,
+            maxArrayLength: 2,
+            maxObjectKeys: 2,
+            maxSerializedBytes: 80,
+          }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(new Set(result.findings.map((finding) => finding.ruleId))).toEqual(
+      new Set([
+        "safety.oversizedAttribute",
+        "safety.rawPrompt",
+        "safety.redaction",
+        "safety.secretPattern",
+      ]),
+    );
+    const serialized = JSON.stringify(result.findings);
+    expect(serialized).not.toContain("sk-fixtureSecretValue123456");
+    expect(serialized).not.toContain("should-never-leak");
+    expect(serialized).not.toContain("Bearer abcdefghijklmnop");
+    expect(serialized).not.toContain("secret-output-value");
+    expect(result.findings.every((finding) => finding.evidence.every((item) => item.path))).toBe(
+      true,
+    );
   });
 });

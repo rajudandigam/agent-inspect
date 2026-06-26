@@ -369,7 +369,7 @@ The reader contract does not silently accept arbitrary JSON and does not add OTe
 
 ## 19. Experimental Checks
 
-`agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, add CLI behavior, call providers, perform network I/O, or implement rule families yet.
+`agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, add CLI behavior, call providers, perform network I/O, or implement baseline comparison yet.
 
 Import from `agent-inspect/checks`:
 
@@ -379,11 +379,11 @@ import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
 ```
 
 - **`runTraceChecks({ read }, { rules?, select?, runId? })`**: executes provided rules against a `TraceReadResult` from `agent-inspect/readers`.
-- **Built-in rule factories**: `createRunStatusRule`, `createRunDurationRule`, `createRunEventCountRule`, `createRunDepthRule`, `createToolUsageRule`, `createToolOrderingRule`, `createToolFailureRule`, and `createLlmUsageRule`.
+- **Built-in rule factories**: run, tool, LLM, structure, retrieval, guardrail, decision, and safety helpers including `createRunStatusRule`, `createToolUsageRule`, `createLlmUsageRule`, `createStructureOrphanRule`, `createStructureCycleRule`, `createStructureRelationshipRule`, `createRetrievalRule`, `createGuardrailRule`, `createDecisionRule`, `createSafetyRawContentRule`, and `createSafetySecretPatternRule`.
 - **`TraceCheckRule`**: synchronous pure rule contract.
 - **`TraceCheckResult`**: deterministic aggregate result with findings, evidence, summary counts, and execution diagnostics.
 
-The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation. Built-in rules operate on normalized event metadata and token counts; they do not emit raw prompts, outputs, headers, request/response bodies, or full tool payloads.
+The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation. Built-in rules operate on normalized event metadata, tree relationships, bounded summaries, and token counts; safety findings identify event IDs and field paths rather than emitting raw prompts, outputs, secrets, headers, request/response bodies, or full tool payloads.
 
 ## 20. Deprecated APIs
 

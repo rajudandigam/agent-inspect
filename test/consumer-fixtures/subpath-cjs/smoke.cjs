@@ -20,6 +20,7 @@ const {
 } = require("agent-inspect/readers");
 const {
   createRunStatusRule,
+  createStructureOrphanRule,
   runTraceChecks,
 } = require("agent-inspect/checks");
 
@@ -38,6 +39,7 @@ const functionChecks = [
   nullWriter,
   detectTraceFormat,
   createRunStatusRule,
+  createStructureOrphanRule,
   runTraceChecks,
 ];
 

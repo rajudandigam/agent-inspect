@@ -1,5 +1,6 @@
 import type { TraceReadResult, TraceReadWarning } from "../readers/index.js";
 import type {
+  AttributionConfidence,
   InspectNode,
   InspectRunTree,
 } from "../types/inspect-event.js";
@@ -283,6 +284,149 @@ export interface LlmUsageRuleOptions {
 }
 
 /**
+ * Experimental options for the built-in structure incomplete rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface StructureIncompleteRuleOptions {
+  allowRunning?: boolean;
+  requireEndedAtForStarted?: boolean;
+}
+
+/**
+ * Experimental options for the built-in structure orphan rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface StructureOrphanRuleOptions {
+  allowMarkedUnresolved?: boolean;
+}
+
+/**
+ * Experimental options for the built-in structure relationship rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface StructureRelationshipRuleOptions {
+  minConfidence?: AttributionConfidence;
+  requireParentBeforeChild?: boolean;
+  requireTraceParentSpan?: boolean;
+}
+
+/**
+ * Experimental options for the built-in structure parallel-width rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface StructureParallelWidthRuleOptions {
+  maxChildren?: number;
+  maxConcurrent?: number;
+}
+
+/**
+ * Experimental options shared by built-in signal rules.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface TraceSignalRuleOptions {
+  required?: readonly string[];
+  forbidden?: readonly string[];
+  allowed?: readonly string[];
+  minCount?: number;
+  maxCount?: number;
+}
+
+/**
+ * Experimental options for the built-in retrieval signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface RetrievalRuleOptions extends TraceSignalRuleOptions {}
+
+/**
+ * Experimental options for the built-in guardrail signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface GuardrailRuleOptions extends TraceSignalRuleOptions {}
+
+/**
+ * Experimental options for the built-in decision signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface DecisionRuleOptions extends TraceSignalRuleOptions {}
+
+/**
+ * Experimental options for the built-in safety redaction rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface SafetyRedactionRuleOptions {
+  sensitiveKeys?: readonly string[];
+  redactedMarkers?: readonly string[];
+  maxFindings?: number;
+}
+
+/**
+ * Experimental options for the built-in raw content path rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface SafetyRawContentRuleOptions {
+  forbiddenKeys?: readonly string[];
+  includeSummaries?: boolean;
+  maxFindings?: number;
+}
+
+/**
+ * Experimental secret pattern used by the built-in secret safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface SafetySecretPattern {
+  id: string;
+  pattern: RegExp;
+}
+
+/**
+ * Experimental options for the built-in secret pattern safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface SafetySecretPatternRuleOptions {
+  patterns?: readonly SafetySecretPattern[];
+  maxStringLength?: number;
+  maxFindings?: number;
+}
+
+/**
+ * Experimental options for the built-in oversized attribute safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export interface SafetyOversizedAttributeRuleOptions {
+  maxStringLength?: number;
+  maxArrayLength?: number;
+  maxObjectKeys?: number;
+  maxSerializedBytes?: number;
+  maxFindings?: number;
+}
+
+/**
  * Experimental aggregate counts for trace-check results.
  *
  * @experimental Available through `agent-inspect/checks`; the checks API may
@@ -325,6 +469,61 @@ const STATUS_RANK: Record<TraceCheckFindingStatus, number> = {
   fail: 0,
   warning: 1,
   pass: 2,
+};
+
+const CONFIDENCE_RANK: Record<AttributionConfidence, number> = {
+  unknown: 0,
+  heuristic: 1,
+  correlated: 2,
+  explicit: 3,
+};
+
+const DEFAULT_SENSITIVE_KEYS = [
+  "authorization",
+  "cookie",
+  "token",
+  "apikey",
+  "api_key",
+  "password",
+  "secret",
+  "email",
+];
+
+const DEFAULT_RAW_CONTENT_KEYS = [
+  "body",
+  "headers",
+  "input",
+  "messages",
+  "output",
+  "payload",
+  "prompt",
+  "requestbody",
+  "request_body",
+  "responsebody",
+  "response_body",
+  "rawprompt",
+  "raw_prompt",
+  "rawoutput",
+  "raw_output",
+  "toolinput",
+  "tool_input",
+  "tooloutput",
+  "tool_output",
+];
+
+const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [
+  { id: "bearer-token", pattern: /Bearer\s+[A-Za-z0-9._~+/-]{12,}=*/ },
+  { id: "openai-key", pattern: /sk-[A-Za-z0-9_-]{16,}/ },
+  { id: "aws-access-key", pattern: /AKIA[0-9A-Z]{16}/ },
+  { id: "github-token", pattern: /gh[opsu]_[A-Za-z0-9_]{20,}/ },
+  { id: "key-value-secret", pattern: /(api[_-]?key|token|password|secret)=\S{8,}/i },
+];
+
+type EventValueEntry = {
+  event: PersistedInspectEvent;
+  path: string;
+  key?: string;
+  value: unknown;
 };
 
 function compareStrings(a: string | undefined, b: string | undefined): number {
@@ -575,6 +774,14 @@ function numericAttr(event: PersistedInspectEvent, keys: readonly string[]): num
   return undefined;
 }
 
+function booleanAttr(event: PersistedInspectEvent, keys: readonly string[]): boolean | undefined {
+  for (const key of keys) {
+    const value = event.attributes?.[key];
+    if (typeof value === "boolean") return value;
+  }
+  return undefined;
+}
+
 function stripPrefix(name: string, prefixes: readonly string[]): string {
   for (const prefix of prefixes) {
     if (name.startsWith(prefix)) return name.slice(prefix.length);
@@ -659,6 +866,181 @@ function firstIndexByName(events: readonly PersistedInspectEvent[]): Map<string,
     if (!index.has(name)) index.set(name, position);
   }
   return index;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function eventMap(events: readonly PersistedInspectEvent[]): Map<string, PersistedInspectEvent> {
+  return new Map(events.map((event) => [event.eventId, event]));
+}
+
+function parseEventTime(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function eventStartMs(event: PersistedInspectEvent): number | undefined {
+  return parseEventTime(event.startedAt) ?? parseEventTime(event.timestamp);
+}
+
+function eventEndMs(event: PersistedInspectEvent): number | undefined {
+  const endedAt = parseEventTime(event.endedAt);
+  if (endedAt !== undefined) return endedAt;
+  const startedAt = eventStartMs(event);
+  if (
+    startedAt !== undefined &&
+    event.durationMs !== undefined &&
+    Number.isFinite(event.durationMs)
+  ) {
+    return startedAt + event.durationMs;
+  }
+  return undefined;
+}
+
+function sortedStrings(values: readonly string[] | undefined): string[] {
+  return [...(values ?? [])].sort((a, b) => a.localeCompare(b));
+}
+
+function normalizedKey(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9_]/g, "");
+}
+
+function lastPathSegment(path: string): string {
+  const parts = path.split(".");
+  return parts[parts.length - 1] ?? path;
+}
+
+function valueType(value: unknown): string {
+  if (Array.isArray(value)) return "array";
+  if (value === null) return "null";
+  return typeof value;
+}
+
+function serializedByteLength(value: unknown): number | undefined {
+  try {
+    return Buffer.byteLength(JSON.stringify(value), "utf-8");
+  } catch {
+    return undefined;
+  }
+}
+
+function pushValueEntries(
+  entries: EventValueEntry[],
+  event: PersistedInspectEvent,
+  value: unknown,
+  path: string,
+  key?: string,
+  depth = 0,
+): void {
+  entries.push({ event, path, key, value });
+  if (depth >= 8) return;
+
+  if (Array.isArray(value)) {
+    for (const [index, item] of value.entries()) {
+      pushValueEntries(entries, event, item, `${path}.${index}`, String(index), depth + 1);
+    }
+    return;
+  }
+
+  if (!isRecord(value)) return;
+  for (const nestedKey of Object.keys(value).sort((a, b) => a.localeCompare(b))) {
+    pushValueEntries(
+      entries,
+      event,
+      value[nestedKey],
+      `${path}.${nestedKey}`,
+      nestedKey,
+      depth + 1,
+    );
+  }
+}
+
+function eventValueEntries(
+  event: PersistedInspectEvent,
+  options: { includeSummaries?: boolean; includeError?: boolean } = {},
+): EventValueEntry[] {
+  const entries: EventValueEntry[] = [];
+  if (event.attributes !== undefined) {
+    pushValueEntries(entries, event, event.attributes, "attributes", "attributes");
+  }
+  if (options.includeSummaries) {
+    if (event.inputSummary !== undefined) {
+      pushValueEntries(entries, event, event.inputSummary, "inputSummary", "inputSummary");
+    }
+    if (event.outputSummary !== undefined) {
+      pushValueEntries(entries, event, event.outputSummary, "outputSummary", "outputSummary");
+    }
+  }
+  if (options.includeError && event.error !== undefined) {
+    pushValueEntries(entries, event, event.error, "error", "error");
+  }
+  return entries;
+}
+
+function limitFindings(
+  findings: TraceCheckFinding[],
+  maxFindings: number | undefined,
+): TraceCheckFinding[] {
+  if (maxFindings === undefined || findings.length <= maxFindings) return findings;
+  return findings.slice(0, Math.max(0, maxFindings));
+}
+
+function hasRedactionMarker(value: string, markers: readonly string[]): boolean {
+  return markers.some((marker) => value.includes(marker)) || /^\[HASH:[A-Za-z0-9_-]+\]$/.test(value);
+}
+
+function isSensitiveKey(key: string | undefined, sensitiveKeys: readonly string[]): boolean {
+  if (!key) return false;
+  const normalized = normalizedKey(key);
+  return sensitiveKeys.some((sensitive) => normalized.includes(normalizedKey(sensitive)));
+}
+
+function isRawContentKey(key: string | undefined, forbiddenKeys: readonly string[]): boolean {
+  if (!key) return false;
+  const normalized = normalizedKey(key);
+  return forbiddenKeys.some((forbidden) => normalized === normalizedKey(forbidden));
+}
+
+function parentMarkedUnresolved(event: PersistedInspectEvent): boolean {
+  if (
+    booleanAttr(event, [
+      "parentUnresolved",
+      "unresolvedParent",
+      "relationshipUnresolved",
+      "unresolvedRelationship",
+    ]) === true
+  ) {
+    return true;
+  }
+  const resolution = stringAttr(event, [
+    "parentResolution",
+    "relationshipResolution",
+    "relationshipStatus",
+  ]);
+  return resolution === "unresolved" || resolution === "missing-parent";
+}
+
+function signalName(
+  event: PersistedInspectEvent,
+  attributeKeys: readonly string[],
+  prefixes: readonly string[],
+): string {
+  return stringAttr(event, attributeKeys) ?? stripPrefix(event.name, prefixes);
+}
+
+function guardrailEvents(context: TraceCheckContext): PersistedInspectEvent[] {
+  return finishedEvents().filter((event) => {
+    const name = event.name.toLowerCase();
+    if (name.startsWith("guardrail:") || name.includes(".guardrail.")) return true;
+    return stringAttr(event, ["guardrailName", "guardrail", "guardrailId"]) !== undefined;
+  });
+
+  function finishedEvents(): PersistedInspectEvent[] {
+    return context.events.filter((event) => event.status !== "running");
+  }
 }
 
 /**
@@ -1034,6 +1416,668 @@ export function createLlmUsageRule(options: LlmUsageRuleOptions): TraceCheckRule
       }
 
       return findings;
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in structure incomplete rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createStructureIncompleteRule(
+  options: StructureIncompleteRuleOptions = {},
+): TraceCheckRule {
+  return {
+    id: "structure.incomplete",
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      if (!options.allowRunning) {
+        const running = context.events.filter((event) => event.status === "running");
+        if (running.length > 0) {
+          findings.push(
+            failFinding(
+              "structure.incomplete",
+              "Trace contains incomplete running events.",
+              running.map((event) => eventEvidence(event, "status")),
+              "no running events",
+              running.length,
+            ),
+          );
+        }
+      }
+
+      if (options.requireEndedAtForStarted) {
+        const missingEndedAt = context.events.filter(
+          (event) =>
+            event.startedAt !== undefined &&
+            event.endedAt === undefined &&
+            event.status !== "running",
+        );
+        if (missingEndedAt.length > 0) {
+          findings.push(
+            failFinding(
+              "structure.incomplete",
+              "Trace contains events with startedAt but no endedAt.",
+              missingEndedAt.map((event) => eventEvidence(event, "endedAt")),
+              "endedAt for started events",
+              missingEndedAt.length,
+            ),
+          );
+        }
+      }
+
+      return findings;
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in structure orphan rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createStructureOrphanRule(
+  options: StructureOrphanRuleOptions = {},
+): TraceCheckRule {
+  const allowMarkedUnresolved = options.allowMarkedUnresolved ?? true;
+  return {
+    id: "structure.orphan",
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const byId = eventMap(context.events);
+      const orphans = context.events.filter((event) => {
+        if (!event.parentId || byId.has(event.parentId)) return false;
+        return !(allowMarkedUnresolved && parentMarkedUnresolved(event));
+      });
+      if (orphans.length === 0) return [];
+      return [
+        failFinding(
+          "structure.orphan",
+          "Trace contains events whose parentId is not present in the selected run.",
+          orphans.map((event) => eventEvidence(event, "parentId")),
+          "parentId resolves to an event in the selected run",
+          orphans.length,
+        ),
+      ];
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in structure cycle rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createStructureCycleRule(): TraceCheckRule {
+  return {
+    id: "structure.cycle",
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const byId = eventMap(context.events);
+      const seenCycles = new Set<string>();
+      const findings: TraceCheckFinding[] = [];
+
+      for (const event of [...context.events].sort((a, b) => a.eventId.localeCompare(b.eventId))) {
+        const path: PersistedInspectEvent[] = [];
+        const seenAt = new Map<string, number>();
+        let current: PersistedInspectEvent | undefined = event;
+
+        while (current) {
+          const existing = seenAt.get(current.eventId);
+          if (existing !== undefined) {
+            const cycle = path.slice(existing);
+            const key = cycle.map((item) => item.eventId).sort().join("\0");
+            if (!seenCycles.has(key)) {
+              seenCycles.add(key);
+              findings.push(
+                failFinding(
+                  "structure.cycle",
+                  "Trace contains a parentId cycle.",
+                  cycle.map((item) => eventEvidence(item, "parentId")),
+                  "acyclic parentId graph",
+                  cycle.map((item) => item.eventId).sort(),
+                ),
+              );
+            }
+            break;
+          }
+          seenAt.set(current.eventId, path.length);
+          path.push(current);
+          current = current.parentId ? byId.get(current.parentId) : undefined;
+        }
+      }
+
+      return findings;
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in structure relationship rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createStructureRelationshipRule(
+  options: StructureRelationshipRuleOptions = {},
+): TraceCheckRule {
+  return {
+    id: "structure.relationship",
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const byId = eventMap(context.events);
+      const findings: TraceCheckFinding[] = [];
+      const minConfidence = options.minConfidence;
+
+      for (const event of context.events) {
+        if (
+          minConfidence &&
+          CONFIDENCE_RANK[event.confidence] < CONFIDENCE_RANK[minConfidence]
+        ) {
+          findings.push(
+            failFinding(
+              "structure.relationship",
+              `Event confidence ${event.confidence} is below ${minConfidence}.`,
+              [eventEvidence(event, "confidence")],
+              { minConfidence },
+              event.confidence,
+            ),
+          );
+        }
+
+        if (!event.parentId) continue;
+        if (event.parentId === event.eventId) {
+          findings.push(
+            failFinding(
+              "structure.relationship",
+              "Event parentId points to itself.",
+              [eventEvidence(event, "parentId")],
+              "parentId references a distinct event",
+              "self",
+            ),
+          );
+          continue;
+        }
+
+        const parent = byId.get(event.parentId);
+        if (!parent) continue;
+
+        if (options.requireParentBeforeChild) {
+          const parentTime = eventStartMs(parent);
+          const childTime = eventStartMs(event);
+          if (
+            parentTime !== undefined &&
+            childTime !== undefined &&
+            parentTime > childTime
+          ) {
+            findings.push(
+              failFinding(
+                "structure.relationship",
+                "Parent event starts after child event.",
+                [eventEvidence(parent), eventEvidence(event, "parentId")],
+                "parent start <= child start",
+                { parentEventId: parent.eventId, childEventId: event.eventId },
+              ),
+            );
+          }
+        }
+
+        if (options.requireTraceParentSpan && parent.trace?.spanId && event.trace) {
+          const actual = event.trace.parentSpanId;
+          if (actual !== parent.trace.spanId) {
+            findings.push(
+              failFinding(
+                "structure.relationship",
+                "Trace parentSpanId does not match parent spanId.",
+                [eventEvidence(event, "trace.parentSpanId")],
+                { parentSpanId: parent.trace.spanId },
+                actual ?? "missing",
+              ),
+            );
+          }
+        }
+      }
+
+      return findings;
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in structure parallel-width rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createStructureParallelWidthRule(
+  options: StructureParallelWidthRuleOptions,
+): TraceCheckRule {
+  return {
+    id: "structure.parallelWidth",
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      const byId = eventMap(context.events);
+
+      if (options.maxChildren !== undefined) {
+        for (const [parentId, children] of context.childrenByParentId.entries()) {
+          if (children.length <= options.maxChildren) continue;
+          const parent = byId.get(parentId);
+          findings.push(
+            failFinding(
+              "structure.parallelWidth",
+              `Parent ${parentId} has ${children.length} children, exceeding ${options.maxChildren}.`,
+              [
+                ...(parent ? [eventEvidence(parent)] : [{ runId: context.selectedRun?.runId, eventId: parentId }]),
+                ...children.map((child) => ({
+                  runId: child.event.runId,
+                  eventId: child.event.eventId,
+                  parentId: child.event.parentId,
+                  kind: child.event.kind,
+                  name: child.event.name,
+                  status: child.event.status,
+                })),
+              ],
+              { maxChildren: options.maxChildren },
+              children.length,
+            ),
+          );
+        }
+      }
+
+      if (options.maxConcurrent !== undefined) {
+        const intervals = context.events
+          .map((event) => ({ event, start: eventStartMs(event), end: eventEndMs(event) }))
+          .filter(
+            (item): item is { event: PersistedInspectEvent; start: number; end: number } =>
+              item.start !== undefined && item.end !== undefined && item.end > item.start,
+          );
+        const points = intervals.flatMap((item) => [
+          { time: item.start, delta: 1, event: item.event },
+          { time: item.end, delta: -1, event: item.event },
+        ]);
+        points.sort((a, b) => {
+          const byTime = a.time - b.time;
+          if (byTime !== 0) return byTime;
+          const byDelta = a.delta - b.delta;
+          if (byDelta !== 0) return byDelta;
+          return a.event.eventId.localeCompare(b.event.eventId);
+        });
+
+        const active = new Map<string, PersistedInspectEvent>();
+        let maxActive: PersistedInspectEvent[] = [];
+        for (const point of points) {
+          if (point.delta > 0) {
+            active.set(point.event.eventId, point.event);
+            if (active.size > maxActive.length) {
+              maxActive = [...active.values()].sort((a, b) => a.eventId.localeCompare(b.eventId));
+            }
+          } else {
+            active.delete(point.event.eventId);
+          }
+        }
+
+        if (maxActive.length > options.maxConcurrent) {
+          findings.push(
+            failFinding(
+              "structure.parallelWidth",
+              `Concurrent event width ${maxActive.length} exceeded ${options.maxConcurrent}.`,
+              maxActive.map((event) => eventEvidence(event)),
+              { maxConcurrent: options.maxConcurrent },
+              maxActive.length,
+            ),
+          );
+        }
+      }
+
+      return findings;
+    },
+  };
+}
+
+function createSignalRule(
+  ruleId: "structure.retrieval" | "structure.guardrail" | "structure.decision",
+  label: string,
+  options: TraceSignalRuleOptions,
+  selectEvents: (context: TraceCheckContext) => PersistedInspectEvent[],
+  nameForEvent: (event: PersistedInspectEvent) => string,
+): TraceCheckRule {
+  return {
+    id: ruleId,
+    category: "structure",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const events = selectEvents(context);
+      const names = events.map(nameForEvent);
+      const nameSet = new Set(names);
+      const findings: TraceCheckFinding[] = [];
+
+      for (const required of sortedStrings(options.required)) {
+        if (!nameSet.has(required)) {
+          findings.push(
+            failFinding(
+              ruleId,
+              `Required ${label} ${required} did not appear.`,
+              runEvidence(context.selectedRun),
+              required,
+              names,
+            ),
+          );
+        }
+      }
+
+      const forbidden = new Set(options.forbidden ?? []);
+      const allowed = options.allowed ? new Set(options.allowed) : undefined;
+      for (const event of events) {
+        const name = nameForEvent(event);
+        if (forbidden.has(name)) {
+          findings.push(
+            failFinding(
+              ruleId,
+              `Forbidden ${label} ${name} appeared.`,
+              [eventEvidence(event)],
+              `${label} absent`,
+              name,
+            ),
+          );
+        }
+        if (allowed && !allowed.has(name)) {
+          findings.push(
+            failFinding(
+              ruleId,
+              `${label[0]!.toUpperCase()}${label.slice(1)} ${name} is not in the allowed set.`,
+              [eventEvidence(event)],
+              [...allowed].sort(),
+              name,
+            ),
+          );
+        }
+      }
+
+      if (options.minCount !== undefined && events.length < options.minCount) {
+        findings.push(
+          failFinding(
+            ruleId,
+            `${label[0]!.toUpperCase()}${label.slice(1)} count ${events.length} was below minimum ${options.minCount}.`,
+            runEvidence(context.selectedRun),
+            { minCount: options.minCount },
+            events.length,
+          ),
+        );
+      }
+      if (options.maxCount !== undefined && events.length > options.maxCount) {
+        findings.push(
+          failFinding(
+            ruleId,
+            `${label[0]!.toUpperCase()}${label.slice(1)} count ${events.length} exceeded maximum ${options.maxCount}.`,
+            events.map((event) => eventEvidence(event)),
+            { maxCount: options.maxCount },
+            events.length,
+          ),
+        );
+      }
+
+      return findings;
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in retrieval signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createRetrievalRule(options: RetrievalRuleOptions): TraceCheckRule {
+  return createSignalRule(
+    "structure.retrieval",
+    "retrieval",
+    options,
+    (context) => finishedEvents(context, "RETRIEVER"),
+    (event) => signalName(event, ["retrievalName", "retrieverName", "retriever"], ["retriever:", "retrieval:"]),
+  );
+}
+
+/**
+ * Create the experimental built-in guardrail signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createGuardrailRule(options: GuardrailRuleOptions): TraceCheckRule {
+  return createSignalRule(
+    "structure.guardrail",
+    "guardrail",
+    options,
+    guardrailEvents,
+    (event) => signalName(event, ["guardrailName", "guardrail", "guardrailId"], ["guardrail:"]),
+  );
+}
+
+/**
+ * Create the experimental built-in decision signal rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createDecisionRule(options: DecisionRuleOptions): TraceCheckRule {
+  return createSignalRule(
+    "structure.decision",
+    "decision",
+    options,
+    (context) => finishedEvents(context, "DECISION"),
+    (event) => signalName(event, ["decisionName", "decision", "decisionId"], ["decision:"]),
+  );
+}
+
+/**
+ * Create the experimental built-in safety redaction rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createSafetyRedactionRule(
+  options: SafetyRedactionRuleOptions = {},
+): TraceCheckRule {
+  const sensitiveKeys = options.sensitiveKeys ?? DEFAULT_SENSITIVE_KEYS;
+  const markers = options.redactedMarkers ?? ["[REDACTED]", "[REDACTED:"];
+  return {
+    id: "safety.redaction",
+    category: "safety",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      for (const event of context.events) {
+        for (const entry of eventValueEntries(event, { includeSummaries: true, includeError: true })) {
+          if (!isSensitiveKey(entry.key ?? lastPathSegment(entry.path), sensitiveKeys)) continue;
+          if (typeof entry.value === "string" && hasRedactionMarker(entry.value, markers)) continue;
+          findings.push(
+            failFinding(
+              "safety.redaction",
+              `Sensitive-looking field at ${entry.path} is not redacted.`,
+              [eventEvidence(event, entry.path)],
+              "redaction marker",
+              { path: entry.path, valueType: valueType(entry.value) },
+            ),
+          );
+        }
+      }
+      return limitFindings(findings, options.maxFindings);
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in raw content path safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createSafetyRawContentRule(
+  options: SafetyRawContentRuleOptions = {},
+): TraceCheckRule {
+  const forbiddenKeys = options.forbiddenKeys ?? DEFAULT_RAW_CONTENT_KEYS;
+  return {
+    id: "safety.rawPrompt",
+    category: "safety",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      for (const event of context.events) {
+        for (const entry of eventValueEntries(event, { includeSummaries: options.includeSummaries })) {
+          const key = entry.key ?? lastPathSegment(entry.path);
+          if (!isRawContentKey(key, forbiddenKeys)) continue;
+          findings.push(
+            failFinding(
+              "safety.rawPrompt",
+              `Raw content-like field ${entry.path} is present.`,
+              [eventEvidence(event, entry.path)],
+              "metadata-only trace fields",
+              { path: entry.path, valueType: valueType(entry.value) },
+            ),
+          );
+        }
+      }
+      return limitFindings(findings, options.maxFindings);
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in secret pattern safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createSafetySecretPatternRule(
+  options: SafetySecretPatternRuleOptions = {},
+): TraceCheckRule {
+  const patterns = options.patterns ?? DEFAULT_SECRET_PATTERNS;
+  const maxStringLength = options.maxStringLength ?? 4_096;
+  return {
+    id: "safety.secretPattern",
+    category: "safety",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      for (const event of context.events) {
+        for (const entry of eventValueEntries(event, { includeSummaries: true, includeError: true })) {
+          if (typeof entry.value !== "string") continue;
+          const sample = entry.value.slice(0, maxStringLength);
+          for (const pattern of patterns) {
+            pattern.pattern.lastIndex = 0;
+            if (!pattern.pattern.test(sample)) continue;
+            pattern.pattern.lastIndex = 0;
+            findings.push(
+              failFinding(
+                "safety.secretPattern",
+                `Secret-like pattern ${pattern.id} matched at ${entry.path}.`,
+                [eventEvidence(event, entry.path)],
+                "no secret-like strings",
+                { pattern: pattern.id, path: entry.path },
+              ),
+            );
+            break;
+          }
+        }
+      }
+      return limitFindings(findings, options.maxFindings);
+    },
+  };
+}
+
+/**
+ * Create the experimental built-in oversized attribute safety rule.
+ *
+ * @experimental Available through `agent-inspect/checks`; the checks API may
+ * evolve during the v1.x experimental period.
+ */
+export function createSafetyOversizedAttributeRule(
+  options: SafetyOversizedAttributeRuleOptions,
+): TraceCheckRule {
+  return {
+    id: "safety.oversizedAttribute",
+    category: "safety",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      for (const event of context.events) {
+        for (const entry of eventValueEntries(event, { includeSummaries: true, includeError: true })) {
+          if (
+            typeof entry.value === "string" &&
+            options.maxStringLength !== undefined &&
+            entry.value.length > options.maxStringLength
+          ) {
+            findings.push(
+              failFinding(
+                "safety.oversizedAttribute",
+                `String at ${entry.path} exceeds ${options.maxStringLength} characters.`,
+                [eventEvidence(event, entry.path)],
+                { maxStringLength: options.maxStringLength },
+                { path: entry.path, length: entry.value.length },
+              ),
+            );
+          }
+
+          if (
+            Array.isArray(entry.value) &&
+            options.maxArrayLength !== undefined &&
+            entry.value.length > options.maxArrayLength
+          ) {
+            findings.push(
+              failFinding(
+                "safety.oversizedAttribute",
+                `Array at ${entry.path} exceeds ${options.maxArrayLength} items.`,
+                [eventEvidence(event, entry.path)],
+                { maxArrayLength: options.maxArrayLength },
+                { path: entry.path, length: entry.value.length },
+              ),
+            );
+          }
+
+          if (
+            isRecord(entry.value) &&
+            options.maxObjectKeys !== undefined &&
+            Object.keys(entry.value).length > options.maxObjectKeys
+          ) {
+            findings.push(
+              failFinding(
+                "safety.oversizedAttribute",
+                `Object at ${entry.path} exceeds ${options.maxObjectKeys} keys.`,
+                [eventEvidence(event, entry.path)],
+                { maxObjectKeys: options.maxObjectKeys },
+                { path: entry.path, keys: Object.keys(entry.value).length },
+              ),
+            );
+          }
+
+          if (options.maxSerializedBytes !== undefined) {
+            const bytes = serializedByteLength(entry.value);
+            if (bytes !== undefined && bytes > options.maxSerializedBytes) {
+              findings.push(
+                failFinding(
+                  "safety.oversizedAttribute",
+                  `Value at ${entry.path} exceeds ${options.maxSerializedBytes} serialized bytes.`,
+                  [eventEvidence(event, entry.path)],
+                  { maxSerializedBytes: options.maxSerializedBytes },
+                  { path: entry.path, bytes },
+                ),
+              );
+            }
+          }
+        }
+      }
+      return limitFindings(findings, options.maxFindings);
     },
   };
 }

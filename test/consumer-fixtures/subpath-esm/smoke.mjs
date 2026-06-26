@@ -20,6 +20,7 @@ import {
 } from "agent-inspect/readers";
 import {
   createRunStatusRule,
+  createStructureOrphanRule,
   runTraceChecks,
 } from "agent-inspect/checks";
 
@@ -38,6 +39,7 @@ const functionChecks = [
   nullWriter,
   detectTraceFormat,
   createRunStatusRule,
+  createStructureOrphanRule,
   runTraceChecks,
 ];
 
