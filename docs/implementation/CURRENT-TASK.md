@@ -4,73 +4,53 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-20-release-readiness"
-status: "ready"
+chunk: "v1.8-21-first-openai-package-publication-and-linked-release"
+status: "blocked_on_maintainer_release_authority"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-19-recipes-docs-performance"
+dependsOn: "v1.8-20-release-readiness"
 ```
 
 ## Goal
 
-Run the full release-readiness gate and create `docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md` with exact evidence, package contents, sizes, performance, compatibility, safety, known limitations, and honest adoption status.
+Prepare and validate the `@agent-inspect/openai-agents@1.8.0` first-publication path, then stop for maintainer publication/verification authority before any version, changeset, tag, GitHub release, or npm publish action.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 20
-- v1.8 implementation docs and generated validation output from the release-readiness gate
+- `docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md`
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 21
+- `docs/community/MAINTAINER-GUIDE.md` first scoped-package publication guidance, if needed
 
 ## In scope
 
-1. Run the full release-readiness validation once and capture exact evidence.
-2. Verify package contents, subpath exports, optional package publish status, private/unpublished reporter status, and tarball smoke results.
-3. Record size, performance baseline, compatibility, safety, docs, schema compatibility, and known limitations.
-4. Prepare an honest release-readiness document for maintainer review.
-5. Keep release actions gated on maintainer approval.
+1. Confirm maintainer authorization before any release operation.
+2. Prepare and validate the OpenAI Agents package tarball contents for first public publication.
+3. Document exact maintainer publication steps and expected post-publication verification.
+4. After maintainer publication and resume, verify npm registry/package evidence and prepare linked-release Changesets work only with explicit authorization.
 
-## Out of scope
+## Out of scope without explicit maintainer authorization
 
-- package version changes, changesets, npm publication, tags, GitHub releases, or release note conversion;
-- changing package publish status except where explicitly authorized by the maintainer during release readiness;
-- hosted upload behavior, GitHub API comments, repository-write automation, provider execution, networked evals, replay behavior, raw content capture, or persisted schema changes;
-- root/core dependency expansion or broad architecture rewrites.
+- changing package versions;
+- adding or applying changesets;
+- removing `private: true` from any package;
+- npm publish, tag creation, GitHub release creation, or release note conversion;
+- pushing release/version commits or merging release PRs;
+- hosted upload behavior, GitHub API comments, provider execution, replay, raw content capture, or persisted schema changes.
 
 ## Acceptance criteria
 
-- full release-readiness evidence is captured in `V1.8.0-RELEASE-READINESS.md`;
-- validation commands and notable warnings/failures are recorded exactly enough for maintainer review;
-- docs remain honest about private/unpublished packages and release gates;
-- no version, tag, publish, changeset, or release action is performed.
-
-## Focused tests
-
-Use the release-readiness gate from the execution plan. Include at minimum:
-
-```bash
-pnpm install --frozen-lockfile
-pnpm build
-pnpm typecheck
-pnpm test
-pnpm test:coverage
-pnpm fixtures:check
-pnpm recipes:check
-pnpm size
-pnpm pack:smoke
-pnpm compat:smoke
-node scripts/performance-baseline.mjs
-git diff --check
-```
-
-Add `npm pack --dry-run` and CLI help/package-content checks if required by the release-readiness plan.
+- release authority is explicit before any release-affecting action;
+- OpenAI Agents package contents are validated before first publication;
+- maintainer has clear manual publication and verification evidence requirements;
+- no unauthorized version, changeset, tag, release, publish, or package publish-status change occurs.
 
 ## Proposed commit
 
 ```text
-docs: prepare v1.8.0 release readiness
+docs: verify v1.8.0 publication
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, a material validation failure that cannot be fixed without expanding scope, any decision requiring package publication/version/tag/release authority, package publish-status changes, root/core dependency expansion, hosted upload or GitHub API behavior, persisted schema changes, or raw content capture.
+Stop immediately unless the maintainer explicitly authorizes release operations. Also stop on any validation failure, package-content surprise, registry mismatch, or decision that would expand into unapproved publication/version/tag/release behavior.
