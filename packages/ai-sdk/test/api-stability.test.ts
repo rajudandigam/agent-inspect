@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { generateText, streamText } from "ai";
 import type {
+  OnFinishEvent,
   OnStartEvent,
+  OnStepFinishEvent,
   OnStepStartEvent,
   OnToolCallFinishEvent,
   OnToolCallStartEvent,
@@ -106,6 +108,31 @@ function stepStartEvent(): OnStepStartEvent {
   } as unknown as OnStepStartEvent;
 }
 
+function stepFinishEvent(): OnStepFinishEvent {
+  return {
+    stepNumber: 0,
+    model,
+    content: [],
+    text: "",
+    reasoning: [],
+    files: [],
+    sources: [],
+    toolCalls: [],
+    toolResults: [],
+    finishReason: { unified: "stop", raw: "stop" },
+    usage,
+    response: {
+      id: "response-finish",
+      modelId: "fixture-model",
+      timestamp: new Date("2026-06-25T00:00:00.000Z"),
+    },
+    warnings: [],
+    functionId: "fixture-function",
+    metadata: { fixture: true },
+    experimental_context: undefined,
+  } as unknown as OnStepFinishEvent;
+}
+
 function toolStartEvent(): OnToolCallStartEvent {
   return {
     stepNumber: 0,
@@ -124,6 +151,28 @@ function toolStartEvent(): OnToolCallStartEvent {
     metadata: { fixture: true },
     experimental_context: undefined,
   } as unknown as OnToolCallStartEvent;
+}
+
+function finishEvent(): OnFinishEvent {
+  return {
+    stepNumber: 0,
+    steps: [],
+    model,
+    content: [],
+    text: "",
+    reasoning: [],
+    files: [],
+    sources: [],
+    toolCalls: [],
+    toolResults: [],
+    finishReason: { unified: "stop", raw: "stop" },
+    usage,
+    totalUsage: usage,
+    warnings: [],
+    functionId: "fixture-function",
+    metadata: { fixture: true },
+    experimental_context: undefined,
+  } as unknown as OnFinishEvent;
 }
 
 function toolFinishEvent(success: true): OnToolCallFinishEvent;
@@ -174,7 +223,12 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
 
     const integration = agentInspect(options);
 
-    expect(integration.getDiagnostics()).toEqual({ writeFailures: 0 });
+    expect(integration.getDiagnostics()).toEqual({
+      writeFailures: 0,
+      lifecycleWarnings: 0,
+      flushFailures: 0,
+      closeFailures: 0,
+    });
   });
 
   it("records generateText run and LLM metadata without raw prompt or output text", async () => {
@@ -376,6 +430,50 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     expectNoRawText(events, "streamed raw");
   });
 
+  it("preserves interrupted stream failures without raw prompt capture", async () => {
+    const writer = memoryWriter();
+    const interruptedStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue({ type: "stream-start", warnings: [] });
+        controller.error(new Error("stream interrupted"));
+      },
+    });
+
+    const result = streamText({
+      model: new MockLanguageModelV3({
+        provider: "fixture-provider",
+        modelId: "interrupted-stream-model",
+        doStream: {
+          stream: interruptedStream,
+          response: {
+            headers: {},
+          },
+        },
+      }),
+      prompt: "raw interrupted stream prompt",
+      experimental_telemetry: {
+        isEnabled: true,
+        recordInputs: false,
+        recordOutputs: false,
+        integrations: [
+          agentInspect({
+            writer,
+            runName: "interrupted-stream-fixture",
+            capture: "metadata-only",
+          }),
+        ],
+      },
+    });
+
+    await expect(result.text).rejects.toThrow("stream interrupted");
+
+    expect(writer.getEvents().map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+    ]);
+    expectNoRawText(writer.getEvents(), "raw interrupted stream prompt");
+  });
+
   it("records tool start and finish metadata without raw tool payloads", async () => {
     const writer = memoryWriter();
     const integration = agentInspect({
@@ -504,7 +602,189 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
 
     expect(integration.getDiagnostics()).toEqual({
       writeFailures: 2,
+      lifecycleWarnings: 1,
+      flushFailures: 0,
+      closeFailures: 0,
       lastError: "disk unavailable",
+      lastWarning:
+        "onToolCallStart attached tool to run because the AI SDK callback did not expose a matching active step.",
     });
+  });
+
+  it("does not mix lifecycle state when one integration is reused concurrently", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "overlap-fixture",
+    });
+
+    await integration.onStart?.(startEvent());
+    await integration.onStart?.(startEvent());
+    await integration.onStepStart?.(stepStartEvent());
+    await integration.onFinish?.(finishEvent());
+    await integration.onStart?.(startEvent());
+
+    expect(writer.getEvents().map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["RUN", "running"],
+    ]);
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 2,
+      lastWarning:
+        "onStepStart ignored while integration is suspended: Overlapping AI SDK generation ignored; create one agentInspect() integration per concurrent generation.",
+    });
+  });
+
+  it("diagnoses out-of-order callbacks without fabricating lifecycle rows", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "disorder-fixture",
+    });
+
+    await integration.onStepFinish?.(stepFinishEvent());
+    await integration.onToolCallFinish?.(toolFinishEvent(true));
+    await integration.onStart?.(startEvent());
+    await integration.onStepFinish?.(stepFinishEvent());
+    await integration.onToolCallFinish?.(toolFinishEvent(true));
+
+    expect(writer.getEvents().map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+    ]);
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 4,
+      lastWarning:
+        "onToolCallFinish ignored because tool call tool-call-1 has no matching start callback.",
+    });
+  });
+
+  it("attaches tools with missing step parents to the run and records a diagnostic", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "missing-step-parent-fixture",
+    });
+
+    await integration.onStart?.(startEvent());
+    await integration.onToolCallStart?.(toolStartEvent());
+    await integration.onToolCallFinish?.(toolFinishEvent(true));
+
+    const events = writer.getEvents();
+    const runStart = events.find((event) => event.kind === "RUN");
+    const toolEvents = events.filter((event) => event.kind === "TOOL");
+
+    expect(toolEvents.map((event) => [event.status, event.parentId])).toEqual([
+      ["running", runStart?.eventId],
+      ["ok", runStart?.eventId],
+    ]);
+    expect(integration.getDiagnostics()).toMatchObject({
+      lifecycleWarnings: 1,
+      lastWarning:
+        "onToolCallStart attached tool to run because the AI SDK callback did not expose a matching active step.",
+    });
+  });
+
+  it("isolates unsafe callback values without throwing into AI SDK callbacks", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "unsafe-callback-fixture",
+    });
+    const unsafeStart = new Proxy(startEvent(), {
+      get(target, property, receiver) {
+        if (property === "model") {
+          throw new Error("unsafe model getter");
+        }
+        return Reflect.get(target, property, receiver);
+      },
+    });
+
+    await expect(integration.onStart?.(unsafeStart)).resolves.toBeUndefined();
+
+    expect(writer.getEvents()).toEqual([]);
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 1,
+      lastWarning: "onStart: unsafe model getter",
+    });
+  });
+
+  it("exposes writer stats and isolates flush and close failures", async () => {
+    const stats = {
+      writtenEvents: 0,
+      droppedEvents: 0,
+      flushCount: 0,
+    };
+    const writer: TraceWriter = {
+      async write() {
+        stats.writtenEvents += 1;
+      },
+      async flush() {
+        throw new Error("flush unavailable");
+      },
+      async close() {
+        throw new Error("close unavailable");
+      },
+      getStats() {
+        return { ...stats };
+      },
+    };
+    const integration = agentInspect({
+      writer,
+      runName: "writer-lifecycle-fixture",
+    });
+
+    await integration.onStart?.(startEvent());
+    expect(integration.getWriterStats()).toEqual({
+      writtenEvents: 1,
+      droppedEvents: 0,
+      flushCount: 0,
+    });
+
+    await expect(integration.flush()).resolves.toBeUndefined();
+    await expect(integration.close()).resolves.toBeUndefined();
+
+    expect(integration.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 0,
+      flushFailures: 1,
+      closeFailures: 1,
+      lastError: "close unavailable",
+    });
+  });
+
+  it("preserves provider failures from generateText", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "provider-failure-fixture",
+    });
+
+    await expect(
+      generateText({
+        model: new MockLanguageModelV3({
+          provider: "fixture-provider",
+          modelId: "failure-model",
+          async doGenerate() {
+            throw new Error("provider down");
+          },
+        }),
+        prompt: "raw failed prompt",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: false,
+          recordOutputs: false,
+          integrations: [integration],
+        },
+      }),
+    ).rejects.toThrow("provider down");
+
+    expect(writer.getEvents().map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+    ]);
+    expectNoRawText(writer.getEvents(), "raw failed prompt");
   });
 });

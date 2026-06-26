@@ -15,7 +15,7 @@ import type {
   RedactionProfile,
 } from "agent-inspect";
 import { fileWriter } from "agent-inspect/writers";
-import type { TraceWriter } from "agent-inspect/writers";
+import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 
 /**
  * Experimental capture mode for the AI SDK adapter.
@@ -64,11 +64,18 @@ export interface AgentInspectAiSdkOptions {
 
 export interface AgentInspectAiSdkDiagnostics {
   writeFailures: number;
+  lifecycleWarnings: number;
+  flushFailures: number;
+  closeFailures: number;
   lastError?: string;
+  lastWarning?: string;
 }
 
 export interface AgentInspectAiSdkIntegration extends TelemetryIntegration {
   getDiagnostics(): AgentInspectAiSdkDiagnostics;
+  getWriterStats(): TraceWriterStats | undefined;
+  flush(): Promise<void>;
+  close(): Promise<void>;
 }
 
 type AiSdkModelInfo = {
@@ -222,8 +229,12 @@ class AgentInspectAiSdkTelemetryIntegration {
   private readonly writer: TraceWriter | undefined;
   private readonly diagnostics: AgentInspectAiSdkDiagnostics = {
     writeFailures: 0,
+    lifecycleWarnings: 0,
+    flushFailures: 0,
+    closeFailures: 0,
   };
   private activeRun: ActiveRun | undefined;
+  private suspendedReason: string | undefined;
 
   constructor(private readonly options: AgentInspectAiSdkOptions) {
     this.writer = options.writer ?? (options.traceDir ? fileWriter({ dir: options.traceDir }) : undefined);
@@ -234,288 +245,363 @@ class AgentInspectAiSdkTelemetryIntegration {
   }
 
   async onStart(event: OnStartEvent): Promise<void> {
-    const startedAt = nowIso();
-    const runId = createId("ai_sdk_run");
-    const eventId = createId("event");
-    const name =
-      this.options.runName ??
-      event.functionId ??
-      event.model.modelId ??
-      "ai-sdk-generation";
+    await this.handleLifecycle("onStart", async () => {
+      if (this.activeRun || this.suspendedReason) {
+        this.activeRun = undefined;
+        this.suspendedReason =
+          "Overlapping AI SDK generation ignored; create one agentInspect() integration per concurrent generation.";
+        this.recordLifecycleWarning(this.suspendedReason);
+        return;
+      }
 
-    this.activeRun = {
-      runId,
-      eventId,
-      name,
-      startedAt,
-      model: event.model,
-      steps: new Map(),
-      tools: new Map(),
-    };
+      const startedAt = nowIso();
+      const runId = createId("ai_sdk_run");
+      const eventId = createId("event");
+      const name =
+        this.options.runName ??
+        event.functionId ??
+        event.model.modelId ??
+        "ai-sdk-generation";
 
-    await this.write({
-      schemaVersion: "0.2",
-      eventId,
-      runId,
-      kind: "RUN",
-      name,
-      status: "running",
-      timestamp: startedAt,
-      startedAt,
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "run_started",
-        ...summarizeModel(event.model),
-        functionId: event.functionId,
-        capture: this.options.capture ?? "metadata-only",
-        recordInputsRequired: false,
-        recordOutputsRequired: false,
-        toolCount: countRecordKeys(event.tools),
-        hasPrompt: event.prompt !== undefined,
-        hasMessages: event.messages !== undefined,
-        metadataKeyCount: countRecordKeys(event.metadata),
-      },
+      this.activeRun = {
+        runId,
+        eventId,
+        name,
+        startedAt,
+        model: event.model,
+        steps: new Map(),
+        tools: new Map(),
+      };
+
+      await this.write({
+        schemaVersion: "0.2",
+        eventId,
+        runId,
+        kind: "RUN",
+        name,
+        status: "running",
+        timestamp: startedAt,
+        startedAt,
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "run_started",
+          ...summarizeModel(event.model),
+          functionId: event.functionId,
+          capture: this.options.capture ?? "metadata-only",
+          recordInputsRequired: false,
+          recordOutputsRequired: false,
+          toolCount: countRecordKeys(event.tools),
+          hasPrompt: event.prompt !== undefined,
+          hasMessages: event.messages !== undefined,
+          metadataKeyCount: countRecordKeys(event.metadata),
+        },
+      });
     });
   }
 
   async onStepStart(event: OnStepStartEvent): Promise<void> {
-    const run = this.ensureRun(event.model, event.functionId);
-    const startedAt = nowIso();
-    const stepEventId = createId("event");
-    run.steps.set(event.stepNumber, {
-      eventId: stepEventId,
-      parentId: run.eventId,
-      startedAt,
-    });
+    await this.handleLifecycle("onStepStart", async () => {
+      const run = this.getActiveRun("onStepStart");
+      if (!run) return;
+      const startedAt = nowIso();
+      const stepEventId = createId("event");
+      run.steps.set(event.stepNumber, {
+        eventId: stepEventId,
+        parentId: run.eventId,
+        startedAt,
+      });
 
-    await this.write({
-      schemaVersion: "0.2",
-      eventId: stepEventId,
-      runId: run.runId,
-      parentId: run.eventId,
-      kind: "LLM",
-      name: `ai-sdk-step-${event.stepNumber}`,
-      status: "running",
-      timestamp: startedAt,
-      startedAt,
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "step_started",
-        stepId: stepEventId,
-        ...summarizeModel(event.model),
-        functionId: event.functionId,
-        stepNumber: event.stepNumber,
-        priorStepCount: event.steps.length,
-        activeToolCount: event.activeTools?.length,
-        toolCount: countRecordKeys(event.tools),
-        messageCount: event.messages.length,
-        metadataKeyCount: countRecordKeys(event.metadata),
-      },
+      await this.write({
+        schemaVersion: "0.2",
+        eventId: stepEventId,
+        runId: run.runId,
+        parentId: run.eventId,
+        kind: "LLM",
+        name: `ai-sdk-step-${event.stepNumber}`,
+        status: "running",
+        timestamp: startedAt,
+        startedAt,
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "step_started",
+          stepId: stepEventId,
+          ...summarizeModel(event.model),
+          functionId: event.functionId,
+          stepNumber: event.stepNumber,
+          priorStepCount: event.steps.length,
+          activeToolCount: event.activeTools?.length,
+          toolCount: countRecordKeys(event.tools),
+          messageCount: event.messages.length,
+          metadataKeyCount: countRecordKeys(event.metadata),
+        },
+      });
     });
   }
 
   async onStepFinish(event: OnStepFinishEvent): Promise<void> {
-    const run = this.ensureRun(event.model, event.functionId);
-    const endedAt = nowIso();
-    const activeStep =
-      run.steps.get(event.stepNumber) ?? {
-        eventId: createId("event"),
-        parentId: run.eventId,
-        startedAt: endedAt,
-      };
+    await this.handleLifecycle("onStepFinish", async () => {
+      const run = this.getActiveRun("onStepFinish");
+      if (!run) return;
+      const endedAt = nowIso();
+      const activeStep = run.steps.get(event.stepNumber);
+      if (!activeStep) {
+        this.recordLifecycleWarning(
+          `onStepFinish ignored because step ${event.stepNumber} has no matching start callback.`,
+        );
+        return;
+      }
 
-    await this.write({
-      schemaVersion: "0.2",
-      eventId: activeStep.eventId,
-      runId: run.runId,
-      parentId: activeStep.parentId,
-      kind: "LLM",
-      name: `ai-sdk-step-${event.stepNumber}`,
-      status: "ok",
-      timestamp: endedAt,
-      startedAt: activeStep.startedAt,
-      endedAt,
-      durationMs: durationMs(activeStep.startedAt, endedAt),
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "step_completed",
-        stepId: activeStep.eventId,
-        ...summarizeModel(event.model),
-        functionId: event.functionId,
-        stepNumber: event.stepNumber,
-        ...summarizeFinishReason(event.finishReason),
-        warningCount: event.warnings?.length ?? 0,
-        contentPartCount: event.content.length,
-        toolCallCount: event.toolCalls.length,
-        toolResultCount: event.toolResults.length,
-        responseId: event.response.id,
-        responseModelId: event.response.modelId,
-        responseTimestamp: event.response.timestamp?.toISOString(),
-        metadataKeyCount: countRecordKeys(event.metadata),
-      },
-      tokenUsage: summarizeUsage(event.usage),
-      outputSummary: {
-        contentPartCount: event.content.length,
-        textLength: event.text.length,
-        reasoningPartCount: event.reasoning.length,
-        fileCount: event.files.length,
-        sourceCount: event.sources.length,
-      },
+      await this.write({
+        schemaVersion: "0.2",
+        eventId: activeStep.eventId,
+        runId: run.runId,
+        parentId: activeStep.parentId,
+        kind: "LLM",
+        name: `ai-sdk-step-${event.stepNumber}`,
+        status: "ok",
+        timestamp: endedAt,
+        startedAt: activeStep.startedAt,
+        endedAt,
+        durationMs: durationMs(activeStep.startedAt, endedAt),
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "step_completed",
+          stepId: activeStep.eventId,
+          ...summarizeModel(event.model),
+          functionId: event.functionId,
+          stepNumber: event.stepNumber,
+          ...summarizeFinishReason(event.finishReason),
+          warningCount: event.warnings?.length ?? 0,
+          contentPartCount: event.content.length,
+          toolCallCount: event.toolCalls.length,
+          toolResultCount: event.toolResults.length,
+          responseId: event.response.id,
+          responseModelId: event.response.modelId,
+          responseTimestamp: event.response.timestamp?.toISOString(),
+          metadataKeyCount: countRecordKeys(event.metadata),
+        },
+        tokenUsage: summarizeUsage(event.usage),
+        outputSummary: {
+          contentPartCount: event.content.length,
+          textLength: event.text.length,
+          reasoningPartCount: event.reasoning.length,
+          fileCount: event.files.length,
+          sourceCount: event.sources.length,
+        },
+      });
     });
   }
 
   async onToolCallStart(event: OnToolCallStartEvent): Promise<void> {
-    const run = this.ensureRun(event.model, event.functionId);
-    const startedAt = nowIso();
-    const eventId = createId("event");
-    const toolCall = event.toolCall;
-    const step = event.stepNumber === undefined ? undefined : run.steps.get(event.stepNumber);
-    const parentId = step?.eventId ?? run.eventId;
-    run.tools.set(toolCall.toolCallId, {
-      eventId,
-      parentId,
-      startedAt,
-      toolName: toolCall.toolName,
-    });
-
-    await this.write({
-      schemaVersion: "0.2",
-      eventId,
-      runId: run.runId,
-      parentId,
-      kind: "TOOL",
-      name: toolCall.toolName,
-      status: "running",
-      timestamp: startedAt,
-      startedAt,
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "step_started",
-        stepId: eventId,
-        ...summarizeModel(event.model),
-        functionId: event.functionId,
-        stepNumber: event.stepNumber,
-        toolCallId: toolCall.toolCallId,
+    await this.handleLifecycle("onToolCallStart", async () => {
+      const run = this.getActiveRun("onToolCallStart");
+      if (!run) return;
+      const startedAt = nowIso();
+      const eventId = createId("event");
+      const toolCall = event.toolCall;
+      const step = event.stepNumber === undefined ? undefined : run.steps.get(event.stepNumber);
+      const parentId = step?.eventId ?? run.eventId;
+      if (event.stepNumber === undefined || !step) {
+        this.recordLifecycleWarning(
+          "onToolCallStart attached tool to run because the AI SDK callback did not expose a matching active step.",
+        );
+      }
+      run.tools.set(toolCall.toolCallId, {
+        eventId,
+        parentId,
+        startedAt,
         toolName: toolCall.toolName,
-        dynamic: toolCall.dynamic === true,
-        invalid: toolCall.invalid === true,
-        providerExecuted: toolCall.providerExecuted === true,
-        messageCount: event.messages.length,
-        metadataKeyCount: countRecordKeys(event.metadata),
-        providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
-        toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
-      },
-      inputSummary: summarizeUnknown(toolCall.input),
-      error: toolCall.invalid ? summarizeError(toolCall.error) : undefined,
+      });
+
+      await this.write({
+        schemaVersion: "0.2",
+        eventId,
+        runId: run.runId,
+        parentId,
+        kind: "TOOL",
+        name: toolCall.toolName,
+        status: "running",
+        timestamp: startedAt,
+        startedAt,
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "step_started",
+          stepId: eventId,
+          ...summarizeModel(event.model),
+          functionId: event.functionId,
+          stepNumber: event.stepNumber,
+          toolCallId: toolCall.toolCallId,
+          toolName: toolCall.toolName,
+          dynamic: toolCall.dynamic === true,
+          invalid: toolCall.invalid === true,
+          providerExecuted: toolCall.providerExecuted === true,
+          messageCount: event.messages.length,
+          metadataKeyCount: countRecordKeys(event.metadata),
+          providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
+          toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+        },
+        inputSummary: summarizeUnknown(toolCall.input),
+        error: toolCall.invalid ? summarizeError(toolCall.error) : undefined,
+      });
     });
   }
 
   async onToolCallFinish(event: OnToolCallFinishEvent): Promise<void> {
-    const run = this.ensureRun(event.model, event.functionId);
-    const endedAt = nowIso();
-    const toolCall = event.toolCall;
-    const activeTool =
-      run.tools.get(toolCall.toolCallId) ?? {
-        eventId: createId("event"),
-        parentId: run.eventId,
-        startedAt: endedAt,
-        toolName: toolCall.toolName,
-      };
+    await this.handleLifecycle("onToolCallFinish", async () => {
+      const run = this.getActiveRun("onToolCallFinish");
+      if (!run) return;
+      const endedAt = nowIso();
+      const toolCall = event.toolCall;
+      const activeTool = run.tools.get(toolCall.toolCallId);
+      if (!activeTool) {
+        this.recordLifecycleWarning(
+          `onToolCallFinish ignored because tool call ${toolCall.toolCallId} has no matching start callback.`,
+        );
+        return;
+      }
 
-    await this.write({
-      schemaVersion: "0.2",
-      eventId: activeTool.eventId,
-      runId: run.runId,
-      parentId: activeTool.parentId,
-      kind: "TOOL",
-      name: activeTool.toolName,
-      status: event.success ? "ok" : "error",
-      timestamp: endedAt,
-      startedAt: activeTool.startedAt,
-      endedAt,
-      durationMs: event.durationMs,
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "step_completed",
-        stepId: activeTool.eventId,
-        ...summarizeModel(event.model),
-        functionId: event.functionId,
-        stepNumber: event.stepNumber,
-        toolCallId: toolCall.toolCallId,
-        toolName: toolCall.toolName,
-        dynamic: toolCall.dynamic === true,
-        invalid: toolCall.invalid === true,
-        providerExecuted: toolCall.providerExecuted === true,
-        messageCount: event.messages.length,
-        metadataKeyCount: countRecordKeys(event.metadata),
-        providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
-        toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
-      },
-      outputSummary: event.success ? summarizeUnknown(event.output) : undefined,
-      error: event.success ? undefined : summarizeError(event.error),
+      await this.write({
+        schemaVersion: "0.2",
+        eventId: activeTool.eventId,
+        runId: run.runId,
+        parentId: activeTool.parentId,
+        kind: "TOOL",
+        name: activeTool.toolName,
+        status: event.success ? "ok" : "error",
+        timestamp: endedAt,
+        startedAt: activeTool.startedAt,
+        endedAt,
+        durationMs: event.durationMs,
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "step_completed",
+          stepId: activeTool.eventId,
+          ...summarizeModel(event.model),
+          functionId: event.functionId,
+          stepNumber: event.stepNumber,
+          toolCallId: toolCall.toolCallId,
+          toolName: toolCall.toolName,
+          dynamic: toolCall.dynamic === true,
+          invalid: toolCall.invalid === true,
+          providerExecuted: toolCall.providerExecuted === true,
+          messageCount: event.messages.length,
+          metadataKeyCount: countRecordKeys(event.metadata),
+          providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
+          toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+        },
+        outputSummary: event.success ? summarizeUnknown(event.output) : undefined,
+        error: event.success ? undefined : summarizeError(event.error),
+      });
     });
   }
 
   async onFinish(event: OnFinishEvent): Promise<void> {
-    const run = this.ensureRun(event.model, event.functionId);
-    const endedAt = nowIso();
+    await this.handleLifecycle("onFinish", async () => {
+      if (this.suspendedReason) {
+        this.suspendedReason = undefined;
+        return;
+      }
+      const run = this.getActiveRun("onFinish");
+      if (!run) return;
+      const endedAt = nowIso();
 
-    await this.write({
-      schemaVersion: "0.2",
-      eventId: run.eventId,
-      runId: run.runId,
-      kind: "RUN",
-      name: run.name,
-      status: "ok",
-      timestamp: endedAt,
-      startedAt: run.startedAt,
-      endedAt,
-      durationMs: durationMs(run.startedAt, endedAt),
-      confidence: "explicit",
-      source: AI_SDK_SOURCE,
-      attributes: {
-        legacyEvent: "run_completed",
-        ...summarizeModel(event.model ?? run.model),
-        functionId: event.functionId,
-        ...summarizeFinishReason(event.finishReason),
-        stepCount: event.steps.length,
-        warningCount: event.warnings?.length ?? 0,
-        toolCallCount: event.toolCalls.length,
-        toolResultCount: event.toolResults.length,
-        metadataKeyCount: countRecordKeys(event.metadata),
-      },
-      tokenUsage: summarizeUsage(event.totalUsage),
-      outputSummary: {
-        contentPartCount: event.content.length,
-        textLength: event.text.length,
-        reasoningPartCount: event.reasoning.length,
-        fileCount: event.files.length,
-        sourceCount: event.sources.length,
-      },
+      await this.write({
+        schemaVersion: "0.2",
+        eventId: run.eventId,
+        runId: run.runId,
+        kind: "RUN",
+        name: run.name,
+        status: "ok",
+        timestamp: endedAt,
+        startedAt: run.startedAt,
+        endedAt,
+        durationMs: durationMs(run.startedAt, endedAt),
+        confidence: "explicit",
+        source: AI_SDK_SOURCE,
+        attributes: {
+          legacyEvent: "run_completed",
+          ...summarizeModel(event.model ?? run.model),
+          functionId: event.functionId,
+          ...summarizeFinishReason(event.finishReason),
+          stepCount: event.steps.length,
+          warningCount: event.warnings?.length ?? 0,
+          toolCallCount: event.toolCalls.length,
+          toolResultCount: event.toolResults.length,
+          metadataKeyCount: countRecordKeys(event.metadata),
+        },
+        tokenUsage: summarizeUsage(event.totalUsage),
+        outputSummary: {
+          contentPartCount: event.content.length,
+          textLength: event.text.length,
+          reasoningPartCount: event.reasoning.length,
+          fileCount: event.files.length,
+          sourceCount: event.sources.length,
+        },
+      });
+
+      this.activeRun = undefined;
     });
-
-    this.activeRun = undefined;
   }
 
-  private ensureRun(model: AiSdkModelInfo | undefined, functionId: string | undefined): ActiveRun {
+  getWriterStats(): TraceWriterStats | undefined {
+    return this.writer?.getStats?.();
+  }
+
+  async flush(): Promise<void> {
+    try {
+      await this.writer?.flush?.();
+    } catch (error) {
+      this.diagnostics.flushFailures += 1;
+      this.diagnostics.lastError = normalizeError(error);
+    }
+  }
+
+  async close(): Promise<void> {
+    try {
+      await this.writer?.close?.();
+    } catch (error) {
+      this.diagnostics.closeFailures += 1;
+      this.diagnostics.lastError = normalizeError(error);
+    } finally {
+      this.activeRun = undefined;
+      this.suspendedReason = undefined;
+    }
+  }
+
+  private getActiveRun(callbackName: string): ActiveRun | undefined {
+    if (this.suspendedReason) {
+      this.recordLifecycleWarning(
+        `${callbackName} ignored while integration is suspended: ${this.suspendedReason}`,
+      );
+      return undefined;
+    }
     if (this.activeRun) return this.activeRun;
 
-    const startedAt = nowIso();
-    this.activeRun = {
-      runId: createId("ai_sdk_run"),
-      eventId: createId("event"),
-      name: this.options.runName ?? functionId ?? model?.modelId ?? "ai-sdk-generation",
-      startedAt,
-      model,
-      steps: new Map(),
-      tools: new Map(),
-    };
-    return this.activeRun;
+    this.recordLifecycleWarning(
+      `${callbackName} ignored because no active AI SDK generation was started.`,
+    );
+    return undefined;
+  }
+
+  private async handleLifecycle(
+    callbackName: string,
+    run: () => Promise<void>,
+  ): Promise<void> {
+    try {
+      await run();
+    } catch (error) {
+      this.recordLifecycleWarning(`${callbackName}: ${normalizeError(error)}`);
+    }
+  }
+
+  private recordLifecycleWarning(message: string): void {
+    this.diagnostics.lifecycleWarnings += 1;
+    this.diagnostics.lastWarning = message;
   }
 
   private async write(event: PersistedInspectEvent): Promise<void> {
@@ -544,5 +630,8 @@ export function agentInspect(
   return {
     ...bindTelemetryIntegration(integration),
     getDiagnostics: () => integration.getDiagnostics(),
+    getWriterStats: () => integration.getWriterStats(),
+    flush: () => integration.flush(),
+    close: () => integration.close(),
   };
 }

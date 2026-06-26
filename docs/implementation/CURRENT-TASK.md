@@ -4,36 +4,35 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-2-ai-sdk-isolation-and-failure-lifecycle"
+chunk: "v1.8-3-ai-sdk-capture-and-redaction-contract"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-1-ai-sdk-logical-event-identity"
+dependsOn: "v1.8-2-ai-sdk-isolation-and-failure-lifecycle"
 ```
 
 ## Goal
 
-Make AI SDK adapter lifecycle state safe for overlapping or reused integrations, and cover the failure lifecycle cases that must not alter application behavior.
+Implement the published AI SDK preview/redaction options safely or deprecate them with explicit diagnostics so there are no silent no-op capture controls.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 2
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 3
 - `docs/proposals/AI-SDK-INTEGRATION.md`
-- directly related AI SDK adapter source, tests, fixtures, and writer lifecycle helpers only
+- directly related AI SDK adapter source, tests, fixtures, redaction helpers, and option docs only
 
 ## In scope
 
-1. Decide whether reused/overlapping AI SDK integrations are safely supported or explicitly rejected with diagnostics.
-2. Prevent overlapping AI SDK calls from sharing mutable run, step, or tool state.
-3. Cover provider failure, interrupted streaming, missing/out-of-order callbacks, unsafe values, writer failure, flush, and close.
-4. Ensure adapter diagnostics expose failures without throwing into AI SDK callbacks or changing generation behavior.
-5. Keep accepted event order deterministic, metadata-only defaults intact, and fixtures no-network.
+1. Inspect the current AI SDK preview/redaction options and RFC language.
+2. Implement bounded/redacted preview persistence only if it can be made safe within the existing adapter contract.
+3. Otherwise, deprecate unsupported options with explicit diagnostics and documentation.
+4. Preserve metadata-only defaults and ensure prompt/output capture remains opt-in, bounded, and redacted before persistence.
+5. Keep accepted event order deterministic, fixture behavior no-network, and existing trace compatibility intact.
 
 ## Out of scope
 
-- preview/redaction option behavior reserved for chunk 3;
 - optional-package install smoke reserved for chunk 4;
 - check engine/API/CLI design;
 - OpenAI Agents, LangGraph, Vitest, Jest, or safe-artifact implementation;
@@ -41,20 +40,19 @@ Make AI SDK adapter lifecycle state safe for overlapping or reused integrations,
 
 ## Acceptance criteria
 
-- overlapping calls cannot corrupt each other's lifecycle rows or parentage;
-- provider failures and interrupted streams produce deterministic error lifecycle rows where the AI SDK exposes callbacks;
-- missing or out-of-order callbacks are handled conservatively with diagnostics instead of fabricated relationships;
-- unsafe callback values and writer/flush/close failures are isolated and surfaced through diagnostics/stats;
-- application return values and errors are preserved;
+- no AI SDK capture or redaction option is silently ignored;
+- metadata-only defaults still avoid raw prompt/output persistence;
+- any preview capture is bounded and redacted before disk, or unsupported preview options produce explicit diagnostics;
+- diagnostics do not throw into AI SDK callbacks or alter generation behavior;
 - v0.1 writes and v0.1/v0.2 reads remain compatible.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/core/test/writers/index.test.ts
+pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/core/test/security-redaction.test.ts packages/core/test/redaction-profiles.test.ts
 ```
 
-Adjust the exact file list after inspecting directly relevant tests, but keep it focused on AI SDK lifecycle isolation, failure behavior, and writer lifecycle safety.
+Adjust the exact file list after inspecting directly relevant tests, but keep it focused on AI SDK capture options, redaction, diagnostics, and metadata-only compatibility.
 
 ## Chunk gate
 
@@ -74,9 +72,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-fix: isolate ai sdk integration lifecycle state
+fix: enforce ai sdk capture and redaction options
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, public breaking/schema/dependency/network decisions, or validation failures that cannot be fixed within chunk 2 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, public breaking/schema/dependency/network decisions, unsafe raw prompt/output persistence, or validation failures that cannot be fixed within chunk 3 scope.
