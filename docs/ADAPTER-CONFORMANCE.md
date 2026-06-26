@@ -14,6 +14,8 @@ The machine-readable matrix lives at [docs/implementation/adapter-conformance-ma
 
 The v1.7 matrix is declarative coverage guidance. v1.8 makes conformance executable and requires canonical-reader round trips before adapter output is used by checks.
 
+Executable shared assertions live in `packages/core/test/adapter-executable-conformance.test.ts` and `packages/core/test/adapter-conformance-utils.ts`. Adapter-specific suites may add deeper fixture coverage, but the shared suite owns the cross-adapter defaults: local-only execution, no raw payload persistence, lifecycle identity, parentage, streaming summaries, token usage where exposed, and reader round trips.
+
 ## Current matrix
 
 | Adapter | Package | Status | Default install mode | Boundary |

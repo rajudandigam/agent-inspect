@@ -4,57 +4,54 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-8-executable-adapter-conformance"
+chunk: "v1.8-9-checks-rfc"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-7-langgraph-through-langchain"
+dependsOn: "v1.8-8-executable-adapter-conformance"
 ```
 
 ## Goal
 
-Create shared executable adapter conformance utilities and fixture assertions for success, failure, tools, multiple tools, LLM, streaming, token usage, parentage, parallelism, correlation, redaction, truncation, no-network behavior, and canonical-reader round trips.
+Specify the deterministic trace checks design before implementation: normalized input, rule registry, configuration, evidence, deterministic ordering, result types, error taxonomy, exit codes, baseline semantics, extension boundary, and performance limits.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 8
-- `docs/ADAPTER-CONFORMANCE.md`
-- `docs/implementation/adapter-conformance-matrix.json`
-- existing adapter tests under `packages/ai-sdk/test`, `packages/openai-agents/test`, and `packages/langchain/test`
-- persisted reader/tree helpers used by current adapter tests
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 9
+- existing reader, reporter, and CLI docs only as needed for terminology alignment
+- relevant RFCs under `docs/proposals/` if the trace-checks boundary overlaps prior proposals
 
 ## In scope
 
-1. Add shared test utilities or fixtures that make adapter conformance executable without changing runtime public APIs.
-2. Assert success/failure, tools, multiple tools, LLM/token usage, streaming metadata, parentage, parallelism, correlation, redaction/truncation, no-network behavior, and canonical-reader round trips where current adapters expose those signals.
-3. Reuse existing adapter fixtures and callback/processor test shapes rather than adding provider execution.
-4. Update conformance docs/matrix only to reflect executable coverage that lands in this chunk.
-5. Keep root/core dependency boundaries unchanged.
+1. Create `docs/proposals/TRACE-CHECKS.md` as the source-of-truth RFC for deterministic local trace checks.
+2. Define normalized inputs from existing local trace readers without introducing a third persisted model or destructive migration.
+3. Define a rule registry, configuration shape, result/evidence model, deterministic ordering, error taxonomy, CLI/reporting semantics, exit codes, and baseline semantics.
+4. Specify an extension boundary that keeps core dependency-light and prevents plugin/provider/network coupling.
+5. Resolve TypeScript configuration loading honestly for Node `>=20`; do not add YAML support or new dependencies in this RFC chunk.
 
 ## Out of scope
 
 - package version changes, changesets, npm publication, tags, releases, or package publish-status changes;
-- real provider/model execution, API keys, network calls, hosted telemetry/export, or replay behavior;
-- new framework adapter packages or new root exports unless the active plan explicitly requires them;
-- checks engine, reporter packages, or broad CLI feature work.
+- checks engine implementation, CLI flags, reporter implementation, package exports, or runtime public API changes;
+- YAML config, provider execution, API keys, network calls, hosted telemetry/export, replay behavior, or prompt/eval hosting;
+- new framework adapter packages, pricing/provider semantics, or root/core runtime dependencies.
 
 ## Acceptance criteria
 
-- conformance tests are deterministic, local-only, and require no network, provider credentials, or hosted tracing service;
-- shared assertions cover adapter event identity, parentage, token usage, streaming summaries, redaction/truncation, and reader round trips without duplicating parsing logic;
-- tests fail clearly with adapter/package/signal context;
-- no adapter persists raw prompts, messages, generated text, tool payloads, stream tokens, request/response bodies, headers, or hosted trace payloads by default;
-- optional package and root/core dependency boundaries remain unchanged.
+- RFC covers normalized input, rule registry, configuration, evidence, deterministic ordering, result types, error taxonomy, exit codes, baseline semantics, extension boundary, and performance limits;
+- RFC preserves v0.1/v0.2 readability, local-first/no-network behavior, deterministic JSON output, and unknown attribute fidelity;
+- TypeScript config loading is specified without pretending Node can import `.ts` config files without an implementation strategy;
+- no new dependencies, exports, CLI behavior, persisted schema, or implementation code land in this chunk.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/core/test/adapter-conformance-matrix.test.ts packages/ai-sdk/test/api-stability.test.ts packages/openai-agents/test/api-stability.test.ts packages/langchain/test/langgraph-through-langchain.test.ts packages/langchain/test/agent-inspect-callback-streaming.test.ts
+pnpm typecheck
 ```
 
-Adjust the exact file list after inspecting existing adapter fixtures, but keep the chunk focused on executable adapter conformance.
+This is a docs/RFC-only chunk. Add a narrower documentation check only if an existing docs test directly covers proposals.
 
 ## Chunk gate
 
@@ -74,9 +71,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-test: enforce adapter conformance fixtures
+docs: specify deterministic trace checks
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, any fixture requiring network/provider credentials/default hosted export, root/core dependency expansion, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 8 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, any decision that requires implementing checks now, root/core dependency expansion, package publication semantics, YAML/config dependency requirements, raw content capture requirements, or validation failures that cannot be fixed within chunk 9 scope.
