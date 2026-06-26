@@ -9,16 +9,17 @@ currentTrain: "v1.8.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "<replace-with-git-rev-parse-HEAD>"
-lastValidationLevel: "v1.7-post-publish"
+lastConfirmedCommit: "cde7f44ac1c56e45873cf674da86d18f6cb0e881"
+lastValidationLevel: "planning-reset-baseline"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
-currentChunk: "v1.8-0-planning-reset"
+  - "v1.8-0-planning-reset"
+currentChunk: "v1.8-1-ai-sdk-logical-event-identity"
 pendingManualGate: "openai-agents-first-publication-at-release"
-nextAction: "Execute CURRENT-TASK.md and continue through the ordered v1.8 execution plan"
+nextAction: "Execute v1.8 chunk 1: preserve AI SDK logical event identity through canonical readers, trees, what/report, and diff-compatible output"
 publishedAt: "2026-06-26"
-updatedAt: "<current-date>"
+updatedAt: "2026-06-26"
 ```
 
 **Active roadmap:** [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md)  

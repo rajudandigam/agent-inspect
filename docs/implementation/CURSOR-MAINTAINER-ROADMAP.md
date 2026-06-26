@@ -3,7 +3,7 @@
 How maintainers use Codex/Cursor-style maintainer sessions to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.
 
 **Audience:** Repository maintainers and maintainer-owned AI coding sessions.
-**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Active roadmap:** [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
+**Public companion:** [ROADMAP.md](../../ROADMAP.md) · **Active roadmap:** [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md) · **Train state:** [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md)
 **Design:** [UNIFIED-PERSISTED-INSPECT-EVENT.md](../proposals/UNIFIED-PERSISTED-INSPECT-EVENT.md)
 **Historical/private notes:** `docs-local/` (if present) — not required for contributors.
 
@@ -72,13 +72,13 @@ Archive: [V1.2.0-RELEASE-READINESS.md](./V1.2.0-RELEASE-READINESS.md) · Checkli
 
 ## 4. Current and next release trains
 
-Trains are **directional** — not delivery guarantees. Canonical ordering after v1.5.0 is [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
+Trains are **directional** — not delivery guarantees. Canonical ordering after the v1.7.0 publication is [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md). Operational pointer: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md).
 
-**Published baseline:** v1.5.0 — [V1.5.0-RELEASE-READINESS.md](./V1.5.0-RELEASE-READINESS.md) · [V1.5.0-EXECUTION-PLAN.md](./release-trains/V1.5.0-EXECUTION-PLAN.md)
+**Published baseline:** v1.7.0 — [V1.7.0-RELEASE-READINESS.md](./release-trains/V1.7.0-RELEASE-READINESS.md) · [V1.7.0-EXECUTION-PLAN.md](./release-trains/V1.7.0-EXECUTION-PLAN.md)
 
 **Completed internal corrective train:** v1.5 corrective work — [V1.5.1-PATCH-PLAN.md](./release-trains/V1.5.1-PATCH-PLAN.md). This is complete on `main` and is not a publish target by default.
 
-**Current train:** v1.6.0 runtime foundation and universal ingestion — [ROADMAP-V1.6-TO-V3.md](./ROADMAP-V1.6-TO-V3.md)
+**Current train:** v1.8.0 deterministic checks, safe sharing, and CI — [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md)
 
 Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milestones inside v1.5.0**, not separate npm releases.
 
@@ -114,13 +114,13 @@ Former **v1.4.1** (API boundary) and **v1.4.2** (reports) are **internal milesto
 
 ### v1.7.0 — Framework adapters
 
-- `@agent-inspect/ai-sdk` optional adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30))
-- OpenAI Agents, Mastra, LangGraph (extend `@agent-inspect/langchain` patterns first)
+- published experimental `@agent-inspect/ai-sdk` optional adapter ([#30](https://github.com/rajudandigam/agent-inspect/issues/30));
+- OpenAI Agents scaffold/RFC and LangGraph boundary decision; runtime mapping and executable fixtures continue in v1.8.
 
-### v1.8.0 — Reporters + cohort
+### v1.8.0 — Deterministic checks, safe sharing, and CI
 
-- `@agent-inspect/vitest`, `@agent-inspect/jest` ([#24](https://github.com/rajudandigam/agent-inspect/issues/24))
-- `cohort`, `check`, `assert` local helpers ([#28](https://github.com/rajudandigam/agent-inspect/issues/28))
+- adapter correctness catch-up before checks;
+- deterministic `check` rules, safe artifacts, and optional `@agent-inspect/vitest` / `@agent-inspect/jest` reporters ([#24](https://github.com/rajudandigam/agent-inspect/issues/24), [#28](https://github.com/rajudandigam/agent-inspect/issues/28)).
 
 ### v1.9.0 — Standards hardening
 

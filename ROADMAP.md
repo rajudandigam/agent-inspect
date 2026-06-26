@@ -18,7 +18,7 @@ Shipped in **1.7.0** (see [CHANGELOG.md](CHANGELOG.md#170)):
 
 - **AI SDK adapter:** experimental `@agent-inspect/ai-sdk` package for Vercel AI SDK v6 telemetry integrations.
 - **Metadata-only local capture:** AI SDK examples use `recordInputs: false`, `recordOutputs: false`, and no default upload behavior.
-- **Adapter hardening:** tool/error/streaming coverage, local no-network recipe coverage, and adapter conformance fixtures.
+- **Adapter foundation:** tool/error/streaming coverage, local no-network recipe coverage, and a declarative adapter conformance matrix.
 - **Framework decisions:** OpenAI Agents JS tracing processor RFC/scaffold remains private, and LangGraph support stays through `@agent-inspect/langchain` until future evidence warrants more.
 - **Linked release:** `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at **1.7.0**.
 - **Unchanged by design:** local-first, no vendor upload, manual traces remain `schemaVersion: "0.1"`.
@@ -79,9 +79,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.8.0 planning after framework-native adoption** — v1.7.0 is published, and the AI SDK adapter is available as an optional package. The next train should start with a planning reset before implementation.
+**v1.8.0 deterministic checks and adapter correctness** — v1.7.0 is published, and the AI SDK adapter is available as an optional package. The active train starts by correcting adapter lifecycle identity and round-trip behavior before adding checks.
 
-The next minor release is **v1.8.0 CI reporters + deterministic checks**: optional test-runner reporters and local assertion/cohort helpers, without adding hosted services or default upload behavior. The v1.7 adapter work remains local-only and metadata-first, with `recordInputs: false` / `recordOutputs: false` examples and a no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). See [ROADMAP-V1.7-TO-V3.md](docs/implementation/ROADMAP-V1.7-TO-V3.md).
+The next minor release is **v1.8.0 deterministic checks, safe sharing, and CI**: adapter correctness catch-up, local check rules, safe artifacts, and optional test-runner reporters, without adding hosted services or default upload behavior. The v1.7 adapter work remains local-only and metadata-first, with `recordInputs: false` / `recordOutputs: false` examples and a no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/). See [ROADMAP-V1.8-TO-V3.md](docs/implementation/ROADMAP-V1.8-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -89,11 +89,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **v1.8.0 planning** | CI reporters and deterministic check helpers after the v1.7 adapter release — keep optional integrations package-scoped and local-first. |
+| **v1.8.0 train** | Adapter correctness, deterministic checks, safe artifacts, and CI reporters after the v1.7 adapter release — keep optional integrations package-scoped and local-first. |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
-Execution program: [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) · state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · [CURSOR-MAINTAINER-ROADMAP.md](docs/implementation/CURSOR-MAINTAINER-ROADMAP.md)
+Active execution plan: [V1.8.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md) · state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · active maintainer roadmap: [ROADMAP-V1.8-TO-V3.md](docs/implementation/ROADMAP-V1.8-TO-V3.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -150,6 +150,7 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v1.5 corrective train** — internal fixes after v1.5.0 | **Complete on main; not a publish target by default** | [V1.5.1-RELEASE-READINESS.md](docs/implementation/V1.5.1-RELEASE-READINESS.md) |
 | **v1.6.0** — Runtime foundation + universal ingestion | **Released** 2026-06-25 | [V1.6.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md) |
 | **v1.7.0** — Framework-native adoption | **Released** 2026-06-26 | [V1.7.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md) |
+| **v1.8.0** — Deterministic checks, safe sharing, and CI | **In progress** | [V1.8.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

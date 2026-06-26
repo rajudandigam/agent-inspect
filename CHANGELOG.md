@@ -6,7 +6,11 @@ Released **2026-06-26**.
 
 ### Minor Changes
 
-- 94a7220: Release v1.7.0 framework-native adoption with the experimental AI SDK telemetry adapter, adapter conformance coverage, and local-first adapter documentation.
+- 94a7220: Release v1.7.0 framework-native adoption with the experimental AI SDK telemetry adapter, declarative adapter conformance matrix, and local-first adapter documentation.
+
+### Notes
+
+- The v1.8 train carries the remaining adapter correctness work: AI SDK logical lifecycle identity, parallel integration isolation, explicit capture/redaction behavior, executable conformance fixtures, OpenAI Agents runtime mapping, and LangGraph no-network fixtures. v1.7.0 should not be read as claiming those deferred behaviors.
 
 ## 1.6.0
 

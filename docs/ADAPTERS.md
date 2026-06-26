@@ -6,6 +6,8 @@ AgentInspect is **framework-agnostic** at its core. Optional adapter packages in
 
 **Status:** experimental v1.7 adapter — optional package published in the v1.7.0 linked release.
 
+Known v1.8 follow-up: lifecycle identity through canonical readers/trees, parallel integration isolation, and explicit preview/redaction behavior are being hardened before checks rely on adapter output.
+
 ### Install
 
 ```bash
@@ -164,7 +166,7 @@ Full API: [API.md](./API.md) §9.
 
 ### LangGraph boundary
 
-LangGraph support is expected to ride through this same `@agent-inspect/langchain` callback boundary first. A dedicated LangGraph package is deferred until no-network fixtures prove that LangGraph exposes important lifecycle data unavailable through LangChain callbacks.
+LangGraph support is expected to ride through this same `@agent-inspect/langchain` callback boundary first. v1.8 adds executable no-network fixtures before claiming broader LangGraph support. A dedicated LangGraph package remains deferred until fixtures prove that LangGraph exposes important lifecycle data unavailable through LangChain callbacks.
 
 Future LangGraph examples must keep the same safety defaults: explicit callback installation, metadata-only capture, no raw prompt/output/tool payload capture by default, no hosted sink, and local persistence only when `persist: true` is set.
 
@@ -189,7 +191,7 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
 
-**Status:** scaffolded for v1.7 train — optional workspace package; runtime mapping is not implemented yet.
+**Status:** scaffolded in the v1.7 train — optional workspace package; runtime mapping is scheduled for v1.8 and is not implemented yet.
 
 The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Future examples must install the AgentInspect processor by replacing processors:
 

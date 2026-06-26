@@ -10,10 +10,10 @@ This guide defines the efficient operating workflow for using Codex to implement
 | --- | --- | --- |
 | `AGENTS.md` | Durable AI behavior and repository constraints | Rare |
 | `ROADMAP.md` | Public direction | Release/strategy changes |
-| `docs/implementation/ROADMAP-V1.6-TO-V3.md` | Maintainer roadmap | Strategy changes |
+| `docs/implementation/ROADMAP-V1.8-TO-V3.md` | Active maintainer roadmap | Strategy changes |
 | `docs/implementation/RELEASE-TRAIN-STATE.md` | Current train/chunk/commit/gate | Every chunk |
 | `docs/implementation/CURRENT-TASK.md` | Exact current assignment | Every chunk |
-| `docs/implementation/release-trains/V1.6.0-EXECUTION-PLAN.md` | Train chunks and acceptance criteria | When plan changes |
+| `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` | Active train chunks and acceptance criteria | When plan changes |
 | `docs/proposals/*.md` | Architecture contracts | Architecture changes |
 
 Do not paste the complete canonical roadmap into every Codex prompt.
@@ -24,7 +24,7 @@ Codex usage grows with repository size, task complexity, session duration, and r
 
 Recommended model:
 
-1. Keep one long-lived v1.6 branch or permanent worktree.
+1. Keep one long-lived release-train branch or permanent worktree.
 2. Use a fresh Codex thread for each commit-sized chunk.
 3. In each new thread, point Codex to:
    - `AGENTS.md`
@@ -38,7 +38,7 @@ Recommended model:
 7. Manually commit and push.
 8. Update the state/task files, then start a fresh thread.
 
-Do not keep one thread alive from v1.6 planning through release. Repeated context compaction and broad re-audits consume more allowance and increase drift.
+Do not keep one thread alive from planning through release. Repeated context compaction and broad re-audits consume more allowance and increase drift.
 
 ## Worktree strategy
 
@@ -49,10 +49,10 @@ Preferred:
 - optional separate review-only thread after implementation;
 - no simultaneous threads editing the same files.
 
-Suggested branch:
+Suggested branch pattern:
 
 ```text
-codex/v1.6-runtime-ingestion
+codex/v1.8-deterministic-checks
 ```
 
 The maintainer may continue on `main`, but a release-train branch is safer for manual review and rollback.
@@ -176,6 +176,25 @@ Codex must not do these operations unless explicitly authorized.
 
 Update state/task documents and start a fresh thread for the next chunk. Avoid a long “continue” conversation that retains all prior implementation details.
 
+## Autonomous release-train mode
+
+Use autonomous mode only for an approved execution plan with explicit stop conditions.
+
+For each chunk Codex must:
+
+1. verify clean Git state and reconcile state/task documents;
+2. implement one commit-sized scope;
+3. run focused tests and the defined chunk gate;
+4. review the diff and run `git diff --check`;
+5. update state and current-task documents;
+6. commit and push to `main` without force;
+7. verify required CI;
+8. continue to the next planned chunk.
+
+Autonomous mode must stop for public breaking changes, schema changes, root/core dependencies, network behavior, unrelated changes, unresolved validation failures, credentials, partial releases, or first publication of a new npm package.
+
+For `@agent-inspect/openai-agents`, the maintainer performs the first public npm publication after full release validation. Codex resumes only after `npm view @agent-inspect/openai-agents@1.8.0 version` succeeds.
+
 ## Decision gates
 
 Stop for maintainer input when a chunk would:
@@ -211,7 +230,7 @@ Do not combine implementation and release preparation.
 After all chunks:
 
 1. Run full validation.
-2. Create/update `V1.6.0-RELEASE-READINESS.md`.
+2. Create/update the active train release-readiness document.
 3. Draft release notes.
 4. Inspect tarballs and exports.
 5. Stop for authorization.

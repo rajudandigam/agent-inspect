@@ -20,7 +20,7 @@ Use this order:
 4. `docs/implementation/CURRENT-TASK.md`
 5. active release plan
 6. relevant RFC under `docs/proposals/`
-7. `docs/implementation/ROADMAP-V1.7-TO-V3.md`
+7. `docs/implementation/ROADMAP-V1.8-TO-V3.md`
 8. public `ROADMAP.md`
 9. historical implementation docs
 
@@ -55,6 +55,23 @@ After editing:
 
 Do not start the next chunk.
 
+### Explicit autonomous release-train mode
+
+The default remains one chunk followed by maintainer review.
+
+Codex may continue across chunks only when all of the following are true:
+
+- the maintainer explicitly authorizes a named release train;
+- `CURRENT-TASK.md` sets `executionMode: "autonomous-release-train"`;
+- an active execution plan defines the ordered chunks and gates;
+- each chunk remains one independently validated commit;
+- Codex pushes only fast-forward commits to the existing `main` branch;
+- required CI is green before the next chunk begins.
+
+This mode authorizes routine commit and push operations for the named train. It does not authorize force pushes, branch deletion, bypassing CI, destructive Git operations, local npm publishing, credential use, schema changes, new root/core dependencies, network behavior, or unrelated edits.
+
+Stop autonomous execution on unrelated worktree changes, material plan drift, a public breaking change, a schema/dependency/network decision, validation that cannot be repaired in current scope, partial publication, or missing credentials.
+
 ## Maintainer authority
 
 Unless explicitly authorized, do not commit, push, merge, create/switch/delete branches, tag, publish, create a GitHub release, change package versions, add a changeset, or convert Unreleased notes into released notes.
@@ -62,6 +79,8 @@ Unless explicitly authorized, do not commit, push, merge, create/switch/delete b
 Do not run `npm version`, `npm publish`, `pnpm publish`, or `changeset publish`.
 
 The maintainer reviews, commits, pushes, versions, tags, and publishes.
+
+The explicit autonomous release-train mode above is the only exception for routine commits, pushes, and validated Changesets PR merging. First publication of a new npm package remains a manual maintainer gate.
 
 ## 1.x compatibility
 
