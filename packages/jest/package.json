@@ -1,0 +1,46 @@
+{
+  "name": "@agent-inspect/jest",
+  "version": "1.7.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Optional Jest reporter for AgentInspect local trace artifacts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/jest"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.jest.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

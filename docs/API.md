@@ -218,7 +218,49 @@ ctx.task.meta.agentInspect = {
 
 Artifacts are safe structural summaries. They include bounded test identity, status, trace run id, and trace filename, but they do not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Vitest failures.
 
-## 13. Experimental `@agent-inspect/openai-agents` APIs
+## 13. Experimental `@agent-inspect/jest` APIs
+
+`@agent-inspect/jest` is an optional experimental package for local Jest failure artifacts. In the v1.8 train it remains private/unpublished until release readiness. It does not add a Jest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+
+Import from `@agent-inspect/jest`:
+
+```ts
+import { AgentInspectJestReporter, createAgentInspectJestReporter } from "@agent-inspect/jest";
+```
+
+- **`AgentInspectJestReporter`**: default Jest custom reporter class for `reporters: [["@agent-inspect/jest", options]]`.
+- **`createAgentInspectJestReporter(options?)`**: returns a structural reporter facade with `onTestResult` and `onRunComplete` hooks for tests and custom harnesses.
+  - **`artifactDir`**: local output directory for safe artifacts; defaults to `.agent-inspect/jest-artifacts`.
+  - **`githubSummary`**: optional GitHub step-summary file path. The reporter appends bounded structural counts only and does not use the GitHub API.
+  - **`retainSuccessful`**: `false`/undefined keeps no passing-test artifacts; `true` keeps up to `maxSuccessfulTraces`; a number keeps up to that many passing-test artifacts.
+  - **`maxSuccessfulTraces`**: upper bound for passing-test artifacts, capped by the reporter.
+  - **`associations`**: explicit trace associations keyed by `file::fullName`, `basename::fullName`, or `fullName`.
+  - **`resolveTrace(test)`**: optional explicit association resolver for normalized Jest assertion results.
+  - **`onDiagnostic(diagnostic)`**: observes non-fatal reporter/artifact failures.
+  - **`getDiagnostics()`** and **`getArtifacts()`** expose reporter state for tests and custom harnesses.
+- **`agentInspectJestReporter`**: alias for `createAgentInspectJestReporter`.
+
+Jest association is explicit because Jest assertion results do not expose Vitest-style mutable task metadata:
+
+```js
+reporters: [
+  [
+    "@agent-inspect/jest",
+    {
+      associations: {
+        "agent.test.cjs::agent suite agent workflow": {
+          runId: "support-agent",
+          tracePath: ".agent-inspect/support-agent.jsonl",
+        },
+      },
+    },
+  ],
+],
+```
+
+Artifacts are safe structural summaries. They include bounded test identity, status, trace run id, and trace filename, but they do not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Jest failures.
+
+## 14. Experimental `@agent-inspect/openai-agents` APIs
 
 `@agent-inspect/openai-agents` is an optional experimental package for OpenAI Agents JS tracing processor integration. In the v1.8 train it remains private/unpublished until the manual first-publication gate, but runtime metadata mapping is implemented locally.
 
@@ -249,7 +291,7 @@ Do not use `addTraceProcessor()` as the default AgentInspect path; that leaves e
 
 The processor records local v0.2 persisted events for trace/run, agent, generation/response, function/tool, handoff, guardrail, MCP tools, custom, transcription, and speech span metadata where safely representable. It does not persist raw prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, or hosted tool payloads by default.
 
-## 14. Experimental persisted-event foundation (v1.2.0)
+## 15. Experimental persisted-event foundation (v1.2.0)
 
 These helpers expose the **source-agnostic `PersistedInspectEvent` model** (`schemaVersion: "0.2"`). They are **local-only**, **in-memory**, and **do not change** storage write/read or CLI behavior in v1.2.0.
 
@@ -275,7 +317,7 @@ Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEv
 - v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
 - Inspection read paths normalize v0.1 and v0.2 JSONL for local CLI/API use. v0.2 remains experimental as a persisted-event foundation and is not the default writer.
 
-## 15. Local observability helpers (v1.4.0+)
+## 16. Local observability helpers (v1.4.0+)
 
 Read-only helpers for timeline, stats, and search over local JSONL traces. v0.1 manual traces remain the default writer; v0.2 persisted-event files are accepted where the shared dual-format read path is used. Local files only.
 
@@ -285,7 +327,7 @@ Read-only helpers for timeline, stats, and search over local JSONL traces. v0.1 
 
 CLI wrappers: `agent-inspect timeline`, `stats`, `search` — see [CLI.md](./CLI.md).
 
-## 16. Report and what helpers (v1.5.0+)
+## 17. Report and what helpers (v1.5.0+)
 
 Read-only helpers for concise inspection summaries and local reports:
 
@@ -294,7 +336,7 @@ Read-only helpers for concise inspection summaries and local reports:
 
 Report redaction profiles are key-based safeguards applied to the complete rendered report input, not only to the tree section. Review generated reports before sharing; this is not compliance-grade DLP.
 
-## 17. Experimental trace writers (v1.6)
+## 18. Experimental trace writers (v1.6)
 
 Trace writers are the first slice of the v1.6 runtime foundation. They are experimental during v1.x and intended for tests, adapters, and future `createInspector` work.
 
@@ -326,7 +368,7 @@ import type {
 
 No network writer or vendor sink exists in this package.
 
-## 18. Experimental inspector API/runtime (v1.6)
+## 19. Experimental inspector API/runtime (v1.6)
 
 `createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
 
@@ -368,7 +410,7 @@ Public methods:
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
-## 19. Experimental trace readers (v1.6)
+## 20. Experimental trace readers (v1.6)
 
 `agent-inspect/readers` exposes the experimental local trace reader contract and detection pipeline. It includes AgentInspect JSONL for v0.1, v0.2, and mixed local trace files, plus local OpenInference JSON and OTLP JSON compatibility readers.
 
@@ -399,7 +441,7 @@ import type { TraceReader } from "agent-inspect/readers";
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies.
 
-## 20. Experimental Checks
+## 21. Experimental Checks
 
 `agent-inspect/checks` exposes the experimental deterministic trace-check engine foundation. It consumes normalized reader output, runs supplied pure rules in stable order, and returns aggregate findings/diagnostics. It does not read files, discover config, add CLI behavior, call providers, perform network I/O, or implement baseline comparison yet.
 
@@ -417,23 +459,23 @@ import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
 
 The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this API for local reader-backed checks and deterministic JSON output; `agent-inspect artifacts` reuses the same safe findings for local CI artifact bundles and optional step-summary file output. Built-in rules operate on normalized event metadata, tree relationships, bounded summaries, token counts, and normalized baseline facts; safety and baseline findings identify event IDs and field paths rather than emitting raw prompts, outputs, secrets, headers, request/response bodies, or full tool payloads.
 
-## 21. Deprecated APIs
+## 22. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 22. Removal / deprecation policy
+## 23. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 23. Backward compatibility policy
+## 24. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 24. Examples
+## 25. Examples
 
 ### Minimal manual trace
 

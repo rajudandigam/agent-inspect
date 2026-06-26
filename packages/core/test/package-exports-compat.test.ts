@@ -116,6 +116,11 @@ describe("package conditional type exports (manifest)", () => {
     expectDualConditionalExport(exports["."], "@agent-inspect/vitest");
   });
 
+  it("@agent-inspect/jest exposes import/require conditional types", () => {
+    const { exports } = readPkgExports("packages/jest/package.json");
+    expectDualConditionalExport(exports["."], "@agent-inspect/jest");
+  });
+
   it("root package exposes agent-inspect CLI bin", () => {
     const raw = readFileSync(path.join(repoRoot, "package.json"), "utf-8");
     const pkg = JSON.parse(raw) as { bin?: Record<string, string> };

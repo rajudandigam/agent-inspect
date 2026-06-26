@@ -30,6 +30,8 @@
       "@agent-inspect/ai-sdk/*": ["packages/ai-sdk/src/*"],
       "@agent-inspect/vitest": ["packages/vitest/src/index.ts"],
       "@agent-inspect/vitest/*": ["packages/vitest/src/*"],
+      "@agent-inspect/jest": ["packages/jest/src/index.ts"],
+      "@agent-inspect/jest/*": ["packages/jest/src/*"],
       "@agent-inspect/openai-agents": ["packages/openai-agents/src/index.ts"],
       "@agent-inspect/openai-agents/*": ["packages/openai-agents/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
@@ -45,6 +47,7 @@
     "tsup.langchain.config.ts",
     "tsup.ai-sdk.config.ts",
     "tsup.vitest.config.ts",
+    "tsup.jest.config.ts",
     "tsup.openai-agents.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"

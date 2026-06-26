@@ -31,6 +31,10 @@ const vitestEntry = fileURLToPath(
   new URL("./packages/vitest/src/index.ts", import.meta.url),
 );
 
+const jestEntry = fileURLToPath(
+  new URL("./packages/jest/src/index.ts", import.meta.url),
+);
+
 const openAiAgentsEntry = fileURLToPath(
   new URL("./packages/openai-agents/src/index.ts", import.meta.url),
 );
@@ -53,6 +57,7 @@ export default defineConfig({
       "agent-inspect": coreEntry,
       "@agent-inspect/ai-sdk": aiSdkEntry,
       "@agent-inspect/vitest": vitestEntry,
+      "@agent-inspect/jest": jestEntry,
       "@agent-inspect/openai-agents": openAiAgentsEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
@@ -69,6 +74,7 @@ export default defineConfig({
       "agent-inspect/writers",
       "@agent-inspect/ai-sdk",
       "@agent-inspect/vitest",
+      "@agent-inspect/jest",
       "@agent-inspect/openai-agents",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",

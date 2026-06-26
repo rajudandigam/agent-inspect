@@ -10,6 +10,7 @@ const coreDistDir = path.join(repoRoot, "packages", "core", "dist");
 const cliDistDir = path.join(repoRoot, "packages", "cli", "dist");
 const aiSdkDistDir = path.join(repoRoot, "packages", "ai-sdk", "dist");
 const vitestDistDir = path.join(repoRoot, "packages", "vitest", "dist");
+const jestDistDir = path.join(repoRoot, "packages", "jest", "dist");
 const openAiAgentsDistDir = path.join(repoRoot, "packages", "openai-agents", "dist");
 
 const coreMjs = path.join(coreDistDir, "index.mjs");
@@ -25,6 +26,10 @@ const vitestMjs = path.join(vitestDistDir, "index.mjs");
 const vitestCjs = path.join(vitestDistDir, "index.cjs");
 const vitestDts = path.join(vitestDistDir, "index.d.ts");
 const vitestDcts = path.join(vitestDistDir, "index.d.cts");
+const jestMjs = path.join(jestDistDir, "index.mjs");
+const jestCjs = path.join(jestDistDir, "index.cjs");
+const jestDts = path.join(jestDistDir, "index.d.ts");
+const jestDcts = path.join(jestDistDir, "index.d.cts");
 const openAiAgentsMjs = path.join(openAiAgentsDistDir, "index.mjs");
 const openAiAgentsCjs = path.join(openAiAgentsDistDir, "index.cjs");
 const openAiAgentsDts = path.join(openAiAgentsDistDir, "index.d.ts");
@@ -48,6 +53,12 @@ const vitestDistPresent =
   existsSync(vitestCjs) &&
   existsSync(vitestDts) &&
   existsSync(vitestDcts);
+
+const jestDistPresent =
+  existsSync(jestMjs) &&
+  existsSync(jestCjs) &&
+  existsSync(jestDts) &&
+  existsSync(jestDcts);
 
 const openAiAgentsDistPresent =
   existsSync(openAiAgentsMjs) &&
@@ -170,6 +181,32 @@ describe("package manifest (experimental Vitest reporter)", () => {
   });
 });
 
+describe("package manifest (experimental Jest reporter)", () => {
+  it("keeps the optional package private and dependency-isolated until release readiness", () => {
+    const raw = readFileSync(
+      path.join(repoRoot, "packages", "jest", "package.json"),
+      "utf-8",
+    );
+    const pkg = JSON.parse(raw) as Record<string, unknown>;
+
+    expect(pkg.name).toBe("@agent-inspect/jest");
+    expect(pkg.private).toBe(true);
+    expect(pkg.sideEffects).toBe(false);
+
+    const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
+    const rootExport = exportsField?.["."];
+    expect(rootExport).toBeDefined();
+    expect(rootExport?.import?.types).toContain("index.d.ts");
+    expect(rootExport?.import?.default).toContain("index.mjs");
+    expect(rootExport?.require?.types).toContain("index.d.cts");
+    expect(rootExport?.require?.default).toContain("index.cjs");
+
+    const dependencies = pkg.dependencies as Record<string, string> | undefined;
+    expect(dependencies?.["agent-inspect"]).toBe("workspace:*");
+    expect(dependencies?.jest).toBeUndefined();
+  });
+});
+
 describe("package manifest (experimental OpenAI Agents adapter)", () => {
   it("keeps the optional package private and dependency-isolated until release readiness", () => {
     const raw = readFileSync(
@@ -228,6 +265,16 @@ describe("package dist outputs", () => {
       expect(existsSync(vitestCjs)).toBe(true);
       expect(existsSync(vitestDts)).toBe(true);
       expect(existsSync(vitestDcts)).toBe(true);
+    },
+  );
+
+  it.skipIf(!jestDistPresent)(
+    "built Jest reporter artifacts exist (run pnpm build first)",
+    () => {
+      expect(existsSync(jestMjs)).toBe(true);
+      expect(existsSync(jestCjs)).toBe(true);
+      expect(existsSync(jestDts)).toBe(true);
+      expect(existsSync(jestDcts)).toBe(true);
     },
   );
 

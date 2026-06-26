@@ -37,6 +37,7 @@ describe("package boundaries", () => {
       "ink",
       "react",
       "vitest",
+      "jest",
       "@opentelemetry/sdk-node",
       "@opentelemetry/api",
     ]) {
@@ -82,5 +83,10 @@ describe("package boundaries", () => {
     const reporter = await readPkg("packages/vitest/package.json");
     expect(reporter.peerDependencies?.vitest).toBeDefined();
     expect(reporter.dependencies?.vitest).toBeUndefined();
+  });
+
+  it("@agent-inspect/jest does not add jest as a workspace dependency before publication", async () => {
+    const reporter = await readPkg("packages/jest/package.json");
+    expect(reporter.dependencies?.jest).toBeUndefined();
   });
 });

@@ -109,6 +109,29 @@ const optionalPackageChecks = [
     `,
   },
   {
+    dir: "packages/jest",
+    name: "@agent-inspect/jest",
+    peerDependencies: { jest: "^29.0.0 || ^30.0.0" },
+    installPeers: ["jest@30.2.0"],
+    esm: `
+      import { createAgentInspectJestReporter } from "@agent-inspect/jest";
+      const reporter = createAgentInspectJestReporter({ retainSuccessful: 1 });
+      if (typeof reporter.onTestResult !== "function") throw new Error("reporter hook missing");
+      if (reporter.getArtifacts().length !== 0) throw new Error("unexpected artifacts");
+    `,
+    cjs: `
+      const { createAgentInspectJestReporter } = require("@agent-inspect/jest");
+      const reporter = createAgentInspectJestReporter({ retainSuccessful: 1 });
+      if (typeof reporter.onTestResult !== "function") throw new Error("reporter hook missing");
+      if (reporter.getArtifacts().length !== 0) throw new Error("unexpected artifacts");
+    `,
+    ts: `
+      import { createAgentInspectJestReporter, type AgentInspectJestReporterOptions } from "@agent-inspect/jest";
+      const options: AgentInspectJestReporterOptions = { retainSuccessful: 1 };
+      createAgentInspectJestReporter(options).getDiagnostics();
+    `,
+  },
+  {
     dir: "packages/openai-agents",
     name: "@agent-inspect/openai-agents",
     peerDependencies: { "@openai/agents": "^0.12.0" },
