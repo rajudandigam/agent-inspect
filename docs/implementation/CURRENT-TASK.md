@@ -4,60 +4,59 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-13-check-cli-and-configuration"
+chunk: "v1.8-14-baseline-regression"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-12-structure-and-safety-rules"
+dependsOn: "v1.8-13-check-cli-and-configuration"
 ```
 
 ## Goal
 
-Add the local `agent-inspect check` command and minimal configuration path for deterministic trace checks using canonical readers, JSON output, explicit format, stable exit codes, inline flags, JSON config, and approved JavaScript/TypeScript config behavior.
+Add structural baseline regression checks for deterministic comparison of normalized candidate and baseline traces: tree divergence, tools, LLMs, models/providers, tokens, duration, retries, status, error paths, retrieval, and guardrails. Ignore nondeterministic text by default.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 13
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 14
 - `docs/proposals/TRACE-CHECKS.md`
 - `packages/core/src/checks/`
 - `packages/core/src/entries/checks.ts`
-- `packages/cli/src/`
-- existing CLI tests, reader tests, and checks tests
-- built CLI help/smoke fixtures where relevant
+- existing checks, diff/comparable, reader, and baseline-related tests/fixtures
+- CLI check implementation only if baseline selection needs API plumbing
 
 ## In scope
 
-1. Add `agent-inspect check <trace-path-or-run-id>` using canonical local readers and explicit `--format` support.
-2. Add deterministic JSON output for check results and stable exit-code mapping: 0 pass, 1 rule failure, 2 invalid arguments/config, 3 unreadable trace, 4 unsupported/ambiguous format.
-3. Add inline flags for selecting rules and common built-in rule options where they can be normalized without broad config complexity.
-4. Add JSON config loading and approved JavaScript config behavior; TypeScript config must follow the RFC-approved Node >=20 strategy or fail clearly.
-5. Test the built CLI behavior, not only command handlers.
-6. Preserve local, read-only, no-network behavior and avoid mutating traces.
+1. Add baseline comparison rule support through `agent-inspect/checks` without introducing a new persisted model.
+2. Compare candidate and baseline after both are normalized through reader output.
+3. Cover structural dimensions from the plan: tree shape, tools, LLMs, models/providers, tokens, duration, retries, status, error paths, retrieval, and guardrails.
+4. Exclude nondeterministic prompt/output/raw text differences by default.
+5. Emit deterministic, evidence-bearing findings with stable expected/actual summaries and no raw payload leakage.
+6. Keep the implementation local, read-only, dependency-light, and no-network.
 
 ## Out of scope
 
 - package version changes, changesets, npm publication, tags, releases, or package publish-status changes;
-- baseline comparison implementation, reporter artifact generation, GitHub step-summary output, or broad reporter work;
+- reporter artifact generation, GitHub step-summary output, scan/verify-safe commands, or broad reporter work;
 - YAML config, provider execution, API keys, network calls, hosted telemetry/export, replay behavior, or prompt/eval hosting;
 - new framework adapter packages, pricing/provider semantics, root/core runtime dependencies, or persisted schema changes.
 
 ## Acceptance criteria
 
-- `agent-inspect check` reads traces through the canonical reader path and can produce deterministic JSON;
-- exit codes match the TRACE-CHECKS RFC for pass, rule failure, invalid args/config, unreadable input, and unsupported/ambiguous input;
-- built CLI tests cover successful checks, failing rules, invalid config/arguments, unreadable input, unsupported format, explicit format, and built help where relevant;
-- config behavior matches the RFC boundary, including no YAML support and no implicit TypeScript loader dependency;
-- no baseline implementation, new dependency, persisted schema change, provider execution, network behavior, hosted upload, release/tag/version/change changes, or raw content capture lands in this chunk.
+- baseline checks compare normalized check facts rather than raw files or ad hoc parsing;
+- findings are deterministic and identify relevant runs/events/spans/paths without emitting raw prompts, outputs, request/response bodies, headers, API keys, secrets, or full tool payloads;
+- duration comparison uses an explicit tolerance or documented default;
+- baseline and candidate format mismatches are handled conservatively after both normalize successfully;
+- no reporter artifacts, scan/verify-safe command, new dependency, persisted schema change, provider execution, network behavior, hosted upload, release/tag/version/change changes, or raw content capture lands in this chunk.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/cli/test/cli.test.ts packages/cli/test/check.test.ts packages/core/test/checks.test.ts packages/core/test/readers.test.ts packages/core/test/package-boundaries.test.ts
+pnpm exec vitest run packages/core/test/checks.test.ts packages/core/test/diff/comparable.test.ts packages/core/test/readers.test.ts packages/core/test/package-boundaries.test.ts
 ```
 
-Adjust the focused set after inspecting the current CLI test layout; include built CLI help/smoke coverage where the command wiring requires it.
+Adjust the focused set after inspecting the final baseline implementation shape.
 
 ## Chunk gate
 
@@ -77,9 +76,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-feat: add trace check command
+feat: add baseline trace regression checks
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, any decision that expands into baseline implementation, reporter artifact generation, GitHub integration, root/core dependency expansion, package publication semantics, YAML/config dependency requirements, raw content capture requirements, persisted schema changes, or validation failures that cannot be fixed within chunk 13 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, any decision that expands into reporter artifact generation, scan/verify-safe commands, GitHub integration, root/core dependency expansion, package publication semantics, YAML/config dependency requirements, raw content capture requirements, persisted schema changes, or validation failures that cannot be fixed within chunk 14 scope.

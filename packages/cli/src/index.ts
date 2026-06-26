@@ -32,6 +32,8 @@ import type { ReportCommandOptions } from "./report.js";
 import { reportCommand } from "./report.js";
 import type { OpenCommandOptions } from "./open.js";
 import { openCommand } from "./open.js";
+import type { CheckCommandOptions } from "./check.js";
+import { checkCommand } from "./check.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -247,6 +249,43 @@ export function createCliProgram(): Command {
     .option("--run <run-id>", "select a run when the trace contains multiple runs")
     .action((input: string | undefined, opts: OpenCommandOptions) => {
       runCommand(() => openCommand(input, opts));
+    });
+
+  program
+    .command("check")
+    .description("Run deterministic checks against a local trace")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--config <path>", "path to check config (.json, .js, .mjs, .cjs)")
+    .option("--json", "print deterministic JSON check result")
+    .option("--rule <id>", "select a rule id (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--max-duration-ms <number>", "add run.duration with a max duration")
+    .option("--required-tool <name>", "require a tool name (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--forbidden-tool <name>", "forbid a tool name (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--allowed-model <model>", "allow an LLM model (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--max-total-tokens <number>", "add llm.usage with a max total-token budget")
+    .action((target: string, opts: CheckCommandOptions) => {
+      runCommand(() => checkCommand(target, opts));
     });
 
   program

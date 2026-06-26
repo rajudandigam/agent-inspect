@@ -383,7 +383,7 @@ import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
 - **`TraceCheckRule`**: synchronous pure rule contract.
 - **`TraceCheckResult`**: deterministic aggregate result with findings, evidence, summary counts, and execution diagnostics.
 
-The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation. Built-in rules operate on normalized event metadata, tree relationships, bounded summaries, and token counts; safety findings identify event IDs and field paths rather than emitting raw prompts, outputs, secrets, headers, request/response bodies, or full tool payloads.
+The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this API for local reader-backed checks and deterministic JSON output; reporter artifacts and baseline comparison remain separate future work. Built-in rules operate on normalized event metadata, tree relationships, bounded summaries, and token counts; safety findings identify event IDs and field paths rather than emitting raw prompts, outputs, secrets, headers, request/response bodies, or full tool payloads.
 
 ## 20. Deprecated APIs
 

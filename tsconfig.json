@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@agent-inspect/core": ["packages/core/src/index.ts"],
+      "@agent-inspect/core/checks": ["packages/core/src/entries/checks.ts"],
       "@agent-inspect/core/readers": ["packages/core/src/entries/readers.ts"],
       "@agent-inspect/core/*": ["packages/core/src/*"],
       "agent-inspect": ["packages/core/src/index.ts"],

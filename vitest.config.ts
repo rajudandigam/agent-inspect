@@ -9,6 +9,9 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = fileURLToPath(
   new URL("./packages/core/src/index.ts", import.meta.url),
 );
+const coreChecksEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/checks.ts", import.meta.url),
+);
 const coreReadersEntry = fileURLToPath(
   new URL("./packages/core/src/entries/readers.ts", import.meta.url),
 );
@@ -37,6 +40,7 @@ export default defineConfig({
   resolve: {
     // In-repo tests run before build; point workspace imports at source.
     alias: {
+      "@agent-inspect/core/checks": coreChecksEntry,
       "@agent-inspect/core/readers": coreReadersEntry,
       "@agent-inspect/core/writers": coreWritersEntry,
       "@agent-inspect/core": coreEntry,
@@ -53,6 +57,7 @@ export default defineConfig({
     // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
     noExternal: [
       "@agent-inspect/core",
+      "@agent-inspect/core/checks",
       "@agent-inspect/core/readers",
       "@agent-inspect/core/writers",
       "agent-inspect",
