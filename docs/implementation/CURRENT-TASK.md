@@ -4,57 +4,57 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-1-ai-sdk-logical-event-identity"
+chunk: "v1.8-2-ai-sdk-isolation-and-failure-lifecycle"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-0-planning-reset"
+dependsOn: "v1.8-1-ai-sdk-logical-event-identity"
 ```
 
 ## Goal
 
-Fix AI SDK adapter lifecycle persistence so one logical run, step, and tool keeps one logical identity through raw persisted rows, canonical readers, tree construction, `what`, report, and diff-compatible output.
+Make AI SDK adapter lifecycle state safe for overlapping or reused integrations, and cover the failure lifecycle cases that must not alter application behavior.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 1
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 2
 - `docs/proposals/AI-SDK-INTEGRATION.md`
-- directly related AI SDK adapter source, tests, fixtures, and inspection helpers only
+- directly related AI SDK adapter source, tests, fixtures, and writer lifecycle helpers only
 
 ## In scope
 
-1. Inspect current `@agent-inspect/ai-sdk` lifecycle mapping for `generateText`, `streamText`, and tools.
-2. Preserve stable logical identities for AI SDK run, step, and tool start/completion rows without duplicate starts, incomplete parents, or orphaned children after canonical conversion.
-3. Ensure normalized traces build correct execution trees and remain compatible with `what`, report, and diff paths.
-4. Add or update focused fixtures/tests for raw persisted rows, `readTrace`/`openTrace`, tree construction, `what`, report, diff-compatible output, `generateText`, `streamText`, and tool lifecycle.
-5. Keep metadata-only defaults, no-network fixtures, and package isolation intact.
+1. Decide whether reused/overlapping AI SDK integrations are safely supported or explicitly rejected with diagnostics.
+2. Prevent overlapping AI SDK calls from sharing mutable run, step, or tool state.
+3. Cover provider failure, interrupted streaming, missing/out-of-order callbacks, unsafe values, writer failure, flush, and close.
+4. Ensure adapter diagnostics expose failures without throwing into AI SDK callbacks or changing generation behavior.
+5. Keep accepted event order deterministic, metadata-only defaults intact, and fixtures no-network.
 
 ## Out of scope
 
-- parallel/reused integration isolation beyond what is required for logical identity;
-- provider failure, interrupted streaming, callback disorder, writer failure, flush, and close coverage reserved for chunk 2;
 - preview/redaction option behavior reserved for chunk 3;
+- optional-package install smoke reserved for chunk 4;
 - check engine/API/CLI design;
 - OpenAI Agents, LangGraph, Vitest, Jest, or safe-artifact implementation;
 - package version changes, changesets, npm publication, schema changes, root/core dependencies, or network behavior.
 
 ## Acceptance criteria
 
-- one AI SDK logical run/step/tool has one stable identity from raw v0.2 rows through canonical reader output;
-- tree construction has no duplicate starts, incomplete parents, or avoidable orphaned children for covered AI SDK fixtures;
-- `what`, report, and diff-compatible output consume the fixed normalized trace without adapter-specific parsing;
-- focused tests cover `generateText`, `streamText`, and tool lifecycle paths;
+- overlapping calls cannot corrupt each other's lifecycle rows or parentage;
+- provider failures and interrupted streams produce deterministic error lifecycle rows where the AI SDK exposes callbacks;
+- missing or out-of-order callbacks are handled conservatively with diagnostics instead of fabricated relationships;
+- unsafe callback values and writer/flush/close failures are isolated and surfaced through diagnostics/stats;
+- application return values and errors are preserved;
 - v0.1 writes and v0.1/v0.2 reads remain compatible.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/ai-sdk/test packages/core/test/readers packages/core/test/report.test.ts packages/core/test/diff.test.ts
+pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/core/test/writers/index.test.ts
 ```
 
-Adjust the exact file list after inspecting the directly relevant tests, but keep it focused on AI SDK lifecycle identity and canonical inspection paths.
+Adjust the exact file list after inspecting directly relevant tests, but keep it focused on AI SDK lifecycle isolation, failure behavior, and writer lifecycle safety.
 
 ## Chunk gate
 
@@ -74,9 +74,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-fix: preserve ai sdk trace lifecycle identity
+fix: isolate ai sdk integration lifecycle state
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, public breaking/schema/dependency/network decisions, or validation failures that cannot be fixed within chunk 1 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, public breaking/schema/dependency/network decisions, or validation failures that cannot be fixed within chunk 2 scope.

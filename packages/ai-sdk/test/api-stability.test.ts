@@ -9,13 +9,22 @@ import type {
 } from "ai";
 import { MockLanguageModelV3, simulateReadableStream } from "ai/test";
 import { agentInspect } from "@agent-inspect/ai-sdk";
+import {
+  buildRunReport,
+  buildRunWhatSummary,
+  diffTraceEvents,
+  persistedInspectEventsToRunTrees,
+  persistedInspectEventsToTraceEvents,
+} from "agent-inspect";
 import type {
   AgentInspectAiSdkCaptureMode,
   AgentInspectAiSdkOptions,
 } from "@agent-inspect/ai-sdk";
 import { memoryWriter } from "agent-inspect/writers";
-import type { PersistedInspectEvent } from "agent-inspect";
+import type { InspectNode, PersistedInspectEvent } from "agent-inspect";
 import type { TraceWriter } from "agent-inspect/writers";
+
+import { openTrace, readTrace } from "../../core/src/readers/index.js";
 
 const usage = {
   inputTokens: {
@@ -56,6 +65,14 @@ function collectStrings(value: unknown): string[] {
 
 function expectNoRawText(events: PersistedInspectEvent[], rawText: string): void {
   expect(collectStrings(events)).not.toContain(rawText);
+}
+
+function toJsonl(events: PersistedInspectEvent[]): string {
+  return `${events.map((event) => JSON.stringify(event)).join("\n")}\n`;
+}
+
+function flattenNodes(nodes: readonly InspectNode[]): InspectNode[] {
+  return nodes.flatMap((node) => [node, ...flattenNodes(node.children)]);
 }
 
 const model = {
@@ -225,6 +242,71 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       fileCount: 0,
       sourceCount: 0,
     });
+
+    expect(events[0]?.eventId).toBe(events[3]?.eventId);
+    expect(events[1]?.eventId).toBe(events[2]?.eventId);
+    expect(events[1]?.parentId).toBe(events[0]?.eventId);
+    expect(events[2]?.parentId).toBe(events[0]?.eventId);
+    expect(events[0]?.attributes).toMatchObject({
+      legacyEvent: "run_started",
+    });
+    expect(events[1]?.attributes).toMatchObject({
+      legacyEvent: "step_started",
+      stepId: events[1]?.eventId,
+    });
+    expect(events[2]?.attributes).toMatchObject({
+      legacyEvent: "step_completed",
+      stepId: events[1]?.eventId,
+    });
+    expect(events[3]?.attributes).toMatchObject({
+      legacyEvent: "run_completed",
+    });
+
+    const normalized = persistedInspectEventsToTraceEvents(events);
+    expect(normalized.map((event) => event.event)).toEqual([
+      "run_started",
+      "step_started",
+      "step_completed",
+      "run_completed",
+    ]);
+    expect(normalized[1]).toMatchObject({
+      event: "step_started",
+      stepId: events[1]?.eventId,
+      parentId: events[0]?.eventId,
+    });
+    expect(normalized[2]).toMatchObject({
+      event: "step_completed",
+      stepId: events[1]?.eventId,
+    });
+
+    const trees = persistedInspectEventsToRunTrees(events);
+    expect(trees).toHaveLength(1);
+    const nodes = flattenNodes(trees[0]?.children ?? []);
+    expect(nodes.map((node) => [node.event.kind, node.event.status])).toEqual([
+      ["RUN", "ok"],
+      ["LLM", "ok"],
+    ]);
+    expect(new Set(nodes.map((node) => node.event.eventId)).size).toBe(
+      nodes.length,
+    );
+
+    const traceInput = { type: "string" as const, content: toJsonl(events) };
+    const read = await readTrace(traceInput, { format: "agent-inspect-jsonl" });
+    const opened = await openTrace(traceInput, { format: "agent-inspect-jsonl" });
+    expect(read.runs).toEqual(opened.runs);
+    const readNodes = flattenNodes(read.runs[0]?.children ?? []);
+    expect(readNodes.map((node) => [node.event.kind, node.event.status])).toEqual([
+      ["RUN", "ok"],
+      ["LLM", "ok"],
+    ]);
+
+    const summary = buildRunWhatSummary(normalized);
+    expect(summary.totalSteps).toBe(1);
+    expect(summary.llmSteps).toBe(1);
+    expect(summary.toolSteps).toBe(0);
+    const report = buildRunReport(normalized, { format: "markdown" });
+    expect(report.content).toContain("Steps: 1 (1 LLM)");
+    expect(diffTraceEvents(normalized, normalized).differences).toEqual([]);
     expectNoRawText(events, "raw user prompt");
     expectNoRawText(events, "raw generated answer");
   });
@@ -309,8 +391,20 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
 
     const events = writer.getEvents();
     const toolEvents = events.filter((event) => event.kind === "TOOL");
+    const llmEvents = events.filter((event) => event.kind === "LLM");
 
     expect(toolEvents.map((event) => event.status)).toEqual(["running", "ok"]);
+    expect(toolEvents[0]?.eventId).toBe(toolEvents[1]?.eventId);
+    expect(toolEvents[0]?.parentId).toBe(llmEvents[0]?.eventId);
+    expect(toolEvents[1]?.parentId).toBe(llmEvents[0]?.eventId);
+    expect(toolEvents[0]?.attributes).toMatchObject({
+      legacyEvent: "step_started",
+      stepId: toolEvents[0]?.eventId,
+    });
+    expect(toolEvents[1]?.attributes).toMatchObject({
+      legacyEvent: "step_completed",
+      stepId: toolEvents[0]?.eventId,
+    });
     expect(toolEvents[0]?.attributes).toMatchObject({
       functionId: "fixture-function",
       stepNumber: 0,
@@ -329,6 +423,37 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       type: "object",
       keyCount: 1,
     });
+
+    const normalized = persistedInspectEventsToTraceEvents(events);
+    const normalizedTools = normalized.filter(
+      (event) =>
+        (event.event === "step_started" && event.type === "tool") ||
+        event.event === "step_completed",
+    );
+    expect(normalizedTools.map((event) => event.event)).toEqual([
+      "step_started",
+      "step_completed",
+    ]);
+    expect(normalizedTools[0]).toMatchObject({
+      event: "step_started",
+      stepId: toolEvents[0]?.eventId,
+      parentId: llmEvents[0]?.eventId,
+    });
+    expect(normalizedTools[1]).toMatchObject({
+      event: "step_completed",
+      stepId: toolEvents[0]?.eventId,
+    });
+
+    const trees = persistedInspectEventsToRunTrees(events);
+    const nodes = flattenNodes(trees[0]?.children ?? []);
+    expect(nodes.map((node) => [node.event.kind, node.event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+      ["TOOL", "ok"],
+    ]);
+    expect(new Set(nodes.map((node) => node.event.eventId)).size).toBe(
+      nodes.length,
+    );
     expectNoRawText(events, "raw callback prompt");
     expectNoRawText(events, "raw callback message");
     expectNoRawText(events, "raw tool input");

@@ -85,11 +85,13 @@ type AiSdkUsage = {
 
 interface ActiveStep {
   eventId: string;
+  parentId: string;
   startedAt: string;
 }
 
 interface ActiveTool {
   eventId: string;
+  parentId: string;
   startedAt: string;
   toolName: string;
 }
@@ -263,6 +265,7 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "run_started",
         ...summarizeModel(event.model),
         functionId: event.functionId,
         capture: this.options.capture ?? "metadata-only",
@@ -282,6 +285,7 @@ class AgentInspectAiSdkTelemetryIntegration {
     const stepEventId = createId("event");
     run.steps.set(event.stepNumber, {
       eventId: stepEventId,
+      parentId: run.eventId,
       startedAt,
     });
 
@@ -298,6 +302,8 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "step_started",
+        stepId: stepEventId,
         ...summarizeModel(event.model),
         functionId: event.functionId,
         stepNumber: event.stepNumber,
@@ -316,14 +322,15 @@ class AgentInspectAiSdkTelemetryIntegration {
     const activeStep =
       run.steps.get(event.stepNumber) ?? {
         eventId: createId("event"),
+        parentId: run.eventId,
         startedAt: endedAt,
       };
 
     await this.write({
       schemaVersion: "0.2",
-      eventId: createId("event"),
+      eventId: activeStep.eventId,
       runId: run.runId,
-      parentId: activeStep.eventId,
+      parentId: activeStep.parentId,
       kind: "LLM",
       name: `ai-sdk-step-${event.stepNumber}`,
       status: "ok",
@@ -334,6 +341,8 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "step_completed",
+        stepId: activeStep.eventId,
         ...summarizeModel(event.model),
         functionId: event.functionId,
         stepNumber: event.stepNumber,
@@ -363,19 +372,20 @@ class AgentInspectAiSdkTelemetryIntegration {
     const startedAt = nowIso();
     const eventId = createId("event");
     const toolCall = event.toolCall;
+    const step = event.stepNumber === undefined ? undefined : run.steps.get(event.stepNumber);
+    const parentId = step?.eventId ?? run.eventId;
     run.tools.set(toolCall.toolCallId, {
       eventId,
+      parentId,
       startedAt,
       toolName: toolCall.toolName,
     });
-
-    const step = event.stepNumber === undefined ? undefined : run.steps.get(event.stepNumber);
 
     await this.write({
       schemaVersion: "0.2",
       eventId,
       runId: run.runId,
-      parentId: step?.eventId ?? run.eventId,
+      parentId,
       kind: "TOOL",
       name: toolCall.toolName,
       status: "running",
@@ -384,6 +394,8 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "step_started",
+        stepId: eventId,
         ...summarizeModel(event.model),
         functionId: event.functionId,
         stepNumber: event.stepNumber,
@@ -409,15 +421,16 @@ class AgentInspectAiSdkTelemetryIntegration {
     const activeTool =
       run.tools.get(toolCall.toolCallId) ?? {
         eventId: createId("event"),
+        parentId: run.eventId,
         startedAt: endedAt,
         toolName: toolCall.toolName,
       };
 
     await this.write({
       schemaVersion: "0.2",
-      eventId: createId("event"),
+      eventId: activeTool.eventId,
       runId: run.runId,
-      parentId: activeTool.eventId,
+      parentId: activeTool.parentId,
       kind: "TOOL",
       name: activeTool.toolName,
       status: event.success ? "ok" : "error",
@@ -428,6 +441,8 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "step_completed",
+        stepId: activeTool.eventId,
         ...summarizeModel(event.model),
         functionId: event.functionId,
         stepNumber: event.stepNumber,
@@ -452,7 +467,7 @@ class AgentInspectAiSdkTelemetryIntegration {
 
     await this.write({
       schemaVersion: "0.2",
-      eventId: createId("event"),
+      eventId: run.eventId,
       runId: run.runId,
       kind: "RUN",
       name: run.name,
@@ -464,6 +479,7 @@ class AgentInspectAiSdkTelemetryIntegration {
       confidence: "explicit",
       source: AI_SDK_SOURCE,
       attributes: {
+        legacyEvent: "run_completed",
         ...summarizeModel(event.model ?? run.model),
         functionId: event.functionId,
         ...summarizeFinishReason(event.finishReason),
