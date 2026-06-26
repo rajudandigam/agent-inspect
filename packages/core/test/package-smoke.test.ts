@@ -142,7 +142,7 @@ describe("package manifest (experimental AI SDK adapter)", () => {
 });
 
 describe("package manifest (experimental Vitest reporter)", () => {
-  it("keeps the optional package publishable and dependency-isolated", () => {
+  it("keeps the optional package private and dependency-isolated until release readiness", () => {
     const raw = readFileSync(
       path.join(repoRoot, "packages", "vitest", "package.json"),
       "utf-8",
@@ -150,9 +150,8 @@ describe("package manifest (experimental Vitest reporter)", () => {
     const pkg = JSON.parse(raw) as Record<string, unknown>;
 
     expect(pkg.name).toBe("@agent-inspect/vitest");
-    expect(pkg.private).toBeUndefined();
+    expect(pkg.private).toBe(true);
     expect(pkg.sideEffects).toBe(false);
-    expect(pkg.publishConfig).toEqual({ access: "public" });
 
     const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
     const rootExport = exportsField?.["."];

@@ -202,13 +202,13 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ## Vitest (`@agent-inspect/vitest`)
 
-**Status:** experimental v1.8 reporter — optional package for local CI/test artifacts.
+**Status:** experimental v1.8 reporter — optional workspace package, private/unpublished until release readiness.
 
 ```bash
 npm install agent-inspect @agent-inspect/vitest vitest
 ```
 
-The reporter creates safe, structural artifacts for failed tests that explicitly attach AgentInspect trace metadata. It never guesses trace files by timestamp and does not read trace contents into artifacts.
+After publication, the reporter creates safe, structural artifacts for failed tests that explicitly attach AgentInspect trace metadata. It never guesses trace files by timestamp and does not read trace contents into artifacts.
 
 ```ts
 import { createAgentInspectVitestReporter } from "@agent-inspect/vitest";

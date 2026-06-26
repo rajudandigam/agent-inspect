@@ -13,6 +13,7 @@
     "url": "https://github.com/rajudandigam/agent-inspect/issues"
   },
   "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "private": true,
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

@@ -188,7 +188,7 @@ Recipe: [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-loc
 
 ## 12. Experimental `@agent-inspect/vitest` APIs
 
-`@agent-inspect/vitest` is an optional experimental package for local Vitest failure artifacts. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+`@agent-inspect/vitest` is an optional experimental package for local Vitest failure artifacts. In the v1.8 train it remains private/unpublished until release readiness. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
 
 Import from `@agent-inspect/vitest`:
 
