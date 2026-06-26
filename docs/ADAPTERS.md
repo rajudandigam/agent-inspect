@@ -218,6 +218,8 @@ Do not use `addTraceProcessor()` as the default AgentInspect path; that preserve
 
 Full API: [API.md](./API.md) §12.
 
+Runnable local recipe: [openai-agents-local-tracing](../examples/recipes/openai-agents-local-tracing).
+
 ---
 
 ## Future adapters (not shipped)

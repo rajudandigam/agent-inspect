@@ -4,59 +4,57 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-6-openai-agents-safety-and-recipes"
+chunk: "v1.8-7-langgraph-through-langchain"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-5-openai-agents-tracing-processor"
+dependsOn: "v1.8-6-openai-agents-safety-and-recipes"
 ```
 
 ## Goal
 
-Add deterministic no-network OpenAI Agents safety fixtures and local-only recipes that teach the safe replacement install path without enabling default upload behavior.
+Add deterministic no-network LangGraph-through-LangChain fixtures and mapping assertions for graph/node identity, subgraphs, tasks, branches, checkpoints, retries, handoffs, thread/session IDs, streaming metadata, and unknown parents where exposed by official callbacks.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 6
-- `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
-- `packages/openai-agents/src/index.ts`
-- `packages/openai-agents/test/api-stability.test.ts`
-- existing recipe structure and recipe validator
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 7
+- relevant LangChain/LangGraph RFC or proposal docs if present
+- `packages/langchain/src/agent-inspect-callback.ts`
+- `packages/langchain/test/*`
+- existing LangChain example/fixture coverage
 
 ## In scope
 
-1. Add no-network fixtures or tests that exercise the OpenAI Agents processor through deterministic local processor calls, not provider/model execution.
-2. Add local-only recipe documentation/code showing `setTraceProcessors([agentInspectProcessor(...)])` replacement behavior.
-3. Add advanced/additional-processor documentation only with an explicit warning that `addTraceProcessor()` preserves existing/default processors.
-4. Cover sensitive-data exclusion, metadata-only summaries, writer failure isolation, `forceFlush()`, and shutdown behavior.
-5. Keep the package private and dependency-isolated; do not publish or change versions.
+1. Add no-network LangGraph-shaped fixtures that exercise the existing LangChain callback integration, not real provider/model execution.
+2. Preserve explicit trace/span/run identity, parentage, ordering, unknown-parent warnings, and confidence policy.
+3. Cover graph/node/subgraph/task/branch/checkpoint/retry/handoff/thread/session metadata where available from callback shapes.
+4. Add reader/tree/report round-trip assertions only where directly needed for the new fixture semantics.
+5. Keep LangGraph support dependency-isolated through the existing LangChain adapter boundary; do not add root/core runtime dependencies.
 
 ## Out of scope
 
-- package version changes, changesets, npm publication, tags, releases, or changing `@agent-inspect/openai-agents` private status;
-- provider/model execution, OpenAI API calls, API keys, credentials, or default backend export;
-- preview/full raw content capture, raw chain-of-thought capture, or weaker redaction/size protections;
-- LangGraph, checks engine, reporter packages, or broader adapter conformance chunks.
+- package version changes, changesets, npm publication, tags, releases, or changing package publish status;
+- real LangGraph provider/model execution, network calls, API keys, hosted tracing/export, or replay behavior;
+- new root exports unless the active plan explicitly requires them;
+- broad adapter conformance utilities, checks engine work, or reporter packages.
 
 ## Acceptance criteria
 
-- fixtures/recipes are deterministic, local-only, and require no network, provider credentials, or OpenAI account;
-- replacement examples use `setTraceProcessors([agentInspectProcessor(...)])` and explain why `addTraceProcessor()` is not the default safe path;
-- additional-processor examples, if added, are explicitly advanced and user-owned;
-- tests prove raw prompt/output/tool/custom data and trace exporter credentials are not persisted by default;
-- writer failure, flush, and shutdown behavior remains isolated and diagnostic-rich;
-- docs do not claim public npm availability before the manual first-publication gate.
+- fixtures are deterministic, local-only, and require no network, provider credentials, LangSmith upload, or external services;
+- graph/node/task metadata is preserved as bounded safe metadata without raw prompt/output capture;
+- unknown or missing parents are represented conservatively with warnings/confidence rather than fabricated relationships;
+- existing LangChain callback behavior and public imports remain compatible;
+- docs do not imply a new LangGraph package or hosted tracing product.
 
 ## Focused tests
 
 ```bash
-pnpm exec vitest run packages/openai-agents/test/api-stability.test.ts packages/core/test/recipes-smoke.test.ts
-pnpm recipes:check
+pnpm exec vitest run packages/langchain/test/agent-inspect-callback.test.ts packages/langchain/test/agent-inspect-callback-streaming.test.ts packages/langchain/test/agent-inspect-callback-persistence.test.ts packages/langchain/test/metadata.test.ts
 ```
 
-Adjust the exact file list after inspecting recipe conventions, but keep it focused on OpenAI Agents no-network fixtures and recipe validation.
+Adjust the exact file list after inspecting current LangChain fixture coverage, but keep the chunk focused on deterministic LangGraph-through-LangChain behavior.
 
 ## Chunk gate
 
@@ -76,9 +74,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-docs: add openai agents local tracing recipes
+feat: add langgraph trace mapping fixtures
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan or OpenAI Agents tracing RFC, any fixture requiring network/provider credentials/default backend export, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 6 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan, any fixture requiring network/provider credentials/default hosted export, root/core dependency expansion, package publication semantics, raw content capture requirements, or validation failures that cannot be fixed within chunk 7 scope.

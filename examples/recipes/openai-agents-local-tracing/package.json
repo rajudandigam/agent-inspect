@@ -1,0 +1,15 @@
+{
+  "name": "agent-inspect-recipe-openai-agents-local-tracing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @agent-inspect/openai-agents run build",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/openai-agents": "workspace:*",
+    "@openai/agents": "^0.12.0",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

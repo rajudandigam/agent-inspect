@@ -16,6 +16,7 @@ const RECIPES = [
   "retry-fallback",
   "parallel-tools",
   "runtime-and-ingestion",
+  "openai-agents-local-tracing",
 ] as const;
 
 const SECTION_MARKERS = [
@@ -65,9 +66,12 @@ describe("examples/recipes (v0.9)", () => {
 
       const src = readFileSync(path.join(dir, "src", "index.ts"), "utf-8");
       if (name !== "proactive-agent-logs") {
-        expect(src).toMatch(/from\s+["']agent-inspect["']/);
+        expect(src).toMatch(/from\s+["']agent-inspect(?:\/[^"']+)?["']/);
       }
       expect(src).not.toMatch(/from\s+["']openai["']/);
+      if (name !== "openai-agents-local-tracing") {
+        expect(src).not.toMatch(/from\s+["']@openai\/agents["']/);
+      }
       expect(src).not.toMatch(/from\s+["']@anthropic-ai/);
       expect(src).not.toMatch(/from\s+["']@nestjs/);
       expect(src).not.toMatch(/from\s+["']langchain/);

@@ -24,6 +24,7 @@ const RECIPES = [
   "what-report-inspect",
   "runtime-and-ingestion",
   "ai-sdk-local-telemetry",
+  "openai-agents-local-tracing",
 ];
 
 const LOG_RECIPE_FILES = {
@@ -68,11 +69,17 @@ function checkBannedImports(rel, text) {
   const allowAiSdkFixture =
     rel.startsWith(path.join("examples", "recipes", "ai-sdk-local-telemetry")) ||
     rel.startsWith("examples/recipes/ai-sdk-local-telemetry/");
+  const allowOpenAiAgentsFixture =
+    rel.startsWith(path.join("examples", "recipes", "openai-agents-local-tracing")) ||
+    rel.startsWith("examples/recipes/openai-agents-local-tracing/");
   FORBIDDEN_IMPORT_RE.lastIndex = 0;
   let m;
   while ((m = FORBIDDEN_IMPORT_RE.exec(text)) !== null) {
     const spec = m[1] ?? "";
     if (allowAiSdkFixture && (spec === "ai" || spec === "ai/test")) {
+      continue;
+    }
+    if (allowOpenAiAgentsFixture && spec === "@openai/agents") {
       continue;
     }
     for (const p of BANNED_IMPORT_PREFIXES) {
