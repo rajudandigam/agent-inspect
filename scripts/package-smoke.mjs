@@ -86,6 +86,29 @@ const optionalPackageChecks = [
     `,
   },
   {
+    dir: "packages/vitest",
+    name: "@agent-inspect/vitest",
+    peerDependencies: { vitest: "^2.1.0" },
+    installPeers: ["vitest@2.1.8"],
+    esm: `
+      import { createAgentInspectVitestReporter } from "@agent-inspect/vitest";
+      const reporter = createAgentInspectVitestReporter({ retainSuccessful: 1 });
+      if (typeof reporter.onTestCaseResult !== "function") throw new Error("reporter hook missing");
+      if (reporter.getArtifacts().length !== 0) throw new Error("unexpected artifacts");
+    `,
+    cjs: `
+      const { createAgentInspectVitestReporter } = require("@agent-inspect/vitest");
+      const reporter = createAgentInspectVitestReporter({ retainSuccessful: 1 });
+      if (typeof reporter.onTestCaseResult !== "function") throw new Error("reporter hook missing");
+      if (reporter.getArtifacts().length !== 0) throw new Error("unexpected artifacts");
+    `,
+    ts: `
+      import { createAgentInspectVitestReporter, type AgentInspectVitestReporterOptions } from "@agent-inspect/vitest";
+      const options: AgentInspectVitestReporterOptions = { retainSuccessful: 1 };
+      createAgentInspectVitestReporter(options).getDiagnostics();
+    `,
+  },
+  {
     dir: "packages/openai-agents",
     name: "@agent-inspect/openai-agents",
     peerDependencies: { "@openai/agents": "^0.12.0" },

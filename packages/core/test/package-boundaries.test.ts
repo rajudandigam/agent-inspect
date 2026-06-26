@@ -36,6 +36,7 @@ describe("package boundaries", () => {
       "@langchain/core",
       "ink",
       "react",
+      "vitest",
       "@opentelemetry/sdk-node",
       "@opentelemetry/api",
     ]) {
@@ -76,5 +77,10 @@ describe("package boundaries", () => {
     expect(deps).toContain("ink");
     expect(deps).toContain("react");
   });
-});
 
+  it("@agent-inspect/vitest keeps vitest as peer (not dependency)", async () => {
+    const reporter = await readPkg("packages/vitest/package.json");
+    expect(reporter.peerDependencies?.vitest).toBeDefined();
+    expect(reporter.dependencies?.vitest).toBeUndefined();
+  });
+});

@@ -200,6 +200,55 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ---
 
+## Vitest (`@agent-inspect/vitest`)
+
+**Status:** experimental v1.8 reporter — optional package for local CI/test artifacts.
+
+```bash
+npm install agent-inspect @agent-inspect/vitest vitest
+```
+
+The reporter creates safe, structural artifacts for failed tests that explicitly attach AgentInspect trace metadata. It never guesses trace files by timestamp and does not read trace contents into artifacts.
+
+```ts
+import { createAgentInspectVitestReporter } from "@agent-inspect/vitest";
+
+export default {
+  test: {
+    reporters: [
+      "default",
+      createAgentInspectVitestReporter({
+        artifactDir: ".agent-inspect/vitest-artifacts",
+        retainSuccessful: 5,
+      }),
+    ],
+  },
+};
+```
+
+Attach explicit metadata from the test harness, or provide `resolveTrace(test)`:
+
+```ts
+test("agent workflow", async (ctx) => {
+  ctx.task.meta.agentInspect = {
+    runId: "support-agent",
+    tracePath: ".agent-inspect/support-agent.jsonl",
+    artifactLabel: "support-agent",
+  };
+});
+```
+
+- **Explicit association only** — no timestamp matching or directory guessing.
+- **Failure artifacts by default** — passing-test artifacts are kept only when `retainSuccessful` is configured.
+- **Bounded success retention** — successful artifacts are capped by `maxSuccessfulTraces`.
+- **Failure-preserving** — reporter/artifact errors are surfaced through diagnostics and do not replace original Vitest failures.
+- **Local-only** — no network I/O, no hosted upload, no GitHub API, and no root/core Vitest dependency.
+- **Safe rendering** — artifacts include structural test/run/file references only, not raw trace contents, prompts, outputs, request/response bodies, headers, API keys, secrets, or tool payloads.
+
+Full API: [API.md](./API.md) §12.
+
+---
+
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
 
 **Status:** experimental v1.8 adapter — optional workspace package remains private/unpublished until the manual first-publication gate.
@@ -226,7 +275,7 @@ Do not use `addTraceProcessor()` as the default AgentInspect path; that preserve
 - **No raw payload capture by default** — prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, and hosted tool payloads are not persisted.
 - **Preview capture is not enabled yet** — `capture: "preview"`, `redactionProfile`, and `maxPreviewChars` are diagnosed through `getDiagnostics()` and do not persist raw previews.
 
-Full API: [API.md](./API.md) §12.
+Full API: [API.md](./API.md) §13.
 
 Runnable local recipe: [openai-agents-local-tracing](../examples/recipes/openai-agents-local-tracing).
 

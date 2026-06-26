@@ -73,21 +73,6 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
-  examples/recipes/openai-agents-local-tracing:
-    dependencies:
-      '@agent-inspect/openai-agents':
-        specifier: workspace:*
-        version: link:../../../packages/openai-agents
-      '@openai/agents':
-        specifier: ^0.12.0
-        version: 0.12.0(@cfworker/json-schema@4.1.1)(ws@8.21.0)(zod@4.4.3)
-      agent-inspect:
-        specifier: workspace:*
-        version: link:../../..
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
-
   examples/recipes/github-actions-artifact:
     dependencies:
       agent-inspect:
@@ -117,6 +102,21 @@ importers:
 
   examples/recipes/nestjs-json-logging:
     dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/openai-agents-local-tracing:
+    dependencies:
+      '@agent-inspect/openai-agents':
+        specifier: workspace:*
+        version: link:../../../packages/openai-agents
+      '@openai/agents':
+        specifier: ^0.12.0
+        version: 0.12.0(@cfworker/json-schema@4.1.1)(ws@8.21.0)(zod@4.4.3)
       agent-inspect:
         specifier: workspace:*
         version: link:../../..
@@ -271,6 +271,16 @@ importers:
       '@types/react':
         specifier: ^18.3.18
         version: 18.3.28
+
+  packages/vitest:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../..
+    devDependencies:
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.17)
 
 packages:
 

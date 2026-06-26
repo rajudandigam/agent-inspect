@@ -1,0 +1,51 @@
+{
+  "name": "@agent-inspect/vitest",
+  "version": "1.7.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Optional Vitest reporter for AgentInspect local trace artifacts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/vitest"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.vitest.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "peerDependencies": {
+    "vitest": "^2.1.0"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
