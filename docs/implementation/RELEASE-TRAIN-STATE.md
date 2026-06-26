@@ -4,11 +4,11 @@
 
 ```yaml
 baselineVersion: "1.6.0"
-publishedVersion: "1.6.0"
+publishedVersion: "1.7.0"
 currentTrain: "v1.7.0"
-trainStatus: "release_pr_pending"
+trainStatus: "published"
 branch: "main"
-lastValidationLevel: "full-release-readiness"
+lastValidationLevel: "full-release-readiness+post-publish"
 completedChunks:
   - "v1.5-internal-corrections"
   - "canonical-roadmap-reset"
@@ -41,11 +41,13 @@ completedChunks:
   - "v1.7 LangGraph adapter boundary decision"
   - "v1.7 adapter conformance fixture matrix"
   - "v1.7 release readiness"
-currentChunk: "v1.7-changesets-release-pr"
+  - "v1.7.0 published"
+  - "v1.7 post-publish docs"
+currentChunk: "none"
 pendingManualGate: "none"
-nextAction: "Let Changesets create the v1.7 Version Packages PR, validate it, then merge to trigger CI publish"
-publishedAt: "2026-06-25"
-updatedAt: "2026-06-25"
+nextAction: "Prepare v1.8 planning reset before implementation"
+publishedAt: "2026-06-26"
+updatedAt: "2026-06-26"
 ```
 
 **Active roadmap:** [ROADMAP-V1.7-TO-V3.md](./ROADMAP-V1.7-TO-V3.md)

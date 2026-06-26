@@ -4,7 +4,7 @@ AgentInspect is **framework-agnostic** at its core. Optional adapter packages in
 
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
-**Status:** experimental v1.7 train — optional workspace package; publication waits for v1.7 release readiness.
+**Status:** experimental v1.7 adapter — optional package published in the v1.7.0 linked release.
 
 ### Install
 

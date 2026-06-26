@@ -2,6 +2,8 @@
 
 ## 1.7.0
 
+Released **2026-06-26**.
+
 ### Minor Changes
 
 - 94a7220: Release v1.7.0 framework-native adoption with the experimental AI SDK telemetry adapter, adapter conformance coverage, and local-first adapter documentation.

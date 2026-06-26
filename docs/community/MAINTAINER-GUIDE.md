@@ -4,7 +4,7 @@ Internal reference for repository maintainers. Not shipped as primary user docum
 
 ## Release hygiene
 
-- **Changesets** for version bumps (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`).
+- **Changesets** for version bumps (`agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/ai-sdk`).
 - **Do not** version-bump in unrelated PRs.
 - **`publish.yml`** — `changesets/action` opens Version Packages PRs and runs `pnpm run release` (`changeset publish`) via npm Trusted Publishing (OIDC). Requires `id-token: write` and `publish: pnpm run release` on the action step.
 - **`prepublishOnly`** runs full gate locally on `npm publish` — contributors should not publish manually without running checks.
@@ -18,6 +18,7 @@ Configure **each** published package:
 | Package | npm page |
 | ------- | -------- |
 | `agent-inspect` | https://www.npmjs.com/package/agent-inspect |
+| `@agent-inspect/ai-sdk` | https://www.npmjs.com/package/@agent-inspect/ai-sdk |
 | `@agent-inspect/langchain` | https://www.npmjs.com/package/@agent-inspect/langchain |
 | `@agent-inspect/tui` | https://www.npmjs.com/package/@agent-inspect/tui |
 
@@ -27,19 +28,45 @@ On each package: **Settings → Trusted Publisher → GitHub Actions**
 - **Repository:** `agent-inspect`
 - **Workflow filename:** `publish.yml` (must match `.github/workflows/publish.yml`)
 
-**Symptom:** `agent-inspect` publishes but `@agent-inspect/langchain` / `@agent-inspect/tui` fail with `E404 Not Found` on `PUT` — Trusted Publisher missing on the scoped package.
+**Symptom:** `agent-inspect` publishes but a scoped package fails with `E404 Not Found` on `PUT` — Trusted Publisher is missing on that package, or npm has not yet granted the workflow/token permission to create the first version of the scoped package.
 
 **Recovery after partial publish:**
 
-1. Add Trusted Publishers on the failed scoped packages (or set repo secret `NPM_TOKEN` with publish access on all three).
+1. Add Trusted Publishers on the failed scoped packages (or set repo secret `NPM_TOKEN` with publish access on every published package).
 2. Re-run the **Publish** workflow on `main` (`workflow_dispatch` or push). `changeset publish` skips versions already on npm and retries the rest.
-3. Confirm versions: `npm view agent-inspect version`, `npm view @agent-inspect/langchain version`, `npm view @agent-inspect/tui version`.
+3. Confirm versions: `npm view agent-inspect version`, `npm view @agent-inspect/ai-sdk version`, `npm view @agent-inspect/langchain version`, `npm view @agent-inspect/tui version`.
 4. Create or update the GitHub Release if tags are incomplete.
 
 Scoped packages require in `package.json`:
 
 - `"publishConfig": { "access": "public" }`
 - `"repository"` matching the GitHub repo (required when `NPM_CONFIG_PROVENANCE=true`; missing `repository.url` causes `E422` provenance validation failures)
+
+### First publish of a new scoped package
+
+For a brand-new scoped package such as `@agent-inspect/ai-sdk`, the first publish can fail even after the other packages publish successfully. Keep the recovery local and package-scoped:
+
+1. Verify `publishConfig.access` is `public`.
+2. Prefer re-running the Publish workflow after adding `NPM_TOKEN` or Trusted Publisher permissions.
+3. If the package still needs a manual first publish, build and publish the packed tarball from the workspace root:
+
+```bash
+pnpm build
+mkdir -p /tmp/agent-inspect-ai-sdk-pack
+pnpm --dir packages/ai-sdk pack --pack-destination /tmp/agent-inspect-ai-sdk-pack
+npm publish /tmp/agent-inspect-ai-sdk-pack/agent-inspect-ai-sdk-<version>.tgz --access public
+```
+
+Publishing the packed tarball lets pnpm rewrite `workspace:*` dependencies to the released version. Do not publish directly from `packages/ai-sdk` unless dependencies are installed and the packed manifest has been checked.
+
+After the first publish, configure the npm Trusted Publisher for that package:
+
+- **Organization or user:** `rajudandigam`
+- **Repository:** `agent-inspect`
+- **Workflow filename:** `publish.yml`
+- **Allowed action:** `npm publish`
+
+Future releases should then use the normal Changesets publish workflow and skip already-published versions safely.
 
 Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
 
@@ -55,7 +82,7 @@ After a successful npm publish:
 - [ ] Verify CLI: `npx agent-inspect --help` and `npx agent-inspect list`
 - [ ] Verify ESM import in a clean temp TypeScript project (`module: NodeNext`)
 - [ ] Verify CJS `require()` in a clean temp TypeScript project (`module: Node16`, `.cts` types)
-- [ ] Confirm scoped packages (`@agent-inspect/langchain`, `@agent-inspect/tui`) if published in the same release
+- [ ] Confirm scoped packages (`@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`) if published in the same release
 
 ## Open-source activation sprint (post-1.1.0)
 

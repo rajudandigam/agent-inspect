@@ -152,7 +152,7 @@ Rationale: v1.x includes one official adapter and **zero production sinks**, so 
 
 ## 11. Experimental `@agent-inspect/ai-sdk` APIs
 
-`@agent-inspect/ai-sdk` is an optional v1.7 adapter package for Vercel AI SDK v6 telemetry integrations. It is experimental during the v1.7 train and remains private until release readiness.
+`@agent-inspect/ai-sdk` is an optional v1.7 adapter package for Vercel AI SDK v6 telemetry integrations. It is experimental and published as part of the v1.7.0 linked release.
 
 Import from `@agent-inspect/ai-sdk`:
 
