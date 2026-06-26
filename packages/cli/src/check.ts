@@ -1,12 +1,10 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { getTraceFilePath, resolveTraceDir } from "@agent-inspect/core";
 import {
   TraceReadError,
   openTrace,
-  type TraceInput,
 } from "@agent-inspect/core/readers";
 import {
   createLlmUsageRule,
@@ -33,6 +31,8 @@ import {
   type TraceCheckResult,
   type TraceCheckRule,
 } from "@agent-inspect/core/checks";
+
+import { inputFromTarget } from "./trace-input.js";
 
 export interface CheckCommandOptions {
   dir?: string;
@@ -80,47 +80,6 @@ type RuleBuildResult = {
 const DEFAULT_SELECT = ["run.status"];
 const CONFIG_EXTENSIONS = new Set([".json", ".js", ".mjs", ".cjs"]);
 const TS_CONFIG_EXTENSIONS = new Set([".ts", ".mts", ".cts"]);
-
-async function readStdin(stdin: NodeJS.ReadableStream): Promise<string> {
-  stdin.setEncoding("utf8");
-  let content = "";
-  for await (const chunk of stdin) {
-    content += typeof chunk === "string" ? chunk : String(chunk);
-  }
-  return content;
-}
-
-function isMissingFileError(error: unknown): boolean {
-  return (
-    error !== null &&
-    typeof error === "object" &&
-    "code" in error &&
-    (error as NodeJS.ErrnoException).code === "ENOENT"
-  );
-}
-
-async function inputFromTarget(
-  target: string,
-  options: Pick<CheckCommandOptions, "dir">,
-  stdin: NodeJS.ReadableStream,
-): Promise<TraceInput> {
-  if (target === "-") {
-    return { type: "string", content: await readStdin(stdin) };
-  }
-
-  try {
-    const stats = await stat(target);
-    if (stats.isDirectory()) return { type: "directory", path: target };
-    return { type: "file", path: target };
-  } catch (error) {
-    if (!isMissingFileError(error)) throw error;
-  }
-
-  const runPath = getTraceFilePath(target, resolveTraceDir({ dir: options.dir }));
-  const stats = await stat(runPath);
-  if (stats.isDirectory()) return { type: "directory", path: runPath };
-  return { type: "file", path: runPath };
-}
 
 function diagnostic(
   code: TraceCheckDiagnosticCode,

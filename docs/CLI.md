@@ -27,6 +27,8 @@ Core commands:
 - `export` — export manual traces to Markdown/HTML/OpenInference/OTLP JSON (local only)
 - `open` — read supported local trace files, directories, or stdin through the canonical reader pipeline
 - `check` — run deterministic local trace checks with stable JSON and exit codes
+- `scan` — best-effort local safety scan for trace capture risks
+- `verify-safe` — best-effort local trace safety verification
 - `diff` — compare two manual traces (local, read-only)
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
@@ -53,6 +55,12 @@ Exception: `check` uses CI-oriented semantic exit codes:
 - **3**: trace input could not be read
 - **4**: unsupported or ambiguous trace format
 
+Exception: `scan` and `verify-safe` use local safety status exit codes:
+
+- **0**: status is SAFE or SAFE WITH WARNINGS
+- **1**: status is UNSAFE
+- **2**: status is UNKNOWN, including unreadable, unsupported, ambiguous, or invalid inputs
+
 AgentInspect favors **human-readable errors without stack traces** for expected user mistakes.
 
 ## 4. JSON output policy
@@ -68,6 +76,7 @@ Many commands support `--json` for scripting. JSON output is intended to be:
 - Log-derived output includes **confidence** labels and avoids inventing parent-child relationships.
 - Redaction defaults are conservative (e.g. `authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`).
 - Exported payloads are **redacted by default** unless explicitly configured otherwise.
+- `scan` and `verify-safe` are best-effort local checks, not compliance, privacy, security, or regulatory certifications.
 
 ## 6. Command reference
 
@@ -278,7 +287,46 @@ npx agent-inspect check minimal-success --dir fixtures/traces --rule run.status
 npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool search_docs --json
 ```
 
-### 6.9 `diff`
+### 6.9 `scan` and `verify-safe`
+
+Run best-effort local safety verification for supported trace inputs. These commands are local and read-only: they do not rerun agents, call models, upload traces, mutate input files, or certify compliance.
+
+```bash
+agent-inspect scan <trace-path-or-run-id> [options]
+agent-inspect verify-safe <trace-path-or-run-id> [options]
+```
+
+`<trace-path-or-run-id>` may be a trace file, directory, `-` for stdin, or a run id resolved with `--dir`.
+
+Statuses:
+
+- `SAFE`: no safety findings and no reader warnings.
+- `SAFE WITH WARNINGS`: no safety findings, but the reader reported warnings or unsupported fields.
+- `UNSAFE`: safety findings were detected.
+- `UNKNOWN`: the input could not be read, normalized, or selected conservatively.
+
+Options:
+
+- `--dir <path>`: trace directory for run-id lookup
+- `--format <agent-inspect-jsonl|openinference-json|otlp-json>`: explicit reader format override
+- `--run <run-id>`: select a run when input contains multiple runs
+- `--json`: print deterministic JSON safety result
+- `--max-string-length <number>`: unsafe threshold for string values
+- `--max-array-length <number>`: unsafe threshold for array values
+- `--max-object-keys <number>`: unsafe threshold for object key counts
+- `--max-serialized-bytes <number>`: unsafe threshold for serialized values
+
+The scan looks for raw prompt/output-like capture paths, unredacted sensitive-looking keys, secret-like string patterns, and oversized values. It reports evidence paths rather than raw prompt, output, request/response, header, API key, secret, or full tool payload values. Secret detection is best-effort and should not be treated as exhaustive.
+
+Examples:
+
+```bash
+npx agent-inspect scan fixtures/traces-v0.2/manual-basic.jsonl --json
+npx agent-inspect verify-safe minimal-success --dir fixtures/traces
+npx agent-inspect verify-safe trace.jsonl --max-string-length 8192 --json
+```
+
+### 6.10 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -342,7 +390,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.10 `timeline`
+### 6.11 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -358,7 +406,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.11 `stats`
+### 6.12 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -378,7 +426,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.12 `search`
+### 6.13 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -408,7 +456,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.13 `what`
+### 6.14 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -437,7 +485,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.14 `report`
+### 6.15 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 

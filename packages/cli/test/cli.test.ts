@@ -26,6 +26,8 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("export");
     expect(names).toContain("open");
     expect(names).toContain("check");
+    expect(names).toContain("scan");
+    expect(names).toContain("verify-safe");
     expect(names).toContain("diff");
     expect(names).toContain("what");
     expect(names).toContain("report");
@@ -43,6 +45,8 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("export");
     expect(help).toContain("open");
     expect(help).toContain("check");
+    expect(help).toContain("scan");
+    expect(help).toContain("verify-safe");
     expect(help).toContain("diff");
   });
 
@@ -135,6 +139,19 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--config");
     expect(help).toContain("--rule");
     expect(help).toContain("--max-duration-ms");
+  });
+
+  it("scan and verify-safe help mention key options", () => {
+    const program = createCliProgram();
+    for (const name of ["scan", "verify-safe"]) {
+      const cmd = program.commands.find((c) => c.name() === name);
+      expect(cmd).toBeDefined();
+      const help = cmd!.helpInformation();
+      expect(help).toContain("--format");
+      expect(help).toContain("--run");
+      expect(help).toContain("--json");
+      expect(help).toContain("--max-string-length");
+    }
   });
 
   it("what help mentions key options", () => {

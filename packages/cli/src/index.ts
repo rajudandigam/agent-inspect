@@ -34,6 +34,8 @@ import type { OpenCommandOptions } from "./open.js";
 import { openCommand } from "./open.js";
 import type { CheckCommandOptions } from "./check.js";
 import { checkCommand } from "./check.js";
+import type { SafetyCommandOptions } from "./safety.js";
+import { scanCommand, verifySafeCommand } from "./safety.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -286,6 +288,50 @@ export function createCliProgram(): Command {
     .option("--max-total-tokens <number>", "add llm.usage with a max total-token budget")
     .action((target: string, opts: CheckCommandOptions) => {
       runCommand(() => checkCommand(target, opts));
+    });
+
+  program
+    .command("scan")
+    .description("Best-effort local safety scan for trace capture risks")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--json", "print deterministic JSON safety result")
+    .option("--max-string-length <number>", "unsafe threshold for string values")
+    .option("--max-array-length <number>", "unsafe threshold for array values")
+    .option("--max-object-keys <number>", "unsafe threshold for object key counts")
+    .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
+    .action((target: string, opts: SafetyCommandOptions) => {
+      runCommand(() => scanCommand(target, opts));
+    });
+
+  program
+    .command("verify-safe")
+    .description("Best-effort local trace safety verification")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--json", "print deterministic JSON safety result")
+    .option("--max-string-length <number>", "unsafe threshold for string values")
+    .option("--max-array-length <number>", "unsafe threshold for array values")
+    .option("--max-object-keys <number>", "unsafe threshold for object key counts")
+    .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
+    .action((target: string, opts: SafetyCommandOptions) => {
+      runCommand(() => verifySafeCommand(target, opts));
     });
 
   program
