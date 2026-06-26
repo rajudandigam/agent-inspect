@@ -18,7 +18,10 @@ import {
   agentInspectJsonlReader,
   detectTraceFormat,
 } from "agent-inspect/readers";
-import { runTraceChecks } from "agent-inspect/checks";
+import {
+  createRunStatusRule,
+  runTraceChecks,
+} from "agent-inspect/checks";
 
 const functionChecks = [
   parseLogsToTrees,
@@ -34,6 +37,7 @@ const functionChecks = [
   memoryWriter,
   nullWriter,
   detectTraceFormat,
+  createRunStatusRule,
   runTraceChecks,
 ];
 

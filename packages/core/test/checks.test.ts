@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import { runTraceChecks, type TraceCheckRule } from "../src/checks/index.js";
+import {
+  createLlmUsageRule,
+  createRunDepthRule,
+  createRunDurationRule,
+  createRunEventCountRule,
+  createRunStatusRule,
+  createToolFailureRule,
+  createToolOrderingRule,
+  createToolUsageRule,
+  runTraceChecks,
+  type TraceCheckRule,
+} from "../src/checks/index.js";
 import type { TraceReadResult } from "../src/readers/index.js";
 import type { InspectNode, InspectRunTree } from "../src/types/inspect-event.js";
 import type { PersistedInspectEvent } from "../src/types/persisted-inspect-event.js";
@@ -257,5 +268,145 @@ describe("runTraceChecks", () => {
       "same.rule",
       "missing.rule",
     ]);
+  });
+});
+
+describe("built-in run, tool, and LLM checks", () => {
+  it("reports run status, duration, event count, and depth failures with evidence", () => {
+    const running = persisted("event-a", { status: "running" });
+    const read = readResult([running]);
+    const child = read.runs[0]!.children[0]!;
+    child.depth = 3;
+    read.runs[0]!.durationMs = 120;
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createRunStatusRule(),
+          createRunDurationRule({ maxDurationMs: 50 }),
+          createRunEventCountRule({ kind: "TOOL", min: 1 }),
+          createRunDepthRule({ maxDepth: 2 }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.ruleId)).toEqual([
+      "run.depth",
+      "run.duration",
+      "run.eventCount",
+      "run.status",
+    ]);
+    expect(result.findings.every((finding) => JSON.stringify(finding).includes("raw"))).toBe(false);
+    expect(result.findings[0]?.evidence[0]).toMatchObject({
+      runId: "run-checks",
+      eventId: "event-a",
+      kind: "LOGIC",
+    });
+  });
+
+  it("reports required, forbidden, allowed, ordered, failed, and retried tool violations", () => {
+    const forbidden = persisted("event-a", {
+      kind: "TOOL",
+      name: "tool:deleteUser",
+      status: "error",
+      attributes: { toolName: "deleteUser", retryCount: 3, secret: "raw tool payload" },
+    });
+    const late = persisted("event-b", {
+      kind: "TOOL",
+      name: "tool:search",
+      attributes: { toolName: "search" },
+    });
+    const read = readResult([forbidden, late]);
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createToolUsageRule({
+            required: ["lookup"],
+            forbidden: ["deleteUser"],
+            allowed: ["lookup", "search"],
+            maxCount: 1,
+          }),
+          createToolOrderingRule({ before: "search", after: "deleteUser" }),
+          createToolFailureRule({ maxFailures: 0, maxRetries: 1 }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.ruleId)).toEqual([
+      "tool.failures",
+      "tool.failures",
+      "tool.order",
+      "tool.usage",
+      "tool.usage",
+      "tool.usage",
+      "tool.usage",
+    ]);
+    expect(JSON.stringify(result.findings)).not.toContain("raw tool payload");
+    expect(result.findings[0]?.evidence[0]).toMatchObject({
+      eventId: "event-a",
+      kind: "TOOL",
+      name: "tool:deleteUser",
+    });
+  });
+
+  it("reports LLM model, provider, finish reason, call count, and token-budget violations", () => {
+    const first = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:gpt-disallowed",
+      attributes: {
+        model: "gpt-disallowed",
+        provider: "fixture-provider",
+        finishReason: "length",
+        prompt: "raw prompt should not leak",
+      },
+      tokenUsage: { input: 10, output: 5, total: 15, cached: 2 },
+    });
+    const second = persisted("event-b", {
+      kind: "LLM",
+      name: "llm:gpt-allowed",
+      attributes: {
+        model: "gpt-allowed",
+        provider: "other-provider",
+        finishReason: "stop",
+      },
+      tokenUsage: { input: 8, output: 7, total: 15 },
+    });
+    const read = readResult([first, second]);
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createLlmUsageRule({
+            allowedModels: ["gpt-allowed"],
+            allowedProviders: ["fixture-provider"],
+            finishReasons: ["stop"],
+            maxCalls: 1,
+            maxInputTokens: 12,
+            maxOutputTokens: 10,
+            maxTotalTokens: 20,
+            maxCachedTokens: 1,
+          }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.message)).toEqual([
+      "LLM call count 2 exceeded 1.",
+      "LLM finish reason length is not allowed.",
+      "LLM model gpt-disallowed is not allowed.",
+      "LLM cached token count 2 exceeded 1.",
+      "LLM input token count 18 exceeded 12.",
+      "LLM output token count 12 exceeded 10.",
+      "LLM total token count 30 exceeded 20.",
+      "LLM provider other-provider is not allowed.",
+    ]);
+    expect(JSON.stringify(result.findings)).not.toContain("raw prompt should not leak");
   });
 });

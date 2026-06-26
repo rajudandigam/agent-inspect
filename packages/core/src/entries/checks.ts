@@ -1,5 +1,10 @@
 export type {
+  LlmUsageRuleOptions,
   RunTraceChecksOptions,
+  RunDepthRuleOptions,
+  RunDurationRuleOptions,
+  RunEventCountRuleOptions,
+  RunStatusRuleOptions,
   TraceCheckContext,
   TraceCheckDiagnostic,
   TraceCheckDiagnosticCode,
@@ -14,6 +19,19 @@ export type {
   TraceCheckSeverity,
   TraceCheckStatus,
   TraceCheckSummary,
+  ToolFailureRuleOptions,
+  ToolOrderingRuleOptions,
+  ToolUsageRuleOptions,
 } from "../checks/index.js";
 
-export { runTraceChecks } from "../checks/index.js";
+export {
+  createLlmUsageRule,
+  createRunDepthRule,
+  createRunDurationRule,
+  createRunEventCountRule,
+  createRunStatusRule,
+  createToolFailureRule,
+  createToolOrderingRule,
+  createToolUsageRule,
+  runTraceChecks,
+} from "../checks/index.js";

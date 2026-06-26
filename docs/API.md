@@ -379,10 +379,11 @@ import type { TraceCheckRule, TraceCheckResult } from "agent-inspect/checks";
 ```
 
 - **`runTraceChecks({ read }, { rules?, select?, runId? })`**: executes provided rules against a `TraceReadResult` from `agent-inspect/readers`.
+- **Built-in rule factories**: `createRunStatusRule`, `createRunDurationRule`, `createRunEventCountRule`, `createRunDepthRule`, `createToolUsageRule`, `createToolOrderingRule`, `createToolFailureRule`, and `createLlmUsageRule`.
 - **`TraceCheckRule`**: synchronous pure rule contract.
 - **`TraceCheckResult`**: deterministic aggregate result with findings, evidence, summary counts, and execution diagnostics.
 
-The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation.
+The checks API is experimental in v1.x and intentionally has no CLI/config/reporter coupling in its first implementation. Built-in rules operate on normalized event metadata and token counts; they do not emit raw prompts, outputs, headers, request/response bodies, or full tool payloads.
 
 ## 20. Deprecated APIs
 
