@@ -4,55 +4,61 @@
 
 ```yaml
 train: "v1.8.0"
-chunk: "v1.8-4-optional-package-tarball-smoke"
+chunk: "v1.8-5-openai-agents-tracing-processor"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-3-ai-sdk-capture-and-redaction-contract"
+dependsOn: "v1.8-4-optional-package-tarball-smoke"
 ```
 
 ## Goal
 
-Add packed-install smoke coverage for every public optional package so package publication failures are caught before release.
+Replace the private OpenAI Agents scaffold placeholder with an official local-only tracing processor that maps safe metadata into AgentInspect v0.2 persisted events.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/ROADMAP-V1.8-TO-V3.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 4
-- package manifests and existing smoke scripts/tests only
-- optional-package sources only when a smoke failure requires a package-local fix
+- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 5
+- `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
+- `packages/openai-agents/package.json`
+- `packages/openai-agents/src/index.ts`
+- `packages/openai-agents/test/api-stability.test.ts`
+- writer/persisted helpers only as needed for local v0.2 output
 
 ## In scope
 
-1. Pack and clean-install every public optional package: `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` if still public in manifests.
-2. Verify ESM import, CJS require, declaration resolution, peer dependency boundaries, rewritten workspace dependencies, and a minimal runtime call per optional package.
-3. Extend existing smoke infrastructure instead of creating parallel package validation systems.
-4. Keep all smoke fixtures local/no-network and deterministic.
-5. Preserve existing root/core package smoke and compatibility behavior.
+1. Implement the official OpenAI Agents `TracingProcessor`-compatible surface in `@agent-inspect/openai-agents`.
+2. Map trace/run, agent, generation, tool/function, handoff, guardrail, MCP/custom, errors, parentage, trace context, and lifecycle metadata where safely representable from processor callbacks.
+3. Preserve metadata-only default capture; summarize presence/counts/lengths instead of persisting raw prompts, messages, outputs, tool arguments, hosted tool data, or arbitrary span payloads.
+4. Accept a caller-provided `TraceWriter` or create a local file writer from `traceDir`; isolate write, flush, shutdown, clone, and summarization failures into diagnostics.
+5. Keep installation explicit and local-only: guidance and helpers must use `setTraceProcessors()` replacement behavior, never auto-install or default to `addTraceProcessor()`.
+6. Keep `@openai/agents` as an optional package peer dependency; do not add SDK dependencies to root/core.
 
 ## Out of scope
 
-- check engine/API/CLI design;
-- adapter runtime feature work for AI SDK, LangChain, OpenAI Agents, LangGraph, Vitest, Jest, or safe artifacts;
-- package version changes, changesets, npm publication, schema changes, root/core dependencies, or network behavior.
+- publishing `@agent-inspect/openai-agents`, changing its `private` status, package version changes, changesets, npm publication, tags, or releases;
+- provider/model execution, OpenAI API calls, default backend export, network behavior, API keys, or credentials;
+- preview/full raw content capture, raw chain-of-thought capture, or weaker redaction/size protections;
+- LangGraph, checks engine, recipes, or adapter conformance chunks beyond tests needed for this processor.
 
 ## Acceptance criteria
 
-- each public optional package is packed from the repo and installed into a clean temporary consumer;
-- ESM, CJS, and TypeScript declaration consumers resolve package exports and subpaths expected for that package;
-- peer dependencies remain peers and root/core does not absorb optional framework dependencies;
-- minimal runtime calls do not perform network I/O and do not require provider credentials;
-- generated tarballs/temp installs are not committed.
+- `agentInspectProcessor(options)` returns a processor compatible with the official OpenAI Agents tracing callback shape without importing or installing global processors as a side effect;
+- local v0.2 rows preserve trace/span IDs, parent IDs, span kinds, workflow/run names, timestamps/durations/status, safe model/tool names, token counts when structured, errors, and diagnostics;
+- unsupported or ambiguous callback payloads are handled conservatively with warnings instead of fabricated relationships;
+- `forceFlush()` and shutdown are safe, idempotent, local-only, and expose failures through diagnostics/stats;
+- tests use deterministic no-network fixtures and verify no raw prompt/output/tool payload persistence by default;
+- root/core package dependencies and public root exports remain unchanged.
 
 ## Focused tests
 
 ```bash
+pnpm exec vitest run packages/openai-agents/test/api-stability.test.ts packages/core/test/writers/index.test.ts packages/core/test/persisted/to-trace-event.test.ts packages/core/test/persisted/from-trace-event.test.ts
 pnpm pack:smoke
-pnpm compat:smoke
 ```
 
-Adjust the exact file list after inspecting existing smoke scripts, but keep it focused on packed optional-package install behavior and consumer compatibility.
+Adjust the exact file list after inspecting callback shapes and writer helpers, but keep it focused on the OpenAI Agents processor boundary and package smoke behavior.
 
 ## Chunk gate
 
@@ -72,9 +78,9 @@ git diff --check
 ## Proposed commit
 
 ```text
-test: add optional package install smoke
+feat: add local openai agents trace processor
 ```
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material conflict with the v1.8 plan, public breaking/dependency/network decisions, package publication semantics that require maintainer approval, or validation failures that cannot be fixed within chunk 4 scope.
+Stop on unrelated worktree changes, material conflict with the v1.8 plan or OpenAI Agents tracing RFC, official SDK API uncertainty that requires live documentation re-verification, root/core dependency pressure, publication/versioning decisions, upload/default-backend ambiguity, raw content capture requirements, or validation failures that cannot be fixed within chunk 5 scope.

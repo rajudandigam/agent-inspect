@@ -1,7 +1,3 @@
-import React from "react";
-import { render } from "ink";
-
-import { TraceViewerApp } from "./app.js";
 import { loadTraceForTui } from "./trace-loader.js";
 
 export interface RunTraceViewerOptions {
@@ -21,6 +17,11 @@ export async function runTraceViewer(options: RunTraceViewerOptions): Promise<vo
     runId: options.runId,
     dir: options.dir,
   });
+  const [{ default: React }, { render }, { TraceViewerApp }] = await Promise.all([
+    import("react"),
+    import("ink"),
+    import("./app.js"),
+  ]);
 
   const { waitUntilExit } = render(
     React.createElement(TraceViewerApp, { model }),

@@ -19,6 +19,96 @@ const keep = process.env.AGENT_INSPECT_KEEP_SMOKE_DIR === "true";
 const expectedVersion = JSON.parse(
   readFileSync(path.join(root, "package.json"), "utf8"),
 ).version;
+const tscBin = path.join(root, "node_modules", "typescript", "bin", "tsc");
+
+const optionalPackageChecks = [
+  {
+    dir: "packages/ai-sdk",
+    name: "@agent-inspect/ai-sdk",
+    peerDependencies: { ai: "^6.0.0" },
+    installPeers: ["ai@6.0.210"],
+    esm: `
+      import { agentInspect } from "@agent-inspect/ai-sdk";
+      const integration = agentInspect({ capture: "preview" });
+      if (integration.getDiagnostics().lifecycleWarnings !== 1) throw new Error("missing preview diagnostic");
+    `,
+    cjs: `
+      const { agentInspect } = require("@agent-inspect/ai-sdk");
+      const integration = agentInspect({ capture: "preview" });
+      if (integration.getDiagnostics().lifecycleWarnings !== 1) throw new Error("missing preview diagnostic");
+    `,
+    ts: `
+      import { agentInspect, type AgentInspectAiSdkOptions } from "@agent-inspect/ai-sdk";
+      const options: AgentInspectAiSdkOptions = { capture: "metadata-only" };
+      agentInspect(options).getDiagnostics();
+    `,
+  },
+  {
+    dir: "packages/langchain",
+    name: "@agent-inspect/langchain",
+    peerDependencies: { "@langchain/core": "^1.0.0" },
+    installPeers: ["@langchain/core@1.0.0"],
+    esm: `
+      import { extractModelName, safePreview } from "@agent-inspect/langchain";
+      if (extractModelName({ model: "fixture-model" }) !== "fixture-model") throw new Error("model extraction failed");
+      if (safePreview({ ok: true }, 20) === undefined) throw new Error("preview failed");
+    `,
+    cjs: `
+      const { extractModelName, safePreview } = require("@agent-inspect/langchain");
+      if (extractModelName({ model: "fixture-model" }) !== "fixture-model") throw new Error("model extraction failed");
+      if (safePreview({ ok: true }, 20) === undefined) throw new Error("preview failed");
+    `,
+    ts: `
+      import { AgentInspectCallback, type AgentInspectCallbackOptions } from "@agent-inspect/langchain";
+      const options: AgentInspectCallbackOptions = { runName: "packed-langchain-smoke" };
+      new AgentInspectCallback(options).getEvents();
+    `,
+  },
+  {
+    dir: "packages/tui",
+    name: "@agent-inspect/tui",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { countTreeSteps, mapInputToAction } from "@agent-inspect/tui";
+      if (mapInputToAction("q") !== "quit") throw new Error("keymap failed");
+      if (countTreeSteps([]) !== 0) throw new Error("tree count failed");
+    `,
+    cjs: `
+      const { countTreeSteps, mapInputToAction } = require("@agent-inspect/tui");
+      if (mapInputToAction("q") !== "quit") throw new Error("keymap failed");
+      if (countTreeSteps([]) !== 0) throw new Error("tree count failed");
+    `,
+    ts: `
+      import { mapInputToAction, type TuiAction } from "@agent-inspect/tui";
+      const action: TuiAction = mapInputToAction("q");
+      if (action !== "quit") throw new Error("keymap failed");
+    `,
+  },
+  {
+    dir: "packages/openai-agents",
+    name: "@agent-inspect/openai-agents",
+    peerDependencies: { "@openai/agents": "^0.12.0" },
+    installPeers: ["@openai/agents@^0.12.0"],
+    esm: `
+      import { agentInspectProcessor } from "@agent-inspect/openai-agents";
+      const processor = agentInspectProcessor();
+      if (processor.installMode !== "setTraceProcessors") throw new Error("install mode failed");
+      if (!processor.localOnly) throw new Error("local-only flag failed");
+    `,
+    cjs: `
+      const { agentInspectProcessor } = require("@agent-inspect/openai-agents");
+      const processor = agentInspectProcessor();
+      if (processor.installMode !== "setTraceProcessors") throw new Error("install mode failed");
+      if (!processor.localOnly) throw new Error("local-only flag failed");
+    `,
+    ts: `
+      import { agentInspectProcessor, type AgentInspectOpenAiAgentsOptions } from "@agent-inspect/openai-agents";
+      const options: AgentInspectOpenAiAgentsOptions = { capture: "metadata-only" };
+      agentInspectProcessor(options).getDiagnostics();
+    `,
+  },
+];
 
 function assertHelp(label, stdout, stderr, status) {
   const combined = `${stdout}\n${stderr}`;
@@ -71,6 +161,206 @@ function parsePackedFilename(output) {
     .map((l) => l.trim())
     .filter(Boolean)
     .at(-1);
+}
+
+function fail(label, detail) {
+  console.error(`[pack:smoke] ${label}`);
+  if (detail) console.error(detail);
+  process.exit(1);
+}
+
+function run(label, cmd, args, opts = {}) {
+  const result = spawnSync(cmd, args, { encoding: "utf8", ...opts });
+  if (result.status !== 0) {
+    fail(label, `${result.stdout || ""}\n${result.stderr || ""}`.trim());
+  }
+  return result;
+}
+
+function readJson(file) {
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function readPackedPackageJson(tgzPath) {
+  const result = run("read packed package.json", "tar", [
+    "-xOf",
+    tgzPath,
+    "package/package.json",
+  ]);
+  return JSON.parse(result.stdout);
+}
+
+function assertNoWorkspaceProtocol(packageName, manifest) {
+  for (const field of [
+    "dependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "devDependencies",
+  ]) {
+    const deps = manifest[field];
+    if (!deps || typeof deps !== "object") continue;
+    for (const [name, version] of Object.entries(deps)) {
+      if (typeof version === "string" && version.startsWith("workspace:")) {
+        fail(`${packageName} packed manifest still contains workspace dependency`, `${field}.${name}: ${version}`);
+      }
+    }
+  }
+}
+
+function assertOptionalPackedManifest(check, manifest) {
+  if (manifest.name !== check.name) {
+    fail(`${check.name} packed manifest name mismatch`, manifest.name);
+  }
+  if (manifest.version !== expectedVersion) {
+    fail(`${check.name} packed manifest version mismatch`, manifest.version);
+  }
+  assertNoWorkspaceProtocol(check.name, manifest);
+
+  if (manifest.dependencies?.["agent-inspect"] !== expectedVersion) {
+    fail(
+      `${check.name} packed manifest did not rewrite agent-inspect workspace dependency`,
+      JSON.stringify(manifest.dependencies ?? {}, null, 2),
+    );
+  }
+
+  for (const [peerName, peerRange] of Object.entries(check.peerDependencies)) {
+    if (manifest.peerDependencies?.[peerName] !== peerRange) {
+      fail(
+        `${check.name} peer dependency mismatch for ${peerName}`,
+        JSON.stringify(manifest.peerDependencies ?? {}, null, 2),
+      );
+    }
+    if (manifest.dependencies?.[peerName] !== undefined) {
+      fail(`${check.name} peer dependency leaked into dependencies`, peerName);
+    }
+  }
+}
+
+function packWorkspacePackage(check, tarballDir) {
+  const packageDir = path.join(root, check.dir);
+  const packProc = run(
+    `${check.name} pnpm pack`,
+    "pnpm",
+    ["--dir", packageDir, "pack", "--pack-destination", tarballDir],
+    {
+      env: {
+        ...process.env,
+        npm_config_json: "false",
+        NPM_CONFIG_JSON: "false",
+      },
+    },
+  );
+  const packOut = `${packProc.stdout || ""}\n${packProc.stderr || ""}`.trim();
+  const tgzName = parsePackedFilename(packOut);
+  if (!tgzName || !tgzName.endsWith(".tgz")) {
+    fail(`${check.name} could not parse .tgz name from pnpm pack`, packOut);
+  }
+  const tgzPath = path.isAbsolute(tgzName) ? tgzName : path.join(tarballDir, tgzName);
+  if (!existsSync(tgzPath)) {
+    fail(`${check.name} tarball missing`, tgzPath);
+  }
+  return tgzPath;
+}
+
+function npmInstall(label, cwd, packages) {
+  run(label, "npm", ["install", "--ignore-scripts", ...packages], {
+    cwd,
+    stdio: "inherit",
+  });
+}
+
+function writeConsumerPackageJson(dir, type = "module") {
+  writeFileSync(
+    path.join(dir, "package.json"),
+    `${JSON.stringify({ name: "agent-inspect-optional-smoke", private: true, type }, null, 2)}\n`,
+  );
+}
+
+function runOptionalConsumer(check, installDir) {
+  if (!check.esm.trim() || !check.cjs.trim() || !check.ts.trim()) {
+    fail(`${check.name} optional package smoke is incomplete`);
+  }
+
+  writeFileSync(path.join(installDir, "esm-smoke.mjs"), check.esm);
+  run(`${check.name} ESM import/runtime`, process.execPath, ["esm-smoke.mjs"], {
+    cwd: installDir,
+  });
+
+  const cjsDir = path.join(installDir, "cjs-check");
+  mkdirSync(cjsDir, { recursive: true });
+  writeConsumerPackageJson(cjsDir, "commonjs");
+  writeFileSync(path.join(cjsDir, "cjs-smoke.cjs"), check.cjs);
+  run(`${check.name} CJS require/runtime`, process.execPath, ["cjs-smoke.cjs"], {
+    cwd: cjsDir,
+  });
+
+  writeFileSync(
+    path.join(installDir, "tsconfig.json"),
+    `${JSON.stringify(
+      {
+        compilerOptions: {
+          module: "NodeNext",
+          moduleResolution: "NodeNext",
+          target: "ES2022",
+          strict: true,
+          skipLibCheck: true,
+          noEmit: true,
+        },
+        include: ["types-smoke.ts"],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  writeFileSync(path.join(installDir, "types-smoke.ts"), check.ts);
+  run(`${check.name} TypeScript declarations`, process.execPath, [tscBin, "--project", "tsconfig.json"], {
+    cwd: installDir,
+  });
+}
+
+function smokeOptionalPackages(rootTgzPath, tmpRoot) {
+  const tarballDir = path.join(tmpRoot, "optional-tarballs");
+  mkdirSync(tarballDir, { recursive: true });
+  const smoked = [];
+  const skipped = [];
+
+  for (const check of optionalPackageChecks) {
+    const manifest = readJson(path.join(root, check.dir, "package.json"));
+    if (manifest.private === true) {
+      skipped.push(check.name);
+      continue;
+    }
+    if (manifest.publishConfig?.access !== "public") {
+      skipped.push(check.name);
+      continue;
+    }
+
+    const optionalTgzPath = packWorkspacePackage(check, tarballDir);
+    const packedManifest = readPackedPackageJson(optionalTgzPath);
+    assertOptionalPackedManifest(check, packedManifest);
+
+    const installDir = path.join(
+      tmpRoot,
+      `optional-${check.name.replace(/[@/]/g, "-")}`,
+    );
+    mkdirSync(installDir, { recursive: true });
+    writeConsumerPackageJson(installDir);
+    npmInstall(`${check.name} clean install`, installDir, [
+      rootTgzPath,
+      optionalTgzPath,
+      ...check.installPeers,
+    ]);
+    runOptionalConsumer(check, installDir);
+    smoked.push(check.name);
+  }
+
+  if (smoked.length === 0) {
+    fail("no public optional packages were smoked");
+  }
+
+  console.log(
+    `[pack:smoke] optional packages OK: ${smoked.join(", ")}${skipped.length > 0 ? ` (skipped private/non-public: ${skipped.join(", ")})` : ""}`,
+  );
 }
 
 // Force non-JSON output so we can reliably read the .tgz filename even when
@@ -188,8 +478,10 @@ try {
   });
   assertHelp("npx --no-install agent-inspect --help", npxNoInstall.stdout, npxNoInstall.stderr, npxNoInstall.status);
 
+  smokeOptionalPackages(tgzPath, tmpRoot);
+
   console.log(
-    `[pack:smoke] OK: tarball install, ESM import, CJS require, CLI ${expectedVersion}, and local bin / npm exec / npx --no-install --help`,
+    `[pack:smoke] OK: tarball install, ESM import, CJS require, CLI ${expectedVersion}, optional package installs, and local bin / npm exec / npx --no-install --help`,
   );
 } finally {
   if (!keep) {

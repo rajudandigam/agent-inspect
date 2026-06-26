@@ -1,18 +1,35 @@
 import { defineConfig } from "tsup";
 
-export default defineConfig({
-  entry: ["packages/tui/src/index.ts"],
+const base = {
   outDir: "packages/tui/dist",
-  format: ["esm", "cjs"],
-  outExtension({ format }) {
-    return { js: format === "esm" ? ".mjs" : ".cjs" };
-  },
-  dts: true,
   tsconfig: "packages/tui/tsconfig.json",
   sourcemap: true,
-  clean: true,
-  treeshake: true,
-  platform: "node",
+  platform: "node" as const,
   target: "es2022",
   external: ["agent-inspect", "ink", "react"],
-});
+};
+
+export default defineConfig([
+  {
+    ...base,
+    entry: ["packages/tui/src/index.ts"],
+    format: ["esm"],
+    outExtension() {
+      return { js: ".mjs" };
+    },
+    dts: true,
+    clean: true,
+    treeshake: true,
+  },
+  {
+    ...base,
+    entry: { index: "packages/tui/src/index-cjs.ts" },
+    format: ["cjs"],
+    outExtension() {
+      return { js: ".cjs" };
+    },
+    dts: true,
+    clean: false,
+    treeshake: true,
+  },
+]);

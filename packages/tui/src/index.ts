@@ -8,6 +8,6 @@ export { loadTraceForTui } from "./trace-loader.js";
 export type { TuiAction } from "./keymap.js";
 export { mapInputToAction } from "./keymap.js";
 export type { TraceViewerAppProps } from "./app.js";
-export { TraceViewerApp, initialExpandedSet } from "./app.js";
+export { initialExpandedSet } from "./expand.js";
 export type { RunTraceViewerOptions } from "./run-viewer.js";
 export { runTraceViewer } from "./run-viewer.js";
