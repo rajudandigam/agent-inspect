@@ -82,6 +82,27 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/eval-ci-artifacts:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/eval-local-checks:
+    dependencies:
+      '@agent-inspect/eval':
+        specifier: workspace:*
+        version: link:../../../packages/eval
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/github-actions-artifact:
     dependencies:
       agent-inspect:
@@ -201,6 +222,15 @@ importers:
       agent-inspect:
         specifier: workspace:*
         version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/redact-share-safe-file:
+    dependencies:
+      '@agent-inspect/redact':
+        specifier: workspace:*
+        version: link:../../../packages/redact
       tsx:
         specifier: ^4.19.0
         version: 4.21.0

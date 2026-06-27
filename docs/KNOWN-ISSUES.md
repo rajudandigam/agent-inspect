@@ -12,6 +12,12 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 - **OpenInference** and **OTLP JSON** exports are **compatibility-oriented** and **experimental**. Validate against your target collector or backend before relying on them.
 - Exports generate **strings/files locally** only—there is **no** automatic upload.
 
+## Eval and redaction
+
+- **`agent-inspect eval` is deterministic local eval, not hosted evaluation.** Built-in rules are structural checks and grounding heuristics over existing traces. They do not call model providers, manage datasets, replay agents, or perform semantic LLM judging.
+- **TypeScript eval configs are not loaded by default.** Use `.json`, `.js`, `.mjs`, or `.cjs` until an explicit loader path is approved.
+- **`agent-inspect redact` creates a local redacted copy.** It does not mutate source traces, encrypt files, or guarantee compliance-grade detection. Review the exact output before sharing.
+
 ## Readers and `open`
 
 - **OpenInference** and **OTLP JSON** readers are **compatibility-oriented** and **experimental**. They normalize local JSON payloads into AgentInspect inspection trees and may warn on unsupported semantic fields.
@@ -103,6 +109,7 @@ pnpm compat:smoke
 
 - `agent-inspect artifacts --github-summary` writes a local step-summary file only. It does not call GitHub APIs, open PR comments, upload artifacts, or mutate repository state.
 - Baseline checks compare normalized structural facts from explicit candidate and baseline inputs. They are useful for CI regression evidence, not replay or semantic eval scoring.
+- v2.1 eval/redact adoption recipes are local and deterministic: [eval-local-checks](../examples/recipes/eval-local-checks/), [redact-share-safe-file](../examples/recipes/redact-share-safe-file/), and [eval-ci-artifacts](../examples/recipes/eval-ci-artifacts/).
 
 ### What to include in a bug report
 

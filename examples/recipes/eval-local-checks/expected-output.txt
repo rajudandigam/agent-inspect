@@ -1,0 +1,7 @@
+Local eval checks recipe complete
+Eval status: pass
+Findings: 0 failed, 0 warnings
+Markdown summary: Status: pass
+
+CLI equivalent:
+  npx agent-inspect eval trace.jsonl --require-success --required-tool searchDocs --citation-presence --context-overlap --json

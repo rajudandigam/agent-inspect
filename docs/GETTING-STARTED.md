@@ -204,17 +204,34 @@ agent-inspect search --dir ./.agent-inspect --status error --limit 10
 
 For CI artifact workflows, see [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) and [github-actions-artifact recipe](../examples/recipes/github-actions-artifact/).
 
-## 10. Diff two runs
+## 10. Run local evals and redact share copies
+
+After a trace exists, run deterministic eval checks without replaying the agent or calling a model provider:
+
+```bash
+agent-inspect eval minimal-success --dir fixtures/traces --require-success --json
+agent-inspect eval trace.jsonl --forbid-tool deleteAccount --citation-presence --json
+```
+
+Before attaching a trace or JSON artifact to a PR, issue, or support thread, create a redacted local copy:
+
+```bash
+agent-inspect redact trace.jsonl --profile share --json
+```
+
+Recipes: [eval-local-checks](../examples/recipes/eval-local-checks/), [redact-share-safe-file](../examples/recipes/redact-share-safe-file/), and [eval-ci-artifacts](../examples/recipes/eval-ci-artifacts/).
+
+## 11. Diff two runs
 
 ```bash
 agent-inspect diff minimal-success minimal-error --dir fixtures/traces
 ```
 
-## 11. Try recipes
+## 12. Try recipes
 
 See `examples/recipes/README.md`.
 
-## 12. Optional framework adapters
+## 13. Optional framework adapters
 
 See [ADAPTERS.md](./ADAPTERS.md) for AI SDK local telemetry, OpenAI Agents local-only processing, and LangChain callbacks.
 
@@ -228,7 +245,7 @@ pnpm add @agent-inspect/langchain
 
 See [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md) and [docs/ADAPTERS.md](./ADAPTERS.md).
 
-## 13. Optional TUI
+## 14. Optional TUI
 
 `@agent-inspect/tui` is optional and **experimental**. The CLI can invoke it with:
 
@@ -236,16 +253,17 @@ See [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md) 
 agent-inspect view <runId> --tui
 ```
 
-## 14. Safety notes
+## 15. Safety notes
 
 - Nothing uploads by default; core tracing, readers, checks, and exports are local-first.
+- Eval and redaction commands read local inputs and do not call provider APIs or hosted services.
 - Redaction is on by default for log-derived attributes, **manual trace metadata (before disk)**, and exports. Pass `redact: false` to opt out of manual metadata redaction.
 - Export redaction shapes a local copy and does not mutate the source trace; review exported files before sharing.
 - Persisted events are size-bounded by default (see `docs/API.md`).
 - Confidence labels are required to keep attribution honest.
 - AgentInspect is for local debugging, not production monitoring.
 
-## 15. Next docs
+## 16. Next docs
 
 - [docs/API.md](./API.md)
 - [docs/CLI.md](./CLI.md)

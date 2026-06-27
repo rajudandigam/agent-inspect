@@ -50,6 +50,7 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Trace safety bounds
 
 - **Redaction profiles** (`local`, `share`, `strict`) are key-based presets — not compliance-grade PII detection. Review exports before sharing even with `--redaction-profile strict`.
+- **`@agent-inspect/redact` and `agent-inspect redact` create redacted copies.** They do not encrypt source traces, mutate originals, certify compliance, or guarantee every sensitive value is detected.
 - **Default metadata redaction** covers common sensitive keys only (exact key match, case-insensitive). Custom secret field names are not redacted unless you add rules via `redact: { rules: [...] }`.
 - **Metadata truncation** applies to string values and nested structures; very large metadata may be replaced with a truncation marker when `maxEventBytes` is exceeded (default 64 KiB per JSONL line).
 - **Redaction is not encryption.** Local trace files remain readable on disk; treat `.agent-inspect-runs/` like any developer artifact that may contain operational data.
@@ -57,6 +58,7 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Checks, artifacts, and test reporters
 
 - **Checks are deterministic local rules, not compliance certification.** `check`, `scan`, and `verify-safe` surface bounded findings and diagnostics over supported local inputs; they do not prove a trace is safe for every sharing context.
+- **Eval is deterministic local heuristics.** `@agent-inspect/eval` and `agent-inspect eval` do not provide LLM-as-judge scoring, hosted datasets, replay, semantic grading, or production quality analytics.
 - **Safe CI artifacts are structural summaries.** They avoid raw prompt/output/request/response/header/tool payload content by default, but teams should still review generated files before sharing.
 - **Vitest/Jest reporters are optional package surfaces.** Recipes document config patterns and explicit associations; package publication is controlled by release readiness and maintainer authorization.
 
@@ -64,7 +66,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 - **No replay / fork** of past runs from traces alone.
 - **No time-travel debugging** across arbitrary runtime state.
-- **No multi-run statistical evaluation** built into core.
+- **No multi-run statistical evaluation** built into core. v2.1 eval checks are per selected trace/run unless user code aggregates results.
 
 ## Economics
 

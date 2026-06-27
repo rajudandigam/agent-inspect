@@ -1,6 +1,6 @@
 # AgentInspect recipes (v0.9)
 
-Runnable workflows that show **adoption patterns** for manual tracing, framework adapters, advanced structured-log ingestion, retries, and parallelism. Each recipe is **local**, **deterministic**, and uses **mocks only**—no API keys, no external services, no vendor SDKs.
+Runnable workflows that show **adoption patterns** for manual tracing, framework adapters, advanced structured-log ingestion, deterministic evals, redaction, retries, and parallelism. Each recipe is **local**, **deterministic**, and uses **mocks only**—no API keys, no external services, no vendor SDKs.
 
 ## How to run
 
@@ -46,6 +46,9 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [parallel-tools](parallel-tools) | Sibling tools via `Promise.all` | `step.tool`, parallel siblings | yes | no |
 | [github-actions-artifact](github-actions-artifact) | CI trace + share-safe export recipe | `maybeInspectRun`, `AGENT_INSPECT=1`, export | yes | no |
 | [deterministic-ci-checks](deterministic-ci-checks) | v1.8 checks, baseline, safe artifacts, GitHub summary | `check`, `artifacts`, `agent-inspect/checks` | yes | no |
+| [eval-local-checks](eval-local-checks) | v2.1 local eval over a RAG-shaped trace | `@agent-inspect/eval`, `eval` CLI shape | yes | no |
+| [redact-share-safe-file](redact-share-safe-file) | v2.1 redacted local copy for sharing | `@agent-inspect/redact`, `redact` CLI shape | yes | no |
+| [eval-ci-artifacts](eval-ci-artifacts) | v2.1 eval before CI artifact creation | `eval`, `artifacts`, `inspectRun` | yes | no |
 | [test-reporter-artifacts](test-reporter-artifacts) | v1.8 Vitest/Jest artifact config patterns | explicit trace associations, safe reporter artifacts | yes (config-oriented) | no |
 | [what-report-inspect](what-report-inspect) | v1.5 `what` + `report` inspection workflow | `inspectRun`, `what`, `report`, token metadata | yes | no |
 | [runtime-and-ingestion](runtime-and-ingestion) | v1.6 runtime writers + universal ingestion | `createInspector`, writers, `open`, explicit formats | yes | no |

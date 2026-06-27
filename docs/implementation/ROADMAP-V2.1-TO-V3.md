@@ -41,7 +41,8 @@ Primary outcomes:
 - public `@agent-inspect/redact`;
 - deterministic eval CLI;
 - reusable redaction CLI/API;
-- shared redaction engine across trace writing, export, verify-safe, explain, and artifacts.
+- shared redaction engine across trace writing, export, verify-safe, explain, and artifacts;
+- adoption docs and deterministic recipes for local evals, share-safe redaction copies, and eval-before-artifacts CI workflows.
 
 Non-goals:
 

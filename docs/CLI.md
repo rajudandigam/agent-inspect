@@ -28,6 +28,8 @@ Core commands:
 - `open` — read supported local trace files, directories, or stdin through the canonical reader pipeline
 - `migrate` — convert one local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output
 - `check` — run deterministic local trace checks with stable JSON and exit codes
+- `eval` — run deterministic local evals over existing traces
+- `redact` — redact a local JSON/JSONL file or trace copy
 - `scan` — best-effort local safety scan for trace capture risks
 - `verify-safe` — best-effort local trace safety verification
 - `artifacts` — create safe local CI trace artifact bundles and optional step summaries
@@ -58,6 +60,12 @@ Exception: `check` uses CI-oriented semantic exit codes:
 - **3**: trace input could not be read
 - **4**: unsupported or ambiguous trace format
 
+Exception: `eval` uses local eval semantic exit codes:
+
+- **0**: all selected eval rules passed
+- **1**: eval ran and at least one error-severity rule failed
+- **2**: invalid arguments, invalid config, unreadable input, unsupported input, ambiguous input, or run-selection errors
+
 Exception: `scan` and `verify-safe` use local safety status exit codes:
 
 - **0**: status is SAFE or SAFE WITH WARNINGS
@@ -79,6 +87,8 @@ Many commands support `--json` for scripting. JSON output is intended to be:
 - Log-derived output includes **confidence** labels and avoids inventing parent-child relationships.
 - Redaction defaults are conservative (e.g. `authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`).
 - Exported payloads are **redacted by default** unless explicitly configured otherwise.
+- `eval` is deterministic and local-only. It does not replay agents, call model providers, upload traces, or create hosted datasets.
+- `redact` writes or prints a redacted copy. It does not mutate source trace files.
 - `scan` and `verify-safe` are best-effort local checks, not compliance, privacy, security, or regulatory certifications.
 - `artifacts` renders structural summaries and check evidence only; it does not include raw prompt/output bodies, request/response bodies, headers, API keys, secrets, or full tool payloads.
 
@@ -322,7 +332,85 @@ npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool sear
 
 Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.10 `scan` and `verify-safe`
+### 6.10 `eval`
+
+Run deterministic local evals against an existing trace. This command reads through the same local reader pipeline as `open` and `check`; it does not rerun agents, call models, upload traces, mutate inputs, or create a hosted dataset.
+
+```bash
+agent-inspect eval <trace-path-or-run-id> [options]
+```
+
+Options:
+
+- `--dir <path>`: trace directory for run-id lookup
+- `--format <agent-inspect-jsonl|openinference-json|otlp-json>`: explicit trace input format
+- `--run <run-id>`: select a run when input contains multiple runs
+- `--config <path>`: eval config (`.json`, `.js`, `.mjs`, or `.cjs`); TypeScript configs are rejected until an explicit loader is approved
+- `--json`: print deterministic JSON eval result
+- `--markdown`: print deterministic Markdown eval summary
+- `--require-success`: require the selected run to complete successfully
+- `--required-tool <name>`: require a tool name (repeatable)
+- `--forbid-tool <name>` / `--forbidden-tool <name>`: forbid a tool name (repeatable)
+- `--max-duration-ms <number>`, `--max-depth <number>`, `--max-retries <number>`, `--max-total-tokens <number>`
+- `--require-retrieval-before-generation`
+- `--required-decision-metadata <key>`: require decision metadata (repeatable)
+- `--context-overlap`, `--min-context-overlap <number>`, `--min-shared-terms <number>`
+- `--quote-overlap`
+- `--citation-presence`
+- `--required-source-id <id>`: require a source id in context or citations (repeatable)
+- `--min-answer-characters <number>`, `--max-answer-characters <number>`, `--min-answer-words <number>`, `--max-answer-words <number>`
+- `--banned-phrase <text>`: ban unsupported-answer phrasing (repeatable)
+
+Example config:
+
+```json
+{
+  "eval": {
+    "requireSuccess": true,
+    "requiredTools": ["searchDocs"],
+    "forbiddenTools": ["deleteAccount"],
+    "citationPresence": true,
+    "contextOverlap": { "minOverlap": 0.2 },
+    "requiredSourceIds": ["policy-30-day"]
+  }
+}
+```
+
+Examples:
+
+```bash
+npx agent-inspect eval fixtures/traces-v0.2/manual-basic.jsonl --require-success --json
+npx agent-inspect eval trace.jsonl --forbid-tool deleteAccount --markdown
+npx agent-inspect eval trace.jsonl --config agent-inspect.eval.json --json
+```
+
+Recipes: [eval-local-checks](../examples/recipes/eval-local-checks/README.md) and [eval-ci-artifacts](../examples/recipes/eval-ci-artifacts/README.md).
+
+### 6.11 `redact`
+
+Redact a local JSON or JSONL trace/file. The command prints or writes a redacted copy and reports bounded findings; it does not mutate the source file or upload content.
+
+```bash
+agent-inspect redact <trace-or-file> [options]
+```
+
+Options:
+
+- `--dir <path>`: trace directory for run-id lookup
+- `--profile <local|share|strict>`: redaction profile (default `share`)
+- `-o, --output <path>`: write redacted content to a file
+- `--json`: print deterministic JSON wrapper with findings
+
+Examples:
+
+```bash
+npx agent-inspect redact trace.jsonl --profile share --json
+npx agent-inspect redact trace.jsonl --profile strict -o trace.share.jsonl
+```
+
+Recipe: [redact-share-safe-file](../examples/recipes/redact-share-safe-file/README.md).
+
+### 6.12 `scan` and `verify-safe`
 
 Run best-effort local safety verification for supported trace inputs. These commands are local and read-only: they do not rerun agents, call models, upload traces, mutate input files, or certify compliance.
 
@@ -361,7 +449,7 @@ npx agent-inspect verify-safe minimal-success --dir fixtures/traces
 npx agent-inspect verify-safe trace.jsonl --max-string-length 8192 --json
 ```
 
-### 6.11 `artifacts`
+### 6.13 `artifacts`
 
 Create deterministic local CI artifacts for supported trace inputs. This command is local and read-only for trace inputs: it does not rerun agents, call models, upload files, use GitHub APIs, or mutate repository state. It writes only to `--output-dir` and, when requested, a local step-summary file.
 
@@ -401,7 +489,7 @@ npx agent-inspect artifacts candidate.jsonl --baseline baseline.jsonl --output-d
 
 Recipe and sample workflow: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.12 `diff`
+### 6.14 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -465,7 +553,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.13 `timeline`
+### 6.15 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -481,7 +569,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.14 `stats`
+### 6.16 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -501,7 +589,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.15 `search`
+### 6.17 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -531,7 +619,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.16 `what`
+### 6.18 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -560,7 +648,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.17 `report`
+### 6.19 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 
@@ -585,7 +673,7 @@ Example:
 npx agent-inspect report minimal-success --dir fixtures/traces --format html -o report.html
 ```
 
-### 6.18 `explain`
+### 6.20 `explain`
 
 Explain a local trace using deterministic facts and local inference labels. This command reads through the same local reader pipeline as `open` / `check`; it does not call a model provider, upload traces, replay agents, or mutate input files.
 

@@ -128,7 +128,11 @@ await agent.invoke(input, { callbacks: [callback] });
 npx agent-inspect list --dir ./.agent-inspect
 npx agent-inspect view <run-id> --dir ./.agent-inspect
 npx agent-inspect export <run-id> --format markdown --redaction-profile share
+npx agent-inspect eval <run-id> --dir ./.agent-inspect --require-success --json
+npx agent-inspect redact ./.agent-inspect/<trace-file>.jsonl --profile share --json
 ```
+
+`eval` and `redact` read local adapter traces only. They do not call model providers, upload traces, or loosen the adapter metadata-only capture defaults.
 
 ![LangChain callback with persist true writing inspectable JSONL](../assets/demos/langchain-persistence.gif)
 

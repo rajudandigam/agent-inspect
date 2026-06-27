@@ -1,6 +1,6 @@
 ## Compare AgentInspect
 
-AgentInspect is a local-first execution-tree debugger for TypeScript AI agents. It’s designed for inner-loop debugging and quick inspection — not as a replacement for hosted observability, evaluation, or production monitoring platforms.
+AgentInspect is a local-first execution-tree debugger for TypeScript AI agents. It’s designed for inner-loop debugging, deterministic local eval heuristics, redaction, and quick inspection — not as a replacement for hosted observability, dataset evaluation, or production monitoring platforms.
 
 ## AgentInspect vs console.log
 
@@ -16,7 +16,7 @@ LangSmith is a hosted/platform workflow for tracing, evaluation, and observabili
 AgentInspect is local-first CLI debugging:
 
 - Use AgentInspect to debug locally before/alongside LangSmith when iterating on agent logic.
-- AgentInspect does not provide hosted dashboards, dataset/eval workflows, or production tracing pipelines.
+- AgentInspect does not provide hosted dashboards, dataset/eval management workflows, or production tracing pipelines.
 
 ## AgentInspect vs Langfuse
 
@@ -33,7 +33,7 @@ Braintrust is strong for evals, regressions, datasets, and production AI quality
 
 AgentInspect is lighter and local-first:
 
-- Use AgentInspect to understand a single run locally.
+- Use AgentInspect to understand a single run locally and run deterministic trace checks/eval heuristics before sharing artifacts.
 - Use Braintrust when you want repeatable evals, comparisons at scale, and production quality workflows.
 
 ## AgentInspect vs Phoenix / OpenInference
@@ -61,9 +61,10 @@ AgentInspect avoids SDK/collector setup for local debugging:
 | --- | --- |
 | Local agent debugging | Strong fit |
 | No-account CLI tracing | Strong fit |
+| Deterministic local eval heuristics | Good fit |
+| Share-safe local redaction copy | Good fit |
 | Production dashboards | Not the goal |
 | Hosted eval datasets | Not the goal |
 | Prompt management | Not the goal |
 | Standards-aligned local export | Partial (compatibility-oriented) |
 | Full observability platform | Use a dedicated platform |
-

@@ -1,0 +1,8 @@
+Eval CI artifacts recipe complete
+Trace directory: <recipe>/.agent-inspect-candidate
+
+Run local eval:
+  npx agent-inspect eval eval-ci-fixture --dir <candidate> --require-success --forbid-tool deleteAccount --json
+
+Create safe CI artifacts:
+  npx agent-inspect artifacts eval-ci-fixture --dir <candidate> --output-dir ./artifacts --github-summary ./agent-inspect-summary.md

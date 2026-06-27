@@ -13,9 +13,10 @@ This guide is practical sharing guidance, not a guarantee that any artifact is s
 ```bash
 npx agent-inspect export <run-id> --format markdown --redaction-profile share
 npx agent-inspect export <run-id> --format html --redaction-profile strict
+npx agent-inspect redact trace.jsonl --profile share --json
 ```
 
-Original trace files under `.agent-inspect-runs/` are **not modified** by export redaction.
+Original trace files under `.agent-inspect-runs/` are **not modified** by export or `redact` copy workflows.
 
 ### Default redaction before disk
 
@@ -49,6 +50,8 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 ## Export and ingest-specific checks
 
 - Markdown / HTML exports: review rendered text and copied snippets, not only the source trace.
+- Eval JSON / Markdown: review failed-rule messages, expected/actual summaries, source IDs, and evidence paths before attaching them to PRs or issues.
+- Redacted copies from `agent-inspect redact`: review the output file itself; findings show detector/path/action evidence but do not certify full safety.
 - OpenInference / OTLP JSON exports: check attributes, span names, events, and resource metadata.
 - Structured log ingest configs: confirm mapped keys do not pull in full request bodies, headers, raw prompts, or unbounded output fields.
 - LangChain adapter traces: keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments.
@@ -60,6 +63,7 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 | Local debugging only | `local` (default) | Full CLI `view` is fine on your machine |
 | PR or GitHub issue attachment | `share` | `export --format markdown --redaction-profile share` |
 | External blog, public forum, customer-facing | `strict` | Review twice; prefer synthetic/minimal repro |
+| Local JSON/JSONL copy for review | `share` or `strict` | `redact <file> --profile share --json` |
 | Security incident or secret leak suspicion | — | Do not post traces publicly; use [SECURITY.md](../SECURITY.md) |
 
 ## What this guide does not claim

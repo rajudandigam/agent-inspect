@@ -497,7 +497,47 @@ The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this 
 
 Recipes: [deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for check/baseline/artifact workflows, and [test-reporter-artifacts](../examples/recipes/test-reporter-artifacts/README.md) for Vitest/Jest reporter configuration patterns.
 
-## 22. Experimental local explain APIs (v1.9)
+## 22. Experimental `@agent-inspect/eval` APIs (v2.1)
+
+`@agent-inspect/eval` is an optional package for deterministic local evals over existing traces. It consumes normalized reader output or local trace paths, returns stable JSON-compatible results, and does not call model providers, upload traces, replay agents, or create hosted datasets.
+
+Import from `@agent-inspect/eval`:
+
+```ts
+import { checks, evalRun, renderEvalMarkdown } from "@agent-inspect/eval";
+```
+
+- **`evalRun(input, options?)`**: runs selected eval rules over a local trace path or `TraceReadResult`.
+- **`checks`**: built-in deterministic rule factories for run status, tool usage, duration, depth, retries, token totals, failed steps, retrieval-before-generation, decision metadata, context overlap, quote overlap, citation presence, required source IDs, answer length bounds, and banned unsupported phrases.
+- **`renderEvalMarkdown(result)`**: renders a deterministic Markdown summary suitable for local CI logs, PR text, or artifact files after review.
+- Result types include **`EvalRunResult`**, **`EvalFinding`**, **`EvalDiagnostic`**, and **`EvalRule`**.
+
+Findings are designed for CI output: they include rule IDs, expected/actual structural summaries, and evidence paths. They should not include raw prompt, answer, context, request/response, header, API key, secret, or full tool payload values.
+
+CLI wrapper: `agent-inspect eval <trace-path-or-run-id> --require-success --json`.
+
+Recipes: [eval-local-checks](../examples/recipes/eval-local-checks/README.md) and [eval-ci-artifacts](../examples/recipes/eval-ci-artifacts/README.md).
+
+## 23. Experimental `@agent-inspect/redact` APIs (v2.1)
+
+`@agent-inspect/redact` is an optional package for reusable local redaction. It powers the root CLI `redact` workflow and shared trace-safety integrations. Redaction operates on local values/files and returns a redacted copy; it does not mutate the source object, upload content, or claim compliance-grade DLP.
+
+Import from `@agent-inspect/redact`:
+
+```ts
+import { createRedactor, redact } from "@agent-inspect/redact";
+```
+
+- **`redact(value, options?)`**: returns `{ value, findings, redacted, profile }` for a redacted copy.
+- **`createRedactor(options?)`**: creates a reusable redactor with profile, custom detectors, and custom rules.
+- **Profiles**: `local`, `share`, and `strict`.
+- **Findings**: detector id, path, action, severity, and bounded preview metadata where applicable.
+
+CLI wrapper: `agent-inspect redact <trace-or-file> --profile share --json`.
+
+Recipe: [redact-share-safe-file](../examples/recipes/redact-share-safe-file/README.md).
+
+## 24. Experimental local explain APIs (v1.9)
 
 `buildLocalExplanation()` creates a deterministic local explanation payload from a reader-selected `InspectRunTree`. It performs no network I/O, does not call model providers, and separates observed facts from deterministic inference labels.
 
@@ -522,7 +562,7 @@ Provider design gate:
 - Provider prompts must use redacted facts only, label inferred claims, and must not request raw chain-of-thought.
 - Provider packages or SDKs must not become root/core runtime dependencies.
 
-## 23. Experimental `@agent-inspect/harness` APIs
+## 25. Experimental `@agent-inspect/harness` APIs
 
 `@agent-inspect/harness` is a private experimental workspace package during the v1.9 release train. It provides a no-framework fixture runner for local targets and recipes; first public package publication remains a manual maintainer gate.
 
@@ -548,23 +588,23 @@ The harness package does not add root/core dependencies, does not upload traces,
 
 Recipes: [harness-basic](../examples/recipes/harness-basic/README.md) and [harness-adapter-local](../examples/recipes/harness-adapter-local/README.md).
 
-## 24. Deprecated APIs
+## 26. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 25. Removal / deprecation policy
+## 27. Removal / deprecation policy
 
 - Stable APIs are not removed within the current major version.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 26. Backward compatibility policy
+## 28. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
 - Breaking changes require a major version.
 - Unknown fields should be ignored where safe.
 
-## 25. Examples
+## 29. Examples
 
 ### Minimal manual trace
 

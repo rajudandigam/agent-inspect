@@ -235,7 +235,9 @@ AGENT_INSPECT=1 node eval-runner.mjs
 - **Use an isolated inspector** with `createInspector()` and explicit local writers for tests/adapters.
 - **Correlate runs** with optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started` metadata.
 - **Redact before disk** with default key-based redaction, or choose `redactionProfile`: `local`, `share`, or `strict`.
-- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `open`, `migrate`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
+- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `open`, `migrate`, `eval`, `redact`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
+- **Run local evals** with `agent-inspect eval` or `@agent-inspect/eval`; built-in checks are deterministic heuristics over local traces, not model judges.
+- **Redact local files** with `agent-inspect redact` or `@agent-inspect/redact` before creating shareable copies.
 - **Migrate explicitly** with `agent-inspect migrate <trace.jsonl> --to 1.0 --dry-run` or `--output <file>`; originals are never overwritten by default.
 - **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
@@ -296,6 +298,8 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `export` | Write Markdown / HTML / OpenInference-compatible JSON / OTLP JSON **locally** |
 | `open` | Read AgentInspect JSONL, OpenInference JSON, or OTLP JSON locally |
 | `migrate` | Convert a local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output |
+| `eval` | Deterministic local evals over existing traces |
+| `redact` | Redact a local JSON/JSONL file or trace copy |
 | `diff` | Compare two local runs (read-only) |
 | `timeline` | Chronological view of one run |
 | `stats` | Local aggregates over a trace directory |
@@ -316,6 +320,8 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - Debug a **failed tool call** or thrown error in a support or ops agent.
 - See **which step dominated latency** in a multi-step planner or RAG pipeline.
 - **Diff two runs** after a prompt, model, or routing change (see [diff examples](docs/DIFF.md)).
+- Run **local eval checks** over a trace before sharing or creating CI artifacts.
+- **Redact** a local trace/file before attaching it to a PR, issue, or support thread.
 - Point **`logs`** / **`tail`** at existing job or service logs to get a **local execution view** without shipping data upstream.
 - **Export** a run to Markdown for a PR, postmortem, or internal thread — use `--redaction-profile share` for share-safe copies, then review before sharing.
 - Keep traces **on disk** while still using enterprise observability elsewhere.
@@ -422,6 +428,9 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/parallel-tools](examples/recipes/parallel-tools) | Parallel tools |
 | [examples/recipes/github-actions-artifact](examples/recipes/github-actions-artifact) | CI trace artifacts |
 | [examples/recipes/deterministic-ci-checks](examples/recipes/deterministic-ci-checks) | v1.8 checks, baseline, and safe CI artifacts |
+| [examples/recipes/eval-local-checks](examples/recipes/eval-local-checks) | v2.1 deterministic local eval checks |
+| [examples/recipes/redact-share-safe-file](examples/recipes/redact-share-safe-file) | v2.1 share-safe local redaction copy |
+| [examples/recipes/eval-ci-artifacts](examples/recipes/eval-ci-artifacts) | v2.1 eval before safe CI artifacts |
 | [examples/recipes/test-reporter-artifacts](examples/recipes/test-reporter-artifacts) | v1.8 Vitest/Jest reporter artifact patterns |
 | [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
 | [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |

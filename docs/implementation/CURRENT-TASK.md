@@ -4,19 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-8-eval-redact-recipes-and-documentation"
+chunk: "v2.1-9-release-readiness"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-7-eval-grounding-heuristics-and-cli"
+dependsOn: "v2.1-8-eval-redact-recipes-and-documentation"
 ```
 
 ## Goal
 
-Make the v2.1 utility triangle visible through adoption docs and deterministic recipes:
-
-```text
-trace -> eval -> redact/share/report/artifact
-```
+Prepare v2.1 for maintainer release authorization, then stop before any versioning, tagging, publishing, or first public package publication gate.
 
 ## Read first
 
@@ -28,84 +24,74 @@ trace -> eval -> redact/share/report/artifact
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
 - `docs/proposals/REDACT-PACKAGE.md`
 - `docs/proposals/EVAL-PACKAGE.md`
-- relevant recipe and documentation patterns
+- relevant release-readiness, package, and validation scripts
 
 ## Prior chunk evidence
 
-- Starting commit: `c35de342099262d656ee1fde1a505e0e8d97acc1`.
-- Added deterministic grounding heuristics to `@agent-inspect/eval`:
-  - context overlap;
-  - quote overlap;
-  - citation presence;
-  - required source IDs;
-  - answer length bounds;
-  - banned unsupported phrases.
-- Added root CLI workflow:
-  - `agent-inspect eval trace.jsonl --require-success`;
-  - `agent-inspect eval trace.jsonl --forbid-tool deleteAccount`;
-  - JSON and Markdown output;
-  - deterministic exit codes;
-  - JSON/JS/MJS/CJS config loading;
-  - explicit TypeScript config rejection until a supported loader exists.
-- Added CLI and eval tests for JSON output, Markdown output, failed eval exit code, unreadable diagnostics, and no-network behavior.
+- Starting commit: `1430ba3805bdcbae4d02cea4a85c48a9f41c4292`.
+- Added v2.1 adoption docs for local eval, redaction, safe sharing, CLI usage, API surfaces, limitations, comparisons, adapters, known issues, and roadmap alignment.
+- Added deterministic local recipes:
+  - `examples/recipes/eval-local-checks`;
+  - `examples/recipes/redact-share-safe-file`;
+  - `examples/recipes/eval-ci-artifacts`.
+- Updated recipe validation for 23 recipes.
+- Ran the three new recipes locally with elevated runtime permissions because `tsx` IPC pipes are sandbox-blocked.
 
 ## In scope
 
-1. Update adoption docs:
-   - `README.md`;
-   - `docs/GETTING-STARTED.md`;
-   - `docs/API.md`;
-   - `docs/CLI.md`;
-   - `docs/SAFE-TRACE-SHARING.md`;
-   - `docs/COMPARE.md`;
-   - `docs/ADAPTERS.md`;
-   - `docs/LIMITATIONS.md`;
-   - `docs/KNOWN-ISSUES.md`;
-   - `docs/implementation/ROADMAP-V2.1-TO-V3.md`.
-2. Add deterministic recipes:
-   - `examples/recipes/eval-local-checks`;
-   - `examples/recipes/redact-share-safe-file`;
-   - `examples/recipes/eval-ci-artifacts`.
-3. Keep examples local-only, deterministic, and secret-free.
-4. Make safe-sharing language visible.
-
-## Out of scope
-
-- package version changes, changesets, publishing, or tags;
-- runtime source changes;
-- schema changes;
-- new dependencies;
-- live model calls, provider judging, or network behavior;
-- adapter implementation;
-- v3 extensibility implementation.
-
-## Focused validation
+1. Update or create v2.1 release-readiness documentation.
+2. Inspect package tarballs and public/private package set.
+3. Run the full release-readiness validation gate:
 
 ```bash
+pnpm install --frozen-lockfile
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm test:coverage
 pnpm fixtures:check
 pnpm recipes:check
+pnpm size
+pnpm test:all
+pnpm pack:smoke
+pnpm compat:smoke
+npm pack --dry-run
 git diff --check
 ```
 
+4. Draft release notes/readiness summary for maintainer review.
+5. Stop before versioning or publication.
+
+## Out of scope
+
+- package version changes;
+- changesets;
+- tags;
+- publishing;
+- GitHub releases;
+- npm publish or local package publication;
+- runtime source changes unless needed to repair release-readiness validation;
+- schema changes;
+- dependency additions;
+- live model/provider/network behavior beyond validation, git, npm registry metadata, and CI checks.
+
 ## Acceptance criteria
 
-- Docs describe eval/redact/report/artifact flow without implying hosted evals or telemetry.
-- Recipes use deterministic fixtures and no real API keys.
-- Recipe metadata validates with the existing recipe checker.
-- No package publishing, changeset, version, schema, dependency, runtime, or network change is introduced.
+- Release-readiness documentation accurately summarizes v2.1 scope, validation, package set, and remaining manual gates.
+- Full release-readiness gate passes or any failure is repaired inside the release-readiness scope.
+- No package version, changeset, tag, publish, GitHub release, schema, dependency, or public breaking change is introduced.
+- First public package publication requirements are called out for maintainer review.
 
 ## Proposed commit
 
 ```text
-docs: add eval and redact adoption workflows
+docs: prepare v2.1 release readiness
 ```
 
-## Next chunk
+## Next step
 
-`v2.1-9-release-readiness`.
+Maintainer release authorization and manual release workflow.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, package publication gates, schema/dependency/runtime decisions, live provider/network behavior, public breaking changes, or validation failure that cannot be repaired inside docs/recipes scope.
+Stop on unrelated worktree changes, validation failures that cannot be repaired in scope, root/core dependency requirements, network/provider behavior, schema redesign, package export breaking changes, registry/credential problems, any first public package publication gate, or any publish/tag/release operation not explicitly authorized.

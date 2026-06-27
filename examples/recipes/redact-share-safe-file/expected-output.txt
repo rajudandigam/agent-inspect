@@ -1,0 +1,8 @@
+Redact share-safe file recipe complete
+Profile: share
+Redacted: true
+Findings: 3
+Output contains placeholder: true
+
+CLI equivalent:
+  npx agent-inspect redact trace.jsonl --profile share --json

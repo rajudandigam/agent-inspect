@@ -30,6 +30,9 @@ const RECIPES = [
   "langgraph-callback-local",
   "harness-basic",
   "harness-adapter-local",
+  "eval-local-checks",
+  "redact-share-safe-file",
+  "eval-ci-artifacts",
 ];
 
 const LOG_RECIPE_FILES = {
