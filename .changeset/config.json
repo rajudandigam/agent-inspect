@@ -9,7 +9,9 @@
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
       "@agent-inspect/ai-sdk",
-      "@agent-inspect/openai-agents"
+      "@agent-inspect/openai-agents",
+      "@agent-inspect/redact",
+      "@agent-inspect/eval"
     ]
   ],
   "access": "public",
@@ -29,6 +31,9 @@
     "agent-inspect-recipe-retry-fallback",
     "agent-inspect-recipe-tool-failure-retry",
     "agent-inspect-recipe-winston-json-logs",
+    "agent-inspect-recipe-eval-local-checks",
+    "agent-inspect-recipe-redact-share-safe-file",
+    "agent-inspect-recipe-eval-ci-artifacts",
     "@agent-inspect/harness",
     "@agent-inspect/vitest",
     "@agent-inspect/jest"

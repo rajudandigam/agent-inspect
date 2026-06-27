@@ -9,8 +9,8 @@ currentTrain: "v2.1.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "1430ba3805bdcbae4d02cea4a85c48a9f41c4292"
-lastValidationLevel: "v2.1-8-eval-redact-recipes-and-documentation-local-gate"
+lastConfirmedCommit: "665f6f9ec2cd4ce191e4c3068f61016c8cd8ded1"
+lastValidationLevel: "v2.1-9-release-readiness-local-gate"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -64,9 +64,10 @@ completedChunks:
   - "v2.1-6-eval-package-scaffold-and-deterministic-core"
   - "v2.1-7-eval-grounding-heuristics-and-cli"
   - "v2.1-8-eval-redact-recipes-and-documentation"
-currentChunk: "v2.1-9-release-readiness"
-pendingManualGate: "none"
-nextAction: "Prepare v2.1 release readiness and stop before versioning/publication."
+  - "v2.1-9-release-readiness"
+currentChunk: "v2.1-release-authorization-manual-gate"
+pendingManualGate: "v2.1-release-authorization-and-first-public-package-publication-setup"
+nextAction: "Maintainer review: confirm npm package/Trusted Publishing setup for @agent-inspect/redact and @agent-inspect/eval, then explicitly authorize v2.1 minor release prep."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
@@ -75,4 +76,5 @@ updatedAt: "2026-06-27"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.1.0-EXECUTION-PLAN.md](./release-trains/V2.1.0-EXECUTION-PLAN.md)
+- **Current readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)

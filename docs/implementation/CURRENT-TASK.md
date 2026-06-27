@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-9-release-readiness"
-status: "ready"
+chunk: "v2.1-release-authorization-manual-gate"
+status: "manual-gate"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-8-eval-redact-recipes-and-documentation"
+dependsOn: "v2.1-9-release-readiness"
 ```
 
 ## Goal
 
-Prepare v2.1 for maintainer release authorization, then stop before any versioning, tagging, publishing, or first public package publication gate.
+Hold for maintainer release authorization after v2.1 release-readiness validation. Do not start versioning, tagging, publishing, GitHub releases, or first public package publication until explicitly authorized.
 
 ## Read first
 
@@ -28,20 +28,22 @@ Prepare v2.1 for maintainer release authorization, then stop before any versioni
 
 ## Prior chunk evidence
 
-- Starting commit: `1430ba3805bdcbae4d02cea4a85c48a9f41c4292`.
-- Added v2.1 adoption docs for local eval, redaction, safe sharing, CLI usage, API surfaces, limitations, comparisons, adapters, known issues, and roadmap alignment.
-- Added deterministic local recipes:
-  - `examples/recipes/eval-local-checks`;
-  - `examples/recipes/redact-share-safe-file`;
-  - `examples/recipes/eval-ci-artifacts`.
-- Updated recipe validation for 23 recipes.
-- Ran the three new recipes locally with elevated runtime permissions because `tsx` IPC pipes are sandbox-blocked.
+- Starting commit: `665f6f9ec2cd4ce191e4c3068f61016c8cd8ded1`.
+- Prepared [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md).
+- Aligned `.changeset/config.json` so `@agent-inspect/redact` and `@agent-inspect/eval` are linked with the public release set, and the new private recipe packages are ignored.
+- Verified existing public packages are published at `2.0.0`.
+- Verified `@agent-inspect/redact` and `@agent-inspect/eval` return npm 404 and therefore require first-publication setup before v2.1 publication.
+- Full local release-readiness gate passed.
 
 ## In scope
 
-1. Update or create v2.1 release-readiness documentation.
-2. Inspect package tarballs and public/private package set.
-3. Run the full release-readiness validation gate:
+1. Maintainer reviews v2.1 readiness evidence.
+2. Maintainer confirms npm package/Trusted Publishing setup for:
+   - `@agent-inspect/redact`;
+   - `@agent-inspect/eval`.
+3. Maintainer explicitly authorizes the v2.1 minor release workflow.
+
+## Completed release-readiness gate
 
 ```bash
 pnpm install --frozen-lockfile
@@ -59,9 +61,6 @@ npm pack --dry-run
 git diff --check
 ```
 
-4. Draft release notes/readiness summary for maintainer review.
-5. Stop before versioning or publication.
-
 ## Out of scope
 
 - package version changes;
@@ -77,12 +76,11 @@ git diff --check
 
 ## Acceptance criteria
 
-- Release-readiness documentation accurately summarizes v2.1 scope, validation, package set, and remaining manual gates.
-- Full release-readiness gate passes or any failure is repaired inside the release-readiness scope.
-- No package version, changeset, tag, publish, GitHub release, schema, dependency, or public breaking change is introduced.
-- First public package publication requirements are called out for maintainer review.
+- Maintainer confirms the manual gate is satisfied.
+- No package version, changeset, tag, publish, GitHub release, schema, dependency, or public breaking change is introduced before explicit release authorization.
+- First public package publication requirements are satisfied for `@agent-inspect/redact` and `@agent-inspect/eval`.
 
-## Proposed commit
+## Proposed release-readiness commit
 
 ```text
 docs: prepare v2.1 release readiness
@@ -90,8 +88,8 @@ docs: prepare v2.1 release readiness
 
 ## Next step
 
-Maintainer release authorization and manual release workflow.
+After explicit maintainer authorization, prepare the v2.1 minor release workflow using Changesets. Do not create patch releases.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, validation failures that cannot be repaired in scope, root/core dependency requirements, network/provider behavior, schema redesign, package export breaking changes, registry/credential problems, any first public package publication gate, or any publish/tag/release operation not explicitly authorized.
+Stop on unrelated worktree changes, validation failures that cannot be repaired in scope, root/core dependency requirements, network/provider behavior, schema redesign, package export breaking changes, registry/credential problems, missing first-publication setup, or any publish/tag/release operation not explicitly authorized.
