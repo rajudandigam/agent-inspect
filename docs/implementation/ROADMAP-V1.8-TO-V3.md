@@ -1,7 +1,7 @@
 # Roadmap - v1.8 through v3
 
-**Status:** active maintainer roadmap after v1.7.0 publication  
-**Published baseline:** `agent-inspect@1.7.0`, `@agent-inspect/ai-sdk@1.7.0`, `@agent-inspect/langchain@1.7.0`, `@agent-inspect/tui@1.7.0`  
+**Status:** v1.8.0 published; use remaining v1.9/v2 sections for the next train
+**Published baseline:** `agent-inspect@1.8.0`, `@agent-inspect/ai-sdk@1.8.0`, `@agent-inspect/langchain@1.8.0`, `@agent-inspect/openai-agents@1.8.0`, `@agent-inspect/tui@1.8.0`
 **Canonical source:** the finalized AgentInspect implementation roadmap supplied by the maintainer
 
 ## Product direction
@@ -37,6 +37,8 @@ Deferred from the finalized v1.7 roadmap and carried into the v1.8 train:
 Do not rewrite history by claiming these deferred items shipped in v1.7.
 
 ## v1.8.0 - Deterministic checks, safe sharing, and CI
+
+Published 2026-06-27. See [V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md) for validation and publication evidence.
 
 Goal: turn local traces into enforceable, explainable engineering artifacts.
 

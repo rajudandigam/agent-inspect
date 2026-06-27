@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, and CI are authoritative.
 
 ```yaml
-baselineVersion: "1.7.0"
-publishedVersion: "1.7.0"
+baselineVersion: "1.8.0"
+publishedVersion: "1.8.0"
 currentTrain: "v1.8.0"
-trainStatus: "in_progress"
+trainStatus: "published"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "011619b6fc799ca375b34cef5e45ddd6665c7615"
-lastValidationLevel: "v1.8.0-release-workflow-prep-gate"
+lastConfirmedCommit: "e215dbd123e5a66edd6dcda55d66cd858f1258d4"
+lastValidationLevel: "v1.8.0-published-and-verified"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -35,11 +35,12 @@ completedChunks:
   - "v1.8-18-jest-integration"
   - "v1.8-19-recipes-docs-performance"
   - "v1.8-20-release-readiness"
-currentChunk: "v1.8-21-first-openai-package-publication-and-linked-release"
-pendingManualGate: "github-publish-workflow-and-version-packages-pr"
-nextAction: "Commit and push the v1.8 Changesets release prep, then validate the generated Version Packages PR before merging/publishing"
-publishedAt: "2026-06-26"
-updatedAt: "2026-06-26"
+  - "v1.8-21-first-openai-package-publication-and-linked-release"
+currentChunk: "none"
+pendingManualGate: "none"
+nextAction: "Plan the next release train from the v1.9/v2 roadmap; do not start without a new maintainer chunk"
+publishedAt: "2026-06-27"
+updatedAt: "2026-06-27"
 ```
 
 **Active roadmap:** [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md)  

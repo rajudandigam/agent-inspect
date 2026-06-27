@@ -5,7 +5,7 @@
 ```yaml
 train: "v1.8.0"
 chunk: "v1.8-21-first-openai-package-publication-and-linked-release"
-status: "release_workflow_prepared"
+status: "completed"
 executionMode: "autonomous-release-train"
 dependsOn: "v1.8-20-release-readiness"
 ```
@@ -13,6 +13,8 @@ dependsOn: "v1.8-20-release-readiness"
 ## Goal
 
 Prepare and validate the `@agent-inspect/openai-agents@1.8.0` first-publication path, then use the maintainer-authorized GitHub/Changesets release workflow to publish v1.8.0 only after green CI.
+
+Completed on 2026-06-27. The linked workflow published `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at `1.8.0`; `@agent-inspect/openai-agents@1.8.0` required maintainer manual npm publication after the workflow hit npm `E404` for first scoped-package creation. The missing OpenAI Agents tag and GitHub release were then created at `e215dbd`.
 
 ## Read first
 
@@ -64,3 +66,6 @@ Stop immediately on any validation failure, package-content surprise, registry m
 - Switched to the repository Changesets publish workflow: OpenAI Agents is public in source at the current `1.7.0` baseline, linked into the v1.8 public package group, and included in the v1.8 changeset.
 - Changesets status reports exactly these minor bumps to `1.8.0`: `agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/ai-sdk`, and `@agent-inspect/openai-agents`.
 - `@agent-inspect/vitest` and `@agent-inspect/jest` remain private and are explicitly ignored by Changesets.
+- Version Packages PR #40 merged at `e215dbd123e5a66edd6dcda55d66cd858f1258d4` after green CI.
+- Final npm verification passed for all five public `1.8.0` packages; each has `latest: "1.8.0"`.
+- Git tags and GitHub releases exist for all five public `1.8.0` packages, including `@agent-inspect/openai-agents@1.8.0`.
