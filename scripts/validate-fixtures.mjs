@@ -1,6 +1,6 @@
 /**
  * Validate committed fixtures: required files, JSONL trace shape, config shape, no obvious secrets.
- * Run from repo root after `pnpm build` (imports `validateEvent` from core dist).
+ * Run from repo root after `pnpm build` (imports validators from core dist).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -80,14 +80,17 @@ const FORBIDDEN = [
 let validateEvent;
 let isPersistedInspectEvent;
 try {
-  const mod = await import(
-    pathToFileURL(path.join(root, "packages/core/dist/index.mjs")).href,
+  const advanced = await import(
+    pathToFileURL(path.join(root, "packages/core/dist/advanced.mjs")).href,
   );
-  validateEvent = mod.validateEvent;
-  isPersistedInspectEvent = mod.isPersistedInspectEvent;
+  const persisted = await import(
+    pathToFileURL(path.join(root, "packages/core/dist/persisted.mjs")).href,
+  );
+  validateEvent = advanced.validateEvent;
+  isPersistedInspectEvent = persisted.isPersistedInspectEvent;
 } catch (e) {
   console.error(
-    "[fixtures:check] Could not import packages/core/dist/index.mjs. Run `pnpm build` first.\n",
+    "[fixtures:check] Could not import packages/core/dist subpaths. Run `pnpm build` first.\n",
     e,
   );
   process.exit(1);

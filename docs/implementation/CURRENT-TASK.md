@@ -75,11 +75,16 @@ git diff --check
   - Used an isolated npm cache because the local user npm cache has root-owned files.
 - `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm pack:smoke` passed.
   - Used an isolated npm cache because the local user npm cache has root-owned files.
+- Post-push Publish gate repair:
+  - Publish failed in `fixtures:check` because `scripts/validate-fixtures.mjs` still imported root-only `validateEvent` / `isPersistedInspectEvent` from `packages/core/dist/index.mjs`.
+  - Updated the validator to import `validateEvent` from `packages/core/dist/advanced.mjs` and `isPersistedInspectEvent` from `packages/core/dist/persisted.mjs`.
+  - `CI=true pnpm fixtures:check` passed.
+  - `CI=true pnpm recipes:check` passed.
 
 ## Proposed commit
 
 ```text
-feat: enforce v2 root api contract
+fix: use core subpaths in fixture validator
 ```
 
 ## Next chunk

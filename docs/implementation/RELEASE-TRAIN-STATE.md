@@ -9,7 +9,7 @@ currentTrain: "v2.0.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "6c6eb1047c038e89e5ab0c82d7becb723f66db46"
+lastConfirmedCommit: "4e0f6672a948dd96d41d3f8447cb6e2719ff894d"
 lastValidationLevel: "v2.0-5-local-root-api-gate-green"
 completedChunks:
   - "v1.6.0-published"
@@ -53,7 +53,7 @@ completedChunks:
   - "v2.0-4-migration-dry-run-cli"
 currentChunk: "v2.0-5-v2-root-api-contract"
 pendingManualGate: "none"
-nextAction: "Commit and push v2.0 chunk 5, wait for CI/Publish, then continue with v2.0 chunk 6."
+nextAction: "Commit and push v2.0 chunk 5 Publish-gate repair, wait for CI/Publish, then continue with v2.0 chunk 6."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
