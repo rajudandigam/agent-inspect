@@ -5,7 +5,7 @@
 ```yaml
 train: "v2.0.0"
 chunk: "v2.0-release-prep-and-publication"
-status: "validated_pending_commit"
+status: "completed"
 executionMode: "autonomous-release-train"
 dependsOn: "v2.0-7-release-readiness"
 ```
@@ -77,19 +77,39 @@ git diff --check
 - `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm compat:smoke` passed.
   - Bundled CJS, ESM/CJS consumers, subpath ESM/CJS, Jest-style CJS pattern, ts-jest Node16 compile, CLI help.
 - `git diff --check` passed.
+- Commit `90fa75e` (`chore: prepare v2 release`) was pushed to `main`.
+- Changesets opened Version Packages PR #42; the PR was verified to contain only the expected linked v2.0.0 package version and changelog updates.
+- PR #42 checks passed after rerunning the initially action-required CI run.
+- PR #42 was merged to `main` as `0533c3377b2079cc76b85bf41ff9e8832a26f012`.
+- Initial publish workflow run `28294765040` partially published `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at `2.0.0`, then stopped on `@agent-inspect/openai-agents` because npm package Trusted Publishing/package setup was missing.
+- After maintainer enabled npm Trusted Publishing/package setup for `@agent-inspect/openai-agents@2.0.0`, recovery publish workflow run `28296235522` passed.
+- Registry verification after recovery:
+  - `npm view agent-inspect version` -> `2.0.0`
+  - `npm view @agent-inspect/ai-sdk version` -> `2.0.0`
+  - `npm view @agent-inspect/langchain version` -> `2.0.0`
+  - `npm view @agent-inspect/tui version` -> `2.0.0`
+  - `npm view @agent-inspect/openai-agents version` -> `2.0.0`
+- GitHub release verification after recovery:
+  - `agent-inspect@2.0.0`
+  - `@agent-inspect/ai-sdk@2.0.0`
+  - `@agent-inspect/langchain@2.0.0`
+  - `@agent-inspect/tui@2.0.0`
+  - `@agent-inspect/openai-agents@2.0.0`
+- Remote tag verification after recovery:
+  - `@agent-inspect/openai-agents@2.0.0` exists on `origin`.
 
 ## Proposed commit
 
 ```text
-chore: prepare v2 release
+docs: record v2 publication recovery
 ```
 
 ## Next chunk
 
-Version Packages PR verification and publish workflow.
+None for v2.0.0. Perform the manual post-release check before authorizing any next named release train.
 
 ## Stop condition
 
 Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, material plan drift, unexpected Version Packages PR contents, partial publication, or any decision requiring schema redesign, dependency changes, package export routes, hosted upload, provider/network, replay, or cost-engine behavior.
 
-Known risk: `@agent-inspect/openai-agents` still showed npm registry version `1.8.0` during readiness while local manifests were `1.9.0`; if npm Trusted Publishing is not enabled for that package, the publish workflow may fail there and require maintainer action.
+Known risk resolved for v2.0.0: `@agent-inspect/openai-agents` recovered successfully after maintainer enabled npm Trusted Publishing/package setup.

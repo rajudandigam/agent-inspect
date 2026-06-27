@@ -4,13 +4,13 @@
 
 ```yaml
 baselineVersion: "1.9.0"
-publishedVersion: "1.9.0-partial-openai-agents-1.8.0"
+publishedVersion: "2.0.0"
 currentTrain: "v2.0.0"
-trainStatus: "in_progress"
+trainStatus: "published"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "c63ca0707c636bc8b072fadda44307fa03cff341"
-lastValidationLevel: "v2.0-7-remote-ci-publish-green"
+lastConfirmedCommit: "0533c3377b2079cc76b85bf41ff9e8832a26f012"
+lastValidationLevel: "v2.0.0-published-after-openai-agents-recovery"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -54,9 +54,10 @@ completedChunks:
   - "v2.0-5-v2-root-api-contract"
   - "v2.0-6-docs-and-migration-guide-alignment"
   - "v2.0-7-release-readiness"
-currentChunk: "v2.0-release-prep-and-publication"
-pendingManualGate: "none"
-nextAction: "Commit and push the v2.0.0 Changesets release-prep changes, wait for the Version Packages PR, verify it only performs the linked v2.0.0 bumps, merge only after green checks, then watch publish and verify npm/tags/releases."
+  - "v2.0-release-prep-and-publication"
+currentChunk: "none"
+pendingManualGate: "manual post-release check before any next release"
+nextAction: "Perform the manual post-release check, then authorize the next named release train if needed."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
