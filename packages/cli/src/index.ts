@@ -30,6 +30,8 @@ import type { WhatCommandOptions } from "./what.js";
 import { whatCommand } from "./what.js";
 import type { ReportCommandOptions } from "./report.js";
 import { reportCommand } from "./report.js";
+import type { ExplainCommandOptions } from "./explain.js";
+import { explainCommand } from "./explain.js";
 import type { OpenCommandOptions } from "./open.js";
 import { openCommand } from "./open.js";
 import type { CheckCommandOptions } from "./check.js";
@@ -481,6 +483,31 @@ export function createCliProgram(): Command {
     )
     .action((runId: string, opts: ReportCommandOptions) => {
       runCommand(() => reportCommand(runId, opts));
+    });
+
+  program
+    .command("explain")
+    .description("Explain a local trace with deterministic facts (no provider calls)")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--dry-run", "emit only the local facts payload that a provider could receive")
+    .option("--json", "print deterministic JSON explanation result")
+    .addOption(
+      new Option(
+        "--redaction-profile <profile>",
+        "redaction profile for explanation payload: local, share, strict (default: local)",
+      ).choices(["local", "share", "strict"]),
+    )
+    .action((target: string, opts: ExplainCommandOptions) => {
+      runCommand(() => explainCommand(target, opts));
     });
 
   return program;

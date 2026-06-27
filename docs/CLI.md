@@ -36,6 +36,7 @@ Core commands:
 - `search` — deterministic local search over traces
 - `what` — concise summary of a single run (local JSONL)
 - `report` — markdown or HTML inspection report for a single run
+- `explain` — deterministic local facts/inferences for a trace, with dry-run payloads
 
 ## 2. Environment variables
 
@@ -552,6 +553,30 @@ Example:
 
 ```bash
 npx agent-inspect report minimal-success --dir fixtures/traces --format html -o report.html
+```
+
+### 6.17 `explain`
+
+Explain a local trace using deterministic facts and local inference labels. This command reads through the same local reader pipeline as `open` / `check`; it does not call a model provider, upload traces, replay agents, or mutate input files.
+
+```bash
+agent-inspect explain <trace-path-or-run-id> [options]
+```
+
+Options:
+
+- `--dir <path>` — trace directory for run-id lookup
+- `--format <agent-inspect-jsonl|openinference-json|otlp-json>` — explicit input format
+- `--run <run-id>` — select a run when the trace contains multiple runs
+- `--dry-run` — emit only the redacted facts payload, with no local inference labels
+- `--json` — print deterministic JSON output
+- `--redaction-profile <local|share|strict>` — key-based redaction profile for the explanation payload (default `local`)
+
+Examples:
+
+```bash
+npx agent-inspect explain minimal-success --dir fixtures/traces
+npx agent-inspect explain fixtures/traces/minimal-success.jsonl --dry-run --json --redaction-profile strict
 ```
 
 ## 7. Optional TUI behavior

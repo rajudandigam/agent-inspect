@@ -482,7 +482,26 @@ The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this 
 
 Recipes: [deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for check/baseline/artifact workflows, and [test-reporter-artifacts](../examples/recipes/test-reporter-artifacts/README.md) for Vitest/Jest reporter configuration patterns.
 
-## 22. Experimental `@agent-inspect/harness` APIs
+## 22. Experimental local explain APIs (v1.9)
+
+`buildLocalExplanation()` creates a deterministic local explanation payload from a reader-selected `InspectRunTree`. It performs no network I/O, does not call model providers, and separates observed facts from deterministic inference labels.
+
+Import from `agent-inspect`:
+
+```ts
+import { buildLocalExplanation } from "agent-inspect";
+```
+
+- **`buildLocalExplanation(run, options?)`**:
+  - **`mode: "dry-run"`**: returns redacted observed facts and no inference labels.
+  - **`mode: "local"`** (default): returns observed facts plus deterministic local inference labels.
+  - **`redactionProfile`**: `local`, `share`, or `strict`; profile keys are redacted before the payload is returned.
+
+CLI wrapper: `agent-inspect explain <trace-path-or-run-id> --dry-run --json`.
+
+No provider payload is submitted in v1.9 implementation chunks; provider behavior requires a separate maintainer-approved design gate.
+
+## 23. Experimental `@agent-inspect/harness` APIs
 
 `@agent-inspect/harness` is a private experimental workspace package during the v1.9 release train. It provides a no-framework fixture runner for local targets and recipes; first public package publication remains a manual maintainer gate.
 
@@ -508,16 +527,16 @@ The harness package does not add root/core dependencies, does not upload traces,
 
 Recipes: [harness-basic](../examples/recipes/harness-basic/README.md) and [harness-adapter-local](../examples/recipes/harness-adapter-local/README.md).
 
-## 23. Deprecated APIs
+## 24. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 24. Removal / deprecation policy
+## 25. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 25. Backward compatibility policy
+## 26. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.

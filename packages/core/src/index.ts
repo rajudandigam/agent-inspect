@@ -196,6 +196,15 @@ export type { ReportFormat, ReportOptions, ReportResult } from "./report.js";
 export { buildRunReport } from "./report.js";
 
 export type {
+  ExplainFact,
+  ExplainInference,
+  ExplainMode,
+  ExplainOptions,
+  ExplainResult,
+} from "./explain.js";
+export { buildLocalExplanation } from "./explain.js";
+
+export type {
   DurationStats,
   TraceStatsRankedRun,
   TraceStatsRankedStep,
