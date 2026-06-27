@@ -499,6 +499,10 @@ export function createCliProgram(): Command {
     )
     .option("--run <run-id>", "select a run when the trace contains multiple runs")
     .option("--dry-run", "emit only the local facts payload that a provider could receive")
+    .option(
+      "--provider <provider>",
+      "reserved for explicit provider explain; currently rejected without network calls",
+    )
     .option("--json", "print deterministic JSON explanation result")
     .addOption(
       new Option(

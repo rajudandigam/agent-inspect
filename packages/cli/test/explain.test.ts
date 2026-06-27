@@ -128,4 +128,24 @@ describe("explain CLI", () => {
     expect(String(parsed.error.message)).toContain("ENOENT");
     expect(errSpy).not.toHaveBeenCalled();
   });
+
+  it("rejects provider mode without network behavior", async () => {
+    await explainCommand("explain-run", {
+      dir: tmpDir,
+      provider: "openai",
+      json: true,
+    });
+
+    expect(process.exitCode).toBe(1);
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
+    expect(parsed).toEqual({
+      ok: false,
+      error: {
+        code: "PROVIDER_NOT_IMPLEMENTED",
+        message:
+          "Provider explain is not implemented in this build: openai. Use --dry-run to inspect the redacted local payload.",
+      },
+    });
+    expect(errSpy).not.toHaveBeenCalled();
+  });
 });

@@ -499,7 +499,13 @@ import { buildLocalExplanation } from "agent-inspect";
 
 CLI wrapper: `agent-inspect explain <trace-path-or-run-id> --dry-run --json`.
 
-No provider payload is submitted in v1.9 implementation chunks; provider behavior requires a separate maintainer-approved design gate.
+Provider design gate:
+
+- No provider payload is submitted in v1.9 implementation chunks; `--provider <provider>` is reserved and rejected with `PROVIDER_NOT_IMPLEMENTED`.
+- The reviewable provider payload contract is the `ExplainResult` object: `mode`, `runId`, optional `name` / `status`, `redactionProfile`, `facts`, `inferences`, and `notes`.
+- Provider implementations must require explicit provider selection and documented environment requirements. The current local API reads no provider credentials.
+- Provider prompts must use redacted facts only, label inferred claims, and must not request raw chain-of-thought.
+- Provider packages or SDKs must not become root/core runtime dependencies.
 
 ## 23. Experimental `@agent-inspect/harness` APIs
 

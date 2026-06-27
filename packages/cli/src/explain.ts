@@ -19,6 +19,7 @@ export interface ExplainCommandOptions {
   run?: string;
   dryRun?: boolean;
   json?: boolean;
+  provider?: string;
   redactionProfile?: string;
 }
 
@@ -82,11 +83,31 @@ function writeJson(result: unknown): void {
   console.log(JSON.stringify(result, null, 2));
 }
 
+function rejectProvider(provider: string, json: boolean | undefined): void {
+  process.exitCode = 1;
+  const message =
+    `Provider explain is not implemented in this build: ${provider}. ` +
+    "Use --dry-run to inspect the redacted local payload.";
+  if (json) {
+    writeJson({
+      ok: false,
+      error: { code: "PROVIDER_NOT_IMPLEMENTED", message },
+    });
+    return;
+  }
+  console.error(message);
+}
+
 export async function explainCommand(
   target: string,
   options: ExplainCommandOptions = {},
   stdin: NodeJS.ReadableStream = process.stdin,
 ): Promise<void> {
+  if (options.provider !== undefined) {
+    rejectProvider(options.provider, options.json);
+    return;
+  }
+
   let redactionProfile: RedactionProfile;
   try {
     redactionProfile = parseRedactionProfile(options.redactionProfile);

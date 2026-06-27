@@ -569,6 +569,7 @@ Options:
 - `--format <agent-inspect-jsonl|openinference-json|otlp-json>` — explicit input format
 - `--run <run-id>` — select a run when the trace contains multiple runs
 - `--dry-run` — emit only the redacted facts payload, with no local inference labels
+- `--provider <provider>` — reserved for an explicit future provider mode; currently rejected without network calls
 - `--json` — print deterministic JSON output
 - `--redaction-profile <local|share|strict>` — key-based redaction profile for the explanation payload (default `local`)
 
@@ -578,6 +579,14 @@ Examples:
 npx agent-inspect explain minimal-success --dir fixtures/traces
 npx agent-inspect explain fixtures/traces/minimal-success.jsonl --dry-run --json --redaction-profile strict
 ```
+
+Provider design gate:
+
+- Current behavior is local only. `--provider <provider>` exits with a user-facing `PROVIDER_NOT_IMPLEMENTED` error and performs no provider call.
+- `--dry-run --json` is the payload review surface. The provider payload contract is the returned `explanation` object: `mode`, `runId`, optional `name` / `status`, `redactionProfile`, `facts`, `inferences`, and `notes`.
+- Provider chunks must require explicit provider selection, document required environment variables, and keep credentials out of trace data and dry-run output.
+- Provider prompts must ask for concise explanations from redacted facts only. They must not request, expose, or preserve raw chain-of-thought.
+- Cloud provider behavior is never selected by default and must be reviewed before implementation. Local provider support must still be explicit and opt-in.
 
 ## 7. Optional TUI behavior
 
