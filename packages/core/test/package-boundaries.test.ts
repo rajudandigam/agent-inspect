@@ -97,4 +97,12 @@ describe("package boundaries", () => {
     expect(keys(harness.dependencies)).toEqual(["agent-inspect"]);
     expect(keys(harness.peerDependencies)).toEqual([]);
   });
+
+  it("@agent-inspect/redact is dependency-free and public", async () => {
+    const redact = await readPkg("packages/redact/package.json");
+    expect(redact.name).toBe("@agent-inspect/redact");
+    expect(redact.private).toBeUndefined();
+    expect(keys(redact.dependencies)).toEqual([]);
+    expect(keys(redact.peerDependencies)).toEqual([]);
+  });
 });

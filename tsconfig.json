@@ -49,6 +49,8 @@
       "@agent-inspect/openai-agents/*": ["packages/openai-agents/src/*"],
       "@agent-inspect/harness": ["packages/harness/src/index.ts"],
       "@agent-inspect/harness/*": ["packages/harness/src/*"],
+      "@agent-inspect/redact": ["packages/redact/src/index.ts"],
+      "@agent-inspect/redact/*": ["packages/redact/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
@@ -65,6 +67,7 @@
     "tsup.jest.config.ts",
     "tsup.openai-agents.config.ts",
     "tsup.harness.config.ts",
+    "tsup.redact.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

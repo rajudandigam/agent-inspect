@@ -322,6 +322,8 @@ importers:
         specifier: workspace:*
         version: link:../..
 
+  packages/redact: {}
+
   packages/tui:
     dependencies:
       agent-inspect:

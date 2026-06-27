@@ -154,6 +154,32 @@ const optionalPackageChecks = [
       agentInspectProcessor(options).getDiagnostics();
     `,
   },
+  {
+    dir: "packages/redact",
+    name: "@agent-inspect/redact",
+    peerDependencies: {},
+    installPeers: [],
+    requiresAgentInspectDependency: false,
+    esm: `
+      import { redact } from "@agent-inspect/redact";
+      const result = redact({ token: "secret", ok: true });
+      if (result.value.token !== "[REDACTED]") throw new Error("redaction failed");
+      if (result.findings.length !== 1) throw new Error("finding missing");
+    `,
+    cjs: `
+      const { redact } = require("@agent-inspect/redact");
+      const result = redact({ token: "secret", ok: true });
+      if (result.value.token !== "[REDACTED]") throw new Error("redaction failed");
+      if (result.findings.length !== 1) throw new Error("finding missing");
+    `,
+    ts: `
+      import { redact, type RedactionFinding, type RedactionProfile } from "@agent-inspect/redact";
+      const profile: RedactionProfile = "share";
+      const result = redact({ correlationId: "corr" }, { profile });
+      const finding: RedactionFinding | undefined = result.findings[0];
+      if (!finding || finding.detector !== "key.correlationid") throw new Error("finding type failed");
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {
@@ -263,7 +289,7 @@ function assertOptionalPackedManifest(check, manifest) {
   }
   assertNoWorkspaceProtocol(check.name, manifest);
 
-  if (manifest.dependencies?.["agent-inspect"] !== expectedVersion) {
+  if (check.requiresAgentInspectDependency !== false && manifest.dependencies?.["agent-inspect"] !== expectedVersion) {
     fail(
       `${check.name} packed manifest did not rewrite agent-inspect workspace dependency`,
       JSON.stringify(manifest.dependencies ?? {}, null, 2),

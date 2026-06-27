@@ -1,0 +1,42 @@
+{
+  "name": "@agent-inspect/redact",
+  "version": "2.0.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Reusable deterministic redaction utilities for local AgentInspect workflows",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/redact"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.redact.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-2-redact-package-scaffold-and-core-engine-extraction"
+chunk: "v2.1-3-redaction-detectors-findings-and-profiles"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-1-redaction-package-rfc-and-boundary"
+dependsOn: "v2.1-2-redact-package-scaffold-and-core-engine-extraction"
 ```
 
 ## Goal
 
-Create the optional `@agent-inspect/redact` package and extract/share the existing redaction engine without breaking current trace safety behavior.
+Make `@agent-inspect/redact` useful as a standalone deterministic utility by adding detector coverage, findings, and profile behavior.
 
 ## Read first
 
@@ -23,72 +23,78 @@ Create the optional `@agent-inspect/redact` package and extract/share the existi
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
 - `docs/proposals/REDACT-PACKAGE.md`
-- existing core redaction implementation and tests
+- `packages/redact/src/index.ts`
+- `packages/redact/test/index.test.ts`
 
 ## Prior chunk evidence
 
-- Starting commit: `1c88d91295fab0c7a473acedf48bf6605fcc669f`.
-- Created `docs/proposals/REDACT-PACKAGE.md`.
-- Added the redaction package proposal to `docs/proposals/README.md`.
-- Clarified the v2.1 execution-plan scope for the proposal index update.
-- Defined the package boundary, API shape, profile semantics, detector model, finding shape, CLI design, integration plan, test strategy, and non-goals.
-- No runtime source, package manifests, package versions, changesets, tags, or publishing state were changed in the RFC chunk.
+- Starting commit: `6e7866af59abaac6cce1a8c3428c4fdac11b371e`.
+- Added public workspace package scaffold `@agent-inspect/redact` at `packages/redact`.
+- Added ESM/CJS/declaration build config via `tsup.redact.config.ts`.
+- Added dependency-free initial API: `redact`, `createRedactor`, `createRedactionProfile`, `Redactor`, `RedactionFinding`, `RedactionProfile`, rules, detectors, and result types.
+- Preserved root runtime dependencies; `package.json` dependencies remain `chalk`, `commander`, and `nanoid`.
+- Added focused package tests and package-boundary coverage.
+- Added pack smoke coverage for `@agent-inspect/redact`.
+- Updated the lockfile for the new workspace package.
 
 ## In scope
 
-1. Add `packages/redact/package.json`.
-2. Add ESM/CJS/types build configuration consistent with optional public packages.
-3. Add initial public API:
-   - `redact`
-   - `createRedactor`
-   - `createRedactionProfile`
-   - `RedactionFinding`
-   - `RedactionProfile`
-4. Reuse or extract existing core redaction logic while preserving root/core behavior.
-5. Keep root dependencies unchanged.
-6. Add focused package tests and smoke support as required by the active plan.
+1. Add deterministic detectors for:
+   - email;
+   - phone;
+   - authorization headers;
+   - bearer tokens;
+   - cookies;
+   - JWT;
+   - provider API key patterns;
+   - GitHub tokens;
+   - AWS-style keys;
+   - private key blocks;
+   - credit-card-like values with Luhn check;
+   - IPv4/IPv6;
+   - custom detectors.
+2. Ensure `local`, `share`, and `strict` profiles have explicit detector behavior.
+3. Ensure findings include stable `path`, `detector`, `action`, and `severity`.
+4. Keep output deterministic and non-mutating.
+5. Avoid compliance claims and network behavior.
 
 ## Out of scope
 
-- detector expansion beyond behavior-preserving scaffold unless required by the plan chunk;
-- changesets, package version changes, publishing, or tags;
+- integrating `@agent-inspect/redact` into trace writing, export, verify-safe, explain, or CI artifacts;
+- package version changes, changesets, publishing, or tags;
 - root/core dependency additions;
 - schema changes;
-- network/provider behavior;
-- LLM judge behavior;
-- compliance guarantees;
-- behavior changes to existing trace writing/export/report redaction unless explicitly tested and documented.
+- LLM/provider behavior;
+- compliance guarantees.
 
 ## Focused validation
 
 ```bash
+pnpm exec vitest run packages/redact/test
 pnpm build
 pnpm typecheck
 pnpm test
-pnpm pack:smoke
-pnpm compat:smoke
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- `@agent-inspect/redact` has a clear optional package scaffold and initial API.
-- Existing trace safety behavior remains compatible.
-- Root/core runtime dependencies do not increase.
-- ESM, CJS, and declaration outputs are valid for the new package.
-- Package smoke covers the new public package as appropriate.
-- No network behavior or compliance claims are added.
+- Built-in detector findings are exact, deterministic, and do not leak raw secrets.
+- Nested object/array input remains non-mutating.
+- Custom detectors still work.
+- `strict` profile produces stronger redaction than `share`, and `share` stronger than `local`.
+- No network behavior, root/core dependency change, package publishing, changeset, or schema change is introduced.
 
 ## Proposed commit
 
 ```text
-feat(redact): add reusable redaction package
+feat(redact): add deterministic detectors and findings
 ```
 
 ## Next chunk
 
-`v2.1-3-redaction-detectors-findings-and-profiles`.
+`v2.1-4-integrate-redaction-package-with-trace-safety-and-cli`.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside the scaffold scope.
+Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside detector/profile scope.

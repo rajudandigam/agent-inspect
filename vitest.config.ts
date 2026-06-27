@@ -58,6 +58,10 @@ const harnessEntry = fileURLToPath(
   new URL("./packages/harness/src/index.ts", import.meta.url),
 );
 
+const redactEntry = fileURLToPath(
+  new URL("./packages/redact/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -91,6 +95,7 @@ export default defineConfig({
       "@agent-inspect/jest": jestEntry,
       "@agent-inspect/openai-agents": openAiAgentsEntry,
       "@agent-inspect/harness": harnessEntry,
+      "@agent-inspect/redact": redactEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -121,6 +126,7 @@ export default defineConfig({
       "@agent-inspect/jest",
       "@agent-inspect/openai-agents",
       "@agent-inspect/harness",
+      "@agent-inspect/redact",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],
