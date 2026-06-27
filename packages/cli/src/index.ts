@@ -30,6 +30,8 @@ import type { WhatCommandOptions } from "./what.js";
 import { whatCommand } from "./what.js";
 import type { ReportCommandOptions } from "./report.js";
 import { reportCommand } from "./report.js";
+import type { RedactCommandOptions } from "./redact.js";
+import { redactCommand } from "./redact.js";
 import type { ExplainCommandOptions } from "./explain.js";
 import { explainCommand } from "./explain.js";
 import type { OpenCommandOptions } from "./open.js";
@@ -499,6 +501,23 @@ export function createCliProgram(): Command {
     )
     .action((runId: string, opts: ReportCommandOptions) => {
       runCommand(() => reportCommand(runId, opts));
+    });
+
+  program
+    .command("redact")
+    .description("Redact a local JSON or JSONL trace/file")
+    .argument("<trace-or-file>", "trace file, JSON file, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option(
+        "--profile <profile>",
+        "redaction profile: local, share, strict (default: share)",
+      ).choices(["local", "share", "strict"]),
+    )
+    .option("-o, --output <path>", "write redacted content to a file")
+    .option("--json", "print deterministic JSON wrapper with findings")
+    .action((target: string, opts: RedactCommandOptions) => {
+      runCommand(() => redactCommand(target, opts));
     });
 
   program

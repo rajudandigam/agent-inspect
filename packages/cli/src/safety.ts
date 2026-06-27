@@ -13,6 +13,7 @@ import {
   type TraceCheckFinding,
   type TraceCheckRule,
 } from "@agent-inspect/core/checks";
+import { redact, type RedactionFinding } from "@agent-inspect/redact";
 
 import { inputFromTarget } from "./trace-input.js";
 
@@ -236,6 +237,106 @@ function buildSafetyRules(options: SafetyCommandOptions): TraceCheckRule[] {
   ];
 }
 
+function flattenNodes(
+  nodes: readonly {
+    event: {
+      eventId: string;
+      runId: string;
+      parentId?: string;
+      kind: string;
+      name: string;
+      status?: string;
+      attributes?: Record<string, unknown>;
+    };
+    children: readonly unknown[];
+  }[],
+): {
+  event: {
+    eventId: string;
+    runId: string;
+    parentId?: string;
+    kind: string;
+    name: string;
+    status?: string;
+    attributes?: Record<string, unknown>;
+  };
+  children: readonly unknown[];
+}[] {
+  return nodes.flatMap((node) => [
+    node,
+    ...flattenNodes(
+      node.children as readonly {
+        event: {
+          eventId: string;
+          runId: string;
+          parentId?: string;
+          kind: string;
+          name: string;
+          status?: string;
+          attributes?: Record<string, unknown>;
+        };
+        children: readonly unknown[];
+      }[],
+    ),
+  ]);
+}
+
+function detectorSeverity(finding: RedactionFinding): TraceCheckFinding["severity"] {
+  return finding.severity;
+}
+
+function redactionDetectorFindings(
+  read: Awaited<ReturnType<typeof openTrace>>,
+  runId: string | undefined,
+): TraceCheckFinding[] {
+  const runs = runId === undefined
+    ? read.runs
+    : read.runs.filter((run) => run.runId === runId);
+  const out: TraceCheckFinding[] = [];
+
+  for (const run of runs) {
+    for (const node of flattenNodes(run.children)) {
+      const attrs = node.event.attributes;
+      if (attrs === undefined) continue;
+
+      const result = redact(attrs, { profile: "share" });
+      for (const finding of result.findings) {
+        if (finding.action === "keep") continue;
+        out.push({
+          ruleId: "safety.redactDetector",
+          severity: detectorSeverity(finding),
+          status: finding.severity === "error" ? "fail" : "warning",
+          message: `Redaction detector ${finding.detector} matched ${finding.matchKind} at ${finding.path}.`,
+          expected: "redacted trace content",
+          actual: finding.detector,
+          evidence: [
+            {
+              runId: node.event.runId,
+              eventId: node.event.eventId,
+              ...(node.event.parentId !== undefined ? { parentId: node.event.parentId } : {}),
+              kind: node.event.kind,
+              name: node.event.name,
+              ...(node.event.status !== undefined ? { status: node.event.status } : {}),
+              path: `attributes.${finding.path.replace(/^\$\.?/, "")}`,
+            },
+          ],
+        });
+      }
+    }
+  }
+
+  return out.sort((a, b) => {
+    const aEvidence = a.evidence[0];
+    const bEvidence = b.evidence[0];
+    return (
+      (aEvidence?.runId ?? "").localeCompare(bEvidence?.runId ?? "") ||
+      (aEvidence?.eventId ?? "").localeCompare(bEvidence?.eventId ?? "") ||
+      (aEvidence?.path ?? "").localeCompare(bEvidence?.path ?? "") ||
+      a.message.localeCompare(b.message)
+    );
+  });
+}
+
 function exitCodeFor(result: SafetyResult): number {
   if (result.status === "SAFE" || result.status === "SAFE WITH WARNINGS") return 0;
   if (result.status === "UNSAFE") return 1;
@@ -284,11 +385,15 @@ async function safetyCommand(
         ...(options.run !== undefined ? { runId: options.run } : {}),
       },
     );
+    const detectorFindings =
+      checkResult.diagnostics.length === 0
+        ? redactionDetectorFindings(read, checkResult.runId)
+        : [];
     result = resultFromParts({
       command,
       format: checkResult.format,
       runId: checkResult.runId,
-      findings: checkResult.findings,
+      findings: [...checkResult.findings, ...detectorFindings],
       diagnostics: [
         ...checkResult.diagnostics.map(diagnosticFromCheck),
         ...warningDiagnostics(read.warnings, read.unsupportedFields),

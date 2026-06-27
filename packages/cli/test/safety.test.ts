@@ -122,6 +122,9 @@ describe("scan and verify-safe commands", () => {
     expect(result.status).toBe("UNSAFE");
     expect(result.findings?.map((finding) => finding.ruleId)).toContain("safety.rawPrompt");
     expect(result.findings?.map((finding) => finding.ruleId)).toContain("safety.redaction");
+    expect(result.findings?.map((finding) => finding.ruleId)).toContain(
+      "safety.redactDetector",
+    );
     expect(serialized).not.toContain("sk-fixtureSecretValue123456");
     expect(serialized).not.toContain("raw prompt should not leak");
   });
