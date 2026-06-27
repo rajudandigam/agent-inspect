@@ -6,7 +6,7 @@ import type { Serialized } from "@langchain/core/load/serializable";
 import type { LLMResult } from "@langchain/core/outputs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { readTraceEvents } from "agent-inspect";
+import { readTraceEvents } from "agent-inspect/advanced";
 
 import { AgentInspectCallback } from "../src/agent-inspect-callback.js";
 

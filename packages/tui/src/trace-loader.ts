@@ -1,4 +1,4 @@
-import { readTraceEvents, resolveTraceDir } from "agent-inspect";
+import { readTraceEvents, resolveTraceDir } from "agent-inspect/advanced";
 
 import { buildTuiTraceModel } from "./tree-model.js";
 import type { TuiTraceModel } from "./types.js";

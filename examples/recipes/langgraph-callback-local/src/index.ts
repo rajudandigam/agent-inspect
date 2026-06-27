@@ -6,7 +6,7 @@ import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { AgentInspectCallback } from "@agent-inspect/langchain";
-import { readTraceEvents } from "agent-inspect";
+import { readTraceEvents } from "agent-inspect/advanced";
 
 const traceDir = path.join(process.cwd(), ".agent-inspect-runs");
 const runId = "run_langgraph_callback_recipe";

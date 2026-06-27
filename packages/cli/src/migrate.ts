@@ -1,12 +1,12 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { validateEvent } from "@agent-inspect/core/advanced";
 import {
   isPersistedInspectEvent,
   traceEventToPersistedInspectEvent,
-  validateEvent,
   type PersistedInspectEvent,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/persisted";
 
 export interface MigrateCommandOptions {
   to?: string;

@@ -6,11 +6,13 @@ import type {
   TracingProcessor,
 } from "@openai/agents";
 import type {
+  RedactionProfile,
+} from "agent-inspect/advanced";
+import type {
   PersistedInspectError,
   PersistedInspectEvent,
   PersistedTokenUsage,
-  RedactionProfile,
-} from "agent-inspect";
+} from "agent-inspect/persisted";
 import { fileWriter } from "agent-inspect/writers";
 import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 

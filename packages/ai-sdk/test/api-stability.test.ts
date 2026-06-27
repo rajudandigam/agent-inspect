@@ -12,18 +12,23 @@ import type {
 import { MockLanguageModelV3, simulateReadableStream } from "ai/test";
 import { agentInspect } from "@agent-inspect/ai-sdk";
 import {
-  buildRunReport,
   buildRunWhatSummary,
-  diffTraceEvents,
+} from "agent-inspect/advanced";
+import type { InspectNode } from "agent-inspect/advanced";
+import {
   persistedInspectEventsToRunTrees,
   persistedInspectEventsToTraceEvents,
-} from "agent-inspect";
+} from "agent-inspect/persisted";
+import type { PersistedInspectEvent } from "agent-inspect/persisted";
+import {
+  diffTraceEvents,
+} from "agent-inspect/diff";
+import { buildRunReport } from "agent-inspect/exporters";
 import type {
   AgentInspectAiSdkCaptureMode,
   AgentInspectAiSdkOptions,
 } from "@agent-inspect/ai-sdk";
 import { memoryWriter } from "agent-inspect/writers";
-import type { InspectNode, PersistedInspectEvent } from "agent-inspect";
 import type { TraceWriter } from "agent-inspect/writers";
 
 import { openTrace, readTrace } from "../../core/src/readers/index.js";

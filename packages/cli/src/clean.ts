@@ -7,8 +7,8 @@ import {
   isAgentInspectTrace,
   parseDuration,
   resolveTraceDir,
-} from "@agent-inspect/core";
-import type { TraceMetadata } from "@agent-inspect/core";
+  type TraceMetadata,
+} from "@agent-inspect/core/advanced";
 
 export interface CleanOptions {
   dir?: string;
@@ -192,4 +192,3 @@ export async function clean(options: CleanOptions = {}): Promise<void> {
     process.exitCode = 1;
   }
 }
-

@@ -10,7 +10,7 @@ import {
   persistedInspectEventsToRunTrees,
   persistedInspectEventsToTraceEvents,
   type PersistedInspectEvent,
-} from "agent-inspect";
+} from "agent-inspect/persisted";
 import { memoryWriter } from "agent-inspect/writers";
 import type { TraceWriter } from "agent-inspect/writers";
 import type { Span, SpanData, Trace, TracingProcessor } from "@openai/agents";

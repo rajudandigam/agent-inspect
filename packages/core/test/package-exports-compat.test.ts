@@ -169,7 +169,8 @@ describe.skipIf(!distPresent)("consumer TypeScript resolution (installed tarball
       },
       "index.ts",
       `import { inspectRun, step, observe } from "agent-inspect";
-import type { InspectRunOptions, TraceEvent } from "agent-inspect";
+import type { InspectRunOptions } from "agent-inspect";
+import type { TraceEvent } from "agent-inspect/advanced";
 
 const opts: InspectRunOptions = { silent: true };
 const _witness: TraceEvent | undefined = undefined;

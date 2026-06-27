@@ -6,7 +6,7 @@ import type { Serialized } from "@langchain/core/load/serializable";
 import type { LLMResult } from "@langchain/core/outputs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { extractMetadata, readTraceEvents } from "agent-inspect";
+import { extractMetadata, readTraceEvents } from "agent-inspect/advanced";
 import { list } from "../../cli/src/list.js";
 import { view } from "../../cli/src/view.js";
 
@@ -207,7 +207,7 @@ describe("AgentInspectCallback persistence", () => {
   });
 
   it("persistence errors do not throw into callback user flow", async () => {
-    const core = await import("agent-inspect");
+    const core = await import("agent-inspect/advanced");
     vi.spyOn(core, "writeTraceEvent").mockImplementation(() =>
       Promise.reject(new Error("disk unavailable")),
     );

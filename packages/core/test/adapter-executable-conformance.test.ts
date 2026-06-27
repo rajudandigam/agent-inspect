@@ -7,7 +7,7 @@ import { agentInspectProcessor } from "@agent-inspect/openai-agents";
 import { AgentInspectCallback } from "@agent-inspect/langchain";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { readTraceEvents } from "../src/index.js";
+import { readTraceEvents } from "../src/entries/advanced.js";
 import { memoryWriter } from "../src/writers/index.js";
 import {
   expectNoRawStrings,

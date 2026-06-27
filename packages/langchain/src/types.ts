@@ -1,4 +1,4 @@
-import type { RedactionRule } from "agent-inspect";
+import type { RedactionRule } from "agent-inspect/logs";
 
 export type CaptureMode = "none" | "metadata-only" | "preview";
 

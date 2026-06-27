@@ -82,3 +82,116 @@ export {
   FALLBACK_TRACE_DIR,
   MAX_NAME_LENGTH,
 } from "../utils.js";
+
+export type {
+  StepType,
+  StepStatus,
+  RunStatus,
+  ErrorInfo,
+  TokenMetadata,
+  StepMetadata,
+  Run,
+  Step,
+  TraceSchemaVersion,
+  TraceEventBase,
+  RunStartedEvent,
+  RunCompletedEvent,
+  StepStartedEvent,
+  StepCompletedEvent,
+  TraceEvent,
+  TraceMetadataStatus,
+  TraceMetadata,
+  RunSummary,
+  InspectRunOptions,
+  RedactionProfile,
+  TraceCorrelationMetadata,
+  StepOptions,
+  ObserveOptions,
+  ExecutionContext,
+  ActiveStepContext,
+} from "../types.js";
+
+export { isTraceEvent, isStepType, isStepStatus } from "../types.js";
+
+export type {
+  AttributionConfidence,
+  InspectKind,
+  EventSource,
+  InspectEvent,
+  InspectNode,
+  InspectRunTree,
+} from "../types/inspect-event.js";
+
+export {
+  serializeEvent,
+  validateEvent,
+  initializeTraceFile,
+  writeTraceEvent,
+  readTraceFile,
+  readTraceEvents,
+  listTraceFiles,
+  getRunIdFromTraceFileName,
+} from "../storage.js";
+
+export type {
+  TraceJsonlFormat,
+  ParseTraceJsonlResult,
+  ParseTraceJsonlOptions,
+} from "../read-trace.js";
+
+export { parseTraceJsonl, unknownTraceFormatMessage } from "../read-trace.js";
+
+export type { TraceDirectoryOptions } from "../trace-directory.js";
+export { TraceDirectory, resolveTraceDir } from "../trace-directory.js";
+
+export { extractMetadata, buildRunSummary } from "../trace-metadata.js";
+
+export type { TraceFilterOptions } from "../trace-filter.js";
+export { filterTraces } from "../trace-filter.js";
+
+export type {
+  TimelineFocus,
+  TimelineEntry,
+  RunTimeline,
+  TimelineOptions,
+  RenderTimelineOptions,
+} from "../timeline.js";
+export { buildRunTimeline, renderTimeline } from "../timeline.js";
+
+export type { RunWhatSummary, RenderWhatOptions } from "../what.js";
+export { buildRunWhatSummary, renderRunWhat } from "../what.js";
+
+export type {
+  ExplainFact,
+  ExplainInference,
+  ExplainMode,
+  ExplainOptions,
+  ExplainResult,
+} from "../explain.js";
+export { buildLocalExplanation } from "../explain.js";
+
+export type {
+  DurationStats,
+  TraceStatsRankedRun,
+  TraceStatsRankedStep,
+  TraceStats,
+  TraceStatsOptions,
+} from "../stats.js";
+export { buildTraceStats, renderTraceStats } from "../stats.js";
+
+export type {
+  TraceSearchOptions,
+  TraceSearchResult,
+  ParsedDurationFilter,
+} from "../search.js";
+export {
+  parseDurationFilter,
+  searchTraces,
+  loadTraceMetadataList,
+} from "../search.js";
+
+export { isAgentInspectTrace } from "../trace-verification.js";
+
+export { parseDuration } from "../utils/duration.js";
+
+export { maybeInspectRun, isAgentInspectEnabled } from "../maybe-inspect-run.js";

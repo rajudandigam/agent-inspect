@@ -1,5 +1,9 @@
-import type { ParserWarning, ParserWarningCode } from "@agent-inspect/core";
-import { parseLogsToTrees, renderRunTrees } from "@agent-inspect/core";
+import {
+  parseLogsToTrees,
+  renderRunTrees,
+  type ParserWarning,
+  type ParserWarningCode,
+} from "@agent-inspect/core/logs";
 
 export interface LogsOptions {
   format?: "json" | "log4js" | "auto";
@@ -129,4 +133,3 @@ export async function logs(filePath: string, options: LogsOptions = {}): Promise
     process.exitCode = 1;
   }
 }
-

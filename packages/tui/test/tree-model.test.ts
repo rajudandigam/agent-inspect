@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { TraceEvent } from "agent-inspect";
+import type { TraceEvent } from "agent-inspect/advanced";
 
 import { buildTuiTraceModel } from "../src/tree-model.js";
 

@@ -13,10 +13,10 @@ type RetrieverDocuments = Parameters<
 >[0];
 import {
   getCurrentCorrelationMetadata,
-  Redactor,
   type InspectEvent,
   type InspectKind,
-} from "agent-inspect";
+} from "agent-inspect/advanced";
+import { Redactor } from "agent-inspect/logs";
 
 import {
   extractLangGraphMetadata,

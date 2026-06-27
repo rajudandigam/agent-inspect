@@ -9,8 +9,23 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = fileURLToPath(
   new URL("./packages/core/src/index.ts", import.meta.url),
 );
+const coreAdvancedEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/advanced.ts", import.meta.url),
+);
 const coreChecksEntry = fileURLToPath(
   new URL("./packages/core/src/entries/checks.ts", import.meta.url),
+);
+const coreDiffEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/diff.ts", import.meta.url),
+);
+const coreExportersEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/exporters.ts", import.meta.url),
+);
+const coreLogsEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/logs.ts", import.meta.url),
+);
+const corePersistedEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/persisted.ts", import.meta.url),
 );
 const coreReadersEntry = fileURLToPath(
   new URL("./packages/core/src/entries/readers.ts", import.meta.url),
@@ -52,10 +67,22 @@ export default defineConfig({
   resolve: {
     // In-repo tests run before build; point workspace imports at source.
     alias: {
+      "@agent-inspect/core/advanced": coreAdvancedEntry,
       "@agent-inspect/core/checks": coreChecksEntry,
+      "@agent-inspect/core/diff": coreDiffEntry,
+      "@agent-inspect/core/exporters": coreExportersEntry,
+      "@agent-inspect/core/logs": coreLogsEntry,
+      "@agent-inspect/core/persisted": corePersistedEntry,
       "@agent-inspect/core/readers": coreReadersEntry,
       "@agent-inspect/core/writers": coreWritersEntry,
       "@agent-inspect/core": coreEntry,
+      "agent-inspect/advanced": coreAdvancedEntry,
+      "agent-inspect/checks": coreChecksEntry,
+      "agent-inspect/diff": coreDiffEntry,
+      "agent-inspect/exporters": coreExportersEntry,
+      "agent-inspect/logs": coreLogsEntry,
+      "agent-inspect/persisted": corePersistedEntry,
+      "agent-inspect/readers": coreReadersEntry,
       "agent-inspect/writers": coreWritersEntry,
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
@@ -72,10 +99,22 @@ export default defineConfig({
     // Ensure Vite doesn't try to resolve package entrypoints for workspace-only deps.
     noExternal: [
       "@agent-inspect/core",
+      "@agent-inspect/core/advanced",
       "@agent-inspect/core/checks",
+      "@agent-inspect/core/diff",
+      "@agent-inspect/core/exporters",
+      "@agent-inspect/core/logs",
+      "@agent-inspect/core/persisted",
       "@agent-inspect/core/readers",
       "@agent-inspect/core/writers",
       "agent-inspect",
+      "agent-inspect/advanced",
+      "agent-inspect/checks",
+      "agent-inspect/diff",
+      "agent-inspect/exporters",
+      "agent-inspect/logs",
+      "agent-inspect/persisted",
+      "agent-inspect/readers",
       "agent-inspect/writers",
       "@agent-inspect/ai-sdk",
       "@agent-inspect/vitest",

@@ -1,13 +1,14 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { ExportFormat, ExportOptions, RedactionProfile } from "@agent-inspect/core";
+import { resolveTraceDir, type RedactionProfile } from "@agent-inspect/core/advanced";
 import {
   exportRunTree,
   manualTraceEventsToRunTree,
-  resolveTraceDir,
   validateExport,
-} from "@agent-inspect/core";
+  type ExportFormat,
+  type ExportOptions,
+} from "@agent-inspect/core/exporters";
 
 import { readRunTraceEvents } from "./read-run.js";
 

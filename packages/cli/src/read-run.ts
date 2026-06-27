@@ -2,10 +2,10 @@ import { access } from "node:fs/promises";
 
 import {
   getTraceFilePath,
-  persistedInspectEventsToTraceEvents,
   unknownTraceFormatMessage,
   type TraceEvent,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
+import { persistedInspectEventsToTraceEvents } from "@agent-inspect/core/persisted";
 import { openTrace } from "@agent-inspect/core/readers";
 
 export interface ReadRunTraceResult {

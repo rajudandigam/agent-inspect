@@ -1,4 +1,4 @@
-# API (AgentInspect 1.x)
+# API
 
 This document describes the **public TypeScript API surface** of AgentInspect and classifies each area as **stable** or **experimental**.
 
@@ -6,8 +6,8 @@ AgentInspect is a **local-first execution-tree debugger**. It is not a SaaS, not
 
 ## 1. Stability policy
 
-- **Stable**: intended to be compatible across v1.x. Breaking changes require v2.0.
-- **Experimental**: available for adoption, but subject to refinement (including naming/shape changes) before a future stability declaration. Experimental APIs may change in v1.x.
+- **Stable**: intended to stay compatible within the current major version.
+- **Experimental**: available for adoption, but subject to refinement (including naming/shape changes) before a future stability declaration.
 
 Use the root import for stable beginner APIs. Use subpaths for advanced, experimental, or lower-level workflows.
 
@@ -21,7 +21,7 @@ import {
 } from "agent-inspect";
 ```
 
-**v1.9 root API direction:** do not add new root exports casually. Existing root imports keep working through v1.x for compatibility, but new advanced examples should use the subpath where the API lives. The intended stable root set for v2 is:
+**v2 root API contract:** do not add new root exports casually. Advanced, experimental, and lower-level helpers belong on the subpath where the API lives. The stable root value set is:
 
 ```ts
 import {
@@ -34,7 +34,7 @@ import {
 } from "agent-inspect";
 ```
 
-**1.x subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`, `/checks`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
+**Subpath exports:** Subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`, `/checks`) narrow the import surface for experimental and advanced APIs. Design history: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
 
 ```ts
 import { parseLogsToTrees } from "agent-inspect/logs";
@@ -44,15 +44,15 @@ import { openTrace } from "agent-inspect/readers";
 import { runTraceChecks } from "agent-inspect/checks";
 import { diffTraceEvents } from "agent-inspect/diff";
 import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
-import { createInspector } from "agent-inspect/advanced";
+import { createInspectorRuntime } from "agent-inspect/advanced";
 ```
 
 Notes:
 
-- The core guarantee of v1.x is **stable local debugging**: manual tracing + CLI inspection.
+- The core guarantee is **stable local debugging**: manual tracing + CLI inspection.
 - Export formats (OpenInference / OTLP JSON) are **local-only** and **compatibility-oriented**. They do **not** upload anywhere.
-- There are **zero production sinks** in v1.x; sink/uploader APIs are not stable.
-- Advanced root exports in v1.x are compatibility aliases. Prefer `agent-inspect/advanced`, `agent-inspect/readers`, `agent-inspect/writers`, `agent-inspect/checks`, `agent-inspect/diff`, `agent-inspect/exporters`, `agent-inspect/logs`, and `agent-inspect/persisted` for new code.
+- There are **zero production sinks**; sink/uploader APIs are not stable.
+- Advanced APIs are available from `agent-inspect/advanced`, `agent-inspect/readers`, `agent-inspect/writers`, `agent-inspect/checks`, `agent-inspect/diff`, `agent-inspect/exporters`, `agent-inspect/logs`, and `agent-inspect/persisted`.
 
 ## 2. Stable core APIs (manual tracing)
 
@@ -78,14 +78,14 @@ import {
   - **`maxEventBytes`**: max UTF-8 bytes per serialized JSONL event (default `65536`). Oversized events are truncated; instrumentation never throws into user code.
   - **Correlation metadata (v1.3.0+):** optional `correlationId`, `requestId`, `decisionId`, and `groupId` strings. When set, they are written on `run_started.metadata` (not on every step). Top-level correlation options override the same keys in `options.metadata`. Useful for eval cases, CI job IDs, request tracing, and `stats --correlation-id` / `--group-id`. They are **metadata only** — they do not replace `runId`. Treat sensitive IDs as trace data before sharing exports.
 - **`maybeInspectRun(name, fn, options?)`**: same as `inspectRun` when tracing is enabled; otherwise passthrough. Enablement: explicit **`options.enabled`** wins; when omitted, reads **`AGENT_INSPECT`** (`1`, `true`, `yes`, `on`, `enabled` — case-insensitive). Unset or other values disable tracing. Use in eval harnesses, CI, or jobs where tracing should be toggled by environment.
-- **`isAgentInspectEnabled(value?)`**: returns whether a string (or `process.env.AGENT_INSPECT`) matches an enable token.
+- **`isAgentInspectEnabled(value?)`**: advanced helper available from `agent-inspect/advanced`; returns whether a string (or `process.env.AGENT_INSPECT`) matches an enable token.
 - **`step(name, fn, options?)`**: traces a named unit of work inside `inspectRun` (`step_started` / `step_completed`). Step `metadata` inherits the parent run's redaction and size-bound settings.
   - **`step.llm(model, fn)`**: convenience wrapper (`type: "llm"`, `metadata.model`).
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
 - **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.
 - **`getCurrentCorrelationMetadata()`**: returns active run correlation fields (`correlationId`, `requestId`, `decisionId`, `groupId`) inside `inspectRun` / `maybeInspectRun`; `undefined` outside a traced run or when none were set.
 - **`RedactionProfile`**: `"local" | "share" | "strict"` — see `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
-- **`resolveRedactionProfile(profile?)`**: resolves profile extra keys and metadata caps (for advanced integrations).
+- **`resolveRedactionProfile(profile?)`**: advanced helper available from `agent-inspect/advanced`; resolves profile extra keys and metadata caps for integrations.
 
 ## 3. Stable local inspection APIs
 
@@ -410,7 +410,7 @@ No network writer or vendor sink exists in this package.
 Import from `agent-inspect/advanced`:
 
 ```ts
-import { createInspector } from "agent-inspect/advanced";
+import { createInspector } from "agent-inspect";
 import { memoryWriter } from "agent-inspect/writers";
 
 const writer = memoryWriter();
@@ -441,7 +441,7 @@ Public methods:
 
 `traceDir` and `silent` on `createInspector()` are context metadata for compatibility with existing helpers. They do not configure persistence or terminal output. Prefer writer-owned output configuration such as `fileWriter({ dir })` or `fileWriter({ filePath })`.
 
-`createInspectorRuntime()` is also available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()` and `inspector.getDiagnostics()`. Root exports for the runtime remain available for 1.x compatibility, but new advanced usage should import from `agent-inspect/advanced`.
+`createInspectorRuntime()` is available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()` and `inspector.getDiagnostics()`.
 
 These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
 
@@ -503,7 +503,7 @@ Recipes: [deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/R
 Import from `agent-inspect`:
 
 ```ts
-import { buildLocalExplanation } from "agent-inspect";
+import { buildLocalExplanation } from "agent-inspect/advanced";
 ```
 
 - **`buildLocalExplanation(run, options?)`**:
@@ -553,7 +553,7 @@ No deprecated APIs are declared as of 1.4.0.
 
 ## 25. Removal / deprecation policy
 
-- Stable APIs are not removed in v1.x.
+- Stable APIs are not removed within the current major version.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
 ## 26. Backward compatibility policy

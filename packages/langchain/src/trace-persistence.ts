@@ -10,11 +10,11 @@ import {
   resolveTraceSafetyOptions,
   writeTraceEvent,
   type InspectKind,
-  type RedactionRule,
   type StepMetadata,
   type StepType,
   type TraceEvent,
-} from "agent-inspect";
+} from "agent-inspect/advanced";
+import type { RedactionRule } from "agent-inspect/logs";
 
 export interface LangChainTracePersistenceOptions {
   runName?: string;

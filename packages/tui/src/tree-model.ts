@@ -4,7 +4,7 @@ import type {
   StepCompletedEvent,
   StepStartedEvent,
   TraceEvent,
-} from "agent-inspect";
+} from "agent-inspect/advanced";
 
 import type { TuiTraceModel, TuiTraceNode } from "./types.js";
 

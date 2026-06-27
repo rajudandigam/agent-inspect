@@ -5,7 +5,7 @@ import {
   parseDurationFilter,
   resolveTraceDir,
   searchTraces,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 
 export interface SearchCommandOptions {
   dir?: string;

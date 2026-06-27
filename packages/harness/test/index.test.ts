@@ -6,7 +6,7 @@ import {
   getRunIdFromTraceFileName,
   listTraceFiles,
   readTraceEvents,
-} from "agent-inspect";
+} from "agent-inspect/advanced";
 import { describe, expect, it } from "vitest";
 
 import {

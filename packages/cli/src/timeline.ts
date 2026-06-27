@@ -2,7 +2,7 @@ import {
   buildRunTimeline,
   renderTimeline,
   resolveTraceDir,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 
 import { readRunTraceEvents } from "./read-run.js";
 

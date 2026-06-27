@@ -1,6 +1,6 @@
 # Migration
 
-AgentInspect 1.x keeps existing global APIs and published imports working. Manual trace writing remains `schemaVersion: "0.1"`, and v0.1/v0.2 traces remain readable.
+AgentInspect keeps stable global APIs and published imports working within each major version. Manual trace writing remains `schemaVersion: "0.1"` where documented, and v0.1/v0.2 traces remain readable.
 
 ## From older 1.x docs
 
@@ -35,17 +35,16 @@ import { diffTraceEvents } from "agent-inspect/diff";
 import { exportMarkdown } from "agent-inspect/exporters";
 import { parseLogsToTrees } from "agent-inspect/logs";
 import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
-import { createInspector } from "agent-inspect/advanced";
+import { createInspectorRuntime } from "agent-inspect/advanced";
 ```
 
-## v2 import preparation
+## Root and subpath imports
 
-No import changes are required for v1.x. To prepare for v2, keep beginner workflow APIs at the root and move advanced usage to subpaths now.
+Keep beginner workflow APIs at the root and move advanced usage to subpaths.
 
-| 1.x root compatibility import | Preferred 1.x import for new code | v2 direction |
+| API area | Preferred import | Direction |
 | --- | --- | --- |
-| `inspectRun`, `maybeInspectRun`, `step`, `observe`, `getCurrentCorrelationMetadata` | `agent-inspect` | stays root |
-| `createInspector` | `agent-inspect/advanced` | likely root and `/advanced` |
+| `inspectRun`, `maybeInspectRun`, `step`, `observe`, `getCurrentCorrelationMetadata`, `createInspector` | `agent-inspect` | stays root |
 | `createInspectorRuntime` | `agent-inspect/advanced` | `/advanced` |
 | `openTrace`, `readTrace`, `detectTraceFormat` | `agent-inspect/readers` | `/readers` |
 | `memoryWriter`, `fileWriter`, `bufferedFileWriter`, `compositeWriter`, `nullWriter` | `agent-inspect/writers` | `/writers` |
@@ -61,7 +60,7 @@ Nothing uploads by default. Manual metadata is redacted before disk by default, 
 
 ## Compatibility notes
 
-- Existing `inspectRun`, `maybeInspectRun`, `step`, `step.llm`, `step.tool`, `observe`, and `getCurrentCorrelationMetadata` imports remain valid.
+- Existing `inspectRun`, `maybeInspectRun`, `step`, `step.llm`, `step.tool`, `observe`, `getCurrentCorrelationMetadata`, and `createInspector` imports remain valid.
 - Root/core does not require optional adapter dependencies.
 - Optional adapter APIs are experimental and package-scoped.
 - No destructive migration is required for existing trace directories.

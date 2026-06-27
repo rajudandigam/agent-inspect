@@ -9,11 +9,13 @@ import type {
   TelemetryIntegration,
 } from "ai";
 import type {
+  RedactionProfile,
+} from "agent-inspect/advanced";
+import type {
   PersistedInspectEvent,
   PersistedInspectError,
   PersistedTokenUsage,
-  RedactionProfile,
-} from "agent-inspect";
+} from "agent-inspect/persisted";
 import { fileWriter } from "agent-inspect/writers";
 import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 

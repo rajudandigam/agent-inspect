@@ -1,6 +1,6 @@
 import { stat } from "node:fs/promises";
 
-import { getTraceFilePath, resolveTraceDir } from "@agent-inspect/core";
+import { getTraceFilePath, resolveTraceDir } from "@agent-inspect/core/advanced";
 import type { TraceInput } from "@agent-inspect/core/readers";
 
 export interface TraceTargetOptions {

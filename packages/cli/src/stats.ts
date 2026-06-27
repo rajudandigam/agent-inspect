@@ -5,7 +5,7 @@ import {
   parseDuration,
   renderTraceStats,
   resolveTraceDir,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 
 export interface StatsCommandOptions {
   dir?: string;

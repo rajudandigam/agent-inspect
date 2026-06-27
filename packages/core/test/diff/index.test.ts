@@ -4,7 +4,7 @@ import {
   diffTraceEvents,
   renderRunDiff,
   diffRuns,
-} from "../../src/index.js";
+} from "../../src/entries/diff.js";
 import type { TraceEvent } from "../../src/types.js";
 
 describe("diff package surface", () => {

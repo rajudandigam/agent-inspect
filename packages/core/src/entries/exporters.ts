@@ -19,6 +19,8 @@ export {
   validateExportContent,
 } from "../exporters/index.js";
 export type { OpenInferenceExport, OpenInferenceSpan } from "../exporters/openinference-exporter.js";
+export type { ReportFormat, ReportOptions, ReportResult } from "../report.js";
+export { buildRunReport } from "../report.js";
 export {
   safeString,
   escapeMarkdown,

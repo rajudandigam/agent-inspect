@@ -8,7 +8,7 @@ import {
   buildRunSummary,
   extractMetadata,
   resolveTraceDir,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 
 import { readRunTraceEvents } from "./read-run.js";
 
@@ -25,7 +25,7 @@ import type {
   StepStatus,
   StepType,
   TraceEvent,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 
 export interface ViewOptions {
   dir?: string;

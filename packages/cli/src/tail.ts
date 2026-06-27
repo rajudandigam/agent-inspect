@@ -1,14 +1,15 @@
 import { open, stat } from "node:fs/promises";
 import { stdin as input } from "node:process";
 
-import type { ParserWarning, ParserWarningCode } from "@agent-inspect/core";
 import {
   LiveLogAccumulator,
   loadLogIngestConfig,
   mergeLogIngestConfig,
   renderRunTrees,
-} from "@agent-inspect/core";
-import type { LogIngestConfig } from "@agent-inspect/core";
+  type LogIngestConfig,
+  type ParserWarning,
+  type ParserWarningCode,
+} from "@agent-inspect/core/logs";
 
 export interface TailOptions {
   file?: string;
@@ -334,4 +335,3 @@ export async function tail(options: TailOptions = {}): Promise<void> {
     process.exitCode = 1;
   }
 }
-

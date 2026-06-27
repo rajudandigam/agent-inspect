@@ -4,11 +4,11 @@ import process from "node:process";
 
 import {
   inspectRun,
-  isAgentInspectEnabled,
   maybeInspectRun,
   observe,
 } from "agent-inspect";
 import type { InspectRunOptions } from "agent-inspect";
+import { isAgentInspectEnabled } from "agent-inspect/advanced";
 
 export type HarnessDiagnosticSeverity = "warning" | "error";
 

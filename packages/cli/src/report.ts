@@ -1,11 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { RedactionProfile, ReportFormat } from "@agent-inspect/core";
+import { resolveTraceDir, type RedactionProfile } from "@agent-inspect/core/advanced";
 import {
   buildRunReport,
-  resolveTraceDir,
-} from "@agent-inspect/core";
+  type ReportFormat,
+} from "@agent-inspect/core/exporters";
 
 import { readRunTraceEvents } from "./read-run.js";
 

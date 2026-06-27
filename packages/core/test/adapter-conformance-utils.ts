@@ -3,11 +3,13 @@ import { expect } from "vitest";
 import {
   persistedInspectEventsToRunTrees,
   persistedInspectEventsToTraceEvents,
-  type InspectNode,
   type PersistedInspectEvent,
   type PersistedTokenUsage,
-  type TraceEvent,
-} from "../src/index.js";
+} from "../src/entries/persisted.js";
+import type {
+  InspectNode,
+  TraceEvent,
+} from "../src/entries/advanced.js";
 import { openTrace, readTrace } from "../src/readers/index.js";
 
 export function toJsonl(events: readonly unknown[]): string {

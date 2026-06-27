@@ -1,10 +1,9 @@
-import type { DiffOptions } from "@agent-inspect/core";
+import type { DiffOptions } from "@agent-inspect/core/diff";
+import { parseDuration, resolveTraceDir } from "@agent-inspect/core/advanced";
 import {
   diffTraceEvents,
-  parseDuration,
   renderRunDiff,
-  resolveTraceDir,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/diff";
 
 import { readRunTraceEvents } from "./read-run.js";
 

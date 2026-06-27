@@ -7,8 +7,9 @@ import {
   filterTraces,
   parseDuration,
   resolveTraceDir,
-} from "@agent-inspect/core";
-import type { TraceMetadata, TraceMetadataStatus } from "@agent-inspect/core";
+  type TraceMetadata,
+  type TraceMetadataStatus,
+} from "@agent-inspect/core/advanced";
 
 export interface ListOptions {
   dir?: string;

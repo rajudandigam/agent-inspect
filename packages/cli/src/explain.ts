@@ -4,7 +4,7 @@ import {
   type ExplainResult,
   type InspectRunTree,
   type RedactionProfile,
-} from "@agent-inspect/core";
+} from "@agent-inspect/core/advanced";
 import {
   TraceReadError,
   openTrace,

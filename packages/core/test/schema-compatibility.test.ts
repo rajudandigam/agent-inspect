@@ -5,13 +5,17 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
-  diffTraceEvents,
-  exportRunTree,
   isAgentInspectTrace,
-  manualTraceEventsToComparableRun,
-  manualTraceEventsToRunTree,
   readTraceEvents,
-} from "../src/index.js";
+} from "../src/entries/advanced.js";
+import {
+  diffTraceEvents,
+  manualTraceEventsToComparableRun,
+} from "../src/entries/diff.js";
+import {
+  exportRunTree,
+  manualTraceEventsToRunTree,
+} from "../src/entries/exporters.js";
 import { parseTraceJsonl } from "../src/read-trace.js";
 import { validateEvent } from "../src/storage.js";
 

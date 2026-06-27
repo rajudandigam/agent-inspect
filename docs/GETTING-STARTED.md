@@ -88,7 +88,7 @@ import { diffTraceEvents } from "agent-inspect/diff";
 import { exportMarkdown } from "agent-inspect/exporters";
 import { parseLogsToTrees } from "agent-inspect/logs";
 import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
-import { createInspector } from "agent-inspect/advanced";
+import { createInspectorRuntime } from "agent-inspect/advanced";
 ```
 
 ### Always trace vs env-gated tracing

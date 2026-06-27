@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as core from "@agent-inspect/core";
+import * as core from "@agent-inspect/core/advanced";
 
 import { list } from "../src/list.js";
 
