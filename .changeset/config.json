@@ -29,6 +29,7 @@
     "agent-inspect-recipe-retry-fallback",
     "agent-inspect-recipe-tool-failure-retry",
     "agent-inspect-recipe-winston-json-logs",
+    "@agent-inspect/harness",
     "@agent-inspect/vitest",
     "@agent-inspect/jest"
   ]

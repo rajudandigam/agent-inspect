@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v1.9.0"
-chunk: "v1.9-7-release-readiness"
-status: "completed"
+chunk: "v1.9-release-prep-and-publication"
+status: "in_progress"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.9-6-root-api-slimming-plan-and-enforcement"
+dependsOn: "v1.9-7-release-readiness"
 ```
 
 ## Goal
 
-Prepare v1.9.0 release-readiness evidence and stop before manual release-prep operations.
+Prepare and execute the v1.9.0 minor release workflow through GitHub Changesets automation.
 
 ## Read first
 
@@ -23,15 +23,18 @@ Prepare v1.9.0 release-readiness evidence and stop before manual release-prep op
 
 ## In scope
 
-1. Prepare v1.9.0 release-readiness evidence and release notes draft.
-2. Inspect package contents.
-3. Verify no unauthorized versions, changesets, tags, publishes, or releases occurred.
-4. Stop for maintainer release-prep authorization.
+1. Add a v1.9.0 minor Changeset for the existing public linked packages.
+2. Keep `@agent-inspect/harness`, `@agent-inspect/vitest`, and `@agent-inspect/jest` private/unpublished.
+3. Run the standard release workflow validation.
+4. Push the release-prep commit to `main`.
+5. Let GitHub Changesets create the Version Packages PR, merge it only after green checks, and verify publication.
 
 ## Out of scope
 
-- package version changes;
-- changesets, tags, npm publish, GitHub releases, or first public package publication;
+- first public `@agent-inspect/harness` publication;
+- private Vitest/Jest reporter publication;
+- patch releases;
+- force pushes, manual local npm publish, or bypassing CI;
 - root export removals or breaking import changes;
 - schema changes;
 - new root/core dependencies;
@@ -41,54 +44,44 @@ Prepare v1.9.0 release-readiness evidence and stop before manual release-prep op
 ## Focused validation
 
 ```bash
-pnpm build
-pnpm typecheck
-pnpm test
-pnpm test:coverage
-pnpm size
+pnpm exec changeset status --verbose
 pnpm test:all
 pnpm fixtures:check
 pnpm recipes:check
-pnpm compat:smoke
 pnpm pack:smoke
-npm pack --dry-run
+pnpm compat:smoke
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- Release-readiness record includes exact validation evidence and package contents evidence.
-- Release notes draft covers harness, explain, adapter promotion, and root API slimming work.
-- No unauthorized versions, changesets, tags, publishes, releases, or release PRs occurred.
-- No root/core dependency, version, schema, network, publish, or release behavior changes occur.
-- Manual maintainer release-prep remains the only next step.
+- Changesets plans exactly five public linked minor bumps to `1.9.0` and no patch or major releases.
+- Harness remains private and is excluded from this public release.
+- GitHub release workflow creates and validates a Version Packages PR.
+- Publish workflow publishes only the authorized public packages.
+- No root/core dependency, schema, network, provider, hosted upload, or replay behavior changes occur.
 
 ## Completion evidence
 
-- `CI=true pnpm build` passed.
-- `CI=true pnpm typecheck` passed.
-- `CI=true pnpm test` passed.
-  - 123 files passed, 1087 tests passed.
-- `CI=true pnpm test:coverage` passed.
-  - 123 files passed, 1087 tests passed.
-  - All-files coverage: statements 81.13%, branches 79.28%, functions 94.81%, lines 81.13%.
-- `CI=true pnpm size` passed.
-  - Size 39.6 kB with all dependencies, minified and brotlied; limit 120 kB.
+- Maintainer authorized release-prep and publish after the readiness gate.
+- `CI=true pnpm exec changeset status --verbose` passed.
+  - Minor bumps only: `agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/ai-sdk`, and `@agent-inspect/openai-agents` to `1.9.0`.
+  - No patch or major releases.
 - `CI=true pnpm test:all` passed.
+  - 123 files passed, 1087 tests passed.
+  - Size 39.6 kB with all dependencies, minified and brotlied; limit 120 kB.
 - `CI=true pnpm fixtures:check` passed.
   - 9 v0.1 JSONL files, 6 v0.2 JSONL files, 8 logs, 5 configs.
 - `CI=true pnpm recipes:check` passed.
   - 20 recipes validated.
-- `CI=true pnpm compat:smoke` passed.
 - `CI=true pnpm pack:smoke` passed.
-- `npm pack --dry-run` passed.
-  - Root dry-run tarball `agent-inspect-1.8.0.tgz`; 126 files; 1.4 MB package size; 6.7 MB unpacked; shasum `3e75c63f292d82449cdb7f037039070be1990070`.
-- `git diff --check` passed after final readiness/state edits.
+- `CI=true pnpm compat:smoke` passed.
+- `git diff --check` passed.
 
 ## Proposed commit
 
 ```text
-docs: prepare v1.9 release readiness
+chore: prepare v1.9.0 changeset release
 ```
 
 ## Stop condition
