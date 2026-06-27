@@ -21,6 +21,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [OPENAI-AGENTS-JS-TRACING.md](./OPENAI-AGENTS-JS-TRACING.md) | v1.7.0 | Safe local-only OpenAI Agents JS tracing processor boundary |
 | [LANGGRAPH-ADAPTER-BOUNDARY.md](./LANGGRAPH-ADAPTER-BOUNDARY.md) | v1.7.0 | Decision to route LangGraph support through the LangChain adapter first |
 | [TRACE-CHECKS.md](./TRACE-CHECKS.md) | v1.8.0 | Deterministic local trace check contract, rule/evidence model, CLI semantics, and baseline boundary |
+| [REDACT-PACKAGE.md](./REDACT-PACKAGE.md) | v2.1.0 | Standalone deterministic redaction package boundary, detector/profile semantics, findings, and CLI shape |
 
 ## Rules
 

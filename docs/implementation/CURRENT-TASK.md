@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-1-redaction-package-rfc-and-boundary"
+chunk: "v2.1-2-redact-package-scaffold-and-core-engine-extraction"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-0-post-v2-reconciliation-and-v2.1-planning"
+dependsOn: "v2.1-1-redaction-package-rfc-and-boundary"
 ```
 
 ## Goal
 
-Define the `@agent-inspect/redact` package boundary before runtime package work begins.
+Create the optional `@agent-inspect/redact` package and extract/share the existing redaction engine without breaking current trace safety behavior.
 
 ## Read first
 
@@ -22,66 +22,73 @@ Define the `@agent-inspect/redact` package boundary before runtime package work 
 - `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
-- existing redaction-related docs and source only as needed for boundary accuracy
+- `docs/proposals/REDACT-PACKAGE.md`
+- existing core redaction implementation and tests
 
 ## Prior chunk evidence
 
-- Starting commit: `904c437475e7ba0da8a844128488d3f2b5be76b1`.
-- `git pull --ff-only origin main` fast-forwarded the worktree to the supplemental v2-to-v3 planning kit.
-- v2.0 publication state was reconciled before opening v2.1:
-  - `npm view agent-inspect version` -> `2.0.0`
-  - `npm view @agent-inspect/ai-sdk version` -> `2.0.0`
-  - `npm view @agent-inspect/langchain version` -> `2.0.0`
-  - `npm view @agent-inspect/tui version` -> `2.0.0`
-  - `npm view @agent-inspect/openai-agents version` -> `2.0.0`
-  - `git ls-remote --tags origin 'agent-inspect@2.0.0^{}'` -> `0533c3377b2079cc76b85bf41ff9e8832a26f012`
-- Public and implementation roadmap pointers were reconciled to the v2.1-to-v3 sequence.
-- Historical v1.x and v2.0 release evidence was preserved.
+- Starting commit: `1c88d91295fab0c7a473acedf48bf6605fcc669f`.
+- Created `docs/proposals/REDACT-PACKAGE.md`.
+- Added the redaction package proposal to `docs/proposals/README.md`.
+- Clarified the v2.1 execution-plan scope for the proposal index update.
+- Defined the package boundary, API shape, profile semantics, detector model, finding shape, CLI design, integration plan, test strategy, and non-goals.
+- No runtime source, package manifests, package versions, changesets, tags, or publishing state were changed in the RFC chunk.
 
 ## In scope
 
-1. Create or update `docs/proposals/REDACT-PACKAGE.md`.
-2. Define the `@agent-inspect/redact` package boundary, profile semantics, detector model, finding shape, and CLI/API design.
-3. Explain how the package can be reused without AgentInspect tracing.
-4. Document that the same engine should later power trace writing, export, verify-safe, explain, and CI artifacts.
-5. Keep the design deterministic, local-first, and free of compliance claims.
+1. Add `packages/redact/package.json`.
+2. Add ESM/CJS/types build configuration consistent with optional public packages.
+3. Add initial public API:
+   - `redact`
+   - `createRedactor`
+   - `createRedactionProfile`
+   - `RedactionFinding`
+   - `RedactionProfile`
+4. Reuse or extract existing core redaction logic while preserving root/core behavior.
+5. Keep root dependencies unchanged.
+6. Add focused package tests and smoke support as required by the active plan.
 
 ## Out of scope
 
-- runtime redaction package implementation;
-- package versions, changesets, publishing, or tags;
+- detector expansion beyond behavior-preserving scaffold unless required by the plan chunk;
+- changesets, package version changes, publishing, or tags;
 - root/core dependency additions;
 - schema changes;
 - network/provider behavior;
 - LLM judge behavior;
 - compliance guarantees;
-- changes to trace writing behavior.
+- behavior changes to existing trace writing/export/report redaction unless explicitly tested and documented.
 
 ## Focused validation
 
 ```bash
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm pack:smoke
+pnpm compat:smoke
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- The redact package boundary is explicit enough for implementation chunks.
-- No runtime code, exports, package manifests, package versions, changesets, tags, or publishing state changes are made in the RFC chunk.
-- The proposal preserves local-first, deterministic, safe-by-default behavior.
-- The proposal does not introduce compliance claims, default prompt/output capture, raw chain-of-thought capture, or network behavior.
+- `@agent-inspect/redact` has a clear optional package scaffold and initial API.
+- Existing trace safety behavior remains compatible.
+- Root/core runtime dependencies do not increase.
+- ESM, CJS, and declaration outputs are valid for the new package.
+- Package smoke covers the new public package as appropriate.
+- No network behavior or compliance claims are added.
 
 ## Proposed commit
 
 ```text
-docs: define redact package boundary
+feat(redact): add reusable redaction package
 ```
 
 ## Next chunk
 
-`v2.1-2-redact-package-scaffold-and-core-engine-extraction`.
+`v2.1-3-redaction-detectors-findings-and-profiles`.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, material roadmap conflict, schema/dependency/network decisions, package publication gates, or validation failure that cannot be repaired inside docs/process scope.
+Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside the scaffold scope.
