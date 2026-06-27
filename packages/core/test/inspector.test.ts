@@ -19,8 +19,12 @@ describe("createInspector", () => {
     await inspector.flush();
 
     expect(result).toBe("ok");
+    expect(writer.getEvents().every((event) => event.schemaVersion === "1.0")).toBe(
+      true,
+    );
     expect(writer.getEvents()).toEqual([
       expect.objectContaining({
+        schemaVersion: "1.0",
         eventId: "run_create_started",
         runId: "run_create",
         kind: "RUN",
@@ -31,6 +35,7 @@ describe("createInspector", () => {
         },
       }),
       expect.objectContaining({
+        schemaVersion: "1.0",
         eventId: "run_create_completed",
         runId: "run_create",
         kind: "RUN",
@@ -154,7 +159,7 @@ describe("createInspector", () => {
 
     expect(result).toBe("ok");
     expect(started).toMatchObject({
-      schemaVersion: "0.2",
+      schemaVersion: "1.0",
       runId: "run_oversized",
       attributes: {
         truncated: true,

@@ -19,6 +19,9 @@ import {
   truncateName,
 } from "./utils.js";
 
+const INSPECTOR_PERSISTED_SCHEMA_VERSION =
+  "1.0" satisfies PersistedInspectEvent["schemaVersion"];
+
 export interface InspectorCaptureOptions {
   onSuccess?: "none" | "metadata-only";
   onError?: "none" | "metadata-only";
@@ -245,7 +248,7 @@ export function createInspector(
       },
       async () => {
         await write({
-          schemaVersion: "0.2",
+          schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
           eventId: `${runId}_started`,
           runId,
           kind: "RUN",
@@ -265,7 +268,7 @@ export function createInspector(
           const result = await Promise.resolve(fn());
           const endedAt = nowIso();
           await write({
-            schemaVersion: "0.2",
+            schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
             eventId: `${runId}_completed`,
             runId,
             kind: "RUN",
@@ -285,7 +288,7 @@ export function createInspector(
         } catch (error) {
           const endedAt = nowIso();
           await write({
-            schemaVersion: "0.2",
+            schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
             eventId: `${runId}_completed`,
             runId,
             kind: "RUN",
@@ -336,7 +339,7 @@ export function createInspector(
     };
 
     await write({
-      schemaVersion: "0.2",
+      schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
       eventId: `${stepId}_started`,
       runId: context.runId,
       ...(parentId !== undefined ? { parentId } : {}),
@@ -355,7 +358,7 @@ export function createInspector(
         const result = await Promise.resolve(fn());
         const endedAt = nowIso();
         await write({
-          schemaVersion: "0.2",
+          schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
           eventId: `${stepId}_completed`,
           runId: context.runId,
           kind: stepTypeToKind(stepType),
@@ -379,7 +382,7 @@ export function createInspector(
       } catch (error) {
         const endedAt = nowIso();
         await write({
-          schemaVersion: "0.2",
+          schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
           eventId: `${stepId}_completed`,
           runId: context.runId,
           kind: stepTypeToKind(stepType),

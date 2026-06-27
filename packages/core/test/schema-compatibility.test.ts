@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -11,9 +12,12 @@ import {
   manualTraceEventsToRunTree,
   readTraceEvents,
 } from "../src/index.js";
+import { parseTraceJsonl } from "../src/read-trace.js";
+import { validateEvent } from "../src/storage.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const fixturesTraceDir = path.join(repoRoot, "fixtures/traces");
+const fixturesTraceV10Dir = path.join(repoRoot, "fixtures/traces-v1.0");
 
 describe("schema compatibility (v0.1 JSONL traces)", () => {
   it("reads minimal-success and minimal-error fixtures", async () => {
@@ -77,3 +81,23 @@ describe("schema compatibility (v0.1 JSONL traces)", () => {
   });
 });
 
+describe("schema compatibility (v1.0 JSONL traces)", () => {
+  it("reads stable persisted fixtures without losing extension fields", async () => {
+    const raw = await readFile(
+      path.join(fixturesTraceV10Dir, "manual-basic.jsonl"),
+      "utf-8",
+    );
+    const parsed = parseTraceJsonl(raw, { validate: validateEvent });
+
+    expect(parsed.format).toBe("1.0");
+    expect(parsed.events.some((event) => event.event === "run_started")).toBe(true);
+    expect(
+      parsed.persisted.find((event) => event.eventId === "logic_1") as Record<
+        string,
+        unknown
+      >,
+    ).toMatchObject({
+      stableExtension: { fixture: "unknown-optional-field" },
+    });
+  });
+});

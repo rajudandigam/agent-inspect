@@ -47,6 +47,32 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+const KNOWN_PERSISTED_EVENT_FIELDS = new Set([
+  "schemaVersion",
+  "eventId",
+  "runId",
+  "kind",
+  "name",
+  "parentId",
+  "status",
+  "timestamp",
+  "startedAt",
+  "endedAt",
+  "durationMs",
+  "confidence",
+  "source",
+  "attributes",
+  "inputSummary",
+  "outputSummary",
+  "error",
+  "tokenUsage",
+  "trace",
+]);
+
+function isSafeExtensionFieldName(key: string): boolean {
+  return key !== "__proto__" && key !== "constructor" && key !== "prototype";
+}
+
 function isPreviewKey(key: string): boolean {
   return key.toLowerCase().includes("preview");
 }
@@ -499,6 +525,43 @@ function prepareTraceContext(
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+function preparePersistedExtensionFieldForDisk(
+  key: string,
+  value: unknown,
+  opts: TraceSafetyOptions,
+): unknown {
+  if (isRecord(value)) {
+    return prepareMetadataForDisk(value, opts);
+  }
+
+  const prepared = prepareMetadataForDisk({ [key]: value }, opts);
+  return Object.prototype.hasOwnProperty.call(prepared, key)
+    ? prepared[key]
+    : undefined;
+}
+
+function preserveV10ExtensionFields(
+  source: Record<string, unknown>,
+  candidate: PersistedInspectEvent,
+  opts: TraceSafetyOptions,
+): void {
+  if (candidate.schemaVersion !== "1.0") return;
+
+  for (const [key, value] of Object.entries(source)) {
+    if (
+      KNOWN_PERSISTED_EVENT_FIELDS.has(key) ||
+      !isSafeExtensionFieldName(key)
+    ) {
+      continue;
+    }
+
+    const prepared = preparePersistedExtensionFieldForDisk(key, value, opts);
+    if (prepared !== undefined) {
+      candidate[key] = prepared;
+    }
+  }
+}
+
 function serializedPersistedEvent(event: PersistedInspectEvent): string | undefined {
   try {
     return JSON.stringify(event);
@@ -518,7 +581,7 @@ function minimalPersistedEvent(
   originalApproxBytes: number,
 ): PersistedInspectEvent {
   return {
-    schemaVersion: "0.2",
+    schemaVersion: event.schemaVersion,
     eventId: truncateString(event.eventId, 128),
     runId: truncateString(event.runId, 128),
     kind: event.kind,
@@ -546,7 +609,7 @@ function minimalPersistedEvent(
 
 function tinyPersistedEvent(event: PersistedInspectEvent): PersistedInspectEvent {
   return {
-    schemaVersion: "0.2",
+    schemaVersion: event.schemaVersion,
     eventId: truncateString(event.eventId, 32),
     runId: truncateString(event.runId, 32),
     kind: event.kind,
@@ -577,7 +640,7 @@ function enforcePersistedEventSize(
 }
 
 /**
- * Prepares v0.2 persisted inspect events for built-in persistence.
+ * Prepares persisted inspect events for built-in persistence.
  *
  * The helper is intentionally non-throwing: invalid required fields return
  * `undefined`; supported optional fields are redacted, bounded, JSON-safe, and
@@ -663,6 +726,8 @@ export function preparePersistedInspectEventForWrite(
 
     const trace = prepareTraceContext(safeGet(value, "trace"), opts);
     if (trace !== undefined) candidate.trace = trace;
+
+    preserveV10ExtensionFields(value, candidate, opts);
 
     if (!isPersistedInspectEvent(candidate)) return undefined;
     return enforcePersistedEventSize(candidate, opts);

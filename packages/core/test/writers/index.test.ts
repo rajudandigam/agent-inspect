@@ -18,7 +18,7 @@ import type { PersistedInspectEvent } from "../../src/types/persisted-inspect-ev
 
 function event(overrides: Partial<PersistedInspectEvent> = {}): PersistedInspectEvent {
   return {
-    schemaVersion: "0.2",
+    schemaVersion: "1.0",
     eventId: "event_1",
     runId: "run_1",
     kind: "TOOL",
@@ -110,6 +110,42 @@ describe("memoryWriter", () => {
         apiKey: "[REDACTED]",
       },
     });
+  });
+
+  it("preserves schema 1.0 extension fields through disk safety", async () => {
+    const writer = memoryWriter();
+
+    await writer.write(
+      event({
+        stableExtension: {
+          kept: true,
+          apiKey: "secret-key",
+        },
+        stringExtension: "kept",
+      }),
+    );
+
+    expect(writer.getEvents()[0]).toMatchObject({
+      schemaVersion: "1.0",
+      stableExtension: {
+        kept: true,
+        apiKey: "[REDACTED]",
+      },
+      stringExtension: "kept",
+    });
+  });
+
+  it("continues to accept legacy v0.2 persisted events", async () => {
+    const writer = memoryWriter();
+
+    await writer.write(event({ schemaVersion: "0.2", eventId: "legacy" }));
+
+    expect(writer.getEvents()).toEqual([
+      expect.objectContaining({
+        schemaVersion: "0.2",
+        eventId: "legacy",
+      }),
+    ]);
   });
 
   it("drops invalid uncloneable inputs without blocking later healthy writes", async () => {
@@ -542,7 +578,7 @@ describe("fileWriter", () => {
         DEFAULT_MAX_EVENT_BYTES,
       );
       expect(row).toMatchObject({
-        schemaVersion: "0.2",
+        schemaVersion: "1.0",
         eventId: "event_1",
         runId: "run_1",
         attributes: {
