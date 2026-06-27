@@ -10,7 +10,7 @@ These files are maintainer-facing. Public product docs live under `docs/` and th
 - [CODEX-MAINTAINER-GUIDE.md](./CODEX-MAINTAINER-GUIDE.md) — Codex operating model for AgentInspect.
 - [CODEX-LOCAL-ENVIRONMENT.md](./CODEX-LOCAL-ENVIRONMENT.md) — local setup notes for Codex worktrees.
 - [CODEX-PROMPTS.md](./CODEX-PROMPTS.md) — reusable prompt snippets.
-- [release-trains/V1.8.1-EXECUTION-PLAN.md](./release-trains/V1.8.1-EXECUTION-PLAN.md) — active v1.8.1 docs cleanup plan.
+- [release-trains/V1.9.0-EXECUTION-PLAN.md](./release-trains/V1.9.0-EXECUTION-PLAN.md) — active v1.9.0 adoption leverage plan.
 
 ## Historical files
 

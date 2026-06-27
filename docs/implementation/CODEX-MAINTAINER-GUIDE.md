@@ -14,7 +14,7 @@ Durable repository behavior rules live in [../../AGENTS.md](../../AGENTS.md). Pr
 | `docs/implementation/ROADMAP-V1.8.1-TO-V3.md` | Active maintainer roadmap |
 | `docs/implementation/RELEASE-TRAIN-STATE.md` | Current train/chunk/commit/gate |
 | `docs/implementation/CURRENT-TASK.md` | Exact current assignment |
-| `docs/implementation/release-trains/V1.8.1-EXECUTION-PLAN.md` | Active train chunks and acceptance criteria |
+| `docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md` | Active train chunks and acceptance criteria |
 | `docs/proposals/*.md` | Architecture contracts |
 
 Do not paste the complete roadmap into every Codex prompt. Point Codex at the active files and the one relevant plan/RFC section.

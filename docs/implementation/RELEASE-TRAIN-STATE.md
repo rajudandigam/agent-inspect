@@ -5,12 +5,12 @@
 ```yaml
 baselineVersion: "1.8.0"
 publishedVersion: "1.8.0"
-currentTrain: "v1.8.1"
-trainStatus: "completed"
+currentTrain: "v1.9.0"
+trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "ca6fe39a03c862d8bf6e7fcd4002e06fb85cb513"
-lastValidationLevel: "v1.8.0-published-and-verified"
+lastConfirmedCommit: "77abefec4da783eb12e55fbd831e75e9f4be48f8"
+lastValidationLevel: "v1.8.1-docs-cleanup-ci-green"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -37,14 +37,15 @@ completedChunks:
   - "v1.8-20-release-readiness"
   - "v1.8-21-first-openai-package-publication-and-linked-release"
   - "v1.8.1-1-docs-roadmap-maintainer-cleanup"
+  - "v1.9-0-train-setup"
 currentChunk: "none"
-pendingManualGate: "maintainer release check before any version/publish/tag"
-nextAction: "Review the completed v1.8.1 docs cleanup and decide whether to start release preparation. Do not version, tag, publish, or create a release without explicit release-prep authorization."
+pendingManualGate: "none"
+nextAction: "Continue with v1.9 chunk 1: harness package boundary and core runner."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
 - **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
-- **Active plan:** [release-trains/V1.8.1-EXECUTION-PLAN.md](./release-trains/V1.8.1-EXECUTION-PLAN.md)
+- **Active plan:** [release-trains/V1.9.0-EXECUTION-PLAN.md](./release-trains/V1.9.0-EXECUTION-PLAN.md)
 - **Architecture index:** [../proposals/README.md](../proposals/README.md)
 - **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)
