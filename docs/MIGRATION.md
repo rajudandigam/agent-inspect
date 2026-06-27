@@ -38,6 +38,23 @@ import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
 import { createInspector } from "agent-inspect/advanced";
 ```
 
+## v2 import preparation
+
+No import changes are required for v1.x. To prepare for v2, keep beginner workflow APIs at the root and move advanced usage to subpaths now.
+
+| 1.x root compatibility import | Preferred 1.x import for new code | v2 direction |
+| --- | --- | --- |
+| `inspectRun`, `maybeInspectRun`, `step`, `observe`, `getCurrentCorrelationMetadata` | `agent-inspect` | stays root |
+| `createInspector` | `agent-inspect/advanced` | likely root and `/advanced` |
+| `createInspectorRuntime` | `agent-inspect/advanced` | `/advanced` |
+| `openTrace`, `readTrace`, `detectTraceFormat` | `agent-inspect/readers` | `/readers` |
+| `memoryWriter`, `fileWriter`, `bufferedFileWriter`, `compositeWriter`, `nullWriter` | `agent-inspect/writers` | `/writers` |
+| `runTraceChecks` and check types | `agent-inspect/checks` | `/checks` |
+| `diffTraceEvents`, `diffRuns`, `renderRunDiff` | `agent-inspect/diff` | `/diff` |
+| `exportMarkdown`, `exportHtml`, `exportOpenInference`, `exportOtlpJson` | `agent-inspect/exporters` | `/exporters` |
+| `parseLogsToTrees`, log parsers, tree builders | `agent-inspect/logs` | `/logs` |
+| persisted conversion helpers | `agent-inspect/persisted` | `/persisted` |
+
 ## Safety
 
 Nothing uploads by default. Manual metadata is redacted before disk by default, and export redaction applies to a local copy before you share it. Review traces and exports before posting them in issues, PRs, chats, or public docs.

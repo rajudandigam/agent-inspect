@@ -21,6 +21,19 @@ import {
 } from "agent-inspect";
 ```
 
+**v1.9 root API direction:** do not add new root exports casually. Existing root imports keep working through v1.x for compatibility, but new advanced examples should use the subpath where the API lives. The intended stable root set for v2 is:
+
+```ts
+import {
+  createInspector,
+  observe,
+  inspectRun,
+  maybeInspectRun,
+  step,
+  getCurrentCorrelationMetadata,
+} from "agent-inspect";
+```
+
 **1.x subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`, `/checks`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
 
 ```ts
@@ -39,6 +52,7 @@ Notes:
 - The core guarantee of v1.x is **stable local debugging**: manual tracing + CLI inspection.
 - Export formats (OpenInference / OTLP JSON) are **local-only** and **compatibility-oriented**. They do **not** upload anywhere.
 - There are **zero production sinks** in v1.x; sink/uploader APIs are not stable.
+- Advanced root exports in v1.x are compatibility aliases. Prefer `agent-inspect/advanced`, `agent-inspect/readers`, `agent-inspect/writers`, `agent-inspect/checks`, `agent-inspect/diff`, `agent-inspect/exporters`, `agent-inspect/logs`, and `agent-inspect/persisted` for new code.
 
 ## 2. Stable core APIs (manual tracing)
 
