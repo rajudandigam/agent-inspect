@@ -9,8 +9,8 @@ currentTrain: "v2.0.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "ea3f9a4ab6f96bbe084ed427c73dec93d4d5621d"
-lastValidationLevel: "v2.0-6-local-docs-gate-green"
+lastConfirmedCommit: "99f5a1b7e14d6e4181e2e0255febf9608d67aa25"
+lastValidationLevel: "v2.0-7-local-release-readiness-green"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -52,15 +52,16 @@ completedChunks:
   - "v2.0-3-schema-1.0-writer-read-path"
   - "v2.0-4-migration-dry-run-cli"
   - "v2.0-5-v2-root-api-contract"
-currentChunk: "v2.0-6-docs-and-migration-guide-alignment"
-pendingManualGate: "none"
-nextAction: "Commit and push v2.0 chunk 6, wait for CI/Publish, then continue with v2.0 chunk 7 release readiness."
+  - "v2.0-6-docs-and-migration-guide-alignment"
+currentChunk: "v2.0-7-release-readiness"
+pendingManualGate: "v2.0-release-authorization"
+nextAction: "Commit and push v2.0 chunk 7 readiness evidence, wait for CI/Publish, then stop for maintainer release authorization before any versioning, changesets, tags, npm publish, or GitHub release."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
 - **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
 - **Active plan:** [release-trains/V2.0.0-EXECUTION-PLAN.md](./release-trains/V2.0.0-EXECUTION-PLAN.md)
-- **Current readiness:** [release-trains/V1.9.0-RELEASE-READINESS.md](./release-trains/V1.9.0-RELEASE-READINESS.md)
+- **Current readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)
 - **Architecture index:** [../proposals/README.md](../proposals/README.md)
 - **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)
