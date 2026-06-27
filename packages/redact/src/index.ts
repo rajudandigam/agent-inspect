@@ -27,6 +27,7 @@ export interface RedactionDetection {
   action?: RedactionAction;
   replacement?: unknown;
   severity?: RedactionSeverity;
+  matchKind?: RedactionMatchKind;
   preview?: string;
 }
 
@@ -39,6 +40,7 @@ export interface RedactionDetectorInput {
 export interface RedactionDetector {
   id: string;
   severity?: RedactionSeverity;
+  matchKind?: RedactionMatchKind;
   detect(input: RedactionDetectorInput): RedactionDetection[];
 }
 
@@ -133,6 +135,12 @@ interface RedactionState {
   seen: WeakMap<object, unknown>;
 }
 
+interface PatternDetectorOptions {
+  id: string;
+  pattern: RegExp;
+  severity?: RedactionSeverity;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -152,6 +160,126 @@ function stringifyScalar(value: unknown): string | undefined {
     return String(value);
   }
   return undefined;
+}
+
+function patternDetector(options: PatternDetectorOptions): RedactionDetector {
+  return {
+    id: options.id,
+    severity: options.severity ?? "warning",
+    matchKind: "value",
+    detect(input) {
+      if (typeof input.value !== "string") return [];
+      options.pattern.lastIndex = 0;
+      return options.pattern.test(input.value)
+        ? [{ action: "replace", severity: options.severity ?? "warning", matchKind: "value" }]
+        : [];
+    },
+  };
+}
+
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function passesLuhn(value: string): boolean {
+  const digits = digitsOnly(value);
+  if (digits.length < 13 || digits.length > 19) return false;
+
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i -= 1) {
+    let digit = Number(digits[i]);
+    if (double) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    double = !double;
+  }
+  return sum % 10 === 0;
+}
+
+const credentialDetectors: readonly RedactionDetector[] = [
+  patternDetector({
+    id: "value.authorizationHeader",
+    pattern: /^(?:basic|bearer|digest|apikey)\s+[a-z0-9._~+/=-]+$/i,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.bearerToken",
+    pattern: /\bbearer\s+[a-z0-9._~+/=-]{12,}\b/i,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.cookie",
+    pattern: /\b[a-z0-9_.-]+=[^;\s]+(?:;\s*[a-z0-9_.-]+=[^;\s]+)+/i,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.jwt",
+    pattern: /\beyJ[a-zA-Z0-9_-]{8,}\.[a-zA-Z0-9_-]{8,}\.[a-zA-Z0-9_-]{8,}\b/,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.providerApiKey",
+    pattern: /\b(?:sk-(?:proj-)?[a-zA-Z0-9_-]{16,}|sk-ant-[a-zA-Z0-9_-]{16,}|AIza[0-9A-Za-z_-]{20,})\b/,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.githubToken",
+    pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b/,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.awsAccessKey",
+    pattern: /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/,
+    severity: "error",
+  }),
+  patternDetector({
+    id: "value.privateKey",
+    pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*-----END [A-Z ]*PRIVATE KEY-----/,
+    severity: "error",
+  }),
+  {
+    id: "value.creditCard",
+    severity: "error",
+    matchKind: "value",
+    detect(input) {
+      if (typeof input.value !== "string") return [];
+      const candidatePattern = /(?:\d[ -]?){13,19}/g;
+      for (const match of input.value.matchAll(candidatePattern)) {
+        const candidate = match[0] ?? "";
+        if (passesLuhn(candidate)) {
+          return [{ action: "replace", severity: "error", matchKind: "value" }];
+        }
+      }
+      return [];
+    },
+  },
+];
+
+const identifierDetectors: readonly RedactionDetector[] = [
+  patternDetector({
+    id: "value.email",
+    pattern: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+  }),
+  patternDetector({
+    id: "value.phone",
+    pattern: /\b(?:\+\d{1,3}[\s.-]?)?(?:\(?\d{3}\)?[\s.-])\d{3}[\s.-]\d{4}\b/,
+  }),
+  patternDetector({
+    id: "value.ipv4",
+    pattern: /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/,
+  }),
+  patternDetector({
+    id: "value.ipv6",
+    pattern: /\b(?:[0-9a-f]{1,4}:){2,7}[0-9a-f]{1,4}\b/i,
+  }),
+];
+
+function builtInDetectorsForProfile(profile: RedactionProfile): readonly RedactionDetector[] {
+  if (profile === "local") return credentialDetectors;
+  return [...credentialDetectors, ...identifierDetectors];
 }
 
 function compileRules(
@@ -282,7 +410,10 @@ export class Redactor {
       ...resolved.extraKeys,
       ...(options?.extraKeys ?? []),
     ]);
-    this.#detectors = options?.detectors ?? [];
+    this.#detectors = [
+      ...builtInDetectorsForProfile(this.#profile),
+      ...(options?.detectors ?? []),
+    ];
     this.#replacement = options?.replacement ?? "[REDACTED]";
     this.#maxDepth = options?.maxDepth ?? 32;
     this.#collectFindings = options?.collectFindings ?? true;
@@ -353,7 +484,7 @@ export class Redactor {
             path,
             detector.id,
             action,
-            "custom",
+            detection.matchKind ?? detector.matchKind ?? "custom",
             detection.severity ?? detector.severity ?? "warning",
             detection.preview,
           ),

@@ -48,6 +48,65 @@ describe("@agent-inspect/redact", () => {
     expect(strict.value).toEqual({ prompt: "[REDACTED]", model: "fixture" });
   });
 
+  it("applies profile strength predictably", () => {
+    const local = redact({ note: "email person@example.com", prompt: "visible" });
+    expect(local.value).toEqual({ note: "email person@example.com", prompt: "visible" });
+
+    const share = redact(
+      { note: "email person@example.com", prompt: "still visible" },
+      { profile: "share" },
+    );
+    expect(share.value).toEqual({ note: "[REDACTED]", prompt: "still visible" });
+
+    const strict = redact(
+      { note: "email person@example.com", prompt: "hidden" },
+      { profile: "strict" },
+    );
+    expect(strict.value).toEqual({ note: "[REDACTED]", prompt: "[REDACTED]" });
+  });
+
+  it.each([
+    ["value.email", "contact person@example.com", "share"],
+    ["value.phone", "+1 (415) 555-1212", "share"],
+    ["value.authorizationHeader", "Bearer abcdefghijklmnop", "local"],
+    ["value.bearerToken", "Authorization: Bearer abcdefghijklmnop", "local"],
+    ["value.cookie", "session=abc; csrftoken=def", "local"],
+    ["value.jwt", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.VTJGc2RHVmtYMThhYlhSMFlR", "local"],
+    ["value.providerApiKey", "sk-proj-abcdefghijklmnopqrstuvwxyz", "local"],
+    ["value.githubToken", "ghp_abcdefghijklmnopqrstuvwxyz123456", "local"],
+    ["value.awsAccessKey", "AKIAIOSFODNN7EXAMPLE", "local"],
+    [
+      "value.privateKey",
+      "-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----",
+      "local",
+    ],
+    ["value.creditCard", "4242 4242 4242 4242", "local"],
+    ["value.ipv4", "192.168.1.10", "share"],
+    ["value.ipv6", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "share"],
+  ] as const)("detects %s", (detector, value, profile) => {
+    const result = redact({ value }, { profile });
+
+    expect(result.value).toEqual({ value: "[REDACTED]" });
+    expect(result.findings).toContainEqual({
+      path: "value",
+      detector,
+      action: "replace",
+      severity: detector.startsWith("value.email") ||
+        detector.startsWith("value.phone") ||
+        detector.startsWith("value.ip")
+        ? "warning"
+        : "error",
+      matchKind: "value",
+    });
+    expect(JSON.stringify(result.findings)).not.toContain(value);
+  });
+
+  it("does not redact invalid credit-card-like strings that fail Luhn", () => {
+    const result = redact({ value: "4242 4242 4242 4241" }, { profile: "share" });
+    expect(result.value).toEqual({ value: "4242 4242 4242 4241" });
+    expect(result.findings).toEqual([]);
+  });
+
   it("supports prefix and hash rules compatibly", () => {
     const redactor = createRedactor({
       rules: [
