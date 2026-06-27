@@ -496,6 +496,7 @@ import { createFixtureRunner, defineTarget } from "@agent-inspect/harness";
 - **`createFixtureRunner(options)`**: returns a local runner with:
   - **`listTargets()`**: deterministic target metadata listing.
   - **`runTarget(name, input, options?)`**: bootstrap, resolve, invoke, and shutdown lifecycle.
+  - **`runFromArgv(argv?, io?)`**: CLI-friendly execution with target listing, JSON fixture files, JSON stdin, JSON stdout, stderr summaries, trace flags, and expected-output comparison.
   - **`getDiagnostics()`**: deterministic diagnostics for missing targets, bootstrap failures, resolve failures, invocation failures, and shutdown failures.
 - **`trace`** options use existing AgentInspect local APIs only:
   - **`mode: "run-if-enabled"`** (default): uses `maybeInspectRun()` and writes no trace unless `options.enabled` or `AGENT_INSPECT` enables tracing.
@@ -504,6 +505,8 @@ import { createFixtureRunner, defineTarget } from "@agent-inspect/harness";
   - **`mode: "off"`**: invokes the target without AgentInspect tracing.
 
 The harness package does not add root/core dependencies, does not upload traces, does not call providers, and does not capture raw prompts or outputs by itself. It writes only local AgentInspect traces when explicitly enabled by runner options or environment-gated tracing.
+
+Recipes: [harness-basic](../examples/recipes/harness-basic/README.md) and [harness-adapter-local](../examples/recipes/harness-adapter-local/README.md).
 
 ## 23. Deprecated APIs
 

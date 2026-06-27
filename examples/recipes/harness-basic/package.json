@@ -1,0 +1,13 @@
+{
+  "name": "agent-inspect-recipe-harness-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts summarize --fixture fixtures/input.json --expected-output fixtures/expected.json --trace-dir ./.agent-inspect-runs --trace"
+  },
+  "dependencies": {
+    "@agent-inspect/harness": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

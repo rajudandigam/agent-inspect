@@ -1,0 +1,2 @@
+{"matchedExpected":true,"ok":true,"output":{"title":"local harness fixtures","words":7},"target":"summarize"}
+agent-inspect harness: ok summarize

@@ -51,6 +51,8 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [runtime-and-ingestion](runtime-and-ingestion) | v1.6 runtime writers + universal ingestion | `createInspector`, writers, `open`, explicit formats | yes | no |
 | [ai-sdk-local-telemetry](ai-sdk-local-telemetry) | AI SDK v6 telemetry with local test mocks | `@agent-inspect/ai-sdk`, writers, `open`, metadata-only capture | yes | no |
 | [openai-agents-local-tracing](openai-agents-local-tracing) | OpenAI Agents JS tracing processor with local fixtures | `@agent-inspect/openai-agents`, writers, `open`, metadata-only capture | yes | no |
+| [harness-basic](harness-basic) | v1.9 fixture harness basics | `@agent-inspect/harness`, fixture JSON, expected output | yes | no |
+| [harness-adapter-local](harness-adapter-local) | Adapter-shaped local harness target | `@agent-inspect/harness`, bootstrap/resolve/invoke, expected output | yes | no |
 
 ## Safety
 

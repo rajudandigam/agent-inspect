@@ -27,6 +27,8 @@ const RECIPES = [
   "runtime-and-ingestion",
   "ai-sdk-local-telemetry",
   "openai-agents-local-tracing",
+  "harness-basic",
+  "harness-adapter-local",
 ];
 
 const LOG_RECIPE_FILES = {

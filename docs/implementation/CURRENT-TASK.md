@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v1.9.0"
-chunk: "v1.9-1-harness-package-boundary-and-core-runner"
+chunk: "v1.9-2-harness-cli-ergonomics-and-recipes"
 status: "completed"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.9-0-train-setup"
+dependsOn: "v1.9-1-harness-package-boundary-and-core-runner"
 ```
 
 ## Goal
 
-Add the private `@agent-inspect/harness` workspace package boundary and a no-framework core runner contract for local fixture targets.
+Add harness command-line ergonomics and deterministic no-network recipes for local fixture execution.
 
 ## Read first
 
@@ -22,10 +22,9 @@ Add the private `@agent-inspect/harness` workspace package boundary and a no-fra
 
 ## In scope
 
-1. Add private workspace package `@agent-inspect/harness`.
-2. Define `defineTarget`, `createFixtureRunner`, public types, and the core runner contract.
-3. Support target resolution/invocation, bootstrap/shutdown hooks, local trace options, and deterministic diagnostics.
-4. Add focused package tests, package-boundary coverage, API docs, and build/test wiring.
+1. Implement `runFromArgv()` target listing, fixture file loading, JSON stdin, JSON stdout, stderr summary, expected-output comparison, and graceful failure behavior.
+2. Add deterministic `harness-basic` and adapter-shaped harness recipes without live vendor calls.
+3. Update examples/docs and focused tests.
 
 ## Out of scope
 
@@ -34,12 +33,13 @@ Add the private `@agent-inspect/harness` workspace package boundary and a no-fra
 - provider/network implementation;
 - schema changes;
 - new root/core dependencies;
-- harness CLI fixture loading, JSON stdin/stdout ergonomics, recipes, or expected-output comparison.
+- live vendor calls or adapter SDK dependencies.
 
 ## Focused validation
 
 ```bash
-pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/package-boundaries.test.ts
+pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/recipes-smoke.test.ts
+pnpm recipes:check
 pnpm build
 pnpm typecheck
 pnpm test
@@ -48,24 +48,24 @@ git diff --check
 
 ## Acceptance criteria
 
-- `@agent-inspect/harness` exists as a private workspace package.
-- The package exposes typed `defineTarget` and `createFixtureRunner` APIs.
-- Runner execution is deterministic, local-only, and supports env-gated or explicit trace options through existing AgentInspect APIs.
-- Bootstrap, resolve, invoke, and shutdown failures are exposed through diagnostics.
-- Package boundaries keep root/core dependencies unchanged and avoid framework/runtime dependencies.
+- `runFromArgv()` supports listing, fixture files, stdin JSON, stdout JSON, stderr summaries, trace options, and expected-output comparison.
+- CLI-style failures return deterministic JSON results and diagnostics without process exits.
+- Recipes are local-only, deterministic, and validated by `recipes:check`.
+- No root/core dependency, version, schema, network, publish, or release behavior changes occur.
 
 ## Completion evidence
 
-- `CI=true pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/package-boundaries.test.ts` passed: 2 test files passed, 16 tests passed.
-- `CI=true pnpm build` passed, including `tsup.harness.config.ts` for the private harness package.
+- `CI=true pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/recipes-smoke.test.ts` passed: 2 test files passed, 11 tests passed.
+- `CI=true pnpm recipes:check` passed: 19 recipes validated.
+- `CI=true pnpm build` passed, including the updated harness package.
 - `CI=true pnpm typecheck` passed.
-- `CI=true pnpm test` passed: 122 test files passed, 1078 tests passed.
+- `CI=true pnpm test` passed: 122 test files passed, 1081 tests passed.
 - `git diff --check` passed.
 
 ## Proposed commit
 
 ```text
-feat: add private harness runner package
+feat: add harness argv runner recipes
 ```
 
 ## Stop condition

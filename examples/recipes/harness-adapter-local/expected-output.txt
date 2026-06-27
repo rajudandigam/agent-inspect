@@ -1,0 +1,2 @@
+{"matchedExpected":true,"ok":true,"output":{"adapter":"local-chat","reply":"hello casey: LOCAL ONLY","routedBy":"mock-router"},"target":"chat"}
+agent-inspect harness: ok chat

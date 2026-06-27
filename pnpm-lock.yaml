@@ -142,6 +142,30 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/harness-basic:
+    dependencies:
+      '@agent-inspect/harness':
+        specifier: workspace:*
+        version: link:../../../packages/harness
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/harness-adapter-local:
+    dependencies:
+      '@agent-inspect/harness':
+        specifier: workspace:*
+        version: link:../../../packages/harness
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/parallel-tools:
     dependencies:
       agent-inspect:

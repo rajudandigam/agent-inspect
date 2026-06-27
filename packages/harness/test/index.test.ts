@@ -1,4 +1,4 @@
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -214,5 +214,120 @@ describe("@agent-inspect/harness", () => {
       { event: "run_started", name: "trace-harness:echo" },
       { event: "run_completed", status: "success" },
     ]);
+  });
+
+  it("lists targets from runFromArgv as JSON stdout", async () => {
+    const runner = createFixtureRunner({
+      targets: {
+        ask: defineTarget<undefined, () => string, undefined, string>({
+          description: "question runner",
+          resolve: () => () => "ok",
+          invoke: (target) => target(),
+        }),
+      },
+    });
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await expect(
+      runner.runFromArgv(["--list"], {
+        stdout: (chunk) => stdout.push(chunk),
+        stderr: (chunk) => stderr.push(chunk),
+      }),
+    ).resolves.toMatchObject({ ok: true, exitCode: 0, listed: true });
+
+    expect(JSON.parse(stdout.join(""))).toEqual({
+      targets: [{ name: "ask", description: "question runner" }],
+    });
+    expect(stderr.join("")).toContain("listed 1 target");
+  });
+
+  it("runs a target from a JSON fixture and compares expected output", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-harness-cli-"));
+    await writeFile(path.join(dir, "input.json"), '{"question":"fixture"}', "utf8");
+    await writeFile(path.join(dir, "expected.json"), '"answer:fixture"', "utf8");
+    const runner = createFixtureRunner({
+      trace: { mode: "off" },
+      targets: {
+        ask: defineTarget<undefined, (input: { question: string }) => string, { question: string }, string>({
+          resolve: () => (input) => `answer:${input.question}`,
+          invoke: (target, input) => target(input),
+        }),
+      },
+    });
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    const result = await runner.runFromArgv(
+      ["ask", "--fixture", "input.json", "--expected-output", "expected.json"],
+      {
+        cwd: dir,
+        stdout: (chunk) => stdout.push(chunk),
+        stderr: (chunk) => stderr.push(chunk),
+      },
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      exitCode: 0,
+      targetName: "ask",
+      output: "answer:fixture",
+      matchedExpected: true,
+    });
+    expect(JSON.parse(stdout.join(""))).toEqual({
+      matchedExpected: true,
+      ok: true,
+      output: "answer:fixture",
+      target: "ask",
+    });
+    expect(stderr.join("")).toContain("ok ask");
+  });
+
+  it("reads JSON stdin and reports expected-output mismatches without throwing", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-harness-cli-"));
+    await writeFile(path.join(dir, "expected.json"), '{"value":"different"}', "utf8");
+    const runner = createFixtureRunner({
+      trace: { mode: "off" },
+      targets: {
+        echo: defineTarget<undefined, (input: { value: string }) => { value: string }, { value: string }, { value: string }>({
+          resolve: () => (input) => input,
+          invoke: (target, input) => target(input),
+        }),
+      },
+    });
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    const result = await runner.runFromArgv(
+      ["echo", "--stdin", "--expected", "expected.json"],
+      {
+        cwd: dir,
+        stdin: () => '{"value":"actual"}',
+        stdout: (chunk) => stdout.push(chunk),
+        stderr: (chunk) => stderr.push(chunk),
+      },
+    );
+
+    expect(result).toMatchObject({
+      ok: false,
+      exitCode: 1,
+      targetName: "echo",
+      output: { value: "actual" },
+      matchedExpected: false,
+    });
+    expect(JSON.parse(stdout.join(""))).toMatchObject({
+      diagnostics: [
+        {
+          code: "expected_output_mismatch",
+          severity: "error",
+          targetName: "echo",
+        },
+      ],
+      matchedExpected: false,
+      ok: false,
+      output: { value: "actual" },
+      target: "echo",
+    });
+    expect(stderr.join("")).toContain("Expected output mismatch");
   });
 });

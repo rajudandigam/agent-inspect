@@ -1,0 +1,13 @@
+{
+  "name": "agent-inspect-recipe-harness-adapter-local",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts chat --fixture fixtures/input.json --expected-output fixtures/expected.json --trace-dir ./.agent-inspect-runs --trace"
+  },
+  "dependencies": {
+    "@agent-inspect/harness": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

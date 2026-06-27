@@ -1,3 +1,7 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+
 import {
   inspectRun,
   isAgentInspectEnabled,
@@ -13,7 +17,12 @@ export type HarnessDiagnosticCode =
   | "bootstrap_failed"
   | "resolve_failed"
   | "invoke_failed"
-  | "shutdown_failed";
+  | "shutdown_failed"
+  | "cli_usage_error"
+  | "fixture_read_failed"
+  | "stdin_read_failed"
+  | "expected_read_failed"
+  | "expected_output_mismatch";
 
 export interface HarnessDiagnosticError {
   name?: string;
@@ -103,6 +112,24 @@ export interface FixtureRunOptions {
   trace?: HarnessTraceOptions;
 }
 
+export interface HarnessArgvIo {
+  cwd?: string;
+  stdin?(): string | Promise<string>;
+  stdout?(chunk: string): void;
+  stderr?(chunk: string): void;
+}
+
+export interface HarnessArgvResult {
+  ok: boolean;
+  exitCode: 0 | 1;
+  targetName?: string;
+  listed?: boolean;
+  matchedExpected?: boolean;
+  output?: unknown;
+  error?: HarnessDiagnosticError;
+  diagnostics: readonly HarnessDiagnostic[];
+}
+
 export interface HarnessTargetInfo {
   name: string;
   description?: string;
@@ -117,6 +144,7 @@ export interface FixtureRunner<TApp, TTargets extends FixtureTargets<TApp>> {
     input: TargetInput<TTargets[TName]>,
     options?: FixtureRunOptions,
   ): Promise<TargetOutput<TTargets[TName]>>;
+  runFromArgv(argv?: readonly string[], io?: HarnessArgvIo): Promise<HarnessArgvResult>;
 }
 
 export class HarnessError extends Error {
@@ -187,8 +215,126 @@ class DefaultFixtureRunner<TApp, TTargets extends FixtureTargets<TApp>>
     input: TargetInput<TTargets[TName]>,
     options?: FixtureRunOptions,
   ): Promise<TargetOutput<TTargets[TName]>> {
+    return await this.runTargetInternal(targetName, input, options) as TargetOutput<
+      TTargets[TName]
+    >;
+  }
+
+  async runFromArgv(
+    argv: readonly string[] = process.argv.slice(2),
+    io: HarnessArgvIo = {},
+  ): Promise<HarnessArgvResult> {
+    const parsed = this.parseArgv(argv);
+    const stdout = io.stdout ?? ((chunk: string) => process.stdout.write(chunk));
+    const stderr = io.stderr ?? ((chunk: string) => process.stderr.write(chunk));
+
+    if (!parsed.ok) {
+      return this.writeArgvFailure(parsed.message, "cli_usage_error", stdout, stderr);
+    }
+
+    if (parsed.list) {
+      const result: HarnessArgvResult = {
+        ok: true,
+        exitCode: 0,
+        listed: true,
+        output: { targets: this.listTargets() },
+        diagnostics: this.getDiagnostics(),
+      };
+      writeJsonLine(stdout, { targets: this.listTargets() });
+      stderr(`agent-inspect harness: listed ${this.listTargets().length} target(s)\n`);
+      return result;
+    }
+
+    if (parsed.targetName === undefined) {
+      return this.writeArgvFailure(
+        "Missing target name. Pass --list or a target name.",
+        "cli_usage_error",
+        stdout,
+        stderr,
+      );
+    }
+
+    if (parsed.fixturePath !== undefined && parsed.readStdin) {
+      return this.writeArgvFailure(
+        "Pass either --fixture or --stdin, not both.",
+        "cli_usage_error",
+        stdout,
+        stderr,
+        parsed.targetName,
+      );
+    }
+
+    const cwd = io.cwd ?? process.cwd();
+    const inputResult = await this.readInput(parsed, io, cwd);
+    if (!inputResult.ok) {
+      return this.writeArgvFailure(
+        inputResult.message,
+        inputResult.code,
+        stdout,
+        stderr,
+        parsed.targetName,
+        inputResult.error,
+      );
+    }
+
+    try {
+      const output = await this.runTargetInternal(parsed.targetName, inputResult.value, {
+        trace: parsed.trace,
+      });
+      const expectedResult = await this.compareExpectedOutput(
+        parsed,
+        output,
+        cwd,
+      );
+      if (!expectedResult.ok) {
+        return this.writeArgvFailure(
+          expectedResult.message,
+          expectedResult.code,
+          stdout,
+          stderr,
+          parsed.targetName,
+          expectedResult.error,
+          output,
+          false,
+        );
+      }
+
+      const matchedExpected = expectedResult.compared ? true : undefined;
+      const result: HarnessArgvResult = {
+        ok: true,
+        exitCode: 0,
+        targetName: parsed.targetName,
+        output,
+        diagnostics: this.getDiagnostics(),
+        ...(matchedExpected !== undefined ? { matchedExpected } : {}),
+      };
+      writeJsonLine(stdout, {
+        ok: true,
+        target: parsed.targetName,
+        output,
+        ...(matchedExpected !== undefined ? { matchedExpected } : {}),
+      });
+      stderr(`agent-inspect harness: ok ${parsed.targetName}\n`);
+      return result;
+    } catch (error) {
+      return this.writeArgvFailure(
+        `Harness target "${parsed.targetName}" failed.`,
+        "invoke_failed",
+        stdout,
+        stderr,
+        parsed.targetName,
+        error,
+      );
+    }
+  }
+
+  private async runTargetInternal(
+    targetName: string,
+    input: unknown,
+    options?: FixtureRunOptions,
+  ): Promise<unknown> {
     const definition = this.options.targets[targetName] as
-      | TargetDefinition<TApp, unknown, unknown, TargetOutput<TTargets[TName]>>
+      | TargetDefinition<TApp, unknown, unknown, unknown>
       | undefined;
     let app: TApp | undefined;
     const context = this.createContext(targetName, () => app);
@@ -238,6 +384,196 @@ class DefaultFixtureRunner<TApp, TTargets extends FixtureTargets<TApp>>
       ...input,
       timestamp: input.timestamp ?? Date.now(),
     });
+  }
+
+  private parseArgv(argv: readonly string[]): ParsedArgv {
+    const parsed: ParsedArgvSuccess = {
+      ok: true,
+      list: false,
+      readStdin: false,
+      trace: {},
+    };
+    const positional: string[] = [];
+
+    for (let i = 0; i < argv.length; i += 1) {
+      const arg = argv[i];
+      switch (arg) {
+        case "--list":
+          parsed.list = true;
+          break;
+        case "--fixture": {
+          const value = argv[i + 1];
+          if (value === undefined) return usageError("--fixture requires a path.");
+          parsed.fixturePath = value;
+          i += 1;
+          break;
+        }
+        case "--stdin":
+          parsed.readStdin = true;
+          break;
+        case "--expected":
+        case "--expected-output": {
+          const value = argv[i + 1];
+          if (value === undefined) return usageError(`${arg} requires a path.`);
+          parsed.expectedPath = value;
+          i += 1;
+          break;
+        }
+        case "--trace":
+          parsed.trace.mode = "run";
+          break;
+        case "--no-trace":
+          parsed.trace.mode = "off";
+          break;
+        case "--trace-dir": {
+          const value = argv[i + 1];
+          if (value === undefined) return usageError("--trace-dir requires a path.");
+          parsed.trace.traceDir = value;
+          i += 1;
+          break;
+        }
+        case "--trace-mode": {
+          const value = argv[i + 1];
+          if (!isHarnessTraceMode(value)) {
+            return usageError(
+              "--trace-mode must be one of: off, run, run-if-enabled, observe.",
+            );
+          }
+          parsed.trace.mode = value;
+          i += 1;
+          break;
+        }
+        default:
+          if (arg?.startsWith("--")) {
+            return usageError(`Unknown harness option: ${arg}`);
+          }
+          if (arg !== undefined) positional.push(arg);
+      }
+    }
+
+    if (positional.length > 1) {
+      return usageError("Pass at most one target name.");
+    }
+    parsed.targetName = positional[0];
+    return parsed;
+  }
+
+  private async readInput(
+    parsed: ParsedArgvSuccess,
+    io: HarnessArgvIo,
+    cwd: string,
+  ): Promise<InputReadResult> {
+    if (parsed.fixturePath !== undefined) {
+      try {
+        return {
+          ok: true,
+          value: parseJsonPayload(
+            await readFile(resolvePath(cwd, parsed.fixturePath), "utf8"),
+            parsed.fixturePath,
+          ),
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          code: "fixture_read_failed",
+          message: `Failed to read fixture: ${parsed.fixturePath}`,
+          error,
+        };
+      }
+    }
+
+    if (parsed.readStdin) {
+      try {
+        const raw = io.stdin === undefined ? await readProcessStdin() : await io.stdin();
+        return { ok: true, value: parseJsonPayload(raw, "stdin") };
+      } catch (error) {
+        return {
+          ok: false,
+          code: "stdin_read_failed",
+          message: "Failed to read JSON from stdin.",
+          error,
+        };
+      }
+    }
+
+    return { ok: true, value: undefined };
+  }
+
+  private async compareExpectedOutput(
+    parsed: ParsedArgvSuccess,
+    output: unknown,
+    cwd: string,
+  ): Promise<ExpectedCompareResult> {
+    if (parsed.expectedPath === undefined) {
+      return { ok: true, compared: false };
+    }
+
+    let expected: unknown;
+    try {
+      expected = parseJsonPayload(
+        await readFile(resolvePath(cwd, parsed.expectedPath), "utf8"),
+        parsed.expectedPath,
+      );
+    } catch (error) {
+      return {
+        ok: false,
+        compared: true,
+        code: "expected_read_failed",
+        message: `Failed to read expected output: ${parsed.expectedPath}`,
+        error,
+      };
+    }
+
+    if (stableJson(expected) !== stableJson(output)) {
+      return {
+        ok: false,
+        compared: true,
+        code: "expected_output_mismatch",
+        message: `Expected output mismatch: ${parsed.expectedPath}`,
+        error: new Error("Expected output mismatch."),
+      };
+    }
+
+    return { ok: true, compared: true };
+  }
+
+  private writeArgvFailure(
+    message: string,
+    code: HarnessDiagnosticCode,
+    stdout: (chunk: string) => void,
+    stderr: (chunk: string) => void,
+    targetName?: string,
+    error?: unknown,
+    output?: unknown,
+    matchedExpected?: boolean,
+  ): HarnessArgvResult {
+    const diagnostic: HarnessDiagnosticInput = {
+      code,
+      severity: "error",
+      message,
+      ...(targetName !== undefined ? { targetName } : {}),
+      ...(error !== undefined ? { error: serializeError(error) } : {}),
+    };
+    this.addDiagnostic(diagnostic);
+    const result: HarnessArgvResult = {
+      ok: false,
+      exitCode: 1,
+      ...(targetName !== undefined ? { targetName } : {}),
+      ...(output !== undefined ? { output } : {}),
+      ...(matchedExpected !== undefined ? { matchedExpected } : {}),
+      ...(error !== undefined ? { error: serializeError(error) } : {}),
+      diagnostics: this.getDiagnostics(),
+    };
+    writeJsonLine(stdout, {
+      ok: false,
+      ...(targetName !== undefined ? { target: targetName } : {}),
+      ...(output !== undefined ? { output } : {}),
+      ...(matchedExpected !== undefined ? { matchedExpected } : {}),
+      ...(error !== undefined ? { error: serializeError(error) } : {}),
+      diagnostics: this.getDiagnostics(),
+    });
+    stderr(`agent-inspect harness: ${message}\n`);
+    return result;
   }
 
   private async bootstrap(context: FixtureRunnerContext<TApp>): Promise<TApp> {
@@ -397,4 +733,100 @@ function serializeError(error: unknown): HarnessDiagnosticError {
   return {
     message: String(error),
   };
+}
+
+type ParsedArgv = ParsedArgvSuccess | ParsedArgvError;
+
+interface ParsedArgvSuccess {
+  ok: true;
+  list: boolean;
+  readStdin: boolean;
+  targetName?: string;
+  fixturePath?: string;
+  expectedPath?: string;
+  trace: HarnessTraceOptions;
+}
+
+interface ParsedArgvError {
+  ok: false;
+  message: string;
+}
+
+type InputReadResult =
+  | { ok: true; value: unknown }
+  | {
+      ok: false;
+      code: "fixture_read_failed" | "stdin_read_failed";
+      message: string;
+      error: unknown;
+    };
+
+type ExpectedCompareResult =
+  | { ok: true; compared: boolean }
+  | {
+      ok: false;
+      compared: true;
+      code: "expected_read_failed" | "expected_output_mismatch";
+      message: string;
+      error: unknown;
+    };
+
+function usageError(message: string): ParsedArgvError {
+  return { ok: false, message };
+}
+
+function isHarnessTraceMode(value: unknown): value is HarnessTraceMode {
+  return (
+    value === "off" ||
+    value === "run" ||
+    value === "run-if-enabled" ||
+    value === "observe"
+  );
+}
+
+function resolvePath(cwd: string, inputPath: string): string {
+  return path.isAbsolute(inputPath) ? inputPath : path.resolve(cwd, inputPath);
+}
+
+function parseJsonPayload(raw: string, source: string): unknown {
+  const trimmed = raw.trim();
+  if (trimmed === "") {
+    throw new Error(`Empty JSON payload from ${source}.`);
+  }
+  return JSON.parse(trimmed) as unknown;
+}
+
+async function readProcessStdin(): Promise<string> {
+  process.stdin.setEncoding("utf8");
+  let raw = "";
+  for await (const chunk of process.stdin) {
+    raw += chunk;
+  }
+  return raw;
+}
+
+function writeJsonLine(writer: (chunk: string) => void, value: unknown): void {
+  writer(`${stableJson(value)}\n`);
+}
+
+function stableJson(value: unknown): string {
+  return JSON.stringify(sortJson(value)) ?? "null";
+}
+
+function sortJson(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => sortJson(item));
+  }
+  if (isPlainRecord(value)) {
+    const sorted: Record<string, unknown> = {};
+    for (const key of Object.keys(value).sort()) {
+      sorted[key] = sortJson(value[key]);
+    }
+    return sorted;
+  }
+  return value === undefined ? null : value;
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
