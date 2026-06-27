@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-6-eval-package-scaffold-and-deterministic-core"
+chunk: "v2.1-7-eval-grounding-heuristics-and-cli"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-5-eval-package-rfc-and-boundary"
+dependsOn: "v2.1-6-eval-package-scaffold-and-deterministic-core"
 ```
 
 ## Goal
 
-Create the optional `@agent-inspect/eval` package and initial deterministic local eval core.
+Make eval useful for local RAG/agent behavior with deterministic grounding heuristics and a root CLI workflow, without LLM judging or provider calls.
 
 ## Read first
 
@@ -23,48 +23,43 @@ Create the optional `@agent-inspect/eval` package and initial deterministic loca
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
 - `docs/proposals/EVAL-PACKAGE.md`
-- `docs/proposals/TRACE-CHECKS.md`
-- relevant checks/readers/package-smoke tests
+- `packages/eval/src/index.ts`
+- `packages/eval/test/index.test.ts`
+- relevant CLI command patterns
 
 ## Prior chunk evidence
 
-- Starting commit: `6eec00a0124c06a28ea38a619435d9959f89e93b`.
-- Added `docs/proposals/EVAL-PACKAGE.md`.
-- Defined `@agent-inspect/eval` as deterministic local eval primitives over existing readers/checks.
-- Documented result schema, package boundary, CLI shape, report/artifact interaction, configuration strategy, non-goals, and no-network defaults.
-- Updated proposal index.
+- Starting commit: `637f36fcd796f56f4756f8272babe954457c8148`.
+- Added public optional workspace package `@agent-inspect/eval`.
+- Added ESM/CJS/declaration build via `tsup.eval.config.ts`.
+- Added initial public API: `evalRun`, `checks`, `EvalRunResult`, `EvalRunInput`, and `renderEvalMarkdown`.
+- Added deterministic local checks for success, tools, duration, depth, retry count, token count, failed steps, retrieval-before-generation, and decision metadata.
+- Added package smoke and package-boundary coverage.
+- Updated the lockfile for the new workspace package.
 
 ## In scope
 
-1. Add `packages/eval/package.json`.
-2. Add ESM/CJS/types build config.
-3. Add initial public API:
-   - `evalRun`;
-   - `checks`;
-   - `EvalRunResult`;
-   - deterministic Markdown summary helper.
-4. Implement initial deterministic checks:
-   - `requireSuccess`;
-   - `requiredTools`;
-   - `forbiddenTools`;
-   - `maxDurationMs`;
-   - `maxDepth`;
-   - `maxRetries`;
-   - `maxTotalTokens`;
-   - `noFailedSteps`;
-   - `requiredRetrievalBeforeGeneration`;
-   - `requiredDecisionMetadata`.
-5. Reuse existing reader/check semantics where practical; do not create a new persisted trace model.
-6. Add package smoke and focused tests.
+1. Add deterministic grounding heuristics:
+   - context overlap;
+   - quote overlap;
+   - citation presence;
+   - required source IDs;
+   - answer length bounds;
+   - banned unsupported phrases.
+2. Add root CLI workflow:
+   - `agent-inspect eval trace.jsonl --config agent-inspect.eval.ts` only if an explicit supported loader path exists;
+   - `agent-inspect eval trace.jsonl --require-success`;
+   - `agent-inspect eval trace.jsonl --forbid-tool deleteAccount`.
+3. Support deterministic JSON output, Markdown output, failed eval exit code, unreadable input diagnostics, and no-network behavior.
+4. Keep source traces read-only and non-mutating.
 
 ## Out of scope
 
 - package version changes, changesets, publishing, or tags;
-- CLI eval command implementation;
-- grounding heuristics beyond the initial deterministic checks;
+- LLM/provider judging;
+- TypeScript config loader dependency;
 - root/core dependency additions;
 - schema changes;
-- LLM/provider implementation;
 - hosted service or dataset platform;
 - adapter implementation;
 - v3 extensibility implementation.
@@ -72,33 +67,32 @@ Create the optional `@agent-inspect/eval` package and initial deterministic loca
 ## Focused validation
 
 ```bash
-pnpm exec vitest run packages/eval/test
 pnpm build
 pnpm typecheck
 pnpm test
-pnpm pack:smoke
-pnpm compat:smoke
+pnpm fixtures:check
+pnpm recipes:check
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- `@agent-inspect/eval` is a public optional package boundary with ESM/CJS/declaration output.
-- `evalRun` produces deterministic JSON-safe results from local trace input.
-- Built-in checks produce stable findings/evidence without raw payload leakage.
-- Package smoke covers `@agent-inspect/eval`.
-- No root/core runtime dependency, package publishing, changeset, version, schema, or network behavior is introduced.
+- Grounding checks are deterministic, local-only, and evidence-rich.
+- CLI eval produces stable JSON and Markdown output.
+- CLI failures use deterministic exit codes.
+- No model/provider/network behavior is introduced.
+- No package publishing, changeset, version, schema, or root/core dependency change is introduced.
 
 ## Proposed commit
 
 ```text
-feat(eval): add deterministic local eval package
+feat: add local eval CLI
 ```
 
 ## Next chunk
 
-`v2.1-7-eval-grounding-heuristics-and-cli`.
+`v2.1-8-eval-redact-recipes-and-documentation`.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside eval package scope.
+Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, TypeScript config loader decisions, or validation failure that cannot be repaired inside eval CLI scope.

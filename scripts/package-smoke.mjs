@@ -180,6 +180,81 @@ const optionalPackageChecks = [
       if (!finding || finding.detector !== "key.correlationid") throw new Error("finding type failed");
     `,
   },
+  {
+    dir: "packages/eval",
+    name: "@agent-inspect/eval",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { checks, evalRun, renderEvalMarkdown } from "@agent-inspect/eval";
+      const read = {
+        format: "agent-inspect-jsonl",
+        runs: [{
+          runId: "run-smoke",
+          status: "ok",
+          children: [],
+          metadata: {
+            totalEvents: 0,
+            confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+          }
+        }],
+        events: [],
+        warnings: [],
+        unsupportedFields: [],
+        sourceFiles: []
+      };
+      const result = await evalRun(read, { checks: [checks.requireSuccess()] });
+      if (!result.ok) throw new Error("eval failed");
+      if (!renderEvalMarkdown(result).includes("Status: pass")) throw new Error("markdown failed");
+    `,
+    cjs: `
+      const { checks, evalRun, renderEvalMarkdown } = require("@agent-inspect/eval");
+      const read = {
+        format: "agent-inspect-jsonl",
+        runs: [{
+          runId: "run-smoke",
+          status: "ok",
+          children: [],
+          metadata: {
+            totalEvents: 0,
+            confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+          }
+        }],
+        events: [],
+        warnings: [],
+        unsupportedFields: [],
+        sourceFiles: []
+      };
+      (async () => {
+        const result = await evalRun(read, { checks: [checks.requireSuccess()] });
+        if (!result.ok) throw new Error("eval failed");
+        if (!renderEvalMarkdown(result).includes("Status: pass")) throw new Error("markdown failed");
+      })();
+    `,
+    ts: `
+      import { checks, evalRun, type EvalRunResult } from "@agent-inspect/eval";
+      const result: Promise<EvalRunResult> = evalRun({
+        format: "agent-inspect-jsonl",
+        runs: [{
+          runId: "run-smoke",
+          status: "ok",
+          children: [],
+          metadata: {
+            totalEvents: 0,
+            confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+          }
+        }],
+        events: [],
+        warnings: [],
+        unsupportedFields: [],
+        sourceFiles: []
+      }, { checks: [checks.requireSuccess()] });
+      void result;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

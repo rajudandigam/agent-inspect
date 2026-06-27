@@ -105,4 +105,12 @@ describe("package boundaries", () => {
     expect(keys(redact.dependencies)).toEqual([]);
     expect(keys(redact.peerDependencies)).toEqual([]);
   });
+
+  it("@agent-inspect/eval is public and depends only on agent-inspect", async () => {
+    const evalPkg = await readPkg("packages/eval/package.json");
+    expect(evalPkg.name).toBe("@agent-inspect/eval");
+    expect(evalPkg.private).toBeUndefined();
+    expect(keys(evalPkg.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(evalPkg.peerDependencies)).toEqual([]);
+  });
 });

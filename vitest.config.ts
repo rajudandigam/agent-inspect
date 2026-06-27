@@ -62,6 +62,10 @@ const redactEntry = fileURLToPath(
   new URL("./packages/redact/src/index.ts", import.meta.url),
 );
 
+const evalEntry = fileURLToPath(
+  new URL("./packages/eval/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -96,6 +100,7 @@ export default defineConfig({
       "@agent-inspect/openai-agents": openAiAgentsEntry,
       "@agent-inspect/harness": harnessEntry,
       "@agent-inspect/redact": redactEntry,
+      "@agent-inspect/eval": evalEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -127,6 +132,7 @@ export default defineConfig({
       "@agent-inspect/openai-agents",
       "@agent-inspect/harness",
       "@agent-inspect/redact",
+      "@agent-inspect/eval",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],
