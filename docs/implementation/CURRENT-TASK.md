@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-5-eval-package-rfc-and-boundary"
+chunk: "v2.1-6-eval-package-scaffold-and-deterministic-core"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-4-integrate-redaction-package-with-trace-safety-and-cli"
+dependsOn: "v2.1-5-eval-package-rfc-and-boundary"
 ```
 
 ## Goal
 
-Define `@agent-inspect/eval` as deterministic local eval primitives, not an LLM-as-judge platform.
+Create the optional `@agent-inspect/eval` package and initial deterministic local eval core.
 
 ## Read first
 
@@ -22,29 +22,46 @@ Define `@agent-inspect/eval` as deterministic local eval primitives, not an LLM-
 - `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
-- `docs/proposals/README.md`
-- relevant package boundary docs and existing checks/eval-adjacent source
+- `docs/proposals/EVAL-PACKAGE.md`
+- `docs/proposals/TRACE-CHECKS.md`
+- relevant checks/readers/package-smoke tests
 
 ## Prior chunk evidence
 
-- Starting commit: `963f75a8649836dfa23f5253d75c1c6e84b8a6ea`.
-- Added `agent-inspect redact <trace-or-file> --profile share` for local JSON/JSONL redaction.
-- Bundled `@agent-inspect/redact` into the root CLI without adding root/core runtime dependencies.
-- Added CLI safety detector findings from `@agent-inspect/redact` for `scan` and `verify-safe`.
-- Preserved existing core trace writing, report/export, explain, schema, package versions, changesets, tags, and publish state.
+- Starting commit: `6eec00a0124c06a28ea38a619435d9959f89e93b`.
+- Added `docs/proposals/EVAL-PACKAGE.md`.
+- Defined `@agent-inspect/eval` as deterministic local eval primitives over existing readers/checks.
+- Documented result schema, package boundary, CLI shape, report/artifact interaction, configuration strategy, non-goals, and no-network defaults.
+- Updated proposal index.
 
 ## In scope
 
-1. Create/update `docs/proposals/EVAL-PACKAGE.md`.
-2. Update the proposal index.
-3. Define deterministic local eval primitives, result schema, package boundary, CLI design, and report/artifact interaction.
-4. State explicit non-goals: hosted eval platform, LLM judge by default, dataset service, replay/cassette behavior, provider calls by default, and network behavior by default.
-5. Keep this chunk documentation-only unless a small index or state update is needed.
+1. Add `packages/eval/package.json`.
+2. Add ESM/CJS/types build config.
+3. Add initial public API:
+   - `evalRun`;
+   - `checks`;
+   - `EvalRunResult`;
+   - deterministic Markdown summary helper.
+4. Implement initial deterministic checks:
+   - `requireSuccess`;
+   - `requiredTools`;
+   - `forbiddenTools`;
+   - `maxDurationMs`;
+   - `maxDepth`;
+   - `maxRetries`;
+   - `maxTotalTokens`;
+   - `noFailedSteps`;
+   - `requiredRetrievalBeforeGeneration`;
+   - `requiredDecisionMetadata`.
+5. Reuse existing reader/check semantics where practical; do not create a new persisted trace model.
+6. Add package smoke and focused tests.
 
 ## Out of scope
 
 - package version changes, changesets, publishing, or tags;
-- runtime package scaffold;
+- CLI eval command implementation;
+- grounding heuristics beyond the initial deterministic checks;
 - root/core dependency additions;
 - schema changes;
 - LLM/provider implementation;
@@ -55,29 +72,33 @@ Define `@agent-inspect/eval` as deterministic local eval primitives, not an LLM-
 ## Focused validation
 
 ```bash
+pnpm exec vitest run packages/eval/test
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm pack:smoke
+pnpm compat:smoke
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- Eval package boundary is concrete enough for the next scaffold chunk.
-- RFC keeps eval local-first, deterministic by default, and network-free by default.
-- RFC explains how eval uses existing trace readers/checks without creating a parallel trace system.
-- Proposal index links the RFC.
-- No package publishing, changeset, version, runtime dependency, schema, or source implementation change is introduced.
+- `@agent-inspect/eval` is a public optional package boundary with ESM/CJS/declaration output.
+- `evalRun` produces deterministic JSON-safe results from local trace input.
+- Built-in checks produce stable findings/evidence without raw payload leakage.
+- Package smoke covers `@agent-inspect/eval`.
+- No root/core runtime dependency, package publishing, changeset, version, schema, or network behavior is introduced.
 
 ## Proposed commit
 
 ```text
-docs: define eval package boundary
+feat(eval): add deterministic local eval package
 ```
 
 ## Next chunk
 
-`v2.1-6-eval-package-scaffold-and-deterministic-core`.
+`v2.1-7-eval-grounding-heuristics-and-cli`.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside eval planning scope.
+Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, or validation failure that cannot be repaired inside eval package scope.
