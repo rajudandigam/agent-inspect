@@ -17,6 +17,7 @@ const RECIPES = [
   "parallel-tools",
   "runtime-and-ingestion",
   "openai-agents-local-tracing",
+  "langgraph-callback-local",
 ] as const;
 
 const SECTION_MARKERS = [

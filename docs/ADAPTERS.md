@@ -49,6 +49,34 @@ const result = await generateText({
 
 [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-local-telemetry/) uses AI SDK test utilities only (`MockLanguageModelV3`, `simulateReadableStream`) and writes local v0.2 adapter events for `agent-inspect open`.
 
+### Common host shapes
+
+Use the same explicit telemetry block for route handlers, streaming, and tool calls. The adapter does not wrap providers or change host-call settings.
+
+```ts
+const telemetry = {
+  isEnabled: true,
+  recordInputs: false,
+  recordOutputs: false,
+  integrations: [agentInspect({ traceDir: "./.agent-inspect", capture: "metadata-only" })],
+};
+
+// Next.js route or local handler
+await generateText({ model, prompt, experimental_telemetry: telemetry });
+
+// Streaming
+await streamText({ model, prompt, experimental_telemetry: telemetry });
+
+// Tool calls
+await generateText({ model, prompt, tools, experimental_telemetry: telemetry });
+```
+
+Review recipe output with:
+
+```bash
+npx agent-inspect open ./examples/recipes/ai-sdk-local-telemetry/.agent-inspect-runs
+```
+
 Full API: [API.md](./API.md) §11.
 
 ---
@@ -181,6 +209,8 @@ LangGraph support is expected to ride through this same `@agent-inspect/langchai
 
 Future LangGraph examples must keep the same safety defaults: explicit callback installation, metadata-only capture, no raw prompt/output/tool payload capture by default, no hosted sink, and local persistence only when `persist: true` is set.
 
+Runnable local recipe: [langgraph-callback-local](../examples/recipes/langgraph-callback-local).
+
 Decision note: [LANGGRAPH-ADAPTER-BOUNDARY.md](./proposals/LANGGRAPH-ADAPTER-BOUNDARY.md).
 
 ---
@@ -311,6 +341,11 @@ setTraceProcessors([
 ```
 
 Do not use `addTraceProcessor()` as the default AgentInspect path; that preserves the OpenAI default exporter in server runtimes. The processor does not auto-install itself, does not upload, and does not add OpenAI Agents dependencies to root/core.
+
+Integration modes:
+
+- **Local-only replacement:** `setTraceProcessors([agentInspectProcessor(...)])` replaces existing processors for the current process. This is the documented safe default when you want AgentInspect to own local trace output.
+- **Additional processor:** `addTraceProcessor(agentInspectProcessor(...))` is an advanced, user-owned choice. It can preserve existing/default processors and any backend export behavior they already perform.
 
 - **No auto-install** — importing or constructing `agentInspectProcessor()` never calls `setTraceProcessors()` or `addTraceProcessor()`.
 - **No upload behavior** — the processor writes only to an explicit local writer or `traceDir`.

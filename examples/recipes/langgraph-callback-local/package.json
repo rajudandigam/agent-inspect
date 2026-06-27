@@ -1,0 +1,14 @@
+{
+  "name": "agent-inspect-recipe-langgraph-callback-local",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --filter @agent-inspect/langchain run build",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/langchain": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

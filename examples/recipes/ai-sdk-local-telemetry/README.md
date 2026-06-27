@@ -35,5 +35,5 @@ See `expected-output.txt`.
 ## Notes and limitations
 
 - This recipe is for local inspection and adapter validation; it is not a replay or hosted telemetry example.
-- The `@agent-inspect/ai-sdk` workspace package remains experimental during the v1.7 train.
+- The `@agent-inspect/ai-sdk` package is experimental and published in the aligned v1.7+ package set.
 - The adapter cannot force AI SDK host-call telemetry options from inside the integration object, so callers must set `recordInputs: false` and `recordOutputs: false`.

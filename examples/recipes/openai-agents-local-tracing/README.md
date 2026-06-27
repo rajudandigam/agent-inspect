@@ -39,6 +39,6 @@ See `expected-output.txt`.
 ## Notes and limitations
 
 - This recipe is for local inspection and adapter validation; it is not a replay, hosted telemetry, or provider execution example.
-- The `@agent-inspect/openai-agents` workspace package remains experimental and private until the v1.8 first-publication gate.
+- The `@agent-inspect/openai-agents` package is experimental and published in the aligned v1.8+ package set.
 - `addTraceProcessor(agentInspectProcessor(...))` is an advanced, user-owned choice only. It preserves existing/default processors and can preserve default backend export behavior in server runtimes.
 - The recipe keeps version ownership explicit: AgentInspect writes local v0.2 events, and OpenAI Agents callback shapes are treated as framework-owned input.

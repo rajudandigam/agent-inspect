@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v1.9.0"
-chunk: "v1.9-4-explain-provider-design-gate"
+chunk: "v1.9-5-adapter-promotion"
 status: "completed"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.9-3-explain-dry-run-and-deterministic-local-explanation"
+dependsOn: "v1.9-4-explain-provider-design-gate"
 ```
 
 ## Goal
 
-Document and enforce the provider design gate for the experimental explain workflow without implementing provider calls.
+Promote AI SDK, OpenAI Agents, and LangChain/LangGraph adoption paths with local-only docs and recipe coverage.
 
 ## Read first
 
@@ -23,10 +23,10 @@ Document and enforce the provider design gate for the experimental explain workf
 
 ## In scope
 
-1. Document explicit provider behavior for `agent-inspect explain`.
-2. Document environment requirements, payload shape, and no-chain-of-thought policy.
-3. Add a CLI guard so `--provider <provider>` fails safely with no provider/network call.
-4. Add focused coverage for unsupported provider mode.
+1. Promote AI SDK, OpenAI Agents, and LangChain/LangGraph adoption paths in README/docs.
+2. Add or register no-network adapter recipes/fixtures where missing.
+3. Clarify OpenAI Agents local-only replacement vs additional processor behavior.
+4. Keep optional integration dependencies package-scoped.
 
 ## Out of scope
 
@@ -35,11 +35,16 @@ Document and enforce the provider design gate for the experimental explain workf
 - provider/network implementation;
 - schema changes;
 - new root/core dependencies;
-- cloud/provider explain calls, provider SDKs, or provider payload submission.
+- new root/core adapter dependencies;
+- live provider calls, hosted tracing, or upload behavior.
 
 ## Focused validation
 
 ```bash
+pnpm recipes:check
+pnpm fixtures:check
+pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/openai-agents/test/api-stability.test.ts packages/langchain/test/langgraph-through-langchain.test.ts
+pnpm build
 pnpm typecheck
 pnpm test
 git diff --check
@@ -47,17 +52,22 @@ git diff --check
 
 ## Acceptance criteria
 
-- Provider behavior is explicitly documented as opt-in future work.
-- Provider environment requirements and payload shape are documented.
-- No-chain-of-thought and redacted-facts-only policy is documented.
-- `--provider <provider>` is rejected as a user-facing error with no provider/network path.
+- README/docs promote adapter adoption paths and local-only privacy defaults.
+- AI SDK and OpenAI Agents no-network recipes remain discoverable.
+- LangGraph-through-LangChain has a no-network local recipe.
+- OpenAI Agents replacement vs additional processor behavior is explicit.
 - No root/core dependency, version, schema, network, publish, or release behavior changes occur.
 
 ## Completion evidence
 
-- Focused test passed:
-  `CI=true pnpm exec vitest run packages/cli/test/explain.test.ts`
-  - 1 file passed, 5 tests passed.
+- `CI=true pnpm recipes:check` passed.
+  - 20 recipes validated.
+- `CI=true pnpm fixtures:check` passed.
+  - 9 v0.1 traces, 6 v0.2 traces, 8 logs, and 5 configs validated.
+- Focused adapter tests passed:
+  `CI=true pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/openai-agents/test/api-stability.test.ts packages/langchain/test/langgraph-through-langchain.test.ts`
+  - 3 files passed, 23 tests passed.
+- `CI=true pnpm build` passed.
 - `CI=true pnpm typecheck` passed.
 - `CI=true pnpm test` passed.
   - 123 files passed, 1086 tests passed.
@@ -66,7 +76,7 @@ git diff --check
 ## Proposed commit
 
 ```text
-docs: add explain provider design gate
+docs: promote adapter adoption paths
 ```
 
 ## Stop condition

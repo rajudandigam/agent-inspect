@@ -27,6 +27,7 @@ const RECIPES = [
   "runtime-and-ingestion",
   "ai-sdk-local-telemetry",
   "openai-agents-local-tracing",
+  "langgraph-callback-local",
   "harness-basic",
   "harness-adapter-local",
 ];

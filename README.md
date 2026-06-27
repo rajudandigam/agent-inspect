@@ -42,6 +42,8 @@ For a clean npm/pnpm install checklist with ESM, CJS, and CLI checks, see [Clean
 
 ## Three adoption paths
 
+Already using AI SDK, OpenAI Agents JS, LangChain, or LangGraph-through-LangChain? Start with **Path B** for framework-native local traces before adding manual instrumentation.
+
 ### Path A — Observe an existing object/class
 
 Use `observe()` when you already have an agent-like object with a `run`, `execute`, or `invoke` method.
@@ -135,6 +137,8 @@ await agent.invoke(input, { callbacks: [callback] });
 ```
 
 See [docs/ADAPTERS.md](docs/ADAPTERS.md).
+
+No-network recipes: [ai-sdk-local-telemetry](examples/recipes/ai-sdk-local-telemetry/), [openai-agents-local-tracing](examples/recipes/openai-agents-local-tracing/), and [langgraph-callback-local](examples/recipes/langgraph-callback-local/).
 
 ### Path C — Manually instrument custom flows
 
