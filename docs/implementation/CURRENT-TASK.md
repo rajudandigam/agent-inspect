@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.0.0"
-chunk: "v2.0-3-schema-1.0-writer-read-path"
+chunk: "v2.0-4-migration-dry-run-cli"
 status: "in_progress"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.0-2-schema-1.0-model-validator-and-fixtures"
+dependsOn: "v2.0-3-schema-1.0-writer-read-path"
 ```
 
 ## Goal
 
-Route core built-in inspector writer output through the schema 1.0 persisted contract while preserving writer safety, diagnostics, and legacy trace readability.
+Add a local, non-destructive migration command for converting AgentInspect JSONL traces to the schema 1.0 persisted contract.
 
 ## Read first
 
@@ -24,74 +24,68 @@ Route core built-in inspector writer output through the schema 1.0 persisted con
 
 ## In scope
 
-1. Make `createInspector()` emit schema 1.0 persisted events.
-2. Preserve schema 1.0 extension fields through built-in writer safety when safe.
-3. Keep persisted redaction, metadata bounds, final size limits, serialization isolation, and writer diagnostics intact.
-4. Keep schema 0.1 and 0.2 traces readable.
-5. Add focused inspector/writer/read compatibility coverage.
-6. Update release-train state and current-task pointers.
+1. Add `agent-inspect migrate <input> --to 1.0 --dry-run`.
+2. Add explicit `--output <path>` mode that refuses to overwrite the input trace.
+3. Emit deterministic summaries and line warnings for malformed or unsupported rows.
+4. Preserve v0.2/v1.0 persisted rows and convert v0.1 trace rows to v1.0 persisted rows.
+5. Add traversal, malformed input, and non-mutating tests.
+6. Keep the CLI help/package smoke aware of the new command.
+7. Update release-train state and current-task pointers.
 
 ## Out of scope
 
-- optional adapter package output changes;
-- global/manual schema 0.1 trace helper changes;
+- destructive in-place migration;
+- directory-wide migration;
+- migration to schema versions other than 1.0;
+- schema changes beyond the existing schema 1.0 persisted contract;
 - root export removals or package export changes;
-- migration CLI implementation;
 - version changes, changesets, tags, npm publish, GitHub releases, or force pushes;
 - new root/core dependencies;
-- live provider calls, hosted tracing, upload behavior, replay, or cost-engine behavior.
+- hosted upload, provider/network, replay, or cost-engine behavior.
 
 ## Focused validation
 
 ```bash
-pnpm exec vitest run packages/core/test/writers packages/core/test/storage.test.ts packages/core/test/read-trace.test.ts packages/core/test/schema-compatibility.test.ts
+pnpm exec vitest run packages/cli/test/migrate.test.ts packages/core/test/migration packages/core/test/trace-verification.test.ts
 pnpm build
 pnpm typecheck
 pnpm test
-pnpm test:coverage
-pnpm size
-pnpm test:all
 pnpm fixtures:check
-pnpm pack:smoke
-pnpm compat:smoke
+pnpm recipes:check
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- `createInspector()` lifecycle rows use `schemaVersion: "1.0"`.
-- Built-in writers persist schema 1.0 rows after redaction, bounding, JSON safety, and size enforcement.
-- Schema 1.0 unknown optional top-level fields are preserved when safe.
-- Legacy schema 0.2 persisted rows remain accepted by built-in writers.
-- Existing schema 0.1 and mixed schema read paths remain green.
-- No adapter, dependency, version, changeset, publish, tag, or release artifact changes occur.
+- `agent-inspect migrate <input> --to 1.0 --dry-run` reports deterministic counts and writes no files.
+- `--output <path>` writes schema 1.0 JSONL to a separate file and creates parent directories.
+- The command refuses input overwrite and output traversal outside the input directory.
+- Malformed JSON and unsupported schema rows produce stable warnings without mutating input.
+- v0.1/v0.2/v1.0 input rows remain readable and convertible without new dependencies.
+- No version, changeset, tag, publish, or release artifact changes occur.
 
 ## Completion evidence
 
-- `CI=true pnpm exec vitest run packages/core/test/writers packages/core/test/storage.test.ts packages/core/test/read-trace.test.ts packages/core/test/schema-compatibility.test.ts packages/core/test/inspector.test.ts` passed.
+- `CI=true pnpm exec vitest run packages/cli/test/migrate.test.ts packages/cli/test/cli.test.ts packages/core/test/migration packages/core/test/trace-verification.test.ts` passed.
 - `CI=true pnpm build` passed.
 - `CI=true pnpm typecheck` passed.
 - `CI=true pnpm test` passed.
-  - 123 files passed, 1095 tests passed.
-- `CI=true pnpm test:coverage` passed.
-- `CI=true pnpm size` passed.
-  - 39.91 kB brotlied against the 120 kB limit.
-- `CI=true pnpm test:all` passed.
-  - 123 files passed, 1094 tests passed, 1 skipped.
+  - 124 files passed, 1101 tests passed.
 - `CI=true pnpm fixtures:check` passed.
   - 9 v0.1 JSONL files, 6 v0.2 JSONL files, 5 v1.0 JSONL files, 8 logs, 5 configs.
+- `CI=true pnpm recipes:check` passed.
+  - 20 recipes validated.
 - `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm pack:smoke` passed.
+  - Added because the packed CLI help smoke now checks `migrate`.
   - Used an isolated npm cache because the local user npm cache has root-owned files.
-- `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm compat:smoke` passed.
-  - Used the same isolated npm cache.
 - `git diff --check` passed.
 
 ## Proposed commit
 
 ```text
-feat: route inspector writer output to schema 1.0
+feat: add schema migration dry-run cli
 ```
 
 ## Stop condition
 
-Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, material plan drift, or any decision requiring adapter output changes, global/manual trace helper changes, root/package export changes, migration CLI design, dependency, version, changeset, release, tag, publish, hosted upload, provider/network, replay, or cost-engine changes.
+Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, material plan drift, or any decision requiring in-place migration, directory-wide migration, schema redesign, root/package export changes, dependency, version, changeset, release, tag, publish, hosted upload, provider/network, replay, or cost-engine changes.

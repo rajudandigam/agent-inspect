@@ -34,6 +34,8 @@ import type { ExplainCommandOptions } from "./explain.js";
 import { explainCommand } from "./explain.js";
 import type { OpenCommandOptions } from "./open.js";
 import { openCommand } from "./open.js";
+import type { MigrateCommandOptions } from "./migrate.js";
+import { migrateCommand } from "./migrate.js";
 import type { CheckCommandOptions } from "./check.js";
 import { checkCommand } from "./check.js";
 import type { SafetyCommandOptions } from "./safety.js";
@@ -255,6 +257,20 @@ export function createCliProgram(): Command {
     .option("--run <run-id>", "select a run when the trace contains multiple runs")
     .action((input: string | undefined, opts: OpenCommandOptions) => {
       runCommand(() => openCommand(input, opts));
+    });
+
+  program
+    .command("migrate")
+    .description("Migrate a local AgentInspect JSONL trace to a newer schema")
+    .argument("<input>", "AgentInspect JSONL trace file")
+    .addOption(
+      new Option("--to <version>", "target schema version").choices(["1.0"]),
+    )
+    .option("--dry-run", "summarize migration without writing files")
+    .option("-o, --output <path>", "write migrated JSONL to a separate file")
+    .option("--force", "replace an existing output file")
+    .action((input: string, opts: MigrateCommandOptions) => {
+      runCommand(() => migrateCommand(input, opts));
     });
 
   program

@@ -172,6 +172,7 @@ function assertHelp(label, stdout, stderr, status) {
     "tail",
     "export",
     "diff",
+    "migrate",
   ]) {
     if (!combined.includes(needle)) {
       console.error(
