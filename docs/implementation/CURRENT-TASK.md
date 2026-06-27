@@ -4,29 +4,29 @@
 
 ```yaml
 train: "v1.9.0"
-chunk: "v1.9-6-root-api-slimming-plan-and-enforcement"
+chunk: "v1.9-7-release-readiness"
 status: "completed"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.9-5-adapter-promotion"
+dependsOn: "v1.9-6-root-api-slimming-plan-and-enforcement"
 ```
 
 ## Goal
 
-Document the v2 root API direction and enforce that new advanced root exports require explicit review.
+Prepare v1.9.0 release-readiness evidence and stop before manual release-prep operations.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md`
-- `docs/implementation/ROADMAP-V1.8.1-TO-V3.md`
+- `docs/implementation/release-trains/V1.9.0-RELEASE-READINESS.md`
 
 ## In scope
 
-1. Document stable root imports and a v2 migration table.
-2. Ensure advanced examples use subpaths.
-3. Add or update tests that prevent accidental new advanced root exports.
-4. Add JSDoc deprecation notes only where practical and non-breaking.
+1. Prepare v1.9.0 release-readiness evidence and release notes draft.
+2. Inspect package contents.
+3. Verify no unauthorized versions, changesets, tags, publishes, or releases occurred.
+4. Stop for maintainer release-prep authorization.
 
 ## Out of scope
 
@@ -41,40 +41,56 @@ Document the v2 root API direction and enforce that new advanced root exports re
 ## Focused validation
 
 ```bash
-pnpm exec vitest run packages/core/test/subpath-exports.test.ts packages/core/test/package-exports-compat.test.ts packages/core/test/api-stability.test.ts
 pnpm build
 pnpm typecheck
 pnpm test
+pnpm test:coverage
+pnpm size
+pnpm test:all
+pnpm fixtures:check
+pnpm recipes:check
 pnpm compat:smoke
+pnpm pack:smoke
+npm pack --dry-run
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- Docs identify the intended small stable root import set and v2 migration path.
-- Advanced examples continue to use subpaths.
-- Tests fail on accidental new root value exports.
-- Existing 1.x root imports remain valid.
+- Release-readiness record includes exact validation evidence and package contents evidence.
+- Release notes draft covers harness, explain, adapter promotion, and root API slimming work.
+- No unauthorized versions, changesets, tags, publishes, releases, or release PRs occurred.
 - No root/core dependency, version, schema, network, publish, or release behavior changes occur.
+- Manual maintainer release-prep remains the only next step.
 
 ## Completion evidence
 
-- Focused root/subpath tests passed:
-  `CI=true pnpm exec vitest run packages/core/test/subpath-exports.test.ts packages/core/test/package-exports-compat.test.ts packages/core/test/api-stability.test.ts`
-  - 3 files passed, 20 tests passed.
 - `CI=true pnpm build` passed.
 - `CI=true pnpm typecheck` passed.
 - `CI=true pnpm test` passed.
   - 123 files passed, 1087 tests passed.
+- `CI=true pnpm test:coverage` passed.
+  - 123 files passed, 1087 tests passed.
+  - All-files coverage: statements 81.13%, branches 79.28%, functions 94.81%, lines 81.13%.
+- `CI=true pnpm size` passed.
+  - Size 39.6 kB with all dependencies, minified and brotlied; limit 120 kB.
+- `CI=true pnpm test:all` passed.
+- `CI=true pnpm fixtures:check` passed.
+  - 9 v0.1 JSONL files, 6 v0.2 JSONL files, 8 logs, 5 configs.
+- `CI=true pnpm recipes:check` passed.
+  - 20 recipes validated.
 - `CI=true pnpm compat:smoke` passed.
-- `git diff --check` passed.
+- `CI=true pnpm pack:smoke` passed.
+- `npm pack --dry-run` passed.
+  - Root dry-run tarball `agent-inspect-1.8.0.tgz`; 126 files; 1.4 MB package size; 6.7 MB unpacked; shasum `3e75c63f292d82449cdb7f037039070be1990070`.
+- `git diff --check` passed after final readiness/state edits.
 
 ## Proposed commit
 
 ```text
-docs: document v2 root api path
+docs: prepare v1.9 release readiness
 ```
 
 ## Stop condition
 
-Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, material plan drift, or any decision requiring runtime, schema, dependency, version, release, tag, publish, hosted upload, provider/network, replay, or cost-engine changes.
+Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, material plan drift, or any decision requiring runtime, schema, dependency, version, changeset, release, tag, publish, hosted upload, provider/network, replay, or cost-engine changes.

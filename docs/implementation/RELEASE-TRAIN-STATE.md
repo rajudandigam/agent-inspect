@@ -9,8 +9,8 @@ currentTrain: "v1.9.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "f43a783f446e82d7df95ecd4b7cab88449bccf81"
-lastValidationLevel: "v1.9-6-local-gate-green"
+lastConfirmedCommit: "8822e52b75525d427a9a9f133c8e06d4221a54d4"
+lastValidationLevel: "v1.9-7-local-release-readiness-green"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -44,14 +44,16 @@ completedChunks:
   - "v1.9-4-explain-provider-design-gate"
   - "v1.9-5-adapter-promotion"
   - "v1.9-6-root-api-slimming-plan-and-enforcement"
+  - "v1.9-7-release-readiness"
 currentChunk: "none"
-pendingManualGate: "none"
-nextAction: "Wait for CI on chunk 6, then continue with v1.9 chunk 7: release readiness only."
+pendingManualGate: "v1.9.0-release-prep-authorization"
+nextAction: "After chunk 7 CI/Publish are green, stop for maintainer manual release-prep authorization for the v1.9.0 minor release."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
 - **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
 - **Active plan:** [release-trains/V1.9.0-EXECUTION-PLAN.md](./release-trains/V1.9.0-EXECUTION-PLAN.md)
+- **Current readiness:** [release-trains/V1.9.0-RELEASE-READINESS.md](./release-trains/V1.9.0-RELEASE-READINESS.md)
 - **Architecture index:** [../proposals/README.md](../proposals/README.md)
 - **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)
