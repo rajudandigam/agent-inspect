@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0
+
+### Minor Changes
+
+- 309350e: Release v1.9.0 adoption leverage with the private harness workspace, explain dry-run/local analysis, promoted adapter adoption paths, and the v2 root API slimming plan.
+
 ## 1.8.0
 
 Released **2026-06-27**.
