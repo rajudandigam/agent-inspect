@@ -15,13 +15,13 @@ This document states what AgentInspect **does not** provide today. It complement
 
 ## Persisted event model (v1.2.0 foundation)
 
-- **v0.2 is not the default persisted trace file format.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL.
-- **Dual-format inspection is a read path, not a write migration.** `list`, `view`, `timeline`, `stats`, `search`, `diff`, `export`, `what`, and `report` read v0.1/v0.2 trace files through normalization where applicable. `logs` and `tail` remain structured-log ingestion commands, not v0.2 writers.
-- **Default write path remains v0.1.** v0.2 fixtures and converters are available for adapters and migration testing, but AgentInspect does not automatically rewrite traces.
+- **Manual global tracing remains v0.1.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL for compatibility.
+- **Persisted writer/runtime output targets schema 1.0.** `createInspector()` with built-in writers emits schema 1.0 persisted rows; v0.2 remains a readable compatibility foundation.
+- **Migration is explicit, not automatic.** `agent-inspect migrate <input> --to 1.0 --dry-run` reports what would change, and `--output <file>` writes a separate file. AgentInspect does not rewrite old traces in place.
 
 ## Runtime writers and universal readers (v1.6)
 
-- **Experimental APIs:** `agent-inspect/writers`, `agent-inspect/readers`, and `createInspector()` are available for local adoption, but their experimental contracts may be refined in v1.x.
+- **Subpath APIs:** `agent-inspect/writers`, `agent-inspect/readers`, and advanced helpers are available for local adoption from their owning subpaths. `createInspector()` is part of the small root API.
 - **Explicit writer ownership:** `createInspector()` does not print terminal lifecycle output or implicitly choose a disk writer. Use `fileWriter()` / `bufferedFileWriter()` / custom writers when persistence is desired.
 - **No standards upload:** OpenInference and OTLP JSON support is local read/export compatibility only. There is no OTLP gRPC/HTTP streaming sink, collector client, or hosted ingestion behavior.
 - **Conservative detection:** `agent-inspect open` does not silently accept arbitrary JSON. Unsupported or ambiguous inputs produce errors/warnings rather than guessed traces.
@@ -31,7 +31,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 - **AI SDK integration is explicit telemetry wiring.** Use `@agent-inspect/ai-sdk` through AI SDK `experimental_telemetry.integrations`; AgentInspect does not wrap providers, patch fetch, or enable telemetry globally.
 - **AI SDK privacy settings are caller-owned.** Examples set `recordInputs: false` and `recordOutputs: false`; leaving those enabled in user code can cause the AI SDK telemetry layer to include richer data before AgentInspect receives events.
-- **OpenAI Agents JS support is experimental and not published yet.** `@agent-inspect/openai-agents` maps metadata-only runtime spans through the safe `setTraceProcessors()` boundary, remains private until the v1.8 first-publication gate, and does not capture raw payloads by default.
+- **OpenAI Agents JS support is experimental.** `@agent-inspect/openai-agents` maps metadata-only runtime spans through the safe `setTraceProcessors()` boundary and does not capture raw payloads by default. The v1.9 package publication retry is a separate maintainer npm automation task, not part of the v2 contract work.
 - **LangGraph support is a boundary decision, not a separate package.** Initial support is expected through `@agent-inspect/langchain` callbacks unless no-network fixtures prove a separate package is needed.
 - **No root/core adapter dependencies.** AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, and LangChain remain outside the root/core runtime dependency graph.
 
@@ -58,7 +58,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 - **Checks are deterministic local rules, not compliance certification.** `check`, `scan`, and `verify-safe` surface bounded findings and diagnostics over supported local inputs; they do not prove a trace is safe for every sharing context.
 - **Safe CI artifacts are structural summaries.** They avoid raw prompt/output/request/response/header/tool payload content by default, but teams should still review generated files before sharing.
-- **Vitest/Jest reporters are optional and unpublished until release readiness in the v1.8 train.** The recipes document config patterns and explicit associations; consumers should install the packages only after publication.
+- **Vitest/Jest reporters are optional package surfaces.** Recipes document config patterns and explicit associations; package publication is controlled by release readiness and maintainer authorization.
 
 ## Execution semantics
 

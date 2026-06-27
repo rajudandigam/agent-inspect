@@ -23,7 +23,7 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 
 - **Vendor sinks** (hosted dashboards, Langfuse/Braintrust/New Relic/Datadog native uploads, OTLP gRPC streaming, etc.) are **not implemented** in the core packages described here.
 - **AI SDK adapter** (`@agent-inspect/ai-sdk`) is experimental and metadata-first. It depends on explicit AI SDK telemetry configuration and requires `recordInputs: false` / `recordOutputs: false` for the documented safe path.
-- **OpenAI Agents JS adapter** (`@agent-inspect/openai-agents`) is experimental and remains private/unpublished until the v1.8 first-publication gate. Runtime metadata mapping is local-only; the safe install path is `setTraceProcessors()` rather than `addTraceProcessor()`.
+- **OpenAI Agents JS adapter** (`@agent-inspect/openai-agents`) is experimental and metadata-first. Runtime metadata mapping is local-only; the safe install path is `setTraceProcessors()` rather than `addTraceProcessor()`. The v1.9 package publication retry is pending maintainer-side npm auto-publish setup and is separate from v2 contract work.
 - **LangGraph support** is currently a documented boundary through `@agent-inspect/langchain`, not a dedicated package.
 - **LangChain adapter** captures **metadata-oriented** signals by default; it does not replace full framework observability.
 - **LangChain `stream: true`** records chunk counts and timing only — not a full token replay. Per-token JSONL events are not emitted.
@@ -93,9 +93,14 @@ pnpm compat:smoke
 - Fixture pattern: [test/consumer-fixtures/jest-cjs/](../../test/consumer-fixtures/jest-cjs/).
 - Full Jest runner smoke in CI is a documented follow-up — root package does not ship Jest as a devDependency.
 
-## v1.8 pre-release adoption notes
+## v2 migration notes
 
-- `@agent-inspect/vitest` and `@agent-inspect/jest` are private/unpublished until the v1.8 release-readiness gate completes. The [test reporter artifact recipe](../examples/recipes/test-reporter-artifacts/README.md) documents the intended config shape without requiring those packages.
+- Advanced APIs no longer live on the root import in the v2 contract. Use `agent-inspect/readers`, `/writers`, `/checks`, `/diff`, `/exporters`, `/logs`, `/persisted`, and `/advanced`.
+- The small root value API is `createInspector`, `inspectRun`, `maybeInspectRun`, `step`, `observe`, and `getCurrentCorrelationMetadata`.
+- Use `agent-inspect migrate <trace.jsonl> --to 1.0 --dry-run` before writing migrated output. The command does not rewrite input files.
+
+## v1.8/v1.9 adoption notes
+
 - `agent-inspect artifacts --github-summary` writes a local step-summary file only. It does not call GitHub APIs, open PR comments, upload artifacts, or mutate repository state.
 - Baseline checks compare normalized structural facts from explicit candidate and baseline inputs. They are useful for CI regression evidence, not replay or semantic eval scoring.
 

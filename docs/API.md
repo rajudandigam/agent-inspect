@@ -13,6 +13,7 @@ Use the root import for stable beginner APIs. Use subpaths for advanced, experim
 
 ```ts
 import {
+  createInspector,
   observe,
   inspectRun,
   maybeInspectRun,
@@ -328,29 +329,29 @@ The processor records local v0.2 persisted events for trace/run, agent, generati
 
 ## 15. Experimental persisted-event foundation (v1.2.0)
 
-These helpers expose the **source-agnostic `PersistedInspectEvent` model** (`schemaVersion: "0.2"`). They are **local-only**, **in-memory**, and **do not change** storage write/read or CLI behavior in v1.2.0.
+These helpers expose the **source-agnostic `PersistedInspectEvent` model**. They are **local-only** and support v0.2 compatibility plus the stable schema 1.0 persisted contract.
 
 Import from `agent-inspect/persisted`:
 
 | API | Role |
 | --- | ---- |
-| `isPersistedInspectEvent` | Runtime validator for v0.2 persisted events |
+| `isPersistedInspectEvent` | Runtime validator for supported persisted events |
 | `traceEventToPersistedInspectEvent` | Convert one v0.1 `TraceEvent` |
 | `traceEventsToPersistedInspectEvents` | Batch v0.1 → v0.2 |
 | `inspectEventToPersistedInspectEvent` | Convert one in-memory `InspectEvent` |
-| `inspectEventsToPersistedInspectEvents` | Batch `InspectEvent` → v0.2 |
-| `persistedInspectEventToInspectEvent` | Convert one v0.2 event to `InspectEvent` |
-| `persistedInspectEventsToInspectEvents` | Batch v0.2 → `InspectEvent` |
-| `persistedInspectEventsToRunTrees` | Build `InspectRunTree[]` from v0.2 events (via `TreeBuilder`) |
+| `inspectEventsToPersistedInspectEvents` | Batch `InspectEvent` → persisted events |
+| `persistedInspectEventToInspectEvent` | Convert one persisted event to `InspectEvent` |
+| `persistedInspectEventsToInspectEvents` | Batch persisted events → `InspectEvent` |
+| `persistedInspectEventsToRunTrees` | Build `InspectRunTree[]` from persisted events (via `TreeBuilder`) |
 | `traceEventsToPersistedRunTrees` | v0.1 `TraceEvent[]` → persisted model → trees |
 
 Related types: `PersistedInspectEvent`, `PersistedEventSourceType`, `PersistedEventStatus`, `TraceEventToPersistedOptions`, `InspectEventToPersistedOptions`, `PersistedToInspectEventOptions`, `PersistedTreeBridgeOptions`.
 
 **Notes:**
 
-- Manual trace **writing** remains `schemaVersion: "0.1"`.
-- v0.2 is **not written by default**; use converters and `fixtures/traces-v0.2/` samples for validation.
-- Inspection read paths normalize v0.1 and v0.2 JSONL for local CLI/API use. v0.2 remains experimental as a persisted-event foundation and is not the default writer.
+- Manual global trace **writing** remains `schemaVersion: "0.1"`.
+- `createInspector()` and built-in persisted writer paths target schema 1.0 rows.
+- Inspection read paths normalize v0.1, v0.2, and v1.0 JSONL for local CLI/API use. v0.2 remains a compatibility foundation.
 
 ## 16. Local observability helpers (v1.4.0+)
 
@@ -373,7 +374,7 @@ Report redaction profiles are key-based safeguards applied to the complete rende
 
 ## 18. Experimental trace writers (v1.6)
 
-Trace writers are the first slice of the v1.6 runtime foundation. They are experimental during v1.x and intended for tests, adapters, and future `createInspector` work.
+Trace writers are the local persistence contract for tests, adapters, and `createInspector()` workflows.
 
 Import from `agent-inspect/writers`:
 
@@ -395,7 +396,7 @@ import type {
 ```
 
 - **`TraceWriter`**: async `write(event)`, optional `flush()`, optional `close()`, optional `getStats()`.
-- **`fileWriter({ dir?, filePath? })`**: appends v0.2 `PersistedInspectEvent` JSONL rows to local disk. By default it derives one file per `event.runId`; `filePath` writes all events to an explicit local file. Filesystem and serialization failures are reflected in writer stats instead of being thrown into application code.
+- **`fileWriter({ dir?, filePath? })`**: appends `PersistedInspectEvent` JSONL rows to local disk. `createInspector()` emits schema 1.0 rows by default; compatibility adapters may still pass readable v0.2 rows. By default it derives one file per `event.runId`; `filePath` writes all events to an explicit local file. Filesystem and serialization failures are reflected in writer stats instead of being thrown into application code.
 - **`bufferedFileWriter({ dir?, filePath?, maxQueueSize?, flushIntervalMs?, maxBatchSize?, overflow? })`**: buffers local JSONL writes with bounded queue behavior. Overflow supports `drop-oldest` and `drop-newest`; neither mode throws into application code.
 - **`compositeWriter([...writers])`**: fans out events to multiple explicit local/custom writers. A failing child writer does not prevent other children from receiving events; failures are reflected in composite stats.
 - **`memoryWriter()`**: stores cloned `PersistedInspectEvent` rows in memory for tests, adapter fixtures, and eval harnesses.
@@ -405,9 +406,9 @@ No network writer or vendor sink exists in this package.
 
 ## 19. Experimental inspector API/runtime (v1.6)
 
-`createInspector()` is the experimental public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records v0.2 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
+`createInspector()` is the public instance API for local-first tracing with explicit writers. It owns an instance-specific runtime context, records schema 1.0 persisted inspect events, preserves application return values/errors, and exposes diagnostics plus deterministic `flush()`/`close()` lifecycle hooks.
 
-Import from `agent-inspect/advanced`:
+Import from `agent-inspect`:
 
 ```ts
 import { createInspector } from "agent-inspect";
@@ -443,7 +444,7 @@ Public methods:
 
 `createInspectorRuntime()` is available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()` and `inspector.getDiagnostics()`.
 
-These APIs are experimental during v1.x. They do not add a default network writer or vendor sink.
+The low-level runtime helpers remain on `agent-inspect/advanced`. These APIs do not add a default network writer or vendor sink.
 
 ## 20. Experimental trace readers (v1.6)
 

@@ -22,7 +22,7 @@ Executable shared assertions live in `packages/core/test/adapter-executable-conf
 | --- | --- | --- | --- | --- |
 | AI SDK | `@agent-inspect/ai-sdk` | implemented experimental; v1.8 correctness hardening pending | AI SDK telemetry integration | optional package peer dependency |
 | LangChain | `@agent-inspect/langchain` | implemented experimental | explicit callback | optional package peer dependency |
-| OpenAI Agents JS | `@agent-inspect/openai-agents` | implemented experimental; private until first publication gate | `setTraceProcessors()` replacement | optional package peer dependency |
+| OpenAI Agents JS | `@agent-inspect/openai-agents` | implemented experimental; public package, with v1.9 publication recovery tracked separately | `setTraceProcessors()` replacement | optional package peer dependency |
 | LangGraph | `@agent-inspect/langchain` | fixture-backed through LangChain callback | explicit LangChain callback | existing LangChain adapter first |
 
 ## Required defaults

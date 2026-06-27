@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.8.0** (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents` — all aligned).
+Current npm release line: **1.9.x** for the existing public packages. The v2 contract work on `main` is unreleased until the release-readiness gate completes. `@agent-inspect/openai-agents` v1.9 publication recovery is a separate maintainer npm setup item and is not retried by the v2 train.
 
 ```bash
 npm install agent-inspect
@@ -194,6 +194,7 @@ Use the root import for stable beginner APIs:
 
 ```ts
 import {
+  createInspector,
   observe,
   inspectRun,
   maybeInspectRun,
@@ -212,7 +213,7 @@ import { diffTraceEvents } from "agent-inspect/diff";
 import { exportMarkdown } from "agent-inspect/exporters";
 import { parseLogsToTrees } from "agent-inspect/logs";
 import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
-import { createInspector } from "agent-inspect/advanced";
+import { createInspectorRuntime } from "agent-inspect/advanced";
 ```
 
 **Env-gated tracing** (eval harnesses, CI): use `maybeInspectRun` and set `AGENT_INSPECT=1` when you want a trace — otherwise no files are written.
@@ -227,20 +228,22 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
-## What you can do today (v1.8.0)
+## What you can do today
 
 - **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
+- **Use an isolated inspector** with `createInspector()` and explicit local writers for tests/adapters.
 - **Correlate runs** with optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started` metadata.
 - **Redact before disk** with default key-based redaction, or choose `redactionProfile`: `local`, `share`, or `strict`.
-- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `open`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
+- **Inspect from the CLI** — `list`, `view`, `clean`, `logs`, `tail`, `export`, `open`, `migrate`, `diff`, `timeline`, `stats`, `search`, `what`, `report`.
+- **Migrate explicitly** with `agent-inspect migrate <trace.jsonl> --to 1.0 --dry-run` or `--output <file>`; originals are never overwritten by default.
 - **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
 - **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
 - **Optional AI SDK adapter** — experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6; metadata-only by default with `recordInputs: false` and `recordOutputs: false`.
 - **Optional OpenAI Agents adapter** — experimental `@agent-inspect/openai-agents` trace processor for local OpenAI Agents JS trace processing.
 - **Optional TUI** — `view --tui` when `@agent-inspect/tui` is installed.
-- **Persisted-event foundation (v1.2.0+)** — in-memory `PersistedInspectEvent` converters; manual writing stays `schemaVersion: "0.1"`.
+- **Persisted-event foundation** — v0.1/v0.2/v1.0 AgentInspect JSONL remains readable; `createInspector()` and built-in writers use the schema 1.0 persisted path.
 - **Experimental subpaths** — `agent-inspect/readers`, `/writers`, `/checks`, `/diff`, `/exporters`, `/logs`, `/persisted`, and `/advanced` for advanced local workflows.
 
 Nothing uploads traces by default. Review exports before sharing — see [safe trace sharing](docs/SAFE-TRACE-SHARING.md).
@@ -292,6 +295,7 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `tail` | Watch structured logs while the app runs |
 | `export` | Write Markdown / HTML / OpenInference-compatible JSON / OTLP JSON **locally** |
 | `open` | Read AgentInspect JSONL, OpenInference JSON, or OTLP JSON locally |
+| `migrate` | Convert a local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output |
 | `diff` | Compare two local runs (read-only) |
 | `timeline` | Chronological view of one run |
 | `stats` | Local aggregates over a trace directory |
@@ -316,15 +320,15 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 - **Export** a run to Markdown for a PR, postmortem, or internal thread — use `--redaction-profile share` for share-safe copies, then review before sharing.
 - Keep traces **on disk** while still using enterprise observability elsewhere.
 
-## Stable foundation (AgentInspect 1.x)
+## Stable foundation
 
-**agent-inspect 1.x** (current: **1.8.0**) is the **local-first trace workbench** for TypeScript AI agents:
+AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 - Instrument runs with `inspectRun` and `step`
-- Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
+- Write and read **local JSONL traces** (`schemaVersion: "0.1"` manual traces remain readable; schema 1.0 persisted rows are the v2 writer target)
 - Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**, **`timeline`**, **`stats`**, **`search`**
 
-**Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
+**Stable root APIs:** `createInspector()`, `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 

@@ -1,4 +1,4 @@
-# CLI (AgentInspect 1.x)
+# CLI
 
 This document describes the **stable CLI surface** of AgentInspect.
 
@@ -26,6 +26,7 @@ Core commands:
 - `tail` — live-tail logs into updating local trees
 - `export` — export manual traces to Markdown/HTML/OpenInference/OTLP JSON (local only)
 - `open` — read supported local trace files, directories, or stdin through the canonical reader pipeline
+- `migrate` — convert one local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output
 - `check` — run deterministic local trace checks with stable JSON and exit codes
 - `scan` — best-effort local safety scan for trace capture risks
 - `verify-safe` — best-effort local trace safety verification
@@ -243,7 +244,36 @@ cat packages/core/test/fixtures/openinference-basic.json | npx agent-inspect ope
 
 When a directory or payload contains multiple runs, `open` lists the run ids and exits until you pass `--run <run-id>`.
 
-### 6.8 `check`
+### 6.8 `migrate`
+
+Convert one local AgentInspect JSONL trace file to the stable schema 1.0 persisted contract. This command is local and non-destructive by default: it does not upload traces, run agents, mutate the input file, or overwrite originals.
+
+```bash
+agent-inspect migrate <input.jsonl> --to 1.0 --dry-run
+agent-inspect migrate <input.jsonl> --to 1.0 --output <output.jsonl>
+```
+
+Options:
+
+- `--to 1.0`: required target schema version
+- `--dry-run`: print deterministic counts and warnings without writing output
+- `-o, --output <path>`: write migrated schema 1.0 JSONL to a separate file
+- `--force`: accepted only for explicit output validation; input overwrite is still refused
+
+Input support:
+
+- v0.1 manual trace rows are converted to schema 1.0 persisted rows.
+- v0.2 and v1.0 persisted rows are preserved/upgraded through the shared persisted contract.
+- malformed JSON and unsupported schema rows are reported as line warnings.
+
+Examples:
+
+```bash
+npx agent-inspect migrate fixtures/traces/minimal-success.jsonl --to 1.0 --dry-run
+npx agent-inspect migrate fixtures/traces/minimal-success.jsonl --to 1.0 --output fixtures/traces/minimal-success.v1.jsonl
+```
+
+### 6.9 `check`
 
 Run deterministic checks against a local trace. This command is local and read-only: it does not rerun agents, call models, upload traces, or mutate input files.
 
@@ -292,7 +322,7 @@ npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool sear
 
 Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.9 `scan` and `verify-safe`
+### 6.10 `scan` and `verify-safe`
 
 Run best-effort local safety verification for supported trace inputs. These commands are local and read-only: they do not rerun agents, call models, upload traces, mutate input files, or certify compliance.
 
@@ -331,7 +361,7 @@ npx agent-inspect verify-safe minimal-success --dir fixtures/traces
 npx agent-inspect verify-safe trace.jsonl --max-string-length 8192 --json
 ```
 
-### 6.10 `artifacts`
+### 6.11 `artifacts`
 
 Create deterministic local CI artifacts for supported trace inputs. This command is local and read-only for trace inputs: it does not rerun agents, call models, upload files, use GitHub APIs, or mutate repository state. It writes only to `--output-dir` and, when requested, a local step-summary file.
 
@@ -371,7 +401,7 @@ npx agent-inspect artifacts candidate.jsonl --baseline baseline.jsonl --output-d
 
 Recipe and sample workflow: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.11 `diff`
+### 6.12 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -435,7 +465,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.12 `timeline`
+### 6.13 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -451,7 +481,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.13 `stats`
+### 6.14 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -471,7 +501,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.14 `search`
+### 6.15 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -501,7 +531,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.15 `what`
+### 6.16 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -530,7 +560,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.16 `report`
+### 6.17 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 
@@ -555,7 +585,7 @@ Example:
 npx agent-inspect report minimal-success --dir fixtures/traces --format html -o report.html
 ```
 
-### 6.17 `explain`
+### 6.18 `explain`
 
 Explain a local trace using deterministic facts and local inference labels. This command reads through the same local reader pipeline as `open` / `check`; it does not call a model provider, upload traces, replay agents, or mutate input files.
 

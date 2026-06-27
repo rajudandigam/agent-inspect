@@ -75,7 +75,7 @@ Experimental helpers (local-only):
 - `exportMarkdown`, `exportHtml`, `exportOpenInference`, `exportOtlpJson`
 - `validateExport`, `validateExportContent`
 
-See [API.md](./API.md) §7.
+Import these from `agent-inspect/exporters`. See [API.md](./API.md) §7.
 
 ## What not to share
 

@@ -70,6 +70,7 @@ Use the root import for stable beginner APIs:
 
 ```ts
 import {
+  createInspector,
   observe,
   inspectRun,
   maybeInspectRun,

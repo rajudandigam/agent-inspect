@@ -1,13 +1,14 @@
-# Schema (AgentInspect 1.x)
+# Schema
 
-This document describes the **persisted manual trace JSONL schema** and the **log-derived normalized model** used by AgentInspect.
+This document describes the **persisted AgentInspect JSONL schemas** and the **log-derived normalized model** used by AgentInspect.
 
 ## 1. Overview
 
 AgentInspect has two related (but distinct) data models:
 
 1. **Manual trace JSONL** (persisted): lines of `TraceEvent` written by `inspectRun()` / `step()`.
-2. **Log-derived normalized model** (in-memory): `InspectEvent` / `InspectRunTree` built from structured logs or adapters.
+2. **Persisted InspectEvent JSONL** (persisted): schema 1.0 rows written by `createInspector()` / built-in writers and produced by explicit migration.
+3. **Log-derived normalized model** (in-memory): `InspectEvent` / `InspectRunTree` built from structured logs or adapters.
 
 Important: log-derived trees are **normalized views**, not the same persisted JSONL schema.
 
@@ -25,7 +26,7 @@ Manual trace events use:
 
 - **`schemaVersion: "0.1"`**
 
-Existing `0.1` traces remain readable across AgentInspect 1.x.
+Existing `0.1` traces remain readable across AgentInspect major versions covered by this migration path.
 
 ### 2.3 TraceEvent union
 
@@ -153,13 +154,13 @@ Manual trace reading:
 
 ## 9. Backward compatibility
 
-- v0.1 JSONL traces remain readable across AgentInspect 1.x.
-- No automatic migrations or rewriting of old files.
+- v0.1, v0.2, and v1.0 AgentInspect JSONL traces remain readable.
+- No automatic migrations or rewriting of old files. Use `agent-inspect migrate <input> --to 1.0 --dry-run` first, then `--output <file>` for explicit conversion.
 
 ## 10. Breaking change policy
 
 - Breaking changes require a major version.
-- Stable v1.x policy: avoid removing stable fields/events; prefer additive extensions.
+- Stable policy: avoid removing stable fields/events within a major version; prefer additive extensions.
 
 ## 11. Log-derived InspectEvent model
 
@@ -241,18 +242,34 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 
 Programmatic helpers: see [API.md](./API.md) §13 (experimental persisted-event foundation).
 
-## 15. v1.6 local reader/writer compatibility
+## 15. Stable persisted InspectEvent schemaVersion "1.0"
 
-v1.6 adds experimental writer and reader surfaces without changing the stable manual trace schema:
+Schema 1.0 is the v2 persisted InspectEvent contract. It evolves the v0.2 shape in place rather than introducing a third unrelated model.
+
+| Topic | Rule |
+| ----- | ---- |
+| `schemaVersion` | `"1.0"` |
+| Default writer target | `createInspector()` and built-in persisted writers emit schema 1.0 rows by default. |
+| Manual helper compatibility | `inspectRun()` / `step()` global/manual tracing continues to write `schemaVersion: "0.1"` for compatibility. |
+| Reader compatibility | AgentInspect readers accept v0.1, v0.2, v1.0, and mixed AgentInspect JSONL where safe, with warnings. |
+| Unknown optional fields | Safe unknown optional fields on v1.0 rows are preserved where possible; unsupported fields are surfaced through warnings/diagnostics rather than fabricated into relationships. |
+| Migration | `agent-inspect migrate <input> --to 1.0 --dry-run` is non-mutating; `--output <file>` writes a separate migrated file and refuses input overwrite. |
+
+Canonical samples: `fixtures/traces-v1.0/*.jsonl` (validated by `pnpm fixtures:check`).
+
+## 16. Local reader/writer compatibility
+
+Local writer and reader surfaces do not change the stable manual trace schema:
 
 - `inspectRun()` / `step()` continue to write `schemaVersion: "0.1"` JSONL by default.
-- `createInspector()` can write explicit v0.2 `PersistedInspectEvent` rows when configured with a writer such as `fileWriter()` or `bufferedFileWriter()`.
+- `createInspector()` writes schema 1.0 `PersistedInspectEvent` rows when configured with a writer such as `fileWriter()` or `bufferedFileWriter()`.
 - `agent-inspect/readers` and `agent-inspect open` read local AgentInspect JSONL, OpenInference JSON, and OTLP JSON inputs through compatibility adapters.
 - OpenInference and OTLP JSON inputs are **not** a third AgentInspect persisted schema. They are local read formats normalized into inspection trees with warnings and unsupported-field reporting.
 - Reader and writer APIs perform no network upload and do not mutate source files.
 - v1.8 checks, safety verification, baseline comparison, safe CI artifacts, and reporter artifacts are report layers over existing trace inputs. They do not change manual trace writing, introduce a third persisted trace model, or embed raw prompt/output/request/response/header/tool payload content in their default structural outputs.
 
-## 16. Migration notes
+## 17. Migration notes
 
 - Minor releases may add optional fields/events, but must keep existing v0.1 traces readable.
-- v0.1 → v0.2 write migration guides are future work. v1.x inspection readers are dual-format; the default manual writer remains v0.1.
+- v0.1/v0.2 → v1.0 migration is explicit and local-only through `agent-inspect migrate`; automatic in-place rewrite remains out of scope.
+- The default manual writer remains v0.1; the persisted writer/runtime path targets schema 1.0.

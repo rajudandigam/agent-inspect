@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.0.0"
-chunk: "v2.0-5-v2-root-api-contract"
+chunk: "v2.0-6-docs-and-migration-guide-alignment"
 status: "validated_pending_commit"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.0-4-migration-dry-run-cli"
+dependsOn: "v2.0-5-v2-root-api-contract"
 ```
 
 ## Goal
 
-Enforce the intended small v2 root API contract and move advanced usage to documented subpaths without changing package routes or runtime behavior.
+Align public docs with the implemented v2 contract: small root API, schema 1.0 persisted path, explicit migration workflow, subpath ownership, and the separate OpenAI Agents v1.9 publication recovery note.
 
 ## Read first
 
@@ -24,72 +24,58 @@ Enforce the intended small v2 root API contract and move advanced usage to docum
 
 ## In scope
 
-1. Shrink the root value export surface to the v2 allowlist.
-2. Keep root type exports limited to stable user-facing contracts.
-3. Move advanced/runtime/reader/writer/export/log/diff/check usage to owning subpaths.
-4. Update API/subpath stability tests, consumer compatibility fixtures, and in-repo test resolver aliases.
-5. Refresh public docs snippets that would otherwise contradict the v2 root contract.
-6. Update release-train state and current-task pointers.
+1. Align README, API, CLI, schema, migration, known issues, limitations, exports, adapter conformance, and roadmap docs with the v2 root/subpath contract.
+2. Document the `agent-inspect migrate <input> --to 1.0 --dry-run` and `--output <file>` workflow.
+3. Clarify that manual global tracing remains v0.1 while `createInspector()` / built-in persisted writers target schema 1.0.
+4. Keep OpenAI Agents v1.9 publication recovery separate from v2 release scope.
+5. Update release-train state and current-task pointers.
 
 ## Out of scope
 
+- source/runtime/schema behavior changes;
 - package export route changes;
-- schema or persisted model changes;
-- migration behavior changes;
-- new dependencies;
-- runtime, writer, reader, exporter, or CLI behavior changes beyond import ownership;
 - version changes, changesets, tags, npm publish, GitHub releases, force pushes, or release artifacts;
+- new dependencies;
 - hosted upload, provider/network, replay, or cost-engine behavior.
 
 ## Focused validation
 
 ```bash
-pnpm exec vitest run packages/core/test/api-stability.test.ts packages/core/test/subpath-exports.test.ts packages/core/test/package-exports-compat.test.ts packages/core/test/consumer-compat.test.ts
-pnpm build
 pnpm typecheck
 pnpm test
-pnpm compat:smoke
-pnpm pack:smoke
+pnpm fixtures:check
+pnpm recipes:check
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- Root runtime exports are limited to `createInspector`, `inspectRun`, `maybeInspectRun`, `step`, `observe`, and `getCurrentCorrelationMetadata`.
-- Root type exports remain limited to the v2 stable user-facing contract.
-- Advanced APIs remain available from their documented subpaths.
-- CLI, adapters, recipes, and tests no longer rely on advanced root imports.
-- Consumer compatibility continues to pass for root beginner APIs and subpath imports.
+- Public docs show the small root value API and subpath ownership accurately.
+- Migration docs describe dry-run and explicit-output behavior without promising directory-wide or in-place migration.
+- Schema docs distinguish v0.1 manual traces, v0.2 compatibility rows, and v1.0 persisted writer/runtime rows.
+- Known issues and limitations no longer describe OpenAI Agents as awaiting the v1.8 first-publication gate.
 - No package versions, package export routes, dependencies, tags, publishes, or releases change.
 
 ## Completion evidence
 
-- Starting commit: `6c6eb1047c038e89e5ab0c82d7becb723f66db46`.
-- `CI=true pnpm exec vitest run packages/core/test/api-stability.test.ts packages/core/test/subpath-exports.test.ts packages/core/test/package-exports-compat.test.ts packages/core/test/consumer-compat.test.ts` passed.
-  - 4 files passed, 26 tests passed.
-- `CI=true pnpm build` passed.
+- Starting commit: `ea3f9a4ab6f96bbe084ed427c73dec93d4d5621d`.
 - `CI=true pnpm typecheck` passed.
 - `CI=true pnpm test` passed.
   - 124 files passed, 1101 tests passed.
-- `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm compat:smoke` passed.
-  - Used an isolated npm cache because the local user npm cache has root-owned files.
-- `CI=true npm_config_cache=/private/tmp/agent-inspect-npm-cache pnpm pack:smoke` passed.
-  - Used an isolated npm cache because the local user npm cache has root-owned files.
-- Post-push Publish gate repair:
-  - Publish failed in `fixtures:check` because `scripts/validate-fixtures.mjs` still imported root-only `validateEvent` / `isPersistedInspectEvent` from `packages/core/dist/index.mjs`.
-  - Updated the validator to import `validateEvent` from `packages/core/dist/advanced.mjs` and `isPersistedInspectEvent` from `packages/core/dist/persisted.mjs`.
-  - `CI=true pnpm fixtures:check` passed.
-  - `CI=true pnpm recipes:check` passed.
+- `CI=true pnpm fixtures:check` passed.
+  - 9 v0.1 JSONL files, 6 v0.2 JSONL files, 5 v1.0 JSONL files, 8 logs, 5 configs.
+- `CI=true pnpm recipes:check` passed.
+  - 20 recipes validated.
 
 ## Proposed commit
 
 ```text
-fix: use core subpaths in fixture validator
+docs: align v2 contract and migration guides
 ```
 
 ## Next chunk
 
-Chunk 6 — docs and migration guide alignment.
+Chunk 7 — v2 release readiness.
 
 ## Stop condition
 

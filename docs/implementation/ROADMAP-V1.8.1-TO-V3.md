@@ -636,8 +636,8 @@ write v1.0 by default
 ### Migration
 
 ```bash
-agent-inspect migrate ./old-traces --to 1.0 --dry-run
-agent-inspect migrate ./old-traces --to 1.0 --out ./migrated-traces
+agent-inspect migrate ./old-trace.jsonl --to 1.0 --dry-run
+agent-inspect migrate ./old-trace.jsonl --to 1.0 --output ./old-trace.v1.jsonl
 ```
 
 Never overwrite originals by default.
