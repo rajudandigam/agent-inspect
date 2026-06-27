@@ -251,7 +251,7 @@ Advanced imports should use:
 ```ts
 import { openTrace } from "agent-inspect/readers";
 import { memoryWriter } from "agent-inspect/writers";
-import { assertTrace } from "agent-inspect/checks";
+import { runTraceChecks } from "agent-inspect/checks";
 ```
 
 ### 5. Align version language

@@ -1,6 +1,6 @@
 ## Log-to-tree quickstart
 
-AgentInspect can inspect **structured logs** and render a local execution tree without requiring you to wrap every function in manual tracing.
+Advanced ingestion: use this when your app already emits structured logs. AgentInspect can inspect those logs and render a local execution tree without requiring you to wrap every function in manual tracing.
 
 ## Example JSON log lines
 
@@ -53,4 +53,3 @@ See also:
 - `docs/LOGGING-PLAYBOOK.md` (pino / log4js / NestJS examples + fixtures)
 - `docs/SCHEMA.md` (log ingest config types + confidence)
 - `examples/recipes/pino-json-logs/`, `log4js-json-layout/`, `nestjs-json-logging/`
-

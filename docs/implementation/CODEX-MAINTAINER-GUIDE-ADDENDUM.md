@@ -1,3 +1,5 @@
+# Historical reference only. Do not use as active Codex instructions. See docs/implementation/README.md and ROADMAP-V1.8.1-TO-V3.md.
+
 # Maintainer Guide Addendum
 
 Add this section after `## Chunk lifecycle`.

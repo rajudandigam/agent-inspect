@@ -1,3 +1,5 @@
+# Historical reference only. Do not use as active Codex instructions. See docs/implementation/README.md and ROADMAP-V1.8.1-TO-V3.md.
+
 # AgentInspect v1.8 Codex Kit
 
 This kit starts the v1.8 release train from the published v1.7.0 baseline and includes the corrective work identified by the post-release review.

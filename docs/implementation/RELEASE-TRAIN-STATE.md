@@ -5,11 +5,11 @@
 ```yaml
 baselineVersion: "1.8.0"
 publishedVersion: "1.8.0"
-currentTrain: "v1.8.0"
-trainStatus: "published"
+currentTrain: "v1.8.1"
+trainStatus: "completed"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "e215dbd123e5a66edd6dcda55d66cd858f1258d4"
+lastConfirmedCommit: "ca6fe39a03c862d8bf6e7fcd4002e06fb85cb513"
 lastValidationLevel: "v1.8.0-published-and-verified"
 completedChunks:
   - "v1.6.0-published"
@@ -36,14 +36,15 @@ completedChunks:
   - "v1.8-19-recipes-docs-performance"
   - "v1.8-20-release-readiness"
   - "v1.8-21-first-openai-package-publication-and-linked-release"
+  - "v1.8.1-1-docs-roadmap-maintainer-cleanup"
 currentChunk: "none"
-pendingManualGate: "none"
-nextAction: "Plan the next release train from the v1.9/v2 roadmap; do not start without a new maintainer chunk"
+pendingManualGate: "maintainer release check before any version/publish/tag"
+nextAction: "Review the completed v1.8.1 docs cleanup and decide whether to start release preparation. Do not version, tag, publish, or create a release without explicit release-prep authorization."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
-**Active roadmap:** [ROADMAP-V1.8-TO-V3.md](./ROADMAP-V1.8-TO-V3.md)  
-**Active plan:** [release-trains/V1.8.0-EXECUTION-PLAN.md](./release-trains/V1.8.0-EXECUTION-PLAN.md)  
-**Architecture index:** [../proposals/README.md](../proposals/README.md)  
-**Previous readiness:** [release-trains/V1.7.0-RELEASE-READINESS.md](./release-trains/V1.7.0-RELEASE-READINESS.md)
+- **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
+- **Active plan:** [release-trains/V1.8.1-EXECUTION-PLAN.md](./release-trains/V1.8.1-EXECUTION-PLAN.md)
+- **Architecture index:** [../proposals/README.md](../proposals/README.md)
+- **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)

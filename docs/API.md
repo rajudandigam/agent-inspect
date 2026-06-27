@@ -9,14 +9,29 @@ AgentInspect is a **local-first execution-tree debugger**. It is not a SaaS, not
 - **Stable**: intended to be compatible across v1.x. Breaking changes require v2.0.
 - **Experimental**: available for adoption, but subject to refinement (including naming/shape changes) before a future stability declaration. Experimental APIs may change in v1.x.
 
-**1.x subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
+Use the root import for stable beginner APIs. Use subpaths for advanced, experimental, or lower-level workflows.
 
 ```ts
-import { inspectRun, step } from "agent-inspect";
+import {
+  observe,
+  inspectRun,
+  maybeInspectRun,
+  step,
+  getCurrentCorrelationMetadata,
+} from "agent-inspect";
+```
+
+**1.x subpath exports:** Additive subpaths (`/logs`, `/exporters`, `/persisted`, `/diff`, `/advanced`, `/writers`, `/readers`, `/checks`) narrow the import surface for experimental and advanced APIs. Root `"."` imports remain valid through v1.x. Design: [API-BOUNDARY-V1.5.md](./implementation/API-BOUNDARY-V1.5.md).
+
+```ts
 import { parseLogsToTrees } from "agent-inspect/logs";
 import { exportMarkdown } from "agent-inspect/exporters";
 import { memoryWriter } from "agent-inspect/writers";
 import { openTrace } from "agent-inspect/readers";
+import { runTraceChecks } from "agent-inspect/checks";
+import { diffTraceEvents } from "agent-inspect/diff";
+import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
+import { createInspector } from "agent-inspect/advanced";
 ```
 
 Notes:
@@ -32,7 +47,13 @@ These are the recommended entry points for manual instrumentation. They are desi
 Import from `agent-inspect`:
 
 ```ts
-import { inspectRun, maybeInspectRun, step, observe } from "agent-inspect";
+import {
+  observe,
+  inspectRun,
+  maybeInspectRun,
+  step,
+  getCurrentCorrelationMetadata,
+} from "agent-inspect";
 ```
 
 - **`inspectRun(name, fn, options?)`**: wraps a workflow in a local JSONL trace (`run_started` / `run_completed`), prints terminal progress, and swallows instrumentation failures (user errors are re-thrown). **Traces by default** when `enabled` is omitted or `true`. Pass **`enabled: false`** to run `fn` with no trace file, no execution context, and no terminal output.
@@ -90,7 +111,7 @@ These APIs support local workflows like listing traces, extracting metadata/summ
 
 ## 5. Experimental log parsing APIs
 
-These are compatibility-oriented utilities for turning structured logs into normalized `InspectEvent` and grouped trees. They remain conservative: **no eval**, **no parsing JS object literals**, JSON logs first-class, log4js best-effort.
+Advanced ingestion: use this when your app already emits structured logs. These are compatibility-oriented utilities for turning structured logs into normalized `InspectEvent` and grouped trees. They remain conservative: **no eval**, **no parsing JS object literals**, JSON logs first-class, log4js best-effort.
 
 - **`parseLogsToTrees`**
 - **`JsonLogParser`**, **`Log4jsParser`**
@@ -152,7 +173,7 @@ Rationale: v1.x includes one official adapter and **zero production sinks**, so 
 
 ## 11. Experimental `@agent-inspect/ai-sdk` APIs
 
-`@agent-inspect/ai-sdk` is an optional v1.7 adapter package for Vercel AI SDK v6 telemetry integrations. It is experimental and published as part of the v1.7.0 linked release.
+`@agent-inspect/ai-sdk` is an optional adapter package for Vercel AI SDK v6 telemetry integrations. It is experimental and published as part of the aligned v1.8.0 package set.
 
 Import from `@agent-inspect/ai-sdk`:
 
@@ -188,7 +209,7 @@ Recipe: [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-loc
 
 ## 12. Experimental `@agent-inspect/vitest` APIs
 
-`@agent-inspect/vitest` is an optional experimental package for local Vitest failure artifacts. In the v1.8 train it remains private/unpublished until release readiness. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+`@agent-inspect/vitest` is an optional experimental workspace package for local Vitest failure artifacts. It remains private/unpublished. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
 
 Import from `@agent-inspect/vitest`:
 
@@ -220,7 +241,7 @@ Artifacts are safe structural summaries. They include bounded test identity, sta
 
 ## 13. Experimental `@agent-inspect/jest` APIs
 
-`@agent-inspect/jest` is an optional experimental package for local Jest failure artifacts. In the v1.8 train it remains private/unpublished until release readiness. It does not add a Jest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+`@agent-inspect/jest` is an optional experimental workspace package for local Jest failure artifacts. It remains private/unpublished. It does not add a Jest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
 
 Import from `@agent-inspect/jest`:
 
@@ -262,7 +283,7 @@ Artifacts are safe structural summaries. They include bounded test identity, sta
 
 ## 14. Experimental `@agent-inspect/openai-agents` APIs
 
-`@agent-inspect/openai-agents` is an optional experimental package for OpenAI Agents JS tracing processor integration. In the v1.8 train it remains private/unpublished until the manual first-publication gate, but runtime metadata mapping is implemented locally.
+`@agent-inspect/openai-agents` is an optional experimental package for OpenAI Agents JS tracing processor integration. It is public in the aligned v1.8.0 package set and records runtime metadata locally.
 
 Import from `@agent-inspect/openai-agents`:
 
@@ -295,7 +316,7 @@ The processor records local v0.2 persisted events for trace/run, agent, generati
 
 These helpers expose the **source-agnostic `PersistedInspectEvent` model** (`schemaVersion: "0.2"`). They are **local-only**, **in-memory**, and **do not change** storage write/read or CLI behavior in v1.2.0.
 
-Import from `agent-inspect`:
+Import from `agent-inspect/persisted`:
 
 | API | Role |
 | --- | ---- |

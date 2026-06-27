@@ -1,6 +1,6 @@
 # Logging playbook (production-shaped, local-first)
 
-AgentInspect turns **structured logs** into local execution trees for inner-loop debugging. This playbook covers field conventions, framework examples, CLI usage, redaction, and unsupported patterns.
+Advanced ingestion: use this when your app already emits structured logs. AgentInspect turns those logs into local execution trees for inner-loop debugging. This playbook covers field conventions, framework examples, CLI usage, redaction, and unsupported patterns.
 
 No vendor sinks. No network upload. JSON logs are first-class.
 

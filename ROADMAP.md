@@ -89,7 +89,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**After v1.8.0** — v1.8.0 is published with deterministic checks, safe sharing workflows, and the first public OpenAI Agents adapter. The next train should start from the v1.9/v2 roadmap: standards hardening, conformance fixtures, and stable-contract freeze work, without adding hosted services or default upload behavior. See [ROADMAP-V1.8-TO-V3.md](docs/implementation/ROADMAP-V1.8-TO-V3.md).
+**v1.8.1 docs truth and adoption polish** — v1.8.0 is published with deterministic checks, safe sharing workflows, and the first public OpenAI Agents adapter. The active cleanup train aligns public docs around `observe()`, framework adapters, advanced structured-log ingestion, root imports, subpaths, and safe sharing before the next development train. See [ROADMAP-V1.8.1-TO-V3.md](docs/implementation/ROADMAP-V1.8.1-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -97,11 +97,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Next train** | Standards hardening, conformance fixtures, and v2 freeze work after the v1.8 release — keep optional integrations package-scoped and local-first. |
+| **Current train** | v1.8.1 documentation truth and adoption polish — keep optional integrations package-scoped and local-first. |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
-Release-train state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · maintainer roadmap: [ROADMAP-V1.8-TO-V3.md](docs/implementation/ROADMAP-V1.8-TO-V3.md)
+Release-train state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · maintainer roadmap: [ROADMAP-V1.8.1-TO-V3.md](docs/implementation/ROADMAP-V1.8.1-TO-V3.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -113,6 +113,7 @@ Published sequence after **v1.8.0** — directional, not delivery guarantees.
 
 | Release | Area | Intent |
 | ------- | ---- | ------ |
+| **v1.8.1** | Docs truth + adoption polish | Lead with `observe()`, promote framework adapters, demote structured logs to advanced ingestion, and align safe-sharing/import guidance. |
 | **v1.9.0** | Standards hardening + v2 freeze | OpenInference / OTLP conformance fixtures and schema 1.0 freeze ([#25](https://github.com/rajudandigam/agent-inspect/issues/25)). |
 
 ---
@@ -158,6 +159,7 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v1.6.0** — Runtime foundation + universal ingestion | **Released** 2026-06-25 | [V1.6.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md) |
 | **v1.7.0** — Framework-native adoption | **Released** 2026-06-26 | [V1.7.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md) |
 | **v1.8.0** — Deterministic checks, safe sharing, and CI | **Released** 2026-06-27 | [V1.8.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md) |
+| **v1.8.1** — Documentation truth and adoption polish | **Active** | [V1.8.1-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.8.1-EXECUTION-PLAN.md) |
 | **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.

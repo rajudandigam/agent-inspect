@@ -4,7 +4,7 @@ AgentInspect is **framework-agnostic** at its core. Optional adapter packages in
 
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
-**Status:** experimental v1.7 adapter — optional package published in the v1.7.0 linked release.
+**Status:** experimental adapter — optional package published in the aligned v1.8.0 package set.
 
 The v1.8 train has hardened lifecycle identity and parallel integration isolation. The adapter remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
 
@@ -202,13 +202,13 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ## Vitest (`@agent-inspect/vitest`)
 
-**Status:** experimental v1.8 reporter — optional workspace package, private/unpublished until release readiness.
+**Status:** experimental workspace package, private/unpublished.
 
 ```bash
 npm install agent-inspect @agent-inspect/vitest vitest
 ```
 
-After publication, the reporter creates safe, structural artifacts for failed tests that explicitly attach AgentInspect trace metadata. It never guesses trace files by timestamp and does not read trace contents into artifacts.
+The reporter creates safe, structural artifacts for failed tests that explicitly attach AgentInspect trace metadata. It never guesses trace files by timestamp and does not read trace contents into artifacts.
 
 ```ts
 import { createAgentInspectVitestReporter } from "@agent-inspect/vitest";
@@ -251,13 +251,13 @@ Full API: [API.md](./API.md) §12.
 
 ## Jest (`@agent-inspect/jest`)
 
-**Status:** experimental v1.8 reporter — optional workspace package, private/unpublished until release readiness.
+**Status:** experimental workspace package, private/unpublished.
 
 ```bash
 npm install agent-inspect @agent-inspect/jest jest
 ```
 
-After publication, the reporter creates safe, structural artifacts for failed Jest assertions that explicitly attach AgentInspect trace metadata through a map or resolver. It never guesses trace files by timestamp and does not read trace contents into artifacts.
+The reporter creates safe, structural artifacts for failed Jest assertions that explicitly attach AgentInspect trace metadata through a map or resolver. It never guesses trace files by timestamp and does not read trace contents into artifacts.
 
 ```js
 module.exports = {
@@ -294,7 +294,7 @@ Full API: [API.md](./API.md) §13.
 
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
 
-**Status:** experimental v1.8 adapter — optional workspace package remains private/unpublished until the manual first-publication gate.
+**Status:** experimental adapter — optional package published in the aligned v1.8.0 package set.
 
 The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Install the AgentInspect processor by replacing processors:
 

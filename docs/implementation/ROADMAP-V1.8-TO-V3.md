@@ -1,3 +1,5 @@
+# Historical reference only. Do not use as active Codex instructions. See docs/implementation/README.md and ROADMAP-V1.8.1-TO-V3.md.
+
 # Roadmap - v1.8 through v3
 
 **Status:** v1.8.0 published; use remaining v1.9/v2 sections for the next train

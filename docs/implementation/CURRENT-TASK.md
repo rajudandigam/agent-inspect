@@ -3,69 +3,95 @@
 ## Identity
 
 ```yaml
-train: "v1.8.0"
-chunk: "v1.8-21-first-openai-package-publication-and-linked-release"
+train: "v1.8.1"
+chunk: "v1.8.1-1-docs-roadmap-maintainer-cleanup"
 status: "completed"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8-20-release-readiness"
+dependsOn: "v1.8-21-first-openai-package-publication-and-linked-release"
 ```
 
 ## Goal
 
-Prepare and validate the `@agent-inspect/openai-agents@1.8.0` first-publication path, then use the maintainer-authorized GitHub/Changesets release workflow to publish v1.8.0 only after green CI.
+Clean up AgentInspect documentation, roadmap, and Codex-maintainer files before the next development train.
 
-Completed on 2026-06-27. The linked workflow published `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at `1.8.0`; `@agent-inspect/openai-agents@1.8.0` required maintainer manual npm publication after the workflow hit npm `E404` for first scoped-package creation. The missing OpenAI Agents tag and GitHub release were then created at `e215dbd`.
+This is a docs/roadmap/maintainer-ops cleanup pass only. Codex is authorized to commit and push this docs cleanup directly to `main` only after validation passes.
+
+Completed on 2026-06-27. The cleanup established `ROADMAP-V1.8.1-TO-V3.md` as the active maintainer roadmap, aligned public docs around `observe()`, framework adapters, advanced structured-log ingestion, root/subpath import boundaries, and safe sharing, and updated Codex maintainer state for the next manual release check.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md`
-- `docs/implementation/release-trains/V1.8.0-EXECUTION-PLAN.md` chunk 21
-- `docs/community/MAINTAINER-GUIDE.md` first scoped-package publication guidance, if needed
+- `docs/implementation/ROADMAP-V1.8.1-TO-V3.md`
+- `docs/implementation/release-trains/V1.8.1-EXECUTION-PLAN.md`
+- directly related public docs
 
 ## In scope
 
-1. Confirm maintainer authorization before any release operation.
-2. Prepare and validate the OpenAI Agents package tarball contents for first public publication.
-3. Configure Changesets so `agent-inspect`, LangChain, TUI, AI SDK, and OpenAI Agents move to `1.8.0` together.
-4. Keep Vitest and Jest private/unpublished and ignored by the release workflow.
-5. Push release prep, validate the generated Version Packages PR with green CI, merge, and verify npm/tags/releases.
+1. Make `docs/implementation/ROADMAP-V1.8.1-TO-V3.md` the active maintainer roadmap.
+2. Update AGENTS, Codex maintainer guidance, implementation indexes, state, and task files.
+3. Treat Cursor-era docs and old one-off Codex prompt/addendum files as historical unless explicitly reactivated.
+4. Align public docs around:
+   - `observe()` first;
+   - framework adapter paths second;
+   - manual `inspectRun` / `step` for custom flows;
+   - structured log parsing as advanced ingestion;
+   - stable root imports and advanced subpaths;
+   - local-first safe sharing.
+5. Remove repository noise such as `docs/.DS_Store`.
 
-## Out of scope without explicit maintainer authorization
+## Out of scope
 
-- changing package versions;
-- adding or applying changesets;
-- removing `private: true` from any package;
-- npm publish, tag creation, GitHub release creation, or release note conversion;
-- pushing release/version commits or merging release PRs;
-- hosted upload behavior, GitHub API comments, provider execution, replay, raw content capture, or persisted schema changes.
+- runtime source code changes;
+- package version changes;
+- changesets;
+- dependency changes;
+- npm publish, tags, or GitHub releases;
+- hosted upload, dashboard, replay, cost-engine, or default network behavior;
+- rewriting all docs from scratch;
+- removing historical release-readiness records.
+
+## Focused validation
+
+```bash
+pnpm typecheck
+pnpm test
+git diff --check
+```
 
 ## Acceptance criteria
 
-- release authority is explicit before any release-affecting action;
-- OpenAI Agents package contents are validated before first publication;
-- maintainer has clear manual publication and verification evidence requirements;
-- no unauthorized version, changeset, tag, release, publish, or package publish-status change occurs.
+- README, ROADMAP, CHANGELOG, and getting-started docs agree that 1.8.0 is current.
+- README and getting-started docs show `observe()` before manual tracing.
+- Root import guidance recommends:
+
+  ```ts
+  import {
+    observe,
+    inspectRun,
+    maybeInspectRun,
+    step,
+    getCurrentCorrelationMetadata
+  } from "agent-inspect";
+  ```
+
+- Advanced docs use subpaths such as `agent-inspect/readers`, `/writers`, `/checks`, `/diff`, `/exporters`, `/logs`, `/persisted`, and `/advanced`.
+- Safe sharing says no upload by default, redaction before disk, and redaction before export.
+- Validation passes before commit/push.
+
+## Completion evidence
+
+- `CI=true pnpm typecheck` passed.
+- `CI=true pnpm test` passed: 120 test files passed, 1 skipped; 1051 tests passed, 20 skipped.
+- `git diff --check` passed after cleanup.
+- `pnpm approve-builds --all` approved the existing esbuild build scripts needed by the validation environment and wrote `allowBuilds.esbuild: true` to `pnpm-workspace.yaml`.
 
 ## Proposed commit
 
 ```text
-docs: verify v1.8.0 publication
+docs: clean up v1.8.1 roadmap and adoption docs
 ```
 
 ## Stop condition
 
-Stop immediately on any validation failure, package-content surprise, registry mismatch, failed CI, missing workflow credentials, partial publication, or decision that would expand into unapproved package/version/tag/release behavior.
-
-## Chunk 21 evidence
-
-- Maintainer authorization received: "looks good, go ahead publish".
-- Local npm first-publish attempt blocked before publish: `npm whoami` returned `E401`.
-- Validated exact OpenAI Agents `1.8.0` tarball by temporarily setting the package version, building, packing, inspecting the packed manifest, and running `npm publish --dry-run --access public`.
-- Switched to the repository Changesets publish workflow: OpenAI Agents is public in source at the current `1.7.0` baseline, linked into the v1.8 public package group, and included in the v1.8 changeset.
-- Changesets status reports exactly these minor bumps to `1.8.0`: `agent-inspect`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/ai-sdk`, and `@agent-inspect/openai-agents`.
-- `@agent-inspect/vitest` and `@agent-inspect/jest` remain private and are explicitly ignored by Changesets.
-- Version Packages PR #40 merged at `e215dbd123e5a66edd6dcda55d66cd858f1258d4` after green CI.
-- Final npm verification passed for all five public `1.8.0` packages; each has `latest: "1.8.0"`.
-- Git tags and GitHub releases exist for all five public `1.8.0` packages, including `@agent-inspect/openai-agents@1.8.0`.
+Stop immediately on unrelated worktree changes, validation failures that cannot be repaired in scope, missing credentials, CI failure, or any decision that requires runtime, schema, dependency, version, release, tag, publish, hosted upload, replay, or cost-engine changes.

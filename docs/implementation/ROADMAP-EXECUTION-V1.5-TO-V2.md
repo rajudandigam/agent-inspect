@@ -1,3 +1,5 @@
+# Historical reference only. Do not use as active Codex instructions. See docs/implementation/README.md and ROADMAP-V1.8.1-TO-V3.md.
+
 # Roadmap execution program — v1.5.0 through v2.0.0
 
 **Audience:** Repository maintainers and Cursor sessions executing maintainer-owned release trains.  

@@ -1,8 +1,8 @@
 # agent-inspect examples
 
-Runnable samples grouped by roadmap phase. No example requires paid API keys unless its README says otherwise.
+Runnable samples grouped by adoption path. No example requires paid API keys unless its README says otherwise.
 
-Roadmap context: [ROADMAP.md](../ROADMAP.md) and [examples/recipes/README.md](recipes/README.md). Maintainer-only historical notes: `docs-local/examples/EXAMPLES-ROADMAP.md`.
+Roadmap context: [ROADMAP.md](../ROADMAP.md), [docs/README.md](../docs/README.md), and [examples/recipes/README.md](recipes/README.md). Historical examples roadmap note: `docs-local/examples/EXAMPLES-ROADMAP.md`.
 
 Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`fixtures/`](../fixtures/README.md).
 
@@ -11,13 +11,13 @@ Canonical **deterministic fixtures** (traces, logs, configs) for CI and docs: [`
 | Example / area | Version | Purpose | Runnable locally | External services |
 |----------------|---------|---------|------------------|-------------------|
 | [00-quickstart-demo](00-quickstart-demo) | v1.0 | 60–90 second install-and-try demo | yes (`npm start` from folder) | no |
+| [05-observe-wrapper](05-observe-wrapper) | v0.1 | `observe()` wrapper for existing objects/classes | yes | no |
 | [01-basic](01-basic) | v0.1 | Manual `inspectRun` + `step()` | yes (`pnpm start` from folder) | no |
 | [02-nested-steps](02-nested-steps) | v0.1 | Nested execution tree | yes | no |
 | [03-parallel-steps](03-parallel-steps) | v0.1 | Parallel sibling steps | yes | no |
 | [04-error-handling](04-error-handling) | v0.1 | Failed steps in traces | yes | no |
-| [05-observe-wrapper](05-observe-wrapper) | v0.1 | `observe()` wrapper | yes | no |
-| [06-log-to-tree](06-log-to-tree) | v0.3 | Log ingest + `logs` / `tail` | yes (see README) | no |
 | [08-langchain-adapter](08-langchain-adapter) | v0.5 | LangChain callbacks | yes from repo root (`pnpm --filter …`) | no API keys (mocked) |
+| [06-log-to-tree](06-log-to-tree) | v0.3 | Advanced structured-log ingestion with `logs` / `tail` | yes (see README) | no |
 | Optional TUI (`npx agent-inspect view --tui`) | v0.6 | Interactive viewer | requires interactive terminal | no |
 | CLI `export` | v0.7 | Standards-oriented exports | yes (`npx agent-inspect export …`) | no |
 | CLI `diff` | v0.8 | Compare two local traces | yes (`npx agent-inspect diff …`) | no |
@@ -27,21 +27,21 @@ Folders **07-live-tail**, **09-tui**, **10-standards-export**, and **11-diff-com
 
 ## Recipes (v0.9)
 
-Runnable **recipe** packages live under [**examples/recipes/**](recipes/README.md). They illustrate realistic patterns—RAG-shaped traces, retries, multi-step handoffs, structured logs, LLM fallback, parallel tools, deterministic CI checks/artifacts, and test-reporter artifact configuration—using **deterministic mocks only**. No API keys or external services are required by default; traces write to each recipe’s local `.agent-inspect-runs/` or similarly named ignored local trace directories.
+Runnable **recipe** packages live under [**examples/recipes/**](recipes/README.md). They illustrate realistic patterns—RAG-shaped traces, retries, multi-step handoffs, advanced structured-log ingestion, LLM fallback, parallel tools, deterministic CI checks/artifacts, and test-reporter artifact configuration—using **deterministic mocks only**. No API keys or external services are required by default; traces write to each recipe’s local `.agent-inspect-runs/` or similarly named ignored local trace directories.
 
 See the [recipe index](recipes/README.md) for commands and which AgentInspect features each recipe exercises.
 
-## MVP manual tracing
+## MVP manual tracing and observe
 
 Runnable from each folder after `pnpm build` at the repo root (they use `agent-inspect` via `file:../..`).
 
 | Example | Demonstrates |
 | --- | --- |
+| [05-observe-wrapper](05-observe-wrapper) | `observe()` wrapper for agent-like objects |
 | [01-basic](01-basic) | `inspectRun()` + `step()` |
 | [02-nested-steps](02-nested-steps) | Execution tree hierarchy |
 | [03-parallel-steps](03-parallel-steps) | `Promise.all` sibling isolation |
 | [04-error-handling](04-error-handling) | Failed steps and error traces |
-| [05-observe-wrapper](05-observe-wrapper) | `observe()` wrapper for agent-like objects |
 
 ```bash
 pnpm build
@@ -50,7 +50,7 @@ pnpm install
 pnpm start
 ```
 
-## Structured log examples
+## Advanced structured-log ingestion (Structured log examples)
 
 | Example | Demonstrates |
 | --- | --- |

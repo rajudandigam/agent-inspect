@@ -25,7 +25,36 @@ pnpm build
 node packages/cli/dist/index.cjs --help
 ```
 
-## 2. Basic manual trace
+## 2. Observe an existing object/class first
+
+```ts
+import { observe } from "agent-inspect";
+
+class SupportAgent {
+  async run(input: { question: string }) {
+    return {
+      answer: `Answering: ${input.question}`,
+    };
+  }
+}
+
+const agent = observe(new SupportAgent(), {
+  traceDir: "./.agent-inspect",
+});
+
+await agent.run({
+  question: "How do refunds work?",
+});
+```
+
+This writes a local JSONL trace with stable event names (`schemaVersion: "0.1"`) when the observed `run` method is called:
+
+- `run_started`, `run_completed`
+- `step_started`, `step_completed`
+
+## 3. Manually instrument custom flows
+
+Use `inspectRun` and `step` when you want explicit step names, custom nesting, or a flow that is not shaped like an object/class method.
 
 ```ts
 import { inspectRun, step } from "agent-inspect";
@@ -37,10 +66,30 @@ await inspectRun("demo-agent", async () => {
 });
 ```
 
-This writes a local JSONL trace with stable event names (`schemaVersion: "0.1"`):
+Use the root import for stable beginner APIs:
 
-- `run_started`, `run_completed`
-- `step_started`, `step_completed`
+```ts
+import {
+  observe,
+  inspectRun,
+  maybeInspectRun,
+  step,
+  getCurrentCorrelationMetadata,
+} from "agent-inspect";
+```
+
+Use subpaths for advanced, experimental, or lower-level workflows:
+
+```ts
+import { openTrace } from "agent-inspect/readers";
+import { memoryWriter } from "agent-inspect/writers";
+import { runTraceChecks } from "agent-inspect/checks";
+import { diffTraceEvents } from "agent-inspect/diff";
+import { exportMarkdown } from "agent-inspect/exporters";
+import { parseLogsToTrees } from "agent-inspect/logs";
+import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
+import { createInspector } from "agent-inspect/advanced";
+```
 
 ### Always trace vs env-gated tracing
 
@@ -90,14 +139,14 @@ If `import` or `require` fails after install, see [KNOWN-ISSUES.md — Common in
 
 To skip tracing in code without env vars: `inspectRun(name, fn, { enabled: false })`.
 
-## 3. View runs
+## 4. View runs
 
 ```bash
 agent-inspect list
 agent-inspect view <runId>
 ```
 
-## 4. Clean old runs (safely)
+## 5. Clean old runs (safely)
 
 Always start with `--dry-run`:
 
@@ -106,7 +155,7 @@ agent-inspect clean --older-than 7d --dry-run
 agent-inspect clean --older-than 7d --yes
 ```
 
-## 5. Parse existing logs
+## 6. Advanced ingestion: parse existing structured logs
 
 ```bash
 agent-inspect logs fixtures/logs/proactive-json.log \
@@ -114,7 +163,7 @@ agent-inspect logs fixtures/logs/proactive-json.log \
   --config fixtures/configs/proactive-agent-inspect.logs.json
 ```
 
-## 6. Tail logs
+## 7. Tail logs
 
 For scripting/CI-style usage, `--once` reads and exits:
 
@@ -126,7 +175,7 @@ agent-inspect tail \
   --once
 ```
 
-## 7. Export a run
+## 8. Export a run
 
 ```bash
 agent-inspect export minimal-success --dir fixtures/traces --format markdown
@@ -142,7 +191,7 @@ agent-inspect export minimal-success --dir fixtures/traces \
 
 Exports are **local-only** and do not upload anywhere. Review output before sharing — see [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
 
-## 8. Local observability (v1.4.0+)
+## 9. Local observability (v1.4.0+)
 
 After traces exist under a directory:
 
@@ -154,17 +203,21 @@ agent-inspect search --dir ./.agent-inspect --status error --limit 10
 
 For CI artifact workflows, see [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) and [github-actions-artifact recipe](../examples/recipes/github-actions-artifact/).
 
-## 9. Diff two runs
+## 10. Diff two runs
 
 ```bash
 agent-inspect diff minimal-success minimal-error --dir fixtures/traces
 ```
 
-## 9. Try recipes
+## 11. Try recipes
 
 See `examples/recipes/README.md`.
 
-## 10. Optional LangChain adapter
+## 12. Optional framework adapters
+
+See [ADAPTERS.md](./ADAPTERS.md) for AI SDK local telemetry, OpenAI Agents local-only processing, and LangChain callbacks.
+
+### LangChain
 
 `@agent-inspect/langchain` is optional and **experimental**. Events are **in-memory by default**; pass `persist: true` to write local JSONL traces inspectable by the CLI.
 
@@ -174,7 +227,7 @@ pnpm add @agent-inspect/langchain
 
 See [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md) and [docs/ADAPTERS.md](./ADAPTERS.md).
 
-## 11. Optional TUI
+## 13. Optional TUI
 
 `@agent-inspect/tui` is optional and **experimental**. The CLI can invoke it with:
 
@@ -182,14 +235,16 @@ See [examples/08-langchain-adapter](../examples/08-langchain-adapter/README.md) 
 agent-inspect view <runId> --tui
 ```
 
-## 12. Safety notes
+## 14. Safety notes
 
+- Nothing uploads by default; core tracing, readers, checks, and exports are local-first.
 - Redaction is on by default for log-derived attributes, **manual trace metadata (before disk)**, and exports. Pass `redact: false` to opt out of manual metadata redaction.
+- Export redaction shapes a local copy and does not mutate the source trace; review exported files before sharing.
 - Persisted events are size-bounded by default (see `docs/API.md`).
 - Confidence labels are required to keep attribution honest.
 - AgentInspect is for local debugging, not production monitoring.
 
-## 13. Next docs
+## 15. Next docs
 
 - [docs/API.md](./API.md)
 - [docs/CLI.md](./CLI.md)

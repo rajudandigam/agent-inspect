@@ -1,3 +1,5 @@
+# Historical reference only. Do not use as active Codex instructions. See docs/implementation/README.md and ROADMAP-V1.8.1-TO-V3.md.
+
 # Maintainer Roadmap Execution Guide
 
 How maintainers use Codex/Cursor-style maintainer sessions to ship AgentInspect in **small PR-sized chunks** while publishing **fewer npm releases** via **release trains**.

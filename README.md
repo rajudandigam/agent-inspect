@@ -1,12 +1,12 @@
 # agent-inspect
 
-**Local execution trees for TypeScript AI agents.**
+**Trace, check, and safely share TypeScript AI agent runs locally.**
 
-agent-inspect helps you understand what happened inside an AI agent run — **locally**. It turns manual steps, tool calls, LLM calls, structured logs, failures, durations, and run metadata into **readable execution trees** you can inspect from the terminal.
+agent-inspect helps you understand what happened inside an AI agent run without sending traces to a hosted service. It turns framework events, observed objects/classes, manual steps, tool calls, LLM calls, structured logs, failures, durations, and run metadata into readable local execution trees.
 
 It is built for TypeScript/Node.js developers and teams shipping real agentic products — not just toy demos. Use it for **local TypeScript agent debugging**, **eval iteration**, and **CI trace artifacts**. It **complements** production observability platforms; it does **not** replace them.
 
-The tool starts with **manual traces** and **existing structured logs**, and extends into **optional framework callbacks** and **standards-aligned local export** — without turning the core into a SaaS or a vendor pipeline.
+The default loop is local-first: capture a trace, inspect/report/diff it, run deterministic checks in CI, then export a redacted copy only when you choose to share.
 
 **No account. No cloud upload. No dashboard required.**
 
@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release: **1.7.0** (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui` — all aligned).
+Current npm release: **1.8.0** (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents` — all aligned).
 
 ```bash
 npm install agent-inspect
@@ -40,9 +40,105 @@ npx agent-inspect --help
 
 For a clean npm/pnpm install checklist with ESM, CJS, and CLI checks, see [Clean install smoke test](docs/INSTALL-SMOKE-TEST.md).
 
-## 60-second quickstart
+## Three adoption paths
+
+### Path A — Observe an existing object/class
+
+Use `observe()` when you already have an agent-like object with a `run`, `execute`, or `invoke` method.
 
 Create `demo.mjs`:
+
+```js
+import { observe } from "agent-inspect";
+
+class SupportAgent {
+  async run(input) {
+    return {
+      answer: `Answering: ${input.question}`,
+    };
+  }
+}
+
+const agent = observe(new SupportAgent(), {
+  traceDir: "./.agent-inspect",
+});
+
+await agent.run({
+  question: "How do refunds work?",
+});
+```
+
+Run it, then inspect the trace:
+
+```bash
+node demo.mjs
+npx agent-inspect list --dir ./.agent-inspect
+npx agent-inspect view <run-id> --dir ./.agent-inspect
+```
+
+### Path B — Use a framework adapter
+
+Optional adapters keep framework dependencies out of the root package and write local traces only when configured.
+
+AI SDK local telemetry:
+
+```ts
+import { generateText } from "ai";
+import { agentInspect } from "@agent-inspect/ai-sdk";
+
+await generateText({
+  model,
+  prompt,
+  experimental_telemetry: {
+    isEnabled: true,
+    recordInputs: false,
+    recordOutputs: false,
+    integrations: [
+      agentInspect({
+        traceDir: "./.agent-inspect",
+        runName: "support-agent",
+        capture: "metadata-only",
+      }),
+    ],
+  },
+});
+```
+
+OpenAI Agents local-only processor:
+
+```ts
+import { setTraceProcessors } from "@openai/agents";
+import { agentInspectProcessor } from "@agent-inspect/openai-agents";
+
+setTraceProcessors([
+  agentInspectProcessor({
+    traceDir: "./.agent-inspect",
+    workflowName: "support-agent",
+    capture: "metadata-only",
+  }),
+]);
+```
+
+LangChain callback adapter:
+
+```ts
+import { AgentInspectCallback } from "@agent-inspect/langchain";
+
+const callback = new AgentInspectCallback({
+  runName: "support-agent",
+  traceDir: "./.agent-inspect",
+  persist: true,
+  capture: "metadata-only",
+});
+
+await agent.invoke(input, { callbacks: [callback] });
+```
+
+See [docs/ADAPTERS.md](docs/ADAPTERS.md).
+
+### Path C — Manually instrument custom flows
+
+Use `inspectRun` and `step` when you want explicit names, custom nesting, or flows that are not object/class shaped.
 
 ```js
 import { inspectRun, step } from "agent-inspect";
@@ -71,15 +167,6 @@ await inspectRun(
 );
 ```
 
-Run it, then inspect the trace:
-
-```bash
-node demo.mjs
-npx agent-inspect list --dir ./.agent-inspect
-npx agent-inspect view <run-id> --dir ./.agent-inspect
-npx agent-inspect view <run-id> --dir ./.agent-inspect --summary
-```
-
 Full flow:
 
 ```bash
@@ -99,6 +186,31 @@ support-agent
 
 A runnable copy lives in [examples/00-quickstart-demo](examples/00-quickstart-demo/README.md).
 
+Use the root import for stable beginner APIs:
+
+```ts
+import {
+  observe,
+  inspectRun,
+  maybeInspectRun,
+  step,
+  getCurrentCorrelationMetadata,
+} from "agent-inspect";
+```
+
+Use subpaths for advanced, experimental, or lower-level workflows:
+
+```ts
+import { openTrace } from "agent-inspect/readers";
+import { memoryWriter } from "agent-inspect/writers";
+import { runTraceChecks } from "agent-inspect/checks";
+import { diffTraceEvents } from "agent-inspect/diff";
+import { exportMarkdown } from "agent-inspect/exporters";
+import { parseLogsToTrees } from "agent-inspect/logs";
+import { traceEventsToPersistedInspectEvents } from "agent-inspect/persisted";
+import { createInspector } from "agent-inspect/advanced";
+```
+
 **Env-gated tracing** (eval harnesses, CI): use `maybeInspectRun` and set `AGENT_INSPECT=1` when you want a trace — otherwise no files are written.
 
 ```ts
@@ -111,7 +223,7 @@ await maybeInspectRun("eval-case-42", async () => runAgent());
 AGENT_INSPECT=1 node eval-runner.mjs
 ```
 
-## What you can do today (v1.7.0)
+## What you can do today (v1.8.0)
 
 - **Trace manually** with `inspectRun`, `step`, `step.llm`, `step.tool`, and `observe` — local JSONL under `.agent-inspect/` by default.
 - **Toggle tracing** with `maybeInspectRun` and `AGENT_INSPECT=1` in eval harnesses or CI.
@@ -122,9 +234,10 @@ AGENT_INSPECT=1 node eval-runner.mjs
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
 - **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
 - **Optional AI SDK adapter** — experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6; metadata-only by default with `recordInputs: false` and `recordOutputs: false`.
+- **Optional OpenAI Agents adapter** — experimental `@agent-inspect/openai-agents` trace processor for local OpenAI Agents JS trace processing.
 - **Optional TUI** — `view --tui` when `@agent-inspect/tui` is installed.
 - **Persisted-event foundation (v1.2.0+)** — in-memory `PersistedInspectEvent` converters; manual writing stays `schemaVersion: "0.1"`.
-- **Experimental v1.6.0 APIs** — `agent-inspect/writers`, `agent-inspect/readers`, `createInspector()`, and `agent-inspect open` for local AgentInspect/OpenInference/OTLP ingestion.
+- **Experimental subpaths** — `agent-inspect/readers`, `/writers`, `/checks`, `/diff`, `/exporters`, `/logs`, `/persisted`, and `/advanced` for advanced local workflows.
 
 Nothing uploads traces by default. Review exports before sharing — see [safe trace sharing](docs/SAFE-TRACE-SHARING.md).
 
@@ -136,7 +249,7 @@ Each run produces a **JSONL** trace: `run_started` / `run_completed`, `step_star
 
 *Synthetic demo — [examples/02-nested-steps](examples/02-nested-steps/README.md). More visuals: [SCREENSHOTS.md](docs/SCREENSHOTS.md).*
 
-## Works with structured logs you already have
+## Advanced ingestion: use this when your app already emits structured logs
 
 Many production systems already emit **line-delimited JSON** or text logs with embedded JSON (e.g. via **pino**, **winston**, **log4js**, **NestJS** loggers, job runners, or custom event streams). agent-inspect can turn those into **local grouped timelines/trees** without wrapping every function.
 
@@ -201,7 +314,7 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 
 ## Stable foundation (AgentInspect 1.x)
 
-**agent-inspect 1.x** (current: **1.7.0**) is the **local-first trace workbench** for TypeScript AI agents:
+**agent-inspect 1.x** (current: **1.8.0**) is the **local-first trace workbench** for TypeScript AI agents:
 
 - Instrument runs with `inspectRun` and `step`
 - Write **local JSONL traces** (`schemaVersion: "0.1"` — compatibility retained)
@@ -210,6 +323,8 @@ Full flags and behavior: [docs/CLI.md](docs/CLI.md).
 **Stable APIs:** `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
+
+**Shipped in 1.8.0:** experimental deterministic checks (`agent-inspect/checks` and `agent-inspect check`), safe-sharing workflows (`scan`, `verify-safe`, safe artifacts), and first public `@agent-inspect/openai-agents` package. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **1.8.0**.
 
 **Shipped in 1.7.0:** experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6 with a local no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/), adapter conformance fixtures, OpenAI Agents/LangGraph support decisions, and local-first adapter docs. Examples keep `recordInputs: false`, `recordOutputs: false`, metadata-only capture, and no upload behavior. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at **1.7.0**.
 

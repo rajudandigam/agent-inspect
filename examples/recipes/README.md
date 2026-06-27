@@ -1,6 +1,6 @@
 # AgentInspect recipes (v0.9)
 
-Runnable workflows that show **adoption patterns** for manual tracing, structured logs, retries, and parallelism. Each recipe is **local**, **deterministic**, and uses **mocks only**—no API keys, no external services, no vendor SDKs.
+Runnable workflows that show **adoption patterns** for manual tracing, framework adapters, advanced structured-log ingestion, retries, and parallelism. Each recipe is **local**, **deterministic**, and uses **mocks only**—no API keys, no external services, no vendor SDKs.
 
 ## How to run
 
@@ -37,7 +37,7 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [rag-pipeline](rag-pipeline) | Mock RAG-style pipeline | `inspectRun`, `step`, `step.tool`, `step.llm`, `traceDir` | yes | no |
 | [tool-failure-retry](tool-failure-retry) | Flaky tool → retry succeeds | `step.tool`, error then success in trace | yes | no |
 | [multi-agent-handoff](multi-agent-handoff) | Coordinator + specialist steps | Nested steps, `metadata` for handoff | yes | no |
-| [proactive-agent-logs](proactive-agent-logs) | Log ingest + tail | `logs`, `tail`, config mapping, redaction | yes (CLI + samples) | no |
+| [proactive-agent-logs](proactive-agent-logs) | Advanced log ingest + tail | `logs`, `tail`, config mapping, redaction | yes (CLI + samples) | no |
 | [pino-json-logs](pino-json-logs) | pino-shaped JSON logs | `logs`, `tail`, `time`/`msg` field mapping | yes (CLI + samples) | no |
 | [winston-json-logs](winston-json-logs) | Winston-shaped JSON logs | `logs`, `tail`, `timestamp`/`message` field mapping | yes (CLI + samples) | no |
 | [log4js-json-layout](log4js-json-layout) | log4js text + embedded JSON | `logs` with `--format log4js` | yes (CLI + samples) | no |
@@ -60,6 +60,6 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 
 ## See also
 
-- [Recipe standards](../../docs/examples/RECIPE-STANDARDS.md)
-- [Examples roadmap](../../docs/examples/EXAMPLES-ROADMAP.md)
-- [Fixture catalog](../../docs/examples/FIXTURE-CATALOG.md)
+- [Docs index](../../docs/README.md)
+- [Getting started](../../docs/GETTING-STARTED.md)
+- [Fixture catalog](../../fixtures/README.md)

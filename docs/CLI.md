@@ -138,7 +138,7 @@ Recommendation: run with `--dry-run` first.
 
 ### 6.4 `logs`
 
-Parse structured logs into local execution trees.
+Advanced ingestion: use this when your app already emits structured logs. Parse those logs into local execution trees.
 
 ```bash
 agent-inspect logs <file> [options]
