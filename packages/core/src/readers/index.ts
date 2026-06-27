@@ -356,6 +356,7 @@ function detectJsonlFormat(content: string): {
 } {
   let saw01 = false;
   let saw02 = false;
+  let saw10 = false;
   let validRows = 0;
   let invalidJsonRows = 0;
   let unknownSchemaRows = 0;
@@ -394,6 +395,11 @@ function detectJsonlFormat(content: string): {
         validRows += 1;
         continue;
       }
+      if (version === "1.0") {
+        saw10 = true;
+        validRows += 1;
+        continue;
+      }
     }
 
     unknownSchemaRows += 1;
@@ -419,9 +425,11 @@ function detectJsonlFormat(content: string): {
   }
 
   let format: TraceJsonlFormat = "empty";
-  if (saw01 && saw02) format = "mixed";
+  const seenFormats = [saw01, saw02, saw10].filter(Boolean).length;
+  if (seenFormats > 1) format = "mixed";
   else if (saw01) format = "0.1";
   else if (saw02) format = "0.2";
+  else if (saw10) format = "1.0";
 
   return { format, validRows, warnings };
 }
@@ -432,6 +440,8 @@ function agentInspectFormatLabel(format: TraceJsonlFormat): string {
       return "agent-inspect-v0.1-jsonl";
     case "0.2":
       return "agent-inspect-v0.2-jsonl";
+    case "1.0":
+      return "agent-inspect-v1.0-jsonl";
     case "mixed":
       return "agent-inspect-mixed-jsonl";
     default:
@@ -442,12 +452,15 @@ function agentInspectFormatLabel(format: TraceJsonlFormat): string {
 function persistedEventsForParsedTrace(
   parsed: ReturnType<typeof parseTraceJsonl>,
 ): PersistedInspectEvent[] {
-  if (parsed.format === "0.2" && parsed.persisted.length > 0) {
+  if (
+    (parsed.format === "0.2" || parsed.format === "1.0") &&
+    parsed.persisted.length > 0
+  ) {
     return [...parsed.persisted];
   }
   if (parsed.format === "mixed" && parsed.rows.length > 0) {
     return parsed.rows.map((row, index) => {
-      if (row.format === "0.2") return row.event;
+      if (row.format === "0.2" || row.format === "1.0") return row.event;
       return traceEventToPersistedInspectEvent(row.event, {
         eventIndex: index,
         sourceName: "agent-inspect-jsonl-reader",

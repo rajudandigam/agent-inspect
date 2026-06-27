@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   isPersistedInspectEvent,
+  isPersistedInspectEventV02,
+  isPersistedInspectEventV10,
   type PersistedInspectEvent,
 } from "../../src/types/persisted-inspect-event.js";
 
@@ -24,6 +26,30 @@ function minimalEvent(
 describe("isPersistedInspectEvent", () => {
   it("valid minimal event passes", () => {
     expect(isPersistedInspectEvent(minimalEvent())).toBe(true);
+  });
+
+  it("valid schema 1.0 event passes and keeps unknown optional fields", () => {
+    const event = minimalEvent({
+      schemaVersion: "1.0",
+      stableExtension: { kept: true },
+    } as Partial<PersistedInspectEvent>);
+
+    expect(isPersistedInspectEvent(event)).toBe(true);
+    expect(isPersistedInspectEventV10(event)).toBe(true);
+    expect(isPersistedInspectEventV02(event)).toBe(false);
+    expect((event as Record<string, unknown>).stableExtension).toEqual({
+      kept: true,
+    });
+  });
+
+  it("schema-specific guards distinguish v0.2 and v1.0", () => {
+    const v02 = minimalEvent();
+    const v10 = minimalEvent({ schemaVersion: "1.0" });
+
+    expect(isPersistedInspectEventV02(v02)).toBe(true);
+    expect(isPersistedInspectEventV10(v02)).toBe(false);
+    expect(isPersistedInspectEventV02(v10)).toBe(false);
+    expect(isPersistedInspectEventV10(v10)).toBe(true);
   });
 
   it("valid event with all optional fields passes", () => {
@@ -71,7 +97,7 @@ describe("isPersistedInspectEvent", () => {
     },
   );
 
-  it("wrong schemaVersion fails", () => {
+  it("unsupported schemaVersion fails", () => {
     expect(
       isPersistedInspectEvent({ ...minimalEvent(), schemaVersion: "0.1" }),
     ).toBe(false);

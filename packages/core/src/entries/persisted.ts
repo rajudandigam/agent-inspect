@@ -7,9 +7,15 @@ export type {
   PersistedTokenUsage,
   PersistedTraceContext,
   PersistedInspectEvent,
+  PersistedInspectEventV02,
+  PersistedInspectEventV10,
 } from "../types/persisted-inspect-event.js";
 
-export { isPersistedInspectEvent } from "../types/persisted-inspect-event.js";
+export {
+  isPersistedInspectEvent,
+  isPersistedInspectEventV02,
+  isPersistedInspectEventV10,
+} from "../types/persisted-inspect-event.js";
 
 export type { TraceEventToPersistedOptions } from "../persisted/from-trace-event.js";
 

@@ -1,6 +1,6 @@
 import type { AttributionConfidence, InspectKind } from "./inspect-event.js";
 
-export type PersistedSchemaVersion = "0.2";
+export type PersistedSchemaVersion = "0.2" | "1.0";
 
 export type PersistedEventSourceType =
   | "manual"
@@ -37,8 +37,7 @@ export interface PersistedTraceContext {
   parentSpanId?: string;
 }
 
-export interface PersistedInspectEvent {
-  schemaVersion: PersistedSchemaVersion;
+export interface PersistedInspectEventBase {
   eventId: string;
   runId: string;
   parentId?: string;
@@ -58,6 +57,19 @@ export interface PersistedInspectEvent {
   tokenUsage?: PersistedTokenUsage;
   trace?: PersistedTraceContext;
 }
+
+export interface PersistedInspectEventV02 extends PersistedInspectEventBase {
+  schemaVersion: "0.2";
+}
+
+export interface PersistedInspectEventV10 extends PersistedInspectEventBase {
+  schemaVersion: "1.0";
+  [key: string]: unknown;
+}
+
+export type PersistedInspectEvent =
+  | PersistedInspectEventV02
+  | PersistedInspectEventV10;
 
 const INSPECT_KINDS: readonly InspectKind[] = [
   "RUN",
@@ -184,7 +196,7 @@ function isPersistedTraceContext(value: unknown): value is PersistedTraceContext
 }
 
 /**
- * Runtime guard for a v0.2 {@link PersistedInspectEvent} JSON object.
+ * Runtime guard for a v0.2 or v1.0 {@link PersistedInspectEvent} JSON object.
  *
  * Timestamp fields (`timestamp`, `startedAt`, `endedAt`) are validated as
  * non-empty strings only — stricter ISO-8601 parsing may be added later.
@@ -193,7 +205,9 @@ export function isPersistedInspectEvent(
   value: unknown,
 ): value is PersistedInspectEvent {
   if (!isRecord(value)) return false;
-  if (value.schemaVersion !== "0.2") return false;
+  if (value.schemaVersion !== "0.2" && value.schemaVersion !== "1.0") {
+    return false;
+  }
 
   if (!isNonEmptyString(value.eventId)) return false;
   if (!isNonEmptyString(value.runId)) return false;
@@ -229,4 +243,16 @@ export function isPersistedInspectEvent(
   }
 
   return true;
+}
+
+export function isPersistedInspectEventV02(
+  value: unknown,
+): value is PersistedInspectEventV02 {
+  return isPersistedInspectEvent(value) && value.schemaVersion === "0.2";
+}
+
+export function isPersistedInspectEventV10(
+  value: unknown,
+): value is PersistedInspectEventV10 {
+  return isPersistedInspectEvent(value) && value.schemaVersion === "1.0";
 }

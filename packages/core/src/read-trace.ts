@@ -5,11 +5,12 @@ import { isTraceEvent } from "./types.js";
 import type { TraceEvent } from "./types.js";
 import { warn } from "./utils.js";
 
-export type TraceJsonlFormat = "0.1" | "0.2" | "mixed" | "empty";
+export type TraceJsonlFormat = "0.1" | "0.2" | "1.0" | "mixed" | "empty";
 
 export type ParsedTraceJsonlRow =
   | { format: "0.1"; event: TraceEvent; sourceLine: number }
-  | { format: "0.2"; event: PersistedInspectEvent; sourceLine: number };
+  | { format: "0.2"; event: PersistedInspectEvent; sourceLine: number }
+  | { format: "1.0"; event: PersistedInspectEvent; sourceLine: number };
 
 export interface ParseTraceJsonlResult {
   format: TraceJsonlFormat;
@@ -25,10 +26,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function detectLineFormat(parsed: unknown): "0.1" | "0.2" | "unknown" {
+function detectLineFormat(parsed: unknown): "0.1" | "0.2" | "1.0" | "unknown" {
   if (!isRecord(parsed)) return "unknown";
   if (parsed.schemaVersion === "0.1") return "0.1";
   if (parsed.schemaVersion === "0.2") return "0.2";
+  if (parsed.schemaVersion === "1.0") return "1.0";
   return "unknown";
 }
 
@@ -40,7 +42,7 @@ export interface ParseTraceJsonlOptions {
 
 /**
  * Parses JSONL content into normalized v0.1 {@link TraceEvent} rows.
- * Accepts homogenous v0.1 or v0.2 files; mixed files are converted with a warning.
+ * Accepts homogenous v0.1, v0.2, or v1.0 files; mixed files are converted with a warning.
  */
 export function parseTraceJsonl(
   raw: string,
@@ -56,6 +58,7 @@ export function parseTraceJsonl(
   let sourceEventCount = 0;
   let saw01 = false;
   let saw02 = false;
+  let saw10 = false;
   let lineNumber = 0;
 
   for (const line of raw.split(/\r?\n/)) {
@@ -84,12 +87,13 @@ export function parseTraceJsonl(
       continue;
     }
 
-    if (format === "0.2") {
-      saw02 = true;
+    if (format === "0.2" || format === "1.0") {
+      if (format === "0.2") saw02 = true;
+      else saw10 = true;
       if (isPersistedInspectEvent(parsed)) {
         sourceEventCount += 1;
         persisted.push(parsed);
-        rows.push({ format: "0.2", event: parsed, sourceLine: lineNumber });
+        rows.push({ format, event: parsed, sourceLine: lineNumber });
         traceEvents.push(...persistedInspectEventToTraceEvents(parsed));
       } else {
         emitWarning("Skipped invalid persisted inspect event line in trace file");
@@ -100,16 +104,18 @@ export function parseTraceJsonl(
     emitWarning("Skipped trace line with unknown schemaVersion");
   }
 
-  if (saw01 && saw02) {
+  const seenFormats = [saw01, saw02, saw10].filter(Boolean).length;
+  if (seenFormats > 1) {
     emitWarning(
-      "Trace file mixes schemaVersion 0.1 and 0.2 lines; normalizing all rows",
+      "Trace file mixes AgentInspect schemaVersion rows; normalizing all rows",
     );
   }
 
   let format: TraceJsonlFormat = "empty";
-  if (saw01 && saw02) format = "mixed";
+  if (seenFormats > 1) format = "mixed";
   else if (saw01) format = "0.1";
   else if (saw02) format = "0.2";
+  else if (saw10) format = "1.0";
 
   return { format, sourceEventCount, events: traceEvents, persisted, rows };
 }
@@ -119,6 +125,6 @@ export function parseTraceJsonl(
  */
 export function unknownTraceFormatMessage(): string {
   return (
-    "Unsupported trace format. Expected schemaVersion 0.1 (TraceEvent) or 0.2 (PersistedInspectEvent)."
+    "Unsupported trace format. Expected schemaVersion 0.1 (TraceEvent), 0.2 (PersistedInspectEvent), or 1.0 (PersistedInspectEvent)."
   );
 }

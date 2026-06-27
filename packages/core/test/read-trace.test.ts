@@ -44,19 +44,90 @@ describe("parseTraceJsonl", () => {
     });
   });
 
-  it("reports mixed format when both schema versions appear", () => {
+  it("normalizes v1.0 fixtures to trace events and preserves persisted rows", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/traces-v1.0/manual-basic.jsonl",
+    );
+    const raw = await readFile(fixture, "utf-8");
+    const { format, sourceEventCount, events, persisted, rows } = parseTraceJsonl(
+      raw,
+      {
+        validate: validateEvent,
+      },
+    );
+
+    expect(format).toBe("1.0");
+    expect(sourceEventCount).toBe(4);
+    expect(rows.map((row) => row.format)).toEqual(["1.0", "1.0", "1.0", "1.0"]);
+    expect(persisted.map((event) => event.schemaVersion)).toEqual([
+      "1.0",
+      "1.0",
+      "1.0",
+      "1.0",
+    ]);
+    expect(
+      persisted.find((event) => event.eventId === "logic_1") as Record<
+        string,
+        unknown
+      >,
+    ).toMatchObject({
+      stableExtension: { fixture: "unknown-optional-field" },
+    });
+    expect(events.some((event) => event.event === "step_started")).toBe(true);
+  });
+
+  it("reports mixed format when multiple schema versions appear", () => {
     const raw = [
       '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"r","name":"n","startTime":1}',
       '{"schemaVersion":"0.2","eventId":"e","runId":"r","kind":"RUN","name":"n","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"manual"}}',
+      '{"schemaVersion":"1.0","eventId":"e10","runId":"r","kind":"TOOL","name":"tool","timestamp":"2023-11-14T22:13:21.000Z","confidence":"explicit","source":{"type":"manual"}}',
     ].join("\n");
     const { format, sourceEventCount, events, rows } = parseTraceJsonl(raw, {
       validate: validateEvent,
     });
     expect(format).toBe("mixed");
-    expect(sourceEventCount).toBe(2);
+    expect(sourceEventCount).toBe(3);
     expect(events.length).toBeGreaterThanOrEqual(2);
-    expect(rows.map((row) => row.format)).toEqual(["0.1", "0.2"]);
-    expect(rows.map((row) => row.sourceLine)).toEqual([1, 2]);
+    expect(rows.map((row) => row.format)).toEqual(["0.1", "0.2", "1.0"]);
+    expect(rows.map((row) => row.sourceLine)).toEqual([1, 2, 3]);
+  });
+
+  it("preserves source-row order across v0.1, v0.2, and v1.0 rows", async () => {
+    const fixture = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "fixtures/mixed-v0.1-v0.2-v1.0-order.jsonl",
+    );
+    const raw = await readFile(fixture, "utf-8");
+    const { format, sourceEventCount, events, persisted, rows } = parseTraceJsonl(
+      raw,
+      {
+        validate: validateEvent,
+        warnings: false,
+      },
+    );
+
+    expect(format).toBe("mixed");
+    expect(sourceEventCount).toBe(4);
+    expect(persisted.map((event) => event.eventId)).toEqual([
+      "mixed-tool-v02",
+      "mixed-llm-v10",
+    ]);
+    expect(rows.map((row) => row.format)).toEqual(["0.1", "0.2", "1.0", "0.1"]);
+    expect(events.map((event) => event.event)).toEqual([
+      "run_started",
+      "step_started",
+      "step_completed",
+      "step_started",
+      "step_completed",
+      "run_completed",
+    ]);
+    expect(
+      persisted.find((event) => event.eventId === "mixed-llm-v10") as Record<
+        string,
+        unknown
+      >,
+    ).toMatchObject({ stableExtension: { kept: true } });
   });
 
   it("preserves source-row order and adjacent one-to-many expansion", async () => {

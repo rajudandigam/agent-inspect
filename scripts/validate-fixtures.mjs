@@ -35,6 +35,13 @@ const REQUIRED = {
     "fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
     "fixtures/traces-v0.2/dual-format-parity.jsonl",
   ],
+  tracesV10: [
+    "fixtures/traces-v1.0/manual-basic.jsonl",
+    "fixtures/traces-v1.0/manual-tool-error.jsonl",
+    "fixtures/traces-v1.0/adapter-ai-sdk-like.jsonl",
+    "fixtures/traces-v1.0/adapter-openai-agents-like.jsonl",
+    "fixtures/traces-v1.0/otel-openinference-import.jsonl",
+  ],
   logs: [
     "fixtures/logs/proactive-json.log",
     "fixtures/logs/proactive-log4js.log",
@@ -119,6 +126,26 @@ function validatePersistedTraceJsonl(rel) {
     }
     if (obj.schemaVersion !== "0.2") {
       throw new Error(`${rel} line ${i + 1}: schemaVersion must be "0.2"`);
+    }
+    if (!isPersistedInspectEvent(obj)) {
+      throw new Error(`${rel} line ${i + 1}: not a valid PersistedInspectEvent`);
+    }
+  }
+}
+
+function validateStableTraceJsonl(rel) {
+  const text = readText(rel);
+  const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
+  if (lines.length === 0) throw new Error(`${rel}: empty`);
+  for (let i = 0; i < lines.length; i++) {
+    let obj;
+    try {
+      obj = JSON.parse(lines[i]);
+    } catch (e) {
+      throw new Error(`${rel} line ${i + 1}: invalid JSON (${e})`);
+    }
+    if (obj.schemaVersion !== "1.0") {
+      throw new Error(`${rel} line ${i + 1}: schemaVersion must be "1.0"`);
     }
     if (!isPersistedInspectEvent(obj)) {
       throw new Error(`${rel} line ${i + 1}: not a valid PersistedInspectEvent`);
@@ -227,6 +254,7 @@ try {
   for (const rel of REQUIRED.readmes) assertFile(rel);
   for (const rel of REQUIRED.traces) assertFile(rel);
   for (const rel of REQUIRED.tracesV02) assertFile(rel);
+  for (const rel of REQUIRED.tracesV10) assertFile(rel);
   for (const rel of REQUIRED.logs) assertFile(rel);
   for (const rel of REQUIRED.configs) assertFile(rel);
 
@@ -237,6 +265,11 @@ try {
 
   for (const rel of REQUIRED.tracesV02) {
     validatePersistedTraceJsonl(rel);
+    scanForbidden(rel);
+  }
+
+  for (const rel of REQUIRED.tracesV10) {
+    validateStableTraceJsonl(rel);
     scanForbidden(rel);
   }
 
@@ -257,6 +290,7 @@ try {
   console.log("[fixtures:check] OK");
   console.log(`  traces: ${REQUIRED.traces.length} v0.1 JSONL files validated`);
   console.log(`  traces-v0.2: ${REQUIRED.tracesV02.length} v0.2 JSONL files validated`);
+  console.log(`  traces-v1.0: ${REQUIRED.tracesV10.length} v1.0 JSONL files validated`);
   console.log(`  logs: ${REQUIRED.logs.length} files`);
   console.log(`  configs: ${REQUIRED.configs.length} JSON files`);
   process.exit(0);

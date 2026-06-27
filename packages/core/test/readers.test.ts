@@ -307,6 +307,32 @@ describe("AgentInspect JSONL reader", () => {
     expect(result.runs).toHaveLength(1);
   });
 
+  it("detects and reads v1.0 JSONL fixtures by default", async () => {
+    const filePath = path.join(repoRoot, "fixtures/traces-v1.0/manual-basic.jsonl");
+
+    const detection = await detectTraceFormat({ type: "file", path: filePath });
+    const result = await openTrace({ type: "file", path: filePath });
+
+    expect(detection.candidates[0]?.description).toBe("agent-inspect-v1.0-jsonl");
+    expect(result.format).toBe("agent-inspect-v1.0-jsonl");
+    expect(result.events).toHaveLength(4);
+    expect(result.events.map((event) => event.schemaVersion)).toEqual([
+      "1.0",
+      "1.0",
+      "1.0",
+      "1.0",
+    ]);
+    expect(
+      result.events.find((event) => event.eventId === "logic_1") as Record<
+        string,
+        unknown
+      >,
+    ).toMatchObject({
+      stableExtension: { fixture: "unknown-optional-field" },
+    });
+    expect(result.runs).toHaveLength(1);
+  });
+
   it("supports buffer input", async () => {
     const content = [
       '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"buffer_run","name":"buffer","startTime":1}',

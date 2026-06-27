@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"mixed_v1","name":"mixed-v1","startTime":1}
+{"schemaVersion":"0.2","eventId":"mixed-tool-v02","runId":"mixed_v1","parentId":"mixed_v1","kind":"TOOL","name":"middle-tool-v02","status":"ok","timestamp":"2023-11-14T22:13:20.000Z","startedAt":"2023-11-14T22:13:20.000Z","endedAt":"2023-11-14T22:13:20.100Z","durationMs":100,"confidence":"explicit","source":{"type":"manual"}}
+{"schemaVersion":"1.0","eventId":"mixed-llm-v10","runId":"mixed_v1","parentId":"mixed-tool-v02","kind":"LLM","name":"middle-llm-v10","status":"ok","timestamp":"2023-11-14T22:13:21.000Z","startedAt":"2023-11-14T22:13:21.000Z","endedAt":"2023-11-14T22:13:21.200Z","durationMs":200,"confidence":"explicit","source":{"type":"manual"},"stableExtension":{"kept":true}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":3,"runId":"mixed_v1","status":"success","endTime":3,"durationMs":2}
