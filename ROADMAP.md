@@ -8,11 +8,26 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [1.8.0](CHANGELOG.md#180) (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents` — all aligned).
+**Current release on npm:** [2.0.0](CHANGELOG.md#200) (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents` — all aligned).
 
 ---
 
 ## Released recently
+
+Shipped in **2.0.0** (see [CHANGELOG.md](CHANGELOG.md#200)):
+
+- **Stable trace contract:** small stable root API, schema 1.0 persisted writer path, and explicit migration workflow.
+- **Reader compatibility:** v0.1, v0.2, and v1.0 local AgentInspect traces remain readable.
+- **Migration safety:** trace migration is explicit and non-destructive; no in-place rewrite or automatic replay behavior was added.
+- **Linked release:** `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **2.0.0**.
+- **Unchanged by design:** local-first, no vendor upload, no hosted dashboard, and no raw chain-of-thought capture.
+
+Shipped in **1.9.0** (see [CHANGELOG.md](CHANGELOG.md#190)):
+
+- **Adoption leverage:** private harness workspace foundation, explain dry-run/local analysis, and adapter promotion.
+- **v2 preparation:** root API slimming plan and contract checks for the v2 stable API reset.
+- **Linked release:** `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **1.9.0**.
+- **Unchanged by design:** optional integrations remain package-scoped and local-first.
 
 Shipped in **1.8.0** (see [CHANGELOG.md](CHANGELOG.md#180)):
 
@@ -89,7 +104,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now
 
-**v1.9.0 adoption leverage** — v1.8.0 is published with deterministic checks, safe sharing workflows, and the first public OpenAI Agents adapter. The active train turns the existing foundation into repeated local use through harness workflows, explain/dry-run safety, adapter promotion, and a v2 root API slimming plan. See [ROADMAP-V1.8.1-TO-V3.md](docs/implementation/ROADMAP-V1.8.1-TO-V3.md).
+**v2.1.0 utility triangle** — v2.0.0 is published with the stable trace contract. The active train turns that contract into a repeated local loop: trace what happened, eval what should have happened, and redact what should never leave your machine. See [ROADMAP-V2.1-TO-V3.md](docs/implementation/ROADMAP-V2.1-TO-V3.md).
 
 **OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
 
@@ -97,11 +112,11 @@ Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bod
 
 | Area | Intent |
 | ---- | ------ |
-| **Current train** | v1.9.0 adoption leverage — harness, explain, adapter promotion, and root API slimming while keeping optional integrations package-scoped and local-first. |
+| **Current train** | v2.1.0 eval/redact utility triangle while keeping new utilities optional, deterministic, and local-first. |
 | **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
 | **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
 
-Release-train state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · maintainer roadmap: [ROADMAP-V1.8.1-TO-V3.md](docs/implementation/ROADMAP-V1.8.1-TO-V3.md)
+Release-train state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · maintainer roadmap: [ROADMAP-V2.1-TO-V3.md](docs/implementation/ROADMAP-V2.1-TO-V3.md)
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
 
@@ -109,12 +124,16 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ## Next
 
-Published sequence after **v1.8.0** — directional, not delivery guarantees.
+Published sequence after **v2.0.0** — directional, not delivery guarantees.
 
 | Release | Area | Intent |
 | ------- | ---- | ------ |
-| **v1.8.1** | Docs truth + adoption polish | Lead with `observe()`, promote framework adapters, demote structured logs to advanced ingestion, and align safe-sharing/import guidance. |
-| **v1.9.0** | Adoption leverage | Harness, explain dry-run/local analysis, adapter promotion, and root API slimming plan. |
+| **v2.1.0** | Eval/redact utility triangle | Public optional eval and redact utilities, shared redaction engine, and deterministic local eval workflows. |
+| **v2.2.0** | Reporters and CI | Public Vitest/Jest reporters, CI summaries, trace/eval artifacts, and quiet success mode. |
+| **v2.3.0** | Adapter hardening | AI SDK, OpenAI Agents, and LangGraph-through-LangChain polish; new adapters only when demand is proven. |
+| **v2.4.0** | Sessions and MCP telemetry | Session navigation, handoffs, retries, sub-agents, and MCP tool tracing without becoming a gateway product. |
+| **v2.5.0** | Guardrails and circuit breakers | Deterministic local safety utilities built on checks, redaction, eval, and trace events. |
+| **v2.6.0** | Optional viewer and IDE/MCP surfaces | Local read-only viewer, read-only MCP server, and optional editor surfaces if user demand is proven. |
 
 ---
 
@@ -127,7 +146,7 @@ Exploratory — requires design review and explicit scope approval before implem
 | **Explain experiment** | Opt-in natural-language trace summaries — no version until maintainer approves scope. | conditional |
 | **Experimental OTLP HTTP sink** | Opt-in, local-or-explicit-endpoint only — not a default upload pipeline. | post-v2 exploratory |
 | **Optional cassette / replay research** | Exploratory only if community demand appears — not a default replay engine. | TBD |
-| **v2.0.0 stable contract** | Stable API reset, unified write format; `schemaVersion: "0.1"` traces remain readable; migration guide required. | v2.0 |
+| **v3.0.0 conditional extensibility** | Stable extension ecosystem only if v2 adoption proves recurring reporter/check workflows, compatible third-party traces, and demand for extension points. | conditional |
 
 ---
 
@@ -160,8 +179,15 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v1.7.0** — Framework-native adoption | **Released** 2026-06-26 | [V1.7.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md) |
 | **v1.8.0** — Deterministic checks, safe sharing, and CI | **Released** 2026-06-27 | [V1.8.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md) |
 | **v1.8.1** — Documentation truth and adoption polish | **Completed as reference cleanup; not a patch release target** | [V1.8.1-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.8.1-EXECUTION-PLAN.md) |
-| **v1.9.0** — Adoption leverage | **Active** | [V1.9.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md) |
-| **v2.0** — Stable trace contract | Future | [ROADMAP-EXECUTION-V1.5-TO-V2.md](docs/implementation/ROADMAP-EXECUTION-V1.5-TO-V2.md) |
+| **v1.9.0** — Adoption leverage | **Released** 2026-06-27 | [V1.9.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md) |
+| **v2.0.0** — Stable trace contract | **Released** 2026-06-27 | [V2.0.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.0.0-RELEASE-READINESS.md) |
+| **v2.1.0** — Eval/redact utility triangle | **Active** | [V2.1.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md) |
+| **v2.2.0** — Reporters and CI | Planned | [V2.2.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md) |
+| **v2.3.0** — Adapter hardening | Planned | [V2.3.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md) |
+| **v2.4.0** — Sessions and MCP telemetry | Planned | [V2.4.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.4.0-EXECUTION-PLAN.md) |
+| **v2.5.0** — Guardrails and circuit breakers | Planned | [V2.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.5.0-EXECUTION-PLAN.md) |
+| **v2.6.0** — Optional viewer and IDE/MCP surfaces | Planned | [V2.6.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.6.0-EXECUTION-PLAN.md) |
+| **v3.0.0** — Conditional extensibility | Conditional | [V3.0.0-READINESS-AND-EXECUTION-PLAN.md](docs/implementation/release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md) |
 
 **Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.
 

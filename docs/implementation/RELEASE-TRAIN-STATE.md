@@ -1,16 +1,16 @@
 # Release train state
 
-> Operational pointer only. Git state, package manifests, tests, npm, and CI are authoritative.
+> Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "1.9.0"
+baselineVersion: "2.0.0"
 publishedVersion: "2.0.0"
-currentTrain: "v2.0.0"
-trainStatus: "published"
+currentTrain: "v2.1.0"
+trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "0533c3377b2079cc76b85bf41ff9e8832a26f012"
-lastValidationLevel: "v2.0.0-published-after-openai-agents-recovery"
+lastConfirmedCommit: "904c437475e7ba0da8a844128488d3f2b5be76b1"
+lastValidationLevel: "v2.1-0-planning-reconciliation"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -55,15 +55,16 @@ completedChunks:
   - "v2.0-6-docs-and-migration-guide-alignment"
   - "v2.0-7-release-readiness"
   - "v2.0-release-prep-and-publication"
-currentChunk: "none"
-pendingManualGate: "manual post-release check before any next release"
-nextAction: "Perform the manual post-release check, then authorize the next named release train if needed."
+  - "v2.1-0-post-v2-reconciliation-and-v2.1-planning"
+currentChunk: "v2.1-1-redaction-package-rfc-and-boundary"
+pendingManualGate: "none"
+nextAction: "Define the @agent-inspect/redact package boundary and CLI/API RFC before runtime package work."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
-- **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
-- **Active plan:** [release-trains/V2.0.0-EXECUTION-PLAN.md](./release-trains/V2.0.0-EXECUTION-PLAN.md)
-- **Current readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)
-- **Architecture index:** [../proposals/README.md](../proposals/README.md)
-- **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)
+- **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
+- **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
+- **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
+- **Active plan:** [release-trains/V2.1.0-EXECUTION-PLAN.md](./release-trains/V2.1.0-EXECUTION-PLAN.md)
+- **Previous readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)

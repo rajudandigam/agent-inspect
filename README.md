@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release line: **1.9.x** for the existing public packages. The v2 contract work on `main` is unreleased until the release-readiness gate completes. `@agent-inspect/openai-agents` v1.9 publication recovery is a separate maintainer npm setup item and is not retried by the v2 train.
+Current npm release line: **2.0.x** for the existing public packages. v2.0.0 is the stable trace-contract release: small root API, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit non-destructive migration workflow.
 
 ```bash
 npm install agent-inspect
@@ -332,6 +332,10 @@ AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
+**Shipped in 2.0.0:** stable root API contract, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit trace migration workflow. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **2.0.0**.
+
+**Shipped in 1.9.0:** private harness workspace foundation, explain dry-run/local analysis, promoted adapter adoption paths, and the v2 root API slimming plan.
+
 **Shipped in 1.8.0:** experimental deterministic checks (`agent-inspect/checks` and `agent-inspect check`), safe-sharing workflows (`scan`, `verify-safe`, safe artifacts), and first public `@agent-inspect/openai-agents` package. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **1.8.0**.
 
 **Shipped in 1.7.0:** experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6 with a local no-network [ai-sdk-local-telemetry recipe](examples/recipes/ai-sdk-local-telemetry/), adapter conformance fixtures, OpenAI Agents/LangGraph support decisions, and local-first adapter docs. Examples keep `recordInputs: false`, `recordOutputs: false`, metadata-only capture, and no upload behavior. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, and `@agent-inspect/tui` at **1.7.0**.
@@ -340,7 +344,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
-**Roadmap beyond current release work:** future work continues from the local runtime, universal ingestion, and optional adapter foundations. See [ROADMAP.md](ROADMAP.md).
+**Roadmap beyond current release work:** v2.1 starts the eval/redact utility triangle, followed by reporters/CI, adapter hardening, sessions/MCP telemetry, guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
