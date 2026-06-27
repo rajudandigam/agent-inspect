@@ -4,70 +4,68 @@
 
 ```yaml
 train: "v1.9.0"
-chunk: "v1.9-0-train-setup"
+chunk: "v1.9-1-harness-package-boundary-and-core-runner"
 status: "completed"
 executionMode: "autonomous-release-train"
-dependsOn: "v1.8.1-1-docs-roadmap-maintainer-cleanup"
+dependsOn: "v1.9-0-train-setup"
 ```
 
 ## Goal
 
-Establish the v1.9.0 autonomous release train for adoption leverage.
-
-The maintainer authorized the named v1.9 release train and clarified that AgentInspect releases minor versions only; v1.8.1 is reference cleanup and not a patch-release target.
-
-Completed on 2026-06-27. The v1.9.0 plan now defines ordered chunks and gates for harness, explain, adapter promotion, root API slimming, and release readiness.
+Add the private `@agent-inspect/harness` workspace package boundary and a no-framework core runner contract for local fixture targets.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/ROADMAP-V1.8.1-TO-V3.md` v1.9.0 section
 - `docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md`
 
 ## In scope
 
-1. Create the v1.9.0 execution plan with ordered chunks and gates.
-2. Update release-train state and current-task pointers.
-3. Encode the minor-only release policy and manual release gates.
+1. Add private workspace package `@agent-inspect/harness`.
+2. Define `defineTarget`, `createFixtureRunner`, public types, and the core runner contract.
+3. Support target resolution/invocation, bootstrap/shutdown hooks, local trace options, and deterministic diagnostics.
+4. Add focused package tests, package-boundary coverage, API docs, and build/test wiring.
 
 ## Out of scope
 
-- runtime source changes;
 - package version changes;
-- changesets;
-- npm publish, tags, or GitHub releases;
-- first publication of any new package;
-- provider/network implementation for explain;
+- changesets, tags, npm publish, GitHub releases, or first public package publication;
+- provider/network implementation;
 - schema changes;
-- new root/core dependencies.
+- new root/core dependencies;
+- harness CLI fixture loading, JSON stdin/stdout ergonomics, recipes, or expected-output comparison.
 
 ## Focused validation
 
 ```bash
-CI=true pnpm typecheck
-CI=true pnpm test
+pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/package-boundaries.test.ts
+pnpm build
+pnpm typecheck
+pnpm test
 git diff --check
 ```
 
 ## Acceptance criteria
 
-- `V1.9.0-EXECUTION-PLAN.md` exists and defines ordered chunks and gates.
-- `RELEASE-TRAIN-STATE.md` points to v1.9.0 and the active plan.
-- `CURRENT-TASK.md` points to chunk 0.
-- Release policy says v1.9.0 is the next release target and v1.8.1 is not a patch-release target.
-- No version, changeset, tag, publish, release, runtime, schema, dependency, or network behavior change occurs.
+- `@agent-inspect/harness` exists as a private workspace package.
+- The package exposes typed `defineTarget` and `createFixtureRunner` APIs.
+- Runner execution is deterministic, local-only, and supports env-gated or explicit trace options through existing AgentInspect APIs.
+- Bootstrap, resolve, invoke, and shutdown failures are exposed through diagnostics.
+- Package boundaries keep root/core dependencies unchanged and avoid framework/runtime dependencies.
 
 ## Completion evidence
 
+- `CI=true pnpm exec vitest run packages/harness/test/index.test.ts packages/core/test/package-boundaries.test.ts` passed: 2 test files passed, 16 tests passed.
+- `CI=true pnpm build` passed, including `tsup.harness.config.ts` for the private harness package.
 - `CI=true pnpm typecheck` passed.
-- `CI=true pnpm test` passed: 120 test files passed, 1 skipped; 1051 tests passed, 20 skipped.
+- `CI=true pnpm test` passed: 122 test files passed, 1078 tests passed.
 - `git diff --check` passed.
 
 ## Proposed commit
 
 ```text
-docs: start v1.9.0 adoption leverage train
+feat: add private harness runner package
 ```
 
 ## Stop condition

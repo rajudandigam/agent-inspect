@@ -1,0 +1,400 @@
+import {
+  inspectRun,
+  isAgentInspectEnabled,
+  maybeInspectRun,
+  observe,
+} from "agent-inspect";
+import type { InspectRunOptions } from "agent-inspect";
+
+export type HarnessDiagnosticSeverity = "warning" | "error";
+
+export type HarnessDiagnosticCode =
+  | "target_not_found"
+  | "bootstrap_failed"
+  | "resolve_failed"
+  | "invoke_failed"
+  | "shutdown_failed";
+
+export interface HarnessDiagnosticError {
+  name?: string;
+  message: string;
+  stack?: string;
+}
+
+export interface HarnessDiagnostic {
+  code: HarnessDiagnosticCode;
+  severity: HarnessDiagnosticSeverity;
+  message: string;
+  targetName?: string;
+  timestamp: number;
+  error?: HarnessDiagnosticError;
+}
+
+export type HarnessDiagnosticInput = Omit<HarnessDiagnostic, "timestamp"> & {
+  timestamp?: number;
+};
+
+export interface FixtureRunnerContext<TApp = unknown> {
+  readonly runnerName: string;
+  readonly targetName: string;
+  readonly app: TApp | undefined;
+  addDiagnostic(diagnostic: HarnessDiagnosticInput): void;
+  getDiagnostics(): readonly HarnessDiagnostic[];
+}
+
+export interface TargetDefinition<TApp, TTarget, TInput, TOutput> {
+  /** Human-readable label for target listing. Experimental during v1.x. */
+  description?: string;
+  /** Safe, bounded metadata for local tooling and recipes. Experimental during v1.x. */
+  metadata?: Record<string, unknown>;
+  /** Resolve a framework-specific object or function from the bootstrapped app. */
+  resolve(
+    app: TApp,
+    context: FixtureRunnerContext<TApp>,
+  ): TTarget | Promise<TTarget>;
+  /** Invoke the resolved target with fixture input. */
+  invoke(
+    target: TTarget,
+    input: TInput,
+    context: FixtureRunnerContext<TApp>,
+  ): TOutput | Promise<TOutput>;
+}
+
+export type FixtureTargets<TApp = unknown> = Record<
+  string,
+  TargetDefinition<TApp, unknown, unknown, unknown>
+>;
+
+export type TargetInput<TDefinition> =
+  TDefinition extends TargetDefinition<infer _TApp, infer _TTarget, infer TInput, infer _TOutput>
+    ? TInput
+    : never;
+
+export type TargetOutput<TDefinition> =
+  TDefinition extends TargetDefinition<infer _TApp, infer _TTarget, infer _TInput, infer TOutput>
+    ? TOutput
+    : never;
+
+export type HarnessTraceMode = "off" | "run" | "run-if-enabled" | "observe";
+
+export interface HarnessTraceOptions extends InspectRunOptions {
+  /**
+   * `run-if-enabled` uses `maybeInspectRun()` and is the default.
+   * `observe` proxies resolved targets and traces `run` / `execute` / `invoke` methods when enabled.
+   */
+  mode?: HarnessTraceMode;
+  runName?: string | ((targetName: string) => string);
+}
+
+export interface FixtureRunnerOptions<TApp, TTargets extends FixtureTargets<TApp>> {
+  name?: string;
+  targets: TTargets;
+  trace?: HarnessTraceOptions;
+  bootstrap?(
+    context: FixtureRunnerContext<TApp>,
+  ): TApp | Promise<TApp>;
+  shutdown?(
+    app: TApp | undefined,
+    context: FixtureRunnerContext<TApp>,
+  ): void | Promise<void>;
+}
+
+export interface FixtureRunOptions {
+  trace?: HarnessTraceOptions;
+}
+
+export interface HarnessTargetInfo {
+  name: string;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface FixtureRunner<TApp, TTargets extends FixtureTargets<TApp>> {
+  listTargets(): HarnessTargetInfo[];
+  getDiagnostics(): readonly HarnessDiagnostic[];
+  runTarget<TName extends Extract<keyof TTargets, string>>(
+    targetName: TName,
+    input: TargetInput<TTargets[TName]>,
+    options?: FixtureRunOptions,
+  ): Promise<TargetOutput<TTargets[TName]>>;
+}
+
+export class HarnessError extends Error {
+  readonly code: HarnessDiagnosticCode;
+  readonly targetName?: string;
+
+  constructor(
+    code: HarnessDiagnosticCode,
+    message: string,
+    options?: { targetName?: string; cause?: unknown },
+  ) {
+    super(message, { cause: options?.cause });
+    this.name = "HarnessError";
+    this.code = code;
+    this.targetName = options?.targetName;
+  }
+}
+
+export class HarnessTargetNotFoundError extends HarnessError {
+  constructor(targetName: string) {
+    super("target_not_found", `Harness target "${targetName}" was not found.`, {
+      targetName,
+    });
+    this.name = "HarnessTargetNotFoundError";
+  }
+}
+
+export function defineTarget<TApp, TTarget, TInput, TOutput>(
+  definition: TargetDefinition<TApp, TTarget, TInput, TOutput>,
+): TargetDefinition<TApp, TTarget, TInput, TOutput> {
+  return definition;
+}
+
+export function createFixtureRunner<
+  TApp,
+  const TTargets extends FixtureTargets<TApp>,
+>(options: FixtureRunnerOptions<TApp, TTargets>): FixtureRunner<TApp, TTargets> {
+  return new DefaultFixtureRunner(options);
+}
+
+class DefaultFixtureRunner<TApp, TTargets extends FixtureTargets<TApp>>
+  implements FixtureRunner<TApp, TTargets>
+{
+  private readonly diagnostics: HarnessDiagnostic[] = [];
+  private readonly runnerName: string;
+
+  constructor(private readonly options: FixtureRunnerOptions<TApp, TTargets>) {
+    this.runnerName = normalizeRunnerName(options.name);
+  }
+
+  listTargets(): HarnessTargetInfo[] {
+    return Object.entries(this.options.targets)
+      .map(([name, definition]) => {
+        const info: HarnessTargetInfo = { name };
+        if (definition.description !== undefined) info.description = definition.description;
+        if (definition.metadata !== undefined) info.metadata = definition.metadata;
+        return info;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  getDiagnostics(): readonly HarnessDiagnostic[] {
+    return [...this.diagnostics];
+  }
+
+  async runTarget<TName extends Extract<keyof TTargets, string>>(
+    targetName: TName,
+    input: TargetInput<TTargets[TName]>,
+    options?: FixtureRunOptions,
+  ): Promise<TargetOutput<TTargets[TName]>> {
+    const definition = this.options.targets[targetName] as
+      | TargetDefinition<TApp, unknown, unknown, TargetOutput<TTargets[TName]>>
+      | undefined;
+    let app: TApp | undefined;
+    const context = this.createContext(targetName, () => app);
+
+    if (definition === undefined) {
+      const error = new HarnessTargetNotFoundError(targetName);
+      this.addDiagnostic({
+        code: "target_not_found",
+        severity: "error",
+        message: error.message,
+        targetName,
+        error: serializeError(error),
+      });
+      throw error;
+    }
+
+    let primaryError: unknown;
+    try {
+      app = await this.bootstrap(context);
+      const target = await this.resolveTarget(definition, app, context, targetName);
+      return await this.invokeTarget(definition, target, input, context, targetName, options);
+    } catch (error) {
+      primaryError = error;
+      throw error;
+    } finally {
+      await this.shutdown(app, context, targetName, primaryError);
+    }
+  }
+
+  private createContext(
+    targetName: string,
+    getApp: () => TApp | undefined,
+  ): FixtureRunnerContext<TApp> {
+    return {
+      runnerName: this.runnerName,
+      targetName,
+      get app() {
+        return getApp();
+      },
+      addDiagnostic: (diagnostic) => this.addDiagnostic(diagnostic),
+      getDiagnostics: () => this.getDiagnostics(),
+    };
+  }
+
+  private addDiagnostic(input: HarnessDiagnosticInput): void {
+    this.diagnostics.push({
+      ...input,
+      timestamp: input.timestamp ?? Date.now(),
+    });
+  }
+
+  private async bootstrap(context: FixtureRunnerContext<TApp>): Promise<TApp> {
+    try {
+      if (this.options.bootstrap === undefined) {
+        return undefined as TApp;
+      }
+      return await this.options.bootstrap(context);
+    } catch (error) {
+      this.addDiagnostic({
+        code: "bootstrap_failed",
+        severity: "error",
+        message: "Harness bootstrap failed.",
+        targetName: context.targetName,
+        error: serializeError(error),
+      });
+      throw new HarnessError("bootstrap_failed", "Harness bootstrap failed.", {
+        targetName: context.targetName,
+        cause: error,
+      });
+    }
+  }
+
+  private async resolveTarget<TOutput>(
+    definition: TargetDefinition<TApp, unknown, unknown, TOutput>,
+    app: TApp,
+    context: FixtureRunnerContext<TApp>,
+    targetName: string,
+  ): Promise<unknown> {
+    try {
+      return await definition.resolve(app, context);
+    } catch (error) {
+      this.addDiagnostic({
+        code: "resolve_failed",
+        severity: "error",
+        message: `Harness target "${targetName}" failed to resolve.`,
+        targetName,
+        error: serializeError(error),
+      });
+      throw new HarnessError(
+        "resolve_failed",
+        `Harness target "${targetName}" failed to resolve.`,
+        { targetName, cause: error },
+      );
+    }
+  }
+
+  private async invokeTarget<TOutput>(
+    definition: TargetDefinition<TApp, unknown, unknown, TOutput>,
+    target: unknown,
+    input: unknown,
+    context: FixtureRunnerContext<TApp>,
+    targetName: string,
+    options: FixtureRunOptions | undefined,
+  ): Promise<TOutput> {
+    const trace = mergeTraceOptions(this.options.trace, options?.trace);
+    const runName = resolveRunName(this.runnerName, targetName, trace.runName);
+    const traceOptions = toInspectRunOptions(trace);
+    const invoke = () => definition.invoke(target, input, context);
+
+    try {
+      switch (trace.mode ?? "run-if-enabled") {
+        case "off":
+          return await invoke();
+        case "run":
+          return await inspectRun(runName, invoke, {
+            ...traceOptions,
+            enabled: traceOptions.enabled ?? true,
+          });
+        case "observe": {
+          const enabled =
+            traceOptions.enabled ?? isAgentInspectEnabled(process.env.AGENT_INSPECT);
+          const observedTarget = observe(target, {
+            ...traceOptions,
+            enabled,
+          });
+          return await definition.invoke(observedTarget, input, context);
+        }
+        case "run-if-enabled":
+          return await maybeInspectRun(runName, invoke, traceOptions);
+      }
+    } catch (error) {
+      this.addDiagnostic({
+        code: "invoke_failed",
+        severity: "error",
+        message: `Harness target "${targetName}" failed during invocation.`,
+        targetName,
+        error: serializeError(error),
+      });
+      throw error;
+    }
+  }
+
+  private async shutdown(
+    app: TApp | undefined,
+    context: FixtureRunnerContext<TApp>,
+    targetName: string,
+    primaryError: unknown,
+  ): Promise<void> {
+    if (this.options.shutdown === undefined) return;
+
+    try {
+      await this.options.shutdown(app, context);
+    } catch (error) {
+      this.addDiagnostic({
+        code: "shutdown_failed",
+        severity: "error",
+        message: "Harness shutdown failed.",
+        targetName,
+        error: serializeError(error),
+      });
+      if (primaryError === undefined) {
+        throw new HarnessError("shutdown_failed", "Harness shutdown failed.", {
+          targetName,
+          cause: error,
+        });
+      }
+    }
+  }
+}
+
+function normalizeRunnerName(name: string | undefined): string {
+  const trimmed = name?.trim();
+  return trimmed === undefined || trimmed === "" ? "agent-inspect-harness" : trimmed;
+}
+
+function resolveRunName(
+  runnerName: string,
+  targetName: string,
+  configured: HarnessTraceOptions["runName"],
+): string {
+  if (typeof configured === "function") return configured(targetName);
+  if (typeof configured === "string" && configured.trim() !== "") return configured.trim();
+  return `${runnerName}:${targetName}`;
+}
+
+function mergeTraceOptions(
+  base: HarnessTraceOptions | undefined,
+  override: HarnessTraceOptions | undefined,
+): HarnessTraceOptions {
+  return { ...(base ?? {}), ...(override ?? {}) };
+}
+
+function toInspectRunOptions(options: HarnessTraceOptions): InspectRunOptions {
+  const { mode: _mode, runName: _runName, ...inspectOptions } = options;
+  return inspectOptions;
+}
+
+function serializeError(error: unknown): HarnessDiagnosticError {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+  return {
+    message: String(error),
+  };
+}

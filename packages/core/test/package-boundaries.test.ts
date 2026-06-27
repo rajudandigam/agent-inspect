@@ -89,4 +89,12 @@ describe("package boundaries", () => {
     const reporter = await readPkg("packages/jest/package.json");
     expect(reporter.dependencies?.jest).toBeUndefined();
   });
+
+  it("@agent-inspect/harness stays private and dependency-light", async () => {
+    const harness = await readPkg("packages/harness/package.json");
+    expect(harness.name).toBe("@agent-inspect/harness");
+    expect(harness.private).toBe(true);
+    expect(keys(harness.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(harness.peerDependencies)).toEqual([]);
+  });
 });

@@ -482,16 +482,39 @@ The checks API is experimental in v1.x. The `agent-inspect check` CLI uses this 
 
 Recipes: [deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for check/baseline/artifact workflows, and [test-reporter-artifacts](../examples/recipes/test-reporter-artifacts/README.md) for Vitest/Jest reporter configuration patterns.
 
-## 22. Deprecated APIs
+## 22. Experimental `@agent-inspect/harness` APIs
+
+`@agent-inspect/harness` is a private experimental workspace package during the v1.9 release train. It provides a no-framework fixture runner for local targets and recipes; first public package publication remains a manual maintainer gate.
+
+Import from `@agent-inspect/harness` inside the workspace:
+
+```ts
+import { createFixtureRunner, defineTarget } from "@agent-inspect/harness";
+```
+
+- **`defineTarget(definition)`**: returns a typed target definition with `resolve(app, context)` and `invoke(target, input, context)` hooks.
+- **`createFixtureRunner(options)`**: returns a local runner with:
+  - **`listTargets()`**: deterministic target metadata listing.
+  - **`runTarget(name, input, options?)`**: bootstrap, resolve, invoke, and shutdown lifecycle.
+  - **`getDiagnostics()`**: deterministic diagnostics for missing targets, bootstrap failures, resolve failures, invocation failures, and shutdown failures.
+- **`trace`** options use existing AgentInspect local APIs only:
+  - **`mode: "run-if-enabled"`** (default): uses `maybeInspectRun()` and writes no trace unless `options.enabled` or `AGENT_INSPECT` enables tracing.
+  - **`mode: "run"`**: explicitly wraps the target invocation in `inspectRun()`.
+  - **`mode: "observe"`**: proxies the resolved target with `observe()` for `run` / `execute` / `invoke` methods when enabled.
+  - **`mode: "off"`**: invokes the target without AgentInspect tracing.
+
+The harness package does not add root/core dependencies, does not upload traces, does not call providers, and does not capture raw prompts or outputs by itself. It writes only local AgentInspect traces when explicitly enabled by runner options or environment-gated tracing.
+
+## 23. Deprecated APIs
 
 No deprecated APIs are declared as of 1.4.0.
 
-## 23. Removal / deprecation policy
+## 24. Removal / deprecation policy
 
 - Stable APIs are not removed in v1.x.
 - If removal is necessary, the API should be **deprecated** first, documented, and kept for a reasonable window (target: at least one minor line) unless security requires faster action.
 
-## 24. Backward compatibility policy
+## 25. Backward compatibility policy
 
 - Manual trace JSONL (`schemaVersion: "0.1"`) remains readable.
 - Additive schema changes are allowed in minor versions.
