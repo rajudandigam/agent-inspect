@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, and CI are authoritative.
 
 ```yaml
-baselineVersion: "1.8.0"
-publishedVersion: "1.8.0"
-currentTrain: "v1.9.0"
+baselineVersion: "1.9.0"
+publishedVersion: "1.9.0-partial-openai-agents-1.8.0"
+currentTrain: "v2.0.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "8822e52b75525d427a9a9f133c8e06d4221a54d4"
-lastValidationLevel: "v1.9-release-prep-local-gate-green"
+lastConfirmedCommit: "283346162f767d6e704e635cc3f2c7145914ebb3"
+lastValidationLevel: "v2.0-0-local-docs-and-workflow-gate-green"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -45,15 +45,16 @@ completedChunks:
   - "v1.9-5-adapter-promotion"
   - "v1.9-6-root-api-slimming-plan-and-enforcement"
   - "v1.9-7-release-readiness"
-currentChunk: "none"
+  - "v1.9-release-prep-and-partial-publication"
+currentChunk: "v2.0-0-train-setup-and-v1.9-publication-reconciliation"
 pendingManualGate: "none"
-nextAction: "Push the v1.9 release-prep commit, wait for the GitHub Version Packages PR, merge only after green checks, then verify npm packages, tags, and GitHub releases."
+nextAction: "Commit and push the v2.0 chunk 0 docs/workflow guard, wait for CI/Publish, then continue with v2.0 chunk 1."
 publishedAt: "2026-06-27"
 updatedAt: "2026-06-27"
 ```
 
 - **Active roadmap:** [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md)
-- **Active plan:** [release-trains/V1.9.0-EXECUTION-PLAN.md](./release-trains/V1.9.0-EXECUTION-PLAN.md)
+- **Active plan:** [release-trains/V2.0.0-EXECUTION-PLAN.md](./release-trains/V2.0.0-EXECUTION-PLAN.md)
 - **Current readiness:** [release-trains/V1.9.0-RELEASE-READINESS.md](./release-trains/V1.9.0-RELEASE-READINESS.md)
 - **Architecture index:** [../proposals/README.md](../proposals/README.md)
 - **Previous readiness:** [release-trains/V1.8.0-RELEASE-READINESS.md](./release-trains/V1.8.0-RELEASE-READINESS.md)

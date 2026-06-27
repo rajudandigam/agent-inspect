@@ -50,7 +50,32 @@ jobs:
       # See docs/community/MAINTAINER-GUIDE.md#npm-trusted-publishing
       #
       # Optional recovery: set NPM_TOKEN with publish access on every published package.
+      - name: Detect release automation work
+        id: release-work
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          should_run=false
+          reason="ordinary main push; release automation skipped"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            should_run=true
+            reason="manual workflow dispatch"
+          elif git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -Eq '^\.changeset/[^/]+\.md$'; then
+            should_run=true
+            reason="changeset file changed"
+          elif git log -1 --pretty=%B "$GITHUB_SHA" | grep -Eq '(^|[[:space:]])Version Packages($|[[:space:]])'; then
+            should_run=true
+            reason="Version Packages merge"
+          fi
+
+          echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "$reason"
+
       - name: Create Release PR or Publish
+        if: steps.release-work.outputs.should_run == 'true'
         uses: changesets/action@v1
         with:
           publish: pnpm run release
