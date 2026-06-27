@@ -274,6 +274,9 @@ importers:
       '@agent-inspect/core':
         specifier: workspace:*
         version: link:../core
+      '@agent-inspect/eval':
+        specifier: workspace:*
+        version: link:../eval
       commander:
         specifier: ^12.1.0
         version: 12.1.0

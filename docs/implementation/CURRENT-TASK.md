@@ -4,15 +4,19 @@
 
 ```yaml
 train: "v2.1.0"
-chunk: "v2.1-7-eval-grounding-heuristics-and-cli"
+chunk: "v2.1-8-eval-redact-recipes-and-documentation"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-6-eval-package-scaffold-and-deterministic-core"
+dependsOn: "v2.1-7-eval-grounding-heuristics-and-cli"
 ```
 
 ## Goal
 
-Make eval useful for local RAG/agent behavior with deterministic grounding heuristics and a root CLI workflow, without LLM judging or provider calls.
+Make the v2.1 utility triangle visible through adoption docs and deterministic recipes:
+
+```text
+trace -> eval -> redact/share/report/artifact
+```
 
 ## Read first
 
@@ -22,52 +26,62 @@ Make eval useful for local RAG/agent behavior with deterministic grounding heuri
 - `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
+- `docs/proposals/REDACT-PACKAGE.md`
 - `docs/proposals/EVAL-PACKAGE.md`
-- `packages/eval/src/index.ts`
-- `packages/eval/test/index.test.ts`
-- relevant CLI command patterns
+- relevant recipe and documentation patterns
 
 ## Prior chunk evidence
 
-- Starting commit: `637f36fcd796f56f4756f8272babe954457c8148`.
-- Added public optional workspace package `@agent-inspect/eval`.
-- Added ESM/CJS/declaration build via `tsup.eval.config.ts`.
-- Added initial public API: `evalRun`, `checks`, `EvalRunResult`, `EvalRunInput`, and `renderEvalMarkdown`.
-- Added deterministic local checks for success, tools, duration, depth, retry count, token count, failed steps, retrieval-before-generation, and decision metadata.
-- Added package smoke and package-boundary coverage.
-- Updated the lockfile for the new workspace package.
+- Starting commit: `c35de342099262d656ee1fde1a505e0e8d97acc1`.
+- Added deterministic grounding heuristics to `@agent-inspect/eval`:
+  - context overlap;
+  - quote overlap;
+  - citation presence;
+  - required source IDs;
+  - answer length bounds;
+  - banned unsupported phrases.
+- Added root CLI workflow:
+  - `agent-inspect eval trace.jsonl --require-success`;
+  - `agent-inspect eval trace.jsonl --forbid-tool deleteAccount`;
+  - JSON and Markdown output;
+  - deterministic exit codes;
+  - JSON/JS/MJS/CJS config loading;
+  - explicit TypeScript config rejection until a supported loader exists.
+- Added CLI and eval tests for JSON output, Markdown output, failed eval exit code, unreadable diagnostics, and no-network behavior.
 
 ## In scope
 
-1. Add deterministic grounding heuristics:
-   - context overlap;
-   - quote overlap;
-   - citation presence;
-   - required source IDs;
-   - answer length bounds;
-   - banned unsupported phrases.
-2. Add root CLI workflow:
-   - `agent-inspect eval trace.jsonl --config agent-inspect.eval.ts` only if an explicit supported loader path exists;
-   - `agent-inspect eval trace.jsonl --require-success`;
-   - `agent-inspect eval trace.jsonl --forbid-tool deleteAccount`.
-3. Support deterministic JSON output, Markdown output, failed eval exit code, unreadable input diagnostics, and no-network behavior.
-4. Keep source traces read-only and non-mutating.
+1. Update adoption docs:
+   - `README.md`;
+   - `docs/GETTING-STARTED.md`;
+   - `docs/API.md`;
+   - `docs/CLI.md`;
+   - `docs/SAFE-TRACE-SHARING.md`;
+   - `docs/COMPARE.md`;
+   - `docs/ADAPTERS.md`;
+   - `docs/LIMITATIONS.md`;
+   - `docs/KNOWN-ISSUES.md`;
+   - `docs/implementation/ROADMAP-V2.1-TO-V3.md`.
+2. Add deterministic recipes:
+   - `examples/recipes/eval-local-checks`;
+   - `examples/recipes/redact-share-safe-file`;
+   - `examples/recipes/eval-ci-artifacts`.
+3. Keep examples local-only, deterministic, and secret-free.
+4. Make safe-sharing language visible.
 
 ## Out of scope
 
 - package version changes, changesets, publishing, or tags;
-- LLM/provider judging;
-- TypeScript config loader dependency;
-- root/core dependency additions;
+- runtime source changes;
 - schema changes;
-- hosted service or dataset platform;
+- new dependencies;
+- live model calls, provider judging, or network behavior;
 - adapter implementation;
 - v3 extensibility implementation.
 
 ## Focused validation
 
 ```bash
-pnpm build
 pnpm typecheck
 pnpm test
 pnpm fixtures:check
@@ -77,22 +91,21 @@ git diff --check
 
 ## Acceptance criteria
 
-- Grounding checks are deterministic, local-only, and evidence-rich.
-- CLI eval produces stable JSON and Markdown output.
-- CLI failures use deterministic exit codes.
-- No model/provider/network behavior is introduced.
-- No package publishing, changeset, version, schema, or root/core dependency change is introduced.
+- Docs describe eval/redact/report/artifact flow without implying hosted evals or telemetry.
+- Recipes use deterministic fixtures and no real API keys.
+- Recipe metadata validates with the existing recipe checker.
+- No package publishing, changeset, version, schema, dependency, runtime, or network change is introduced.
 
 ## Proposed commit
 
 ```text
-feat: add local eval CLI
+docs: add eval and redact adoption workflows
 ```
 
 ## Next chunk
 
-`v2.1-8-eval-redact-recipes-and-documentation`.
+`v2.1-9-release-readiness`.
 
 ## Stop condition
 
-Stop on unrelated worktree changes, root/core dependency decisions, schema decisions, package publication gates, network behavior, public breaking changes, TypeScript config loader decisions, or validation failure that cannot be repaired inside eval CLI scope.
+Stop on unrelated worktree changes, package publication gates, schema/dependency/runtime decisions, live provider/network behavior, public breaking changes, or validation failure that cannot be repaired inside docs/recipes scope.

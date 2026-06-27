@@ -194,6 +194,93 @@ describe("@agent-inspect/eval", () => {
     expect(result.summary.failed).toBe(5);
   });
 
+  it("passes deterministic grounding heuristics over local trace attributes", async () => {
+    const result = await evalRun(
+      read({
+        children: [
+          node("event-retrieval", "RETRIEVER", "retrieveDocs", {
+            attributes: {
+              documents: [
+                {
+                  id: "doc-guide",
+                  text: "AgentInspect keeps evals local and deterministic for CI.",
+                },
+              ],
+              sourceIds: ["doc-guide"],
+            },
+          }),
+          node("event-llm", "LLM", "generateAnswer", {
+            attributes: {
+              answer:
+                "AgentInspect evals are \"local and deterministic\" for CI [doc-guide].",
+              citations: ["doc-guide"],
+            },
+          }),
+        ],
+      }),
+      {
+        checks: [
+          checks.contextOverlap({ minOverlap: 0.2 }),
+          checks.quoteOverlap(),
+          checks.citationPresence(),
+          checks.requiredSourceIds(["doc-guide"]),
+          checks.answerLengthBounds({ minWords: 5, maxWords: 20 }),
+          checks.bannedUnsupportedPhrases(["not enough context"]),
+        ],
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.findings).toEqual([]);
+  });
+
+  it("reports grounding failures without raw answer or context leakage", async () => {
+    const result = await evalRun(
+      read({
+        children: [
+          node("event-retrieval", "RETRIEVER", "retrieveDocs", {
+            attributes: {
+              documents: [
+                {
+                  id: "doc-safe",
+                  text: "private context phrase should not leak",
+                },
+              ],
+            },
+          }),
+          node("event-llm", "LLM", "generateAnswer", {
+            attributes: {
+              answer:
+                "unrelated secret answer should not leak and I don't have enough information",
+            },
+          }),
+        ],
+      }),
+      {
+        checks: [
+          checks.contextOverlap({ minOverlap: 0.8, minSharedTerms: 3 }),
+          checks.quoteOverlap(),
+          checks.citationPresence(),
+          checks.requiredSourceIds(["doc-required"]),
+          checks.answerLengthBounds({ maxWords: 3 }),
+          checks.bannedUnsupportedPhrases(),
+        ],
+      },
+    );
+
+    const serialized = JSON.stringify(result);
+    expect(findingIds(result)).toEqual([
+      "eval.answerLengthBounds",
+      "eval.bannedUnsupportedPhrases",
+      "eval.citationPresence",
+      "eval.contextOverlap",
+      "eval.quoteOverlap",
+      "eval.requiredSourceIds",
+    ]);
+    expect(serialized).not.toContain("private context phrase should not leak");
+    expect(serialized).not.toContain("unrelated secret answer should not leak");
+  });
+
   it("renders a deterministic markdown summary", async () => {
     const result = await evalRun(read({ status: "error" }), {
       checks: [checks.requireSuccess()],

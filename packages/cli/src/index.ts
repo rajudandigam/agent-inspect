@@ -40,6 +40,8 @@ import type { MigrateCommandOptions } from "./migrate.js";
 import { migrateCommand } from "./migrate.js";
 import type { CheckCommandOptions } from "./check.js";
 import { checkCommand } from "./check.js";
+import type { EvalCommandOptions } from "./eval.js";
+import { evalCommand } from "./eval.js";
 import type { SafetyCommandOptions } from "./safety.js";
 import { scanCommand, verifySafeCommand } from "./safety.js";
 import type { ArtifactsCommandOptions } from "./artifacts.js";
@@ -310,6 +312,68 @@ export function createCliProgram(): Command {
     .option("--max-total-tokens <number>", "add llm.usage with a max total-token budget")
     .action((target: string, opts: CheckCommandOptions) => {
       runCommand(() => checkCommand(target, opts));
+    });
+
+  program
+    .command("eval")
+    .description("Run deterministic local evals against a trace")
+    .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")
+    .option("--dir <path>", "trace directory for run-id lookup")
+    .addOption(
+      new Option("--format <format>", "trace input format").choices([
+        "agent-inspect-jsonl",
+        "openinference-json",
+        "otlp-json",
+      ]),
+    )
+    .option("--run <run-id>", "select a run when the trace contains multiple runs")
+    .option("--config <path>", "path to eval config (.json, .js, .mjs, .cjs)")
+    .option("--json", "print deterministic JSON eval result")
+    .option("--markdown", "print deterministic Markdown eval summary")
+    .option("--require-success", "require the selected run to complete successfully")
+    .option("--required-tool <name>", "require a tool name (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--forbid-tool <name>", "forbid a tool name (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--forbidden-tool <name>", "alias for --forbid-tool (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--max-duration-ms <number>", "require run duration at or below this value")
+    .option("--max-depth <number>", "require tree depth at or below this value")
+    .option("--max-retries <number>", "require retry counts at or below this value")
+    .option("--max-total-tokens <number>", "require total LLM tokens at or below this value")
+    .option(
+      "--require-retrieval-before-generation",
+      "require a retrieval step before the first LLM generation",
+    )
+    .option("--required-decision-metadata <key>", "require decision metadata (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--context-overlap", "require answer/context token overlap")
+    .option("--min-context-overlap <number>", "minimum answer/context overlap ratio")
+    .option("--min-shared-terms <number>", "minimum shared answer/context terms")
+    .option("--quote-overlap", "require quoted answer text to appear in context")
+    .option("--citation-presence", "require a citation or source reference")
+    .option("--required-source-id <id>", "require a source id in context or citations (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .option("--min-answer-characters <number>", "minimum answer character count")
+    .option("--max-answer-characters <number>", "maximum answer character count")
+    .option("--min-answer-words <number>", "minimum answer word count")
+    .option("--max-answer-words <number>", "maximum answer word count")
+    .option("--banned-phrase <text>", "ban unsupported-answer phrasing (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
+    .action((target: string, opts: EvalCommandOptions) => {
+      runCommand(() => evalCommand(target, opts));
     });
 
   program

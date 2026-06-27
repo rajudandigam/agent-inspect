@@ -14,5 +14,5 @@ export default defineConfig({
   platform: "node",
   target: "es2022",
   external: ["@agent-inspect/tui"],
-  noExternal: ["@agent-inspect/redact", "chalk", "nanoid"],
+  noExternal: ["@agent-inspect/eval", "@agent-inspect/redact", "chalk", "nanoid"],
 });

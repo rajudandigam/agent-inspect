@@ -45,11 +45,15 @@ export interface EvalDiagnostic {
     | "AI_EVAL_AMBIGUOUS_FORMAT"
     | "AI_EVAL_RUN_SELECTION_REQUIRED"
     | "AI_EVAL_RULE_FAILED"
-    | "AI_EVAL_INVALID_ARGUMENTS";
+    | "AI_EVAL_INVALID_ARGUMENTS"
+    | "AI_EVAL_INVALID_CONFIG"
+    | "AI_EVAL_CONFIG_LOAD_FAILED";
   severity: EvalSeverity;
   message: string;
   ruleId?: string;
 }
+
+export type EvalDiagnosticCode = EvalDiagnostic["code"];
 
 export interface EvalSummary {
   passed: number;
@@ -81,6 +85,47 @@ export interface EvalRunOptions {
 }
 
 export type EvalRunInput = EvalInput | string | TraceReadResult;
+
+/** Experimental options for deterministic answer/context overlap checks. */
+export interface ContextOverlapOptions {
+  minOverlap?: number;
+  minSharedTerms?: number;
+  answerKeys?: readonly string[];
+  contextKeys?: readonly string[];
+}
+
+/** Experimental options for deterministic quote grounding checks. */
+export interface QuoteOverlapOptions {
+  answerKeys?: readonly string[];
+  contextKeys?: readonly string[];
+  minQuoteLength?: number;
+  requireQuote?: boolean;
+}
+
+/** Experimental options for deterministic citation presence checks. */
+export interface CitationPresenceOptions {
+  answerKeys?: readonly string[];
+  citationKeys?: readonly string[];
+}
+
+/** Experimental options for deterministic source-id checks. */
+export interface RequiredSourceIdsOptions {
+  sourceIdKeys?: readonly string[];
+}
+
+/** Experimental options for deterministic answer length checks. */
+export interface AnswerLengthBoundsOptions {
+  minCharacters?: number;
+  maxCharacters?: number;
+  minWords?: number;
+  maxWords?: number;
+  answerKeys?: readonly string[];
+}
+
+/** Experimental options for deterministic unsupported-phrase checks. */
+export interface BannedUnsupportedPhrasesOptions {
+  answerKeys?: readonly string[];
+}
 
 export interface EvalRule {
   id: string;
@@ -401,6 +446,198 @@ function createRule(
   return { id, category, severity: "error", evaluate };
 }
 
+const DEFAULT_ANSWER_KEYS = [
+  "answer",
+  "finalAnswer",
+  "final",
+  "response",
+  "result",
+  "output",
+  "outputPreview",
+  "completion",
+  "text",
+] as const;
+
+const DEFAULT_CONTEXT_KEYS = [
+  "context",
+  "contexts",
+  "document",
+  "documents",
+  "retrieved",
+  "retrieval",
+  "chunks",
+  "chunk",
+  "source",
+  "sources",
+  "sourceText",
+] as const;
+
+const DEFAULT_CITATION_KEYS = [
+  "citation",
+  "citations",
+  "reference",
+  "references",
+  "sourceId",
+  "sourceIds",
+  "source_id",
+  "source_ids",
+] as const;
+
+const DEFAULT_SOURCE_ID_KEYS = [
+  ...DEFAULT_CITATION_KEYS,
+  "id",
+  "ids",
+  "documentId",
+  "documentIds",
+  "docId",
+  "docIds",
+] as const;
+
+const DEFAULT_BANNED_UNSUPPORTED_PHRASES = [
+  "i don't have enough information",
+  "i do not have enough information",
+  "not enough context",
+  "cannot determine from the context",
+  "unable to determine from the provided context",
+] as const;
+
+const STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "are",
+  "but",
+  "for",
+  "from",
+  "have",
+  "into",
+  "not",
+  "that",
+  "the",
+  "their",
+  "this",
+  "was",
+  "were",
+  "with",
+  "you",
+  "your",
+]);
+
+interface TextField {
+  text: string;
+  node: EvalNode;
+  path: string;
+}
+
+function normalizeKey(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function keySet(keys: readonly string[]): Set<string> {
+  return new Set(keys.map(normalizeKey));
+}
+
+function valuesAsStrings(value: unknown, depth = 0): string[] {
+  if (depth > 5) return [];
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? [trimmed] : [];
+  }
+  if (typeof value === "number" || typeof value === "boolean") return [String(value)];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => valuesAsStrings(item, depth + 1));
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.values(value as Record<string, unknown>).flatMap((item) =>
+      valuesAsStrings(item, depth + 1),
+    );
+  }
+  return [];
+}
+
+function collectTextFields(
+  nodes: readonly EvalNode[],
+  keys: readonly string[],
+  preferredKinds: readonly string[] = [],
+): TextField[] {
+  const wanted = keySet(keys);
+  const preferred = new Set(preferredKinds);
+  const orderedNodes = [...nodes].sort((a, b) => {
+    const aPreferred = preferred.has(a.event.kind) ? 0 : 1;
+    const bPreferred = preferred.has(b.event.kind) ? 0 : 1;
+    return aPreferred - bPreferred || a.event.eventId.localeCompare(b.event.eventId);
+  });
+  const fields: TextField[] = [];
+  for (const node of orderedNodes) {
+    const attrs = node.event.attributes;
+    if (attrs === undefined) continue;
+    for (const [key, value] of Object.entries(attrs)) {
+      if (!wanted.has(normalizeKey(key))) continue;
+      for (const text of valuesAsStrings(value)) {
+        fields.push({ text, node, path: `attributes.${key}` });
+      }
+    }
+  }
+  return fields;
+}
+
+function tokenize(text: string): string[] {
+  return [...text.toLowerCase().matchAll(/[a-z0-9][a-z0-9'-]{2,}/g)]
+    .map((match) => match[0].replace(/^['-]+|['-]+$/g, ""))
+    .filter((token) => token.length > 2 && !STOP_WORDS.has(token));
+}
+
+function firstEvidence(
+  fields: readonly TextField[],
+  run: EvalRunTree,
+  path: string,
+): EvalEvidence[] {
+  const first = fields[0];
+  return first === undefined
+    ? evidenceForRun(run, path)
+    : evidenceForEvent(first.node.event, first.path);
+}
+
+function collectSourceIds(
+  nodes: readonly EvalNode[],
+  keys: readonly string[],
+): string[] {
+  const wanted = keySet(keys);
+  const ids = new Set<string>();
+  for (const node of nodes) {
+    const attrs = node.event.attributes;
+    if (attrs === undefined) continue;
+    for (const [key, value] of Object.entries(attrs)) {
+      if (!wanted.has(normalizeKey(key))) continue;
+      for (const candidate of valuesAsStrings(value)) {
+        const trimmed = candidate.trim();
+        if (trimmed.length > 0 && trimmed.length <= 128) ids.add(trimmed);
+      }
+    }
+  }
+  return [...ids].sort((a, b) => a.localeCompare(b));
+}
+
+function citationCount(answer: string, citationFields: readonly TextField[]): number {
+  const inline =
+    answer.match(/\[[^\]\n]{1,40}\]|\([A-Za-z][A-Za-z0-9_-]{0,39}\)/g)?.length ?? 0;
+  return inline + citationFields.length;
+}
+
+function quotedSnippets(text: string, minLength: number): string[] {
+  const snippets = new Set<string>();
+  const pattern = /"([^"\n]+)"|'([^'\n]+)'|“([^”\n]+)”/g;
+  for (const match of text.matchAll(pattern)) {
+    const snippet = (match[1] ?? match[2] ?? match[3] ?? "").trim();
+    if (snippet.length >= minLength) snippets.add(snippet);
+  }
+  return [...snippets].sort((a, b) => a.localeCompare(b));
+}
+
+function wordCount(text: string): number {
+  return tokenize(text).length;
+}
+
 export const checks = {
   requireSuccess(): EvalRule {
     return createRule("eval.requireSuccess", "run", (context) =>
@@ -591,6 +828,189 @@ export const checks = {
             ),
           ),
       );
+    });
+  },
+
+  contextOverlap(options: ContextOverlapOptions = {}): EvalRule {
+    const minOverlap = options.minOverlap ?? 0.1;
+    const minSharedTerms = options.minSharedTerms ?? 1;
+    const answerKeys = options.answerKeys ?? DEFAULT_ANSWER_KEYS;
+    const contextKeys = options.contextKeys ?? DEFAULT_CONTEXT_KEYS;
+    return createRule("eval.contextOverlap", "retrieval", (context) => {
+      const answers = collectTextFields(context.nodes, answerKeys, ["RESULT", "LLM", "AGENT"]);
+      const contexts = collectTextFields(context.nodes, contextKeys, ["RETRIEVER", "TOOL"]);
+      if (answers.length === 0 || contexts.length === 0) {
+        return [
+          fail(
+            "eval.contextOverlap",
+            "Answer and context text are required for overlap evaluation.",
+            firstEvidence(answers.length > 0 ? answers : contexts, context.run, "children"),
+            { answer: "present", context: "present" },
+            { answerFields: answers.length, contextFields: contexts.length },
+          ),
+        ];
+      }
+
+      const answerTerms = new Set(tokenize(answers.map((field) => field.text).join(" ")));
+      const contextTerms = new Set(tokenize(contexts.map((field) => field.text).join(" ")));
+      const sharedTerms = [...answerTerms].filter((term) => contextTerms.has(term)).length;
+      const overlap = answerTerms.size === 0 ? 0 : sharedTerms / answerTerms.size;
+      return sharedTerms < minSharedTerms || overlap < minOverlap
+        ? [
+            fail(
+              "eval.contextOverlap",
+              "Answer text did not sufficiently overlap retrieved context.",
+              firstEvidence(answers, context.run, "attributes.answer"),
+              { minOverlap, minSharedTerms },
+              {
+                answerTerms: answerTerms.size,
+                contextTerms: contextTerms.size,
+                sharedTerms,
+                overlap: Number(overlap.toFixed(4)),
+              },
+            ),
+          ]
+        : [];
+    });
+  },
+
+  quoteOverlap(options: QuoteOverlapOptions = {}): EvalRule {
+    const answerKeys = options.answerKeys ?? DEFAULT_ANSWER_KEYS;
+    const contextKeys = options.contextKeys ?? DEFAULT_CONTEXT_KEYS;
+    const minQuoteLength = options.minQuoteLength ?? 6;
+    const requireQuote = options.requireQuote ?? true;
+    return createRule("eval.quoteOverlap", "retrieval", (context) => {
+      const answers = collectTextFields(context.nodes, answerKeys, ["RESULT", "LLM", "AGENT"]);
+      const contexts = collectTextFields(context.nodes, contextKeys, ["RETRIEVER", "TOOL"]);
+      const answerText = answers.map((field) => field.text).join(" ");
+      const contextText = contexts.map((field) => field.text).join(" ").toLowerCase();
+      const quotes = quotedSnippets(answerText, minQuoteLength);
+      if (quotes.length === 0) {
+        return requireQuote
+          ? [
+              fail(
+                "eval.quoteOverlap",
+                "Answer did not contain a quote for overlap evaluation.",
+                firstEvidence(answers, context.run, "attributes.answer"),
+                { quotedText: "present" },
+                { quoteCount: 0 },
+              ),
+            ]
+          : [];
+      }
+      const missing = quotes.filter((quote) => !contextText.includes(quote.toLowerCase()));
+      return missing.length > 0
+        ? [
+            fail(
+              "eval.quoteOverlap",
+              "Quoted answer text did not appear in retrieved context.",
+              firstEvidence(answers, context.run, "attributes.answer"),
+              { allQuotesInContext: true },
+              { quoteCount: quotes.length, missingQuotes: missing.length },
+            ),
+          ]
+        : [];
+    });
+  },
+
+  citationPresence(options: CitationPresenceOptions = {}): EvalRule {
+    const answerKeys = options.answerKeys ?? DEFAULT_ANSWER_KEYS;
+    const citationKeys = options.citationKeys ?? DEFAULT_CITATION_KEYS;
+    return createRule("eval.citationPresence", "retrieval", (context) => {
+      const answers = collectTextFields(context.nodes, answerKeys, ["RESULT", "LLM", "AGENT"]);
+      const citations = collectTextFields(context.nodes, citationKeys);
+      const count = citationCount(answers.map((field) => field.text).join(" "), citations);
+      return count === 0
+        ? [
+            fail(
+              "eval.citationPresence",
+              "Answer did not include citations or source references.",
+              firstEvidence(answers, context.run, "attributes.answer"),
+              { citationCount: ">= 1" },
+              { citationCount: 0 },
+            ),
+          ]
+        : [];
+    });
+  },
+
+  requiredSourceIds(
+    requiredIds: readonly string[],
+    options: RequiredSourceIdsOptions = {},
+  ): EvalRule {
+    const expected = [...requiredIds].sort((a, b) => a.localeCompare(b));
+    const sourceIdKeys = options.sourceIdKeys ?? DEFAULT_SOURCE_ID_KEYS;
+    return createRule("eval.requiredSourceIds", "retrieval", (context) => {
+      const available = collectSourceIds(context.nodes, sourceIdKeys);
+      const availableSet = new Set(available);
+      const missing = expected.filter((id) => !availableSet.has(id));
+      return missing.length > 0
+        ? [
+            fail(
+              "eval.requiredSourceIds",
+              "Required source IDs were not present in trace context or citations.",
+              evidenceForRun(context.run, "children"),
+              { sourceIds: expected },
+              { missingSourceIds: missing, availableSourceIds: available.slice(0, 20) },
+            ),
+          ]
+        : [];
+    });
+  },
+
+  answerLengthBounds(options: AnswerLengthBoundsOptions): EvalRule {
+    const answerKeys = options.answerKeys ?? DEFAULT_ANSWER_KEYS;
+    return createRule("eval.answerLengthBounds", "llm", (context) => {
+      const answers = collectTextFields(context.nodes, answerKeys, ["RESULT", "LLM", "AGENT"]);
+      const answer = answers.map((field) => field.text).join(" ").trim();
+      const characters = answer.length;
+      const words = wordCount(answer);
+      const tooShort =
+        (options.minCharacters !== undefined && characters < options.minCharacters) ||
+        (options.minWords !== undefined && words < options.minWords);
+      const tooLong =
+        (options.maxCharacters !== undefined && characters > options.maxCharacters) ||
+        (options.maxWords !== undefined && words > options.maxWords);
+      return answer.length === 0 || tooShort || tooLong
+        ? [
+            fail(
+              "eval.answerLengthBounds",
+              "Answer length fell outside required bounds.",
+              firstEvidence(answers, context.run, "attributes.answer"),
+              {
+                minCharacters: options.minCharacters,
+                maxCharacters: options.maxCharacters,
+                minWords: options.minWords,
+                maxWords: options.maxWords,
+              },
+              { characters, words },
+            ),
+          ]
+        : [];
+    });
+  },
+
+  bannedUnsupportedPhrases(
+    phrases: readonly string[] = DEFAULT_BANNED_UNSUPPORTED_PHRASES,
+    options: BannedUnsupportedPhrasesOptions = {},
+  ): EvalRule {
+    const answerKeys = options.answerKeys ?? DEFAULT_ANSWER_KEYS;
+    const banned = [...phrases].map((phrase) => phrase.toLowerCase()).sort();
+    return createRule("eval.bannedUnsupportedPhrases", "safety", (context) => {
+      const answers = collectTextFields(context.nodes, answerKeys, ["RESULT", "LLM", "AGENT"]);
+      const answer = answers.map((field) => field.text).join(" ").toLowerCase();
+      const matches = banned.filter((phrase) => answer.includes(phrase));
+      return matches.length > 0
+        ? [
+            fail(
+              "eval.bannedUnsupportedPhrases",
+              "Answer contained banned unsupported-answer phrasing.",
+              firstEvidence(answers, context.run, "attributes.answer"),
+              { bannedPhraseCount: banned.length },
+              { matchedPhraseCount: matches.length },
+            ),
+          ]
+        : [];
     });
   },
 } as const;

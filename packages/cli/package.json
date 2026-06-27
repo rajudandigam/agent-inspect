@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@agent-inspect/core": "workspace:*",
+    "@agent-inspect/eval": "workspace:*",
     "commander": "^12.1.0"
   },
   "devDependencies": {
