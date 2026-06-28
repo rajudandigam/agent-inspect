@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.0
+
+### Minor Changes
+
+- 22cad5a: Release v2.3.0 with hardened framework adapter paths.
+
+  This train strengthens the official AI SDK, OpenAI Agents JS, and LangChain/LangGraph integrations with no-network fixtures, clearer local-only defaults, adapter conformance evidence, and adoption-ready recipes. Mastra and NestJS framework packages remain demand-gated; NestJS stays on the structured-log ingestion recipe path for this release.
+
 ## 2.2.0
 
 ### Minor Changes
