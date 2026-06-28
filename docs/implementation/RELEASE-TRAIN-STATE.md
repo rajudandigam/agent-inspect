@@ -89,9 +89,10 @@ completedChunks:
   - "v2.4-1-session-aware-reader-and-index-helpers"
   - "v2.4-2-sessions-session-cli"
   - "v2.4-3-session-aware-search-checks"
-currentChunk: "v2.4-4-mcp-telemetry-package"
-pendingManualGate: "new-public-package-mcp"
-nextAction: "Implement v2.4 chunk 4: @agent-inspect/mcp local client telemetry package."
+  - "v2.4-4-mcp-telemetry-package"
+currentChunk: "v2.4-5-docs-and-release-readiness"
+pendingManualGate: "new-public-package-mcp-publish"
+nextAction: "Implement v2.4 chunk 5: docs, recipes, and v2.4 release readiness."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```

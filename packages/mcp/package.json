@@ -1,0 +1,45 @@
+{
+  "name": "@agent-inspect/mcp",
+  "version": "2.3.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Local MCP client tool-call tracing for AgentInspect",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.mcp.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
