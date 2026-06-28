@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000400000,"runId":"retry-run-2","name":"fetch-job","startTime":1700000400000,"metadata":{"sessionId":"sess-retry-001","groupId":"grp-retry","workflowName":"fetch-pipeline","attempt":2,"retryOf":"retry-run-1","jobId":"job-100"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000400010,"runId":"retry-run-2","stepId":"step_fetch","name":"fetch","type":"tool","startTime":1700000400010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000400040,"runId":"retry-run-2","stepId":"step_fetch","status":"success","endTime":1700000400040,"durationMs":30}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000400050,"runId":"retry-run-2","status":"success","endTime":1700000400050,"durationMs":50}

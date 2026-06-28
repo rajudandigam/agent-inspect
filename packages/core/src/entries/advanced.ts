@@ -190,6 +190,28 @@ export {
   loadTraceMetadataList,
 } from "../search.js";
 
+export type {
+  BuildSessionIndexOptions,
+  CriticalPathStep,
+  HandoffEdge,
+  RetryLink,
+  SessionConfidence,
+  SessionEdgeSource,
+  SessionGroup,
+  SessionIndex,
+  SessionRunRecord,
+  SessionSummary,
+  SessionWarning,
+  SessionWorkflowMetadata,
+  SessionWorkflowKey,
+} from "../sessions/index.js";
+export {
+  SESSION_WORKFLOW_KEYS,
+  buildSessionIndex,
+  extractSessionWorkflowMetadata,
+  sessionKeyForRun,
+} from "../sessions/index.js";
+
 export { isAgentInspectTrace } from "../trace-verification.js";
 
 export { parseDuration } from "../utils/duration.js";

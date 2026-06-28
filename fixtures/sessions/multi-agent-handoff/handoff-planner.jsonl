@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000100000,"runId":"handoff-planner","name":"planner","startTime":1700000100000,"metadata":{"sessionId":"sess-handoff-001","groupId":"grp-handoff","workflowName":"support-triage","workflowStep":"plan","handoffTo":"handoff-worker","subAgentName":"worker-agent"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000100010,"runId":"handoff-planner","stepId":"step_plan","name":"plan","type":"logic","startTime":1700000100010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000100110,"runId":"handoff-planner","stepId":"step_plan","status":"success","endTime":1700000100110,"durationMs":100}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000100120,"runId":"handoff-planner","status":"success","endTime":1700000100120,"durationMs":120}

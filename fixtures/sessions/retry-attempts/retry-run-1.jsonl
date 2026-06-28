@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000300000,"runId":"retry-run-1","name":"fetch-job","startTime":1700000300000,"metadata":{"sessionId":"sess-retry-001","groupId":"grp-retry","workflowName":"fetch-pipeline","attempt":1,"jobId":"job-100"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000300010,"runId":"retry-run-1","stepId":"step_fetch","name":"fetch","type":"tool","startTime":1700000300010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000300040,"runId":"retry-run-1","stepId":"step_fetch","status":"error","endTime":1700000300040,"durationMs":30,"error":{"message":"synthetic timeout"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000300050,"runId":"retry-run-1","status":"error","endTime":1700000300050,"durationMs":50,"error":{"message":"synthetic timeout"}}
