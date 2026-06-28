@@ -9,6 +9,7 @@ const subpathEntries = {
   writers: "packages/core/src/entries/writers.ts",
   readers: "packages/core/src/entries/readers.ts",
   checks: "packages/core/src/entries/checks.ts",
+  reporters: "packages/core/src/entries/reporters.ts",
 } as const;
 
 export default defineConfig({

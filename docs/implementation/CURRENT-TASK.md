@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.2.0"
-chunk: "v2.2-1-shared-reporter-contract-and-artifact-manifest"
+chunk: "v2.2-2-public-vitest-reporter"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
+dependsOn: "v2.2-1-shared-reporter-contract-and-artifact-manifest"
 ```
 
 ## Goal
 
-Define the shared reporter artifact contract and manifest helpers used by future Vitest/Jest reporter chunks.
+Promote the Vitest reporter/helper toward public adoption-ready behavior using the shared reporter artifact contract.
 
 ## Read first
 
@@ -20,58 +20,57 @@ Define the shared reporter artifact contract and manifest helpers used by future
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
 - `docs/proposals/CI-REPORTERS.md`
-- relevant existing artifact/report/redaction helpers and tests
+- `packages/core/src/reporters/index.ts`
+- `packages/vitest/package.json`
+- relevant existing Vitest reporter source/tests
 
 ## Prior chunk evidence
 
-- v2.1 publication verified for all seven public packages at `2.1.0`.
-- v2.2 execution plan baseline set to `2.1.0`.
-- v2.2 execution mode aligned to `autonomous-release-train`.
-- Added `docs/proposals/CI-REPORTERS.md`.
-- Reporter package scope frozen:
-  - `@agent-inspect/vitest` and `@agent-inspect/jest` are currently private workspace packages.
-  - v2.2 may promote them to public optional packages only after package smoke/compat coverage.
-  - first-publication setup is a maintainer gate before v2.2 release if either package becomes public.
+- Added the experimental `agent-inspect/reporters` subpath without changing root exports.
+- Added shared reporter contract types, deterministic manifest creation, safe artifact path helpers, and reporter failure diagnostics.
+- Added focused tests for manifest ordering, path rejection, and diagnostics.
+- Updated ESM/CJS subpath export coverage and consumer fixtures for `agent-inspect/reporters`.
+- No framework dependency, network behavior, trace schema change, package version change, changeset, tag, or publication was introduced.
 
 ## In Scope
 
-1. Add shared reporter contract types/helpers.
-2. Add deterministic artifact manifest creation.
-3. Add safe artifact path/layout helpers.
-4. Add focused unit tests for manifest ordering, safe paths, and failure diagnostics.
-5. Update docs/proposal details if implementation names are refined.
+1. Implement Vitest reporter/helper lifecycle around the shared reporter contract.
+2. Preserve quiet success by default.
+3. Generate useful local artifacts for failed tests only.
+4. Preserve original Vitest failures and exit behavior.
+5. Add focused Vitest reporter tests and package smoke/compat coverage as needed.
+6. Keep package publication/private-state decisions explicit.
 
 ## Out Of Scope
 
-- Vitest reporter lifecycle implementation;
-- Jest reporter lifecycle implementation;
-- package privacy/publication changes;
+- Jest reporter implementation;
+- hosted uploads;
+- GitHub API comments/checks;
 - changesets;
 - tags;
 - publishing;
-- GitHub API comments;
-- hosted uploads;
-- new root/core runtime dependencies;
-- schema changes to persisted traces.
+- root/core framework dependencies;
+- schema changes to persisted traces;
+- first publication without maintainer confirmation.
 
 ## Acceptance Criteria
 
-- Manifest output is deterministic.
-- Artifact paths are safe and relative to an explicit output directory.
-- Reporter helper failures are diagnostic-rich and do not mask test/application failures.
-- No framework dependency enters root/core.
-- Existing package exports and trace schema compatibility remain intact.
+- Failed Vitest tests produce deterministic local artifact metadata.
+- Successful Vitest tests remain quiet by default.
+- Reporter failures become diagnostics and do not mask test failures.
+- `vitest` remains a peer dependency of `@agent-inspect/vitest`, not a root/core dependency.
+- If `@agent-inspect/vitest` is made public, the first-publication gate remains documented for the maintainer before v2.2 release.
 
 ## Suggested Commit
 
 ```text
-feat: add trace reporter artifact contract
+feat(vitest): publish trace test reporter
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/core/test/reporters
+pnpm exec vitest run packages/vitest/test
 ```
 
 ## Chunk Gate
@@ -92,4 +91,4 @@ Add `pnpm compat:smoke` if exports/package boundaries change.
 
 ## Stop Condition
 
-Stop on unrelated worktree changes, reporter package publication decisions, root/core dependency requirements, schema changes, network behavior expansion, framework lifecycle decisions that belong to Vitest/Jest chunks, or validation failures that cannot be repaired in this chunk.
+Stop on unrelated worktree changes, maintainer-only publication setup, reporter package publication decisions that require npm setup, root/core dependency requirements, schema changes, network behavior expansion, Jest-specific lifecycle decisions, or validation failures that cannot be repaired in this chunk.

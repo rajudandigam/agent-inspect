@@ -97,6 +97,16 @@
         "types": "./dist/checks.d.cts",
         "default": "./dist/checks.cjs"
       }
+    },
+    "./reporters": {
+      "import": {
+        "types": "./dist/reporters.d.ts",
+        "default": "./dist/reporters.mjs"
+      },
+      "require": {
+        "types": "./dist/reporters.d.cts",
+        "default": "./dist/reporters.cjs"
+      }
     }
   },
   "files": ["dist"],

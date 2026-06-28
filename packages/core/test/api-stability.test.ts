@@ -7,6 +7,7 @@ import * as exporters from "../src/entries/exporters.js";
 import * as logs from "../src/entries/logs.js";
 import * as persisted from "../src/entries/persisted.js";
 import * as readers from "../src/entries/readers.js";
+import * as reporters from "../src/entries/reporters.js";
 import * as writers from "../src/entries/writers.js";
 import * as core from "../src/index.js";
 
@@ -104,5 +105,7 @@ describe("core API stability (v2.0 root contract)", () => {
     expect(typeof exporters.exportRunTree).toBe("function");
     expect(typeof exporters.buildRunReport).toBe("function");
     expect(typeof checks.runTraceChecks).toBe("function");
+    expect(typeof reporters.createTraceArtifactManifest).toBe("function");
+    expect(typeof reporters.createReporterArtifactPath).toBe("function");
   });
 });

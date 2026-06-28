@@ -106,6 +106,16 @@
         "types": "./packages/core/dist/checks.d.cts",
         "default": "./packages/core/dist/checks.cjs"
       }
+    },
+    "./reporters": {
+      "import": {
+        "types": "./packages/core/dist/reporters.d.ts",
+        "default": "./packages/core/dist/reporters.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/reporters.d.cts",
+        "default": "./packages/core/dist/reporters.cjs"
+      }
     }
   },
   "bin": {

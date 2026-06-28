@@ -92,7 +92,7 @@ export interface TraceArtifact {
 }
 ```
 
-Implementation may refine names, but the durable requirements are:
+Chunk 1 implements the shared contract on the `agent-inspect/reporters` subpath, with matching internal `@agent-inspect/core/reporters` package exports for build and compatibility tests. Implementation names may continue to refine within that surface, but the durable requirements are:
 
 - deterministic artifact paths and manifest order;
 - safe relative paths under an explicit output directory;

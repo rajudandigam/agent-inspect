@@ -24,6 +24,10 @@ const {
   createStructureOrphanRule,
   runTraceChecks,
 } = require("agent-inspect/checks");
+const {
+  createReporterArtifactPath,
+  createTraceArtifactManifest,
+} = require("agent-inspect/reporters");
 
 const functionChecks = [
   parseLogsToTrees,
@@ -43,6 +47,8 @@ const functionChecks = [
   createRunStatusRule,
   createStructureOrphanRule,
   runTraceChecks,
+  createReporterArtifactPath,
+  createTraceArtifactManifest,
 ];
 
 const objectChecks = [agentInspectJsonlReader];

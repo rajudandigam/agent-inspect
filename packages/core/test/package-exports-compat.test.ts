@@ -78,6 +78,7 @@ describe("package conditional type exports (manifest)", () => {
       "writers",
       "readers",
       "checks",
+      "reporters",
     ]) {
       const entry = exports[`./${subpath}`];
       expect(entry, `exports["./${subpath}"]`).toBeDefined();
