@@ -6,11 +6,11 @@
 baselineVersion: "2.1.0"
 publishedVersion: "2.1.0"
 currentTrain: "v2.2.0"
-trainStatus: "in_progress"
+trainStatus: "ready_for_release_authorization"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "eccb98fe6f7367cc5de7b4d7cde8ddca406c5f4b"
-lastValidationLevel: "v2.2-4-full-gate"
+lastConfirmedCommit: "5de92e1ac42c361ac22d92685784d4a609c1d269"
+lastValidationLevel: "v2.2-5-release-readiness-gate"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -72,9 +72,10 @@ completedChunks:
   - "v2.2-2-public-vitest-reporter"
   - "v2.2-3-public-jest-reporter"
   - "v2.2-4-ci-summary-command-and-recipes"
-currentChunk: "v2.2-5-reporter-docs-package-smoke-and-readiness"
-pendingManualGate: "none"
-nextAction: "Implement v2.2 chunk 5: finalize reporter docs, package smoke evidence, and v2.2 release readiness."
+  - "v2.2-5-reporter-docs-package-smoke-and-readiness"
+currentChunk: "v2.2-release-prep-manual-gate"
+pendingManualGate: "confirm first-publication setup and release authorization for @agent-inspect/vitest and @agent-inspect/jest before v2.2 versioning"
+nextAction: "Await maintainer confirmation before v2.2 release prep: reporter first-publication setup, linked package-set decision, versioning, tags, GitHub releases, and npm publication authorization."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -84,5 +85,5 @@ updatedAt: "2026-06-28"
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.2.0-EXECUTION-PLAN.md](./release-trains/V2.2.0-EXECUTION-PLAN.md)
 - **Active proposal:** [../proposals/CI-REPORTERS.md](../proposals/CI-REPORTERS.md)
-- **Latest readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
-- **Previous readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
+- **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)

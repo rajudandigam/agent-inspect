@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Draft v2.2.0 Notes
+
+- Prepared the v2.2 reporter and CI workflow release notes for local Vitest/Jest reporter artifacts, the shared `agent-inspect/reporters` manifest helpers, and `agent-inspect ci-summary`.
+- Reporter artifacts remain local-only and metadata-bounded. `ci-summary` reads reporter manifest JSON only, validates relative artifact paths, and does not read trace contents, upload artifacts, call GitHub APIs, or mutate repository state.
+- `@agent-inspect/vitest` and `@agent-inspect/jest` remain private/unpublished until maintainer first-publication setup is explicitly cleared before release prep.
+
 ## 2.1.0
 
 ### Minor Changes

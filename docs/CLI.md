@@ -492,7 +492,7 @@ Recipe and sample workflow: [examples/recipes/deterministic-ci-checks](../exampl
 
 ### 6.14 `ci-summary`
 
-Summarize local Vitest/Jest reporter artifact manifests into deterministic Markdown or JSON. This command reads manifest JSON files only. It does not read trace contents, rerun tests, upload artifacts, call GitHub APIs, or mutate repository state. `--output` and `--github-summary` write local files.
+Summarize local Vitest/Jest reporter artifact manifests into deterministic Markdown or JSON. This command reads shared `schemaVersion: "0.1"` manifest JSON files only, including the reporter package wrapper emitted by the workspace reporters. It does not read trace contents, rerun tests, upload artifacts, call GitHub APIs, or mutate repository state. `--output` and `--github-summary` write local files.
 
 ```bash
 agent-inspect ci-summary <manifest...> [options]
@@ -512,7 +512,7 @@ npx agent-inspect ci-summary .agent-inspect/jest-artifacts/tests/**/report.json 
   --github-summary "$GITHUB_STEP_SUMMARY"
 ```
 
-Reporter artifact paths in the summary are kept relative and validated conservatively. The summary includes bounded test identity, status counts, trace filenames, artifact paths, and diagnostic counts only.
+Reporter artifact paths in the summary are kept relative and validated conservatively. The summary includes bounded package/framework metadata, test identity, status counts, trace filenames, artifact paths, redaction profiles, and diagnostic counts only.
 
 Recipe and sample workflow: [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md)
 

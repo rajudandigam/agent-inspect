@@ -222,9 +222,32 @@ No network writer, OpenTelemetry exporter, provider wrapper, or global monkey-pa
 
 Recipe: [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-local-telemetry/).
 
+## 11.1 Experimental `agent-inspect/reporters` APIs
+
+`agent-inspect/reporters` contains shared, dependency-free helpers for local test reporter artifacts. The subpath does not import Vitest, Jest, GitHub SDKs, provider SDKs, or upload clients.
+
+Import from `agent-inspect/reporters`:
+
+```ts
+import {
+  TRACE_ARTIFACT_MANIFEST_SCHEMA_VERSION,
+  createReporterArtifactPath,
+  createTraceArtifactManifest,
+  validateReporterArtifactPath,
+  type TraceArtifactManifest,
+} from "agent-inspect/reporters";
+```
+
+- **`TRACE_ARTIFACT_MANIFEST_SCHEMA_VERSION`**: currently `"0.1"` for local reporter manifests.
+- **`createTraceArtifactManifest(options)`**: clones, sorts, and deduplicates reporter results/artifacts into deterministic manifest JSON.
+- **`createReporterArtifactPath(options)`**: creates a safe relative artifact path under a caller-provided output directory.
+- **`validateReporterArtifactPath(options)`**: rejects empty, absolute, traversal, Windows-absolute, and symlink-escape style paths before reporters or `ci-summary` trust artifact links.
+
+The manifest records framework, generation time, bounded test results, artifact descriptors, redaction profile, and diagnostics. It is an artifact index only; it should not contain raw trace contents, prompts, model outputs, request/response bodies, headers, API keys, secrets, or full tool payloads.
+
 ## 12. Experimental `@agent-inspect/vitest` APIs
 
-`@agent-inspect/vitest` is an optional experimental workspace package for local Vitest failure artifacts. It remains private/unpublished. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+`@agent-inspect/vitest` is an optional experimental workspace package for local Vitest failure artifacts. It remains private/unpublished pending maintainer first-publication setup. It does not add a Vitest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
 
 Import from `@agent-inspect/vitest`:
 
@@ -237,6 +260,7 @@ import { createAgentInspectVitestReporter } from "@agent-inspect/vitest";
   - **`githubSummary`**: optional GitHub step-summary file path. The reporter appends bounded structural counts only and does not use the GitHub API.
   - **`retainSuccessful`**: `false`/undefined keeps no passing-test artifacts; `true` keeps up to `maxSuccessfulTraces`; a number keeps up to that many passing-test artifacts.
   - **`maxSuccessfulTraces`**: upper bound for passing-test artifacts, capped by the reporter.
+  - **`redactionProfile`**: manifest artifact profile, `local` (default), `share`, or `strict`.
   - **`resolveTrace(test)`**: optional explicit association resolver when task metadata is not convenient.
   - **`onDiagnostic(diagnostic)`**: observes non-fatal reporter/artifact failures.
   - **`getDiagnostics()`** and **`getArtifacts()`** expose reporter state for tests and custom harnesses.
@@ -252,11 +276,11 @@ ctx.task.meta.agentInspect = {
 };
 ```
 
-Artifacts are safe structural summaries. They include bounded test identity, status, trace run id, and trace filename, but they do not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Vitest failures.
+Artifacts are safe structural summaries. The reporter writes a shared `schemaVersion: "0.1"` manifest wrapper with package metadata, generated time, framework, test results, artifact descriptors, relative paths, and redaction profile. It includes bounded test identity, status, trace run id, and trace filename, but it does not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Vitest failures.
 
 ## 13. Experimental `@agent-inspect/jest` APIs
 
-`@agent-inspect/jest` is an optional experimental workspace package for local Jest failure artifacts. It remains private/unpublished. It does not add a Jest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
+`@agent-inspect/jest` is an optional experimental workspace package for local Jest failure artifacts. It remains private/unpublished pending maintainer first-publication setup. It does not add a Jest dependency to root/core, does not upload artifacts, and does not infer trace relationships by timestamp.
 
 Import from `@agent-inspect/jest`:
 
@@ -270,6 +294,7 @@ import { AgentInspectJestReporter, createAgentInspectJestReporter } from "@agent
   - **`githubSummary`**: optional GitHub step-summary file path. The reporter appends bounded structural counts only and does not use the GitHub API.
   - **`retainSuccessful`**: `false`/undefined keeps no passing-test artifacts; `true` keeps up to `maxSuccessfulTraces`; a number keeps up to that many passing-test artifacts.
   - **`maxSuccessfulTraces`**: upper bound for passing-test artifacts, capped by the reporter.
+  - **`redactionProfile`**: manifest artifact profile, `local` (default), `share`, or `strict`.
   - **`associations`**: explicit trace associations keyed by `file::fullName`, `basename::fullName`, or `fullName`.
   - **`resolveTrace(test)`**: optional explicit association resolver for normalized Jest assertion results.
   - **`onDiagnostic(diagnostic)`**: observes non-fatal reporter/artifact failures.
@@ -294,7 +319,7 @@ reporters: [
 ],
 ```
 
-Artifacts are safe structural summaries. They include bounded test identity, status, trace run id, and trace filename, but they do not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Jest failures.
+Artifacts are safe structural summaries. The reporter writes a shared `schemaVersion: "0.1"` manifest wrapper with package metadata, generated time, framework, test results, artifact descriptors, relative paths, and redaction profile. It includes bounded test identity, status, trace run id, and trace filename, but it does not read or embed raw trace contents, prompts, generated outputs, request/response bodies, headers, API keys, secrets, or tool payloads. Reporter/artifact failures are diagnostics and do not replace original Jest failures.
 
 ## 14. Experimental `@agent-inspect/openai-agents` APIs
 

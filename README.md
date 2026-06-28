@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release line: **2.0.x** for the existing public packages. v2.0.0 is the stable trace-contract release: small root API, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit non-destructive migration workflow.
+Current npm release line: **2.1.x** for the existing public packages. v2.1.0 adds deterministic local eval and reusable redaction utilities on top of the stable v2 trace contract: small root API, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit non-destructive migration workflow.
 
 ```bash
 npm install agent-inspect
@@ -240,6 +240,7 @@ AGENT_INSPECT=1 node eval-runner.mjs
 - **Redact local files** with `agent-inspect redact` or `@agent-inspect/redact` before creating shareable copies.
 - **Migrate explicitly** with `agent-inspect migrate <trace.jsonl> --to 1.0 --dry-run` or `--output <file>`; originals are never overwritten by default.
 - **Export share-safe copies** — `export --redaction-profile share` (or `strict`) writes local Markdown/HTML/OpenInference/OTLP JSON only.
+- **Create local CI artifacts** with `agent-inspect artifacts`, and summarize local test-reporter manifests with `agent-inspect ci-summary`.
 - **Parse structured logs** you already emit (JSON first-class; log4js best-effort).
 - **Optional LangChain adapter** — metadata-only by default; optional `persist: true` and `stream: true` streaming metadata (no full token capture by default).
 - **Optional AI SDK adapter** — experimental `@agent-inspect/ai-sdk` telemetry integration for AI SDK v6; metadata-only by default with `recordInputs: false` and `recordOutputs: false`.
@@ -308,6 +309,7 @@ More detail: [docs/LOGS.md](docs/LOGS.md) · [docs/LOG-TO-TREE-QUICKSTART.md](do
 | `report` | Markdown/HTML inspection report (what + timeline + tree) |
 | `check` / `scan` / `verify-safe` | Deterministic local trace checks and best-effort safety verification |
 | `artifacts` | Safe local CI artifact bundles and optional step-summary file output |
+| `ci-summary` | Summarize local Vitest/Jest reporter artifact manifests for CI |
 
 ![Timeline with slow-step focus for one run](https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/demos/timeline.gif)
 
@@ -338,6 +340,8 @@ AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
+**Shipped in 2.1.0:** deterministic local eval and redaction utilities. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents`, `@agent-inspect/redact`, and `@agent-inspect/eval` at **2.1.0**.
+
 **Shipped in 2.0.0:** stable root API contract, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit trace migration workflow. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **2.0.0**.
 
 **Shipped in 1.9.0:** private harness workspace foundation, explain dry-run/local analysis, promoted adapter adoption paths, and the v2 root API slimming plan.
@@ -350,7 +354,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
-**Roadmap beyond current release work:** v2.1 starts the eval/redact utility triangle, followed by reporters/CI, adapter hardening, sessions/MCP telemetry, guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
+**Roadmap beyond current release work:** v2.2 prepares test reporters and CI workflows, followed by adapter hardening, sessions/MCP telemetry, guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
@@ -405,6 +409,12 @@ npx agent-inspect view <run-id> --tui
 
 The TUI is available as a separate optional package; its programmatic API is experimental, while the CLI integration (`view --tui`) is the intended usage. Details: [docs/ADAPTERS.md](docs/ADAPTERS.md).
 
+### Test reporter artifacts (`@agent-inspect/vitest`, `@agent-inspect/jest`)
+
+Optional Vitest/Jest reporter packages are implemented in the workspace for local failure artifacts, but remain private/unpublished until the maintainer clears first-publication setup for a v2.2 release. They write shared `schemaVersion: "0.1"` reporter manifests with safe relative artifact paths and bounded structural metadata. Use `agent-inspect ci-summary` to summarize those local manifests in CI without reading trace contents or calling GitHub APIs.
+
+Reporter artifact behavior and API details are documented in [docs/API.md](docs/API.md) and [docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md).
+
 ## Examples and recipes
 
 | Example | Shows |
@@ -431,7 +441,7 @@ The TUI is available as a separate optional package; its programmatic API is exp
 | [examples/recipes/eval-local-checks](examples/recipes/eval-local-checks) | v2.1 deterministic local eval checks |
 | [examples/recipes/redact-share-safe-file](examples/recipes/redact-share-safe-file) | v2.1 share-safe local redaction copy |
 | [examples/recipes/eval-ci-artifacts](examples/recipes/eval-ci-artifacts) | v2.1 eval before safe CI artifacts |
-| [examples/recipes/test-reporter-artifacts](examples/recipes/test-reporter-artifacts) | v1.8 Vitest/Jest reporter artifact patterns |
+| [examples/recipes/test-reporter-artifacts](examples/recipes/test-reporter-artifacts) | Vitest/Jest reporter artifact patterns |
 | [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
 | [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |
 

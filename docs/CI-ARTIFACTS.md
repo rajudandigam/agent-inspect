@@ -35,7 +35,7 @@ npx agent-inspect artifacts <run-id> --dir ./.agent-inspect \
 
 This command writes local files only. It does not call GitHub APIs or upload artifacts.
 
-For Vitest/Jest reporter artifacts, summarize reporter manifests without reading trace contents:
+For Vitest/Jest reporter artifacts, summarize shared `schemaVersion: "0.1"` reporter manifests without reading trace contents:
 
 ```bash
 npx agent-inspect ci-summary .agent-inspect/jest-artifacts/tests/**/report.json \
@@ -43,7 +43,7 @@ npx agent-inspect ci-summary .agent-inspect/jest-artifacts/tests/**/report.json 
   --github-summary "$GITHUB_STEP_SUMMARY"
 ```
 
-`ci-summary` writes local files only. It validates reporter artifact paths as relative paths and includes bounded structural metadata: framework, test status, trace filename, artifact paths, and diagnostic counts.
+`ci-summary` writes local files only. It validates reporter artifact paths as relative paths and includes bounded structural metadata: package/framework, test status counts, trace filenames, artifact paths, redaction profile, and diagnostic counts.
 
 ```bash
 npx agent-inspect export <run-id> --dir ./.agent-inspect \
