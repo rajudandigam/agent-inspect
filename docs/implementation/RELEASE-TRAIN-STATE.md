@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.0.0"
-publishedVersion: "2.0.0"
-currentTrain: "v2.1.0"
+baselineVersion: "2.1.0"
+publishedVersion: "2.1.0"
+currentTrain: "v2.2.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "665f6f9ec2cd4ce191e4c3068f61016c8cd8ded1"
-lastValidationLevel: "v2.1-release-prep-local-gate"
+lastConfirmedCommit: "c15955cfb2bdad2cb81252543f828016ab488939"
+lastValidationLevel: "v2.1-publication-verified"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -66,16 +66,17 @@ completedChunks:
   - "v2.1-8-eval-redact-recipes-and-documentation"
   - "v2.1-9-release-readiness"
   - "v2.1-release-prep"
-currentChunk: "v2.1-version-packages-pr"
+  - "v2.1-version-packages-pr-and-publication"
+currentChunk: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
 pendingManualGate: "none"
-nextAction: "Wait for the Changesets Version Packages PR, verify it contains only the expected v2.1.0 linked minor bumps, merge after required checks are green, then watch publication."
-publishedAt: "2026-06-27"
-updatedAt: "2026-06-27"
+nextAction: "Start v2.2 chunk 0: verify v2.1 publication, reconcile reporter scope, and align v2.2 execution plan/current task before implementation."
+publishedAt: "2026-06-28"
+updatedAt: "2026-06-28"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
-- **Active plan:** [release-trains/V2.1.0-EXECUTION-PLAN.md](./release-trains/V2.1.0-EXECUTION-PLAN.md)
-- **Current readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
+- **Active plan:** [release-trains/V2.2.0-EXECUTION-PLAN.md](./release-trains/V2.2.0-EXECUTION-PLAN.md)
+- **Latest readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)

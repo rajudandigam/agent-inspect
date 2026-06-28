@@ -3,16 +3,16 @@
 ## Identity
 
 ```yaml
-train: "v2.1.0"
-chunk: "v2.1-version-packages-pr"
-status: "release-prep"
+train: "v2.2.0"
+chunk: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
+status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-9-release-readiness"
+dependsOn: "v2.1-version-packages-pr-and-publication"
 ```
 
 ## Goal
 
-Prepare the v2.1 minor release through Changesets, then verify and merge the generated Version Packages PR after required checks are green.
+Start the v2.2 reporter train by reconciling the v2.1 publication state, confirming reporter package scope, and aligning the active v2.2 plan before implementation.
 
 ## Read first
 
@@ -21,84 +21,67 @@ Prepare the v2.1 minor release through Changesets, then verify and merge the gen
 - `docs/implementation/ROADMAP-V2.1-TO-V3.md`
 - `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
 - `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
-- `docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md`
-- `docs/proposals/REDACT-PACKAGE.md`
-- `docs/proposals/EVAL-PACKAGE.md`
-- relevant release-readiness, package, and validation scripts
+- `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
+- `docs/proposals/CI-REPORTERS.md`
+- relevant package manifests for `@agent-inspect/vitest` and `@agent-inspect/jest`
 
 ## Prior chunk evidence
 
-- Starting commit: `665f6f9ec2cd4ce191e4c3068f61016c8cd8ded1`.
-- Prepared [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md).
-- Aligned `.changeset/config.json` so `@agent-inspect/redact` and `@agent-inspect/eval` are linked with the public release set, and the new private recipe packages are ignored.
-- Verified existing public packages are published at `2.0.0`.
-- Verified `@agent-inspect/redact` and `@agent-inspect/eval` are now published at `2.0.0` with `bootstrap` and `latest` dist-tags after maintainer first-publication setup.
-- Full local release-readiness gate passed.
-- Added `.changeset/violet-tools-inspect.md` for a linked minor v2.1.0 release of all public packages.
+- v2.1 release-prep commit: `1e5e88911c73799ac8c084cf05d6a9a54ef9ac41`.
+- Version Packages PR #43 merged as `c15955cfb2bdad2cb81252543f828016ab488939`.
+- Publish workflow `28306794996` completed successfully.
+- npm shows `2.1.0` on `latest` for:
+  - `agent-inspect`;
+  - `@agent-inspect/ai-sdk`;
+  - `@agent-inspect/langchain`;
+  - `@agent-inspect/openai-agents`;
+  - `@agent-inspect/tui`;
+  - `@agent-inspect/redact`;
+  - `@agent-inspect/eval`.
+- GitHub releases and remote tags exist for all seven `2.1.0` packages.
 
-## In scope
+## In Scope
 
-1. Push the v2.1 release-prep changeset to `main`.
-2. Wait for the GitHub Actions release workflow to create the Changesets Version Packages PR.
-3. Verify the Version Packages PR contains only expected linked minor bumps and changelog updates for:
-   - `agent-inspect`;
-   - `@agent-inspect/ai-sdk`;
-   - `@agent-inspect/langchain`;
-   - `@agent-inspect/openai-agents`;
-   - `@agent-inspect/tui`;
-   - `@agent-inspect/redact`;
-   - `@agent-inspect/eval`.
-4. Merge the Version Packages PR only after required checks are green.
-5. Watch the publish workflow and verify npm versions, dist-tags, tags, and GitHub releases.
+1. Verify v2.1 publication state remains reconciled.
+2. Resolve the v2.2 plan executionMode wording mismatch with `AGENTS.md` if needed.
+3. Refresh `docs/proposals/CI-REPORTERS.md` to freeze Vitest/Jest reporter scope.
+4. Update state/current-task docs for v2.2 chunk 1 readiness.
+5. Do not publish or version anything in this chunk.
 
-## Completed release-readiness gate
+## Out Of Scope
+
+- reporter runtime implementation;
+- public package publication for reporter packages;
+- package version changes;
+- changesets;
+- tags;
+- publishing;
+- GitHub releases;
+- hosted uploads;
+- PR comments or GitHub API posting behavior;
+- new root/core dependencies.
+
+## Acceptance Criteria
+
+- v2.1 publication remains verified.
+- v2.2 reporter package scope is explicit.
+- Any executionMode wording conflict is resolved or called out.
+- No runtime source, package version, dependency, schema, changeset, tag, publish, or GitHub release change is introduced.
+
+## Suggested Commit
+
+```text
+docs: start v2.2 reporter train
+```
+
+## Validation
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm build
 pnpm typecheck
 pnpm test
-pnpm test:coverage
-pnpm fixtures:check
-pnpm recipes:check
-pnpm size
-pnpm test:all
-pnpm pack:smoke
-pnpm compat:smoke
-npm pack --dry-run
 git diff --check
 ```
 
-## Out of scope
+## Stop Condition
 
-- manual package version changes outside the Version Packages PR;
-- manually authored package changelog/version edits;
-- manual tags;
-- local npm publishing;
-- manual GitHub releases;
-- npm publish or local package publication;
-- runtime source changes unless needed to repair release-readiness validation;
-- schema changes;
-- dependency additions;
-- live model/provider/network behavior beyond validation, git, npm registry metadata, and CI checks.
-
-## Acceptance criteria
-
-- The release-prep Changeset plans only minor releases for the seven linked public packages.
-- The Version Packages PR contains only expected v2.1.0 linked minor version/changelog changes.
-- CI and Publish workflows are green at each release step.
-- No schema, dependency, runtime source, or public breaking change is introduced.
-
-## Proposed release-prep commit
-
-```text
-chore: prepare v2.1 release
-```
-
-## Next step
-
-Push release prep, wait for the Version Packages PR, then verify and merge it after checks pass.
-
-## Stop condition
-
-Stop on unrelated worktree changes, validation failures that cannot be repaired in scope, root/core dependency requirements, network/provider behavior, schema redesign, package export breaking changes, registry/credential problems, partial publication, or any publish/tag/release operation not performed by the standard Changesets/GitHub release workflow.
+Stop on unrelated worktree changes, validation failures outside this docs/scope chunk, public package publication decisions for reporter packages, root/core dependency requirements, network behavior expansion, schema changes, or reporter API decisions that materially change the v2.2 plan.
