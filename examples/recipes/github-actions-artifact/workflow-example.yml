@@ -27,6 +27,7 @@ jobs:
 
       - name: Export share-safe markdown artifact
         run: |
+          mkdir -p ./artifacts
           npx agent-inspect list --dir ./.agent-inspect
           npx agent-inspect what ci-fixture-agent --dir ./.agent-inspect
           npx agent-inspect export ci-fixture-agent \
@@ -40,12 +41,21 @@ jobs:
             --redaction-profile share \
             -o ./artifacts/report.html
 
+      - name: Summarize reporter artifacts
+        if: always()
+        run: |
+          manifests="$(find ./.agent-inspect -path '*/tests/*/*/report.json' -print | sort)"
+          if [ -n "$manifests" ]; then
+            npx agent-inspect ci-summary $manifests \
+              --output ./artifacts/reporter-summary.md \
+              --github-summary "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload trace artifacts
         uses: actions/upload-artifact@v4
         with:
           name: agent-inspect-traces
           path: |
             ./.agent-inspect
-            ./artifacts/trace.md
-            ./artifacts/report.html
+            ./artifacts
           if-no-files-found: error

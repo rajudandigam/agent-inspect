@@ -131,6 +131,8 @@ Reporter options should be explicit:
 
 `agent-inspect ci-summary` should read local artifact manifests and write deterministic summaries for CI systems.
 
+Chunk 4 implements `agent-inspect ci-summary` for local reporter manifests, with Markdown/JSON output and optional local GitHub step-summary file append.
+
 It may support:
 
 - Markdown output for `$GITHUB_STEP_SUMMARY`;

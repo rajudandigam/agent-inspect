@@ -31,6 +31,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("scan");
     expect(names).toContain("verify-safe");
     expect(names).toContain("artifacts");
+    expect(names).toContain("ci-summary");
     expect(names).toContain("diff");
     expect(names).toContain("what");
     expect(names).toContain("report");
@@ -54,6 +55,7 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("scan");
     expect(help).toContain("verify-safe");
     expect(help).toContain("artifacts");
+    expect(help).toContain("ci-summary");
     expect(help).toContain("diff");
     expect(help).toContain("redact");
   });
@@ -191,6 +193,16 @@ describe("@agent-inspect/cli", () => {
     const help = cmd!.helpInformation();
     expect(help).toContain("--output-dir");
     expect(help).toContain("--baseline");
+    expect(help).toContain("--github-summary");
+    expect(help).toContain("--json");
+  });
+
+  it("ci-summary help mentions key options", () => {
+    const program = createCliProgram();
+    const cmd = program.commands.find((c) => c.name() === "ci-summary");
+    expect(cmd).toBeDefined();
+    const help = cmd!.helpInformation();
+    expect(help).toContain("--output");
     expect(help).toContain("--github-summary");
     expect(help).toContain("--json");
   });

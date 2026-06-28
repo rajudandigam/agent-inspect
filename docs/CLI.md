@@ -33,6 +33,7 @@ Core commands:
 - `scan` — best-effort local safety scan for trace capture risks
 - `verify-safe` — best-effort local trace safety verification
 - `artifacts` — create safe local CI trace artifact bundles and optional step summaries
+- `ci-summary` — summarize local reporter artifact manifests for CI
 - `diff` — compare two manual traces (local, read-only)
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
@@ -489,7 +490,33 @@ npx agent-inspect artifacts candidate.jsonl --baseline baseline.jsonl --output-d
 
 Recipe and sample workflow: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.14 `diff`
+### 6.14 `ci-summary`
+
+Summarize local Vitest/Jest reporter artifact manifests into deterministic Markdown or JSON. This command reads manifest JSON files only. It does not read trace contents, rerun tests, upload artifacts, call GitHub APIs, or mutate repository state. `--output` and `--github-summary` write local files.
+
+```bash
+agent-inspect ci-summary <manifest...> [options]
+```
+
+Options:
+
+- `-o, --output <path>`: write the Markdown summary to a local file
+- `--github-summary <path>`: append the Markdown summary to a local file, such as `$GITHUB_STEP_SUMMARY`
+- `--json`: print deterministic JSON summary
+
+Example:
+
+```bash
+npx agent-inspect ci-summary .agent-inspect/jest-artifacts/tests/**/report.json \
+  --output ./artifacts/reporter-summary.md \
+  --github-summary "$GITHUB_STEP_SUMMARY"
+```
+
+Reporter artifact paths in the summary are kept relative and validated conservatively. The summary includes bounded test identity, status counts, trace filenames, artifact paths, and diagnostic counts only.
+
+Recipe and sample workflow: [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md)
+
+### 6.15 `diff`
 
 Compare two manual trace runs. Diff is **local** and **read-only** (does not rerun agents).
 
@@ -553,7 +580,7 @@ Differences:
 
 More examples, including timing-only and structure-only diffs, are in `docs/DIFF.md`.
 
-### 6.15 `timeline`
+### 6.16 `timeline`
 
 Chronological step list for one manual trace. Read-only; does not mutate JSONL files.
 
@@ -569,7 +596,7 @@ Options:
 
 ![Timeline with slow-step focus](../assets/demos/timeline.gif)
 
-### 6.16 `stats`
+### 6.17 `stats`
 
 Local aggregate statistics over trace files in a directory. Read-only.
 
@@ -589,7 +616,7 @@ Options:
 
 Use `--correlation-id` or `--group-id` to filter runs by `run_started` metadata (see [API.md](./API.md)).
 
-### 6.17 `search`
+### 6.18 `search`
 
 Deterministic search over local traces (substring / exact filters). No semantic search.
 
@@ -619,7 +646,7 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.18 `what`
+### 6.19 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 
@@ -648,7 +675,7 @@ Outcome: Completed successfully.
 Slowest: plan (100ms, logic)
 ```
 
-### 6.19 `report`
+### 6.20 `report`
 
 Generate a local inspection report combining **what happened**, **timeline**, and **execution tree** sections. The command reads local v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path without mutating them. Distinct from `export` (which targets shareable tree snapshots and standards formats).
 
@@ -673,7 +700,7 @@ Example:
 npx agent-inspect report minimal-success --dir fixtures/traces --format html -o report.html
 ```
 
-### 6.20 `explain`
+### 6.21 `explain`
 
 Explain a local trace using deterministic facts and local inference labels. This command reads through the same local reader pipeline as `open` / `check`; it does not call a model provider, upload traces, replay agents, or mutate input files.
 

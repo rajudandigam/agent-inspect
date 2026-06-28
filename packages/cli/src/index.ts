@@ -46,6 +46,8 @@ import type { SafetyCommandOptions } from "./safety.js";
 import { scanCommand, verifySafeCommand } from "./safety.js";
 import type { ArtifactsCommandOptions } from "./artifacts.js";
 import { artifactsCommand } from "./artifacts.js";
+import type { CiSummaryCommandOptions } from "./ci-summary.js";
+import { ciSummaryCommand } from "./ci-summary.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -440,6 +442,17 @@ export function createCliProgram(): Command {
     .option("--json", "print deterministic JSON manifest")
     .action((target: string, opts: ArtifactsCommandOptions) => {
       runCommand(() => artifactsCommand(target, opts));
+    });
+
+  program
+    .command("ci-summary")
+    .description("Summarize local reporter artifact manifests for CI")
+    .argument("<manifest...>", "reporter artifact manifest JSON files")
+    .option("-o, --output <path>", "write Markdown summary to a local file")
+    .option("--github-summary <path>", "append Markdown summary to this local file, e.g. GITHUB_STEP_SUMMARY")
+    .option("--json", "print deterministic JSON summary")
+    .action((manifest: string[], opts: CiSummaryCommandOptions) => {
+      runCommand(() => ciSummaryCommand(manifest, opts));
     });
 
   program

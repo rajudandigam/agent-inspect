@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.2.0"
-chunk: "v2.2-4-ci-summary-command-and-recipes"
+chunk: "v2.2-5-reporter-docs-package-smoke-and-readiness"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.2-3-public-jest-reporter"
+dependsOn: "v2.2-4-ci-summary-command-and-recipes"
 ```
 
 ## Goal
 
-Add a local `agent-inspect ci-summary` workflow that can read reporter artifact manifests and write deterministic CI-safe summaries without uploading artifacts or calling hosted APIs.
+Finalize public docs, package-smoke evidence, and v2.2 release readiness for the reporter and CI workflow train.
 
 ## Read first
 
@@ -20,79 +20,78 @@ Add a local `agent-inspect ci-summary` workflow that can read reporter artifact 
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
 - `docs/proposals/CI-REPORTERS.md`
-- `packages/core/src/reporters/index.ts`
-- `packages/cli/src/index.ts`
-- relevant CLI tests and recipe validation scripts
+- `README.md`
+- `docs/API.md`
+- `docs/CLI.md`
+- `docs/CI-ARTIFACTS.md`
+- reporter package manifests and package-smoke script
 
 ## Prior chunk evidence
 
-- Vitest and Jest reporters now write shared `0.1` artifact manifests through `agent-inspect/reporters`.
-- Failed associated tests produce deterministic local report/summary artifact paths.
-- Successful tests remain quiet by default, even when trace metadata is present.
-- Reporter write failures remain diagnostics and do not throw through runner hooks.
+- Vitest and Jest reporters write shared `0.1` artifact manifests through `agent-inspect/reporters`.
+- `agent-inspect ci-summary` reads reporter manifests and writes deterministic Markdown/JSON summaries without reading trace contents.
+- GitHub Actions artifact recipes rely on user-controlled `upload-artifact`; AgentInspect performs no uploads or GitHub API writes.
 - `@agent-inspect/vitest` and `@agent-inspect/jest` remain private pending maintainer first-publication setup before v2.2 release.
 
 ## In Scope
 
-1. Add a CLI `ci-summary` command that reads local reporter artifact manifest files.
-2. Support deterministic Markdown output suitable for `$GITHUB_STEP_SUMMARY`.
-3. Support deterministic JSON output for downstream local tooling if the existing CLI pattern supports it cleanly.
-4. Keep artifact links relative and safe.
-5. Add documentation and a GitHub Actions artifact recipe.
-6. Add focused CLI tests and recipe validation coverage.
+1. Update public docs so reporter and `ci-summary` behavior matches implementation.
+2. Verify package file lists and package-smoke behavior remain explicit for private reporter packages.
+3. Add v2.2 release readiness evidence.
+4. Draft changelog/readiness notes without versioning or publishing.
+5. Keep first-publication gates for reporter packages clear.
 
 ## Out Of Scope
 
-- GitHub API comments/checks;
-- OAuth or GitHub App behavior;
-- artifact upload by AgentInspect;
-- network calls;
-- reporter package publication;
+- Package version bumps;
 - changesets;
 - tags;
-- package versions;
-- root/core framework dependencies;
-- schema changes to persisted traces.
+- publishing;
+- GitHub releases;
+- runtime reporter behavior changes;
+- GitHub API comments/checks;
+- artifact upload by AgentInspect;
+- new dependencies;
+- schema changes.
 
 ## Acceptance Criteria
 
-- `agent-inspect ci-summary` summarizes local reporter manifests deterministically.
-- Markdown output is safe for CI step summaries and does not embed trace contents.
-- JSON mode is stable if implemented.
-- The recipe relies on the user's CI artifact upload mechanism, not AgentInspect uploads.
-- Invalid or unsafe manifest paths fail conservatively with actionable messages.
-- No new network behavior or root/core dependencies are introduced.
+- README/API/CLI/CI docs describe reporter artifacts and `ci-summary` accurately.
+- Release readiness records validation evidence and package publication state.
+- Reporter packages remain private unless maintainer explicitly clears first-publication setup.
+- Changelog notes are draft/unreleased only.
+- No package version, changeset, tag, publish, or release is created in this chunk.
 
 ## Suggested Commit
 
 ```text
-feat: add CI summary workflow
+docs: prepare v2.2 release readiness
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/cli/test
 pnpm recipes:check
+pnpm pack:smoke
 ```
 
 ## Chunk Gate
 
 ```bash
+pnpm install --frozen-lockfile
 pnpm build
 pnpm typecheck
 pnpm test
 pnpm test:coverage
-pnpm size
-pnpm test:all
 pnpm fixtures:check
 pnpm recipes:check
+pnpm size
+pnpm test:all
 pnpm pack:smoke
+pnpm compat:smoke
 git diff --check
 ```
 
-Add `pnpm compat:smoke` if exports/package boundaries change.
-
 ## Stop Condition
 
-Stop on unrelated worktree changes, hosted/network behavior requests, GitHub API write requirements, schema changes, reporter package publication decisions, root/core dependency requirements, or validation failures that cannot be repaired in this chunk.
+Stop on unrelated worktree changes, package publication decisions that require maintainer confirmation, missing first-publication setup, version/tag/publish requirements, changeset requirements, release-state conflicts, or validation failures that cannot be repaired in this chunk.

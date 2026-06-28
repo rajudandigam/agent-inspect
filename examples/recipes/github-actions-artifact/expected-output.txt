@@ -4,3 +4,5 @@ Quick summary:
 Share-safe artifacts:
   npx agent-inspect export ci-fixture-agent --dir ./.agent-inspect --format markdown --redaction-profile share
   npx agent-inspect report ci-fixture-agent --dir ./.agent-inspect --format html --redaction-profile share -o ./artifacts/report.html
+Reporter summary when test reporters write manifests:
+  npx agent-inspect ci-summary .agent-inspect/*-artifacts/tests/*/*/report.json --output ./artifacts/reporter-summary.md

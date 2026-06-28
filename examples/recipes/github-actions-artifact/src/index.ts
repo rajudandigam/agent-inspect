@@ -40,3 +40,7 @@ console.log(
 console.log(
   `  npx agent-inspect report ci-fixture-agent --dir ${traceDir} --format html --redaction-profile share -o ./artifacts/report.html`,
 );
+console.log("Reporter summary when test reporters write manifests:");
+console.log(
+  "  npx agent-inspect ci-summary .agent-inspect/*-artifacts/tests/*/*/report.json --output ./artifacts/reporter-summary.md",
+);

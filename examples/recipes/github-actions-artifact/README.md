@@ -38,6 +38,13 @@ npx agent-inspect report ci-fixture-agent --dir ./.agent-inspect \
   --format html --redaction-profile share -o ./artifacts/report.html
 ```
 
+If Vitest/Jest reporters write local artifact manifests, create a CI-safe reporter summary:
+
+```bash
+npx agent-inspect ci-summary .agent-inspect/*-artifacts/tests/*/*/report.json \
+  --output ./artifacts/reporter-summary.md
+```
+
 See also [what-report-inspect](../what-report-inspect/README.md) for a focused adoption walkthrough.
 
 ## GitHub Actions
@@ -55,4 +62,5 @@ See `expected-output.txt`.
 - No API keys or external LLM calls
 - No vendor upload from AgentInspect
 - Metadata-only tracing (`redact` defaults on)
+- Reporter summaries read manifest metadata only, not trace contents
 - Review artifacts before posting to issues or PRs

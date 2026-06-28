@@ -9,9 +9,10 @@ AgentInspect helps you **write and export traces locally** in CI. Uploading arti
 3. Set `AGENT_INSPECT_TRACE_DIR` (default `.agent-inspect`).
 4. Run your job/tests.
 5. Create safe CI artifacts: `agent-inspect artifacts <run-id> --output-dir ./artifacts`.
-6. Optional legacy exports: `agent-inspect export <run-id> --redaction-profile share`.
-7. Optional inspection reports: `agent-inspect what <run-id>` and `agent-inspect report <run-id> --format html`.
-8. Upload files with your CI artifact step.
+6. For reporter manifests, create a local CI summary: `agent-inspect ci-summary <manifest...> --output ./artifacts/reporter-summary.md`.
+7. Optional legacy exports: `agent-inspect export <run-id> --redaction-profile share`.
+8. Optional inspection reports: `agent-inspect what <run-id>` and `agent-inspect report <run-id> --format html`.
+9. Upload files with your CI artifact step.
 
 ## Environment variables
 
@@ -33,6 +34,16 @@ npx agent-inspect artifacts <run-id> --dir ./.agent-inspect \
 ```
 
 This command writes local files only. It does not call GitHub APIs or upload artifacts.
+
+For Vitest/Jest reporter artifacts, summarize reporter manifests without reading trace contents:
+
+```bash
+npx agent-inspect ci-summary .agent-inspect/jest-artifacts/tests/**/report.json \
+  --output ./artifacts/reporter-summary.md \
+  --github-summary "$GITHUB_STEP_SUMMARY"
+```
+
+`ci-summary` writes local files only. It validates reporter artifact paths as relative paths and includes bounded structural metadata: framework, test status, trace filename, artifact paths, and diagnostic counts.
 
 ```bash
 npx agent-inspect export <run-id> --dir ./.agent-inspect \
@@ -63,7 +74,7 @@ Recipe: [examples/recipes/what-report-inspect](../examples/recipes/what-report-i
 Recipes:
 
 - [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md) for v1.8 `check`, baseline, safe artifact, and step-summary workflows.
-- [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md) for the older share-safe export artifact workflow.
+- [examples/recipes/github-actions-artifact](../examples/recipes/github-actions-artifact/README.md) for share-safe trace exports and reporter manifest summaries.
 
 Sample workflows: [deterministic checks workflow](../examples/recipes/deterministic-ci-checks/workflow-example.yml), [share-safe export workflow](../examples/recipes/github-actions-artifact/workflow-example.yml)
 
