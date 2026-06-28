@@ -9,8 +9,8 @@ currentTrain: "v2.3.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "3e14d38a36d1272d8876ea758c746f6ae4033f48"
-lastValidationLevel: "v2.3-2-openai-agents-adapter-hardening"
+lastConfirmedCommit: "304d6264e7691ed6eb5eeabf21b00fa4f2fc0819"
+lastValidationLevel: "v2.3-3-langchain-langgraph-hardening"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -79,9 +79,10 @@ completedChunks:
   - "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
   - "v2.3-1-ai-sdk-adapter-hardening"
   - "v2.3-2-openai-agents-adapter-hardening"
-currentChunk: "v2.3-3-langchain-langgraph-hardening"
+  - "v2.3-3-langchain-langgraph-hardening"
+currentChunk: "v2.3-4-adapter-conformance-runner-upgrade"
 pendingManualGate: "none"
-nextAction: "Start v2.3 chunk 3: improve LangChain/LangGraph trace mapping for graph node identity, stream modes, parallel branches, and session/thread metadata without adding a new package."
+nextAction: "Start v2.3 chunk 4: upgrade executable adapter conformance with reusable fixtures and release-gate evidence."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -90,6 +91,6 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
-- **Active proposal:** [../proposals/OPENAI-AGENTS-JS-TRACING.md](../proposals/OPENAI-AGENTS-JS-TRACING.md)
+- **Active proposal:** none for the current conformance chunk.
 - **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)

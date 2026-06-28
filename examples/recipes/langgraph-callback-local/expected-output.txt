@@ -1,7 +1,7 @@
 LangGraph callback local recipe complete
-In-memory events: 8
-Persisted events: 10
-LangGraph nodes: router, lookup, answer
+In-memory events: 10
+Persisted events: 12
+LangGraph nodes: router, policy, lookup, answer
 Raw sensitive text persisted: no
 Trace directory: <cwd>/examples/recipes/langgraph-callback-local/.agent-inspect-runs
 

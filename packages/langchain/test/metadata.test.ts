@@ -170,8 +170,17 @@ describe("extractLangGraphMetadata", () => {
         langgraph: {
           graphId: "graph-1",
           nodeName: "router",
+          stream_mode: "updates",
           branchPath: ["__start__", "router"],
+          branch_index: 0,
+          parallel_group_id: "fanout-1",
           checkpoint: { channel_values: { secret: "raw" }, versions_seen: { router: 1 } },
+          config: {
+            configurable: {
+              thread_id: "thread-2",
+              checkpoint_ns: "nested:checkpoint",
+            },
+          },
         },
         config: {
           configurable: {
@@ -183,14 +192,17 @@ describe("extractLangGraphMetadata", () => {
     ).toMatchObject({
       graphId: "graph-1",
       nodeName: "router",
+      streamMode: "updates",
       branchPath: {
         type: "array",
         itemCount: 2,
         items: ["__start__", "router"],
       },
+      branchIndex: 0,
+      parallelGroupId: "fanout-1",
       checkpointSummary: { type: "object", keyCount: 2 },
-      threadId: "thread-1",
-      checkpointNamespace: "router:checkpoint",
+      threadId: "thread-2",
+      checkpointNamespace: "nested:checkpoint",
     });
   });
 

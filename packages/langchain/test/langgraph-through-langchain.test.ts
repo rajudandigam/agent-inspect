@@ -48,11 +48,14 @@ describe("LangGraph through AgentInspectCallback", () => {
           threadId: "thread-1",
           sessionId: "session-1",
           checkpointId: "checkpoint-1",
+          streamMode: "updates",
           checkpoint: {
             channel_values: { private: "raw checkpoint state secret" },
             versions_seen: { router: 1 },
           },
           branchPath: ["__start__", "router"],
+          branches: ["router", "policy"],
+          subgraphs: [{ name: "safety-subgraph", private: "raw subgraph state secret" }],
         },
       },
       "support_graph",
@@ -73,6 +76,32 @@ describe("LangGraph through AgentInspectCallback", () => {
       "router",
       "graph-root",
     );
+    await cb.handleChainStart(
+      mockSerialized("RunnableLambda"),
+      { request: "raw parallel branch input secret" },
+      "node-policy",
+      "chain",
+      ["langgraph:node", "langgraph:parallel"],
+      {
+        langgraph: {
+          langgraph_node: "policy",
+          subgraphName: "safety-subgraph",
+          branch: "parallel-policy",
+          stream_mode: "debug",
+          parallel_group_id: "fanout-1",
+          branch_index: 1,
+          config: {
+            configurable: {
+              thread_id: "thread-1",
+              checkpoint_ns: "policy:checkpoint",
+            },
+          },
+        },
+      },
+      "policy",
+      "graph-root",
+    );
+    await cb.handleChainEnd({ decision: "allow" }, "node-policy", "graph-root");
     await cb.handleToolStart(
       mockSerialized("lookupTool"),
       "raw tool input secret",
@@ -128,7 +157,10 @@ describe("LangGraph through AgentInspectCallback", () => {
       threadId: "thread-1",
       sessionId: "session-1",
       checkpointId: "checkpoint-1",
+      streamMode: "updates",
       checkpointSummary: { type: "object", keyCount: 2 },
+      branchSummary: { type: "array", itemCount: 2 },
+      subgraphSummary: { type: "array", itemCount: 1 },
     });
     expect(graphMetadata.branchPath).toMatchObject({
       type: "array",
@@ -144,6 +176,19 @@ describe("LangGraph through AgentInspectCallback", () => {
       branch: "classify",
       retryAttempt: 1,
       handoffTo: "lookup",
+    });
+
+    const policyStart = events.find((event) => event.eventId === "node-policy:CHAIN:start");
+    expect(policyStart?.parentId).toBe("graph-root");
+    expect(policyStart?.attributes?.langGraph).toMatchObject({
+      nodeName: "policy",
+      subgraphName: "safety-subgraph",
+      branch: "parallel-policy",
+      streamMode: "debug",
+      parallelGroupId: "fanout-1",
+      branchIndex: 1,
+      threadId: "thread-1",
+      checkpointNamespace: "policy:checkpoint",
     });
 
     const toolStart = events.find((event) => event.eventId === "tool-lookup:TOOL:start");
@@ -169,7 +214,9 @@ describe("LangGraph through AgentInspectCallback", () => {
     const serialized = JSON.stringify(events);
     expect(serialized).not.toContain("raw graph state secret");
     expect(serialized).not.toContain("raw checkpoint state secret");
+    expect(serialized).not.toContain("raw subgraph state secret");
     expect(serialized).not.toContain("raw node input secret");
+    expect(serialized).not.toContain("raw parallel branch input secret");
     expect(serialized).not.toContain("raw tool input secret");
     expect(serialized).not.toContain("raw tool output secret");
     expect(serialized).not.toContain("raw prompt secret");

@@ -153,8 +153,15 @@ const LANGGRAPH_ALIASES: readonly LangGraphAlias[] = [
   { out: "subgraphName", aliases: ["subgraphName", "subgraph_name", "langgraph_subgraph"] },
   { out: "taskId", aliases: ["taskId", "task_id", "langgraph_task_id"] },
   { out: "taskName", aliases: ["taskName", "task_name", "langgraph_task"] },
+  { out: "graphStep", aliases: ["graphStep", "graph_step", "langgraph_step"] },
+  { out: "streamMode", aliases: ["streamMode", "stream_mode", "langgraph_stream_mode"] },
   { out: "branch", aliases: ["branch", "branchName", "branch_name", "langgraph_branch"] },
   { out: "branchPath", aliases: ["branchPath", "branch_path", "langgraph_path"] },
+  { out: "branchIndex", aliases: ["branchIndex", "branch_index", "langgraph_branch_index"] },
+  {
+    out: "parallelGroupId",
+    aliases: ["parallelGroupId", "parallel_group_id", "langgraph_parallel_group_id"],
+  },
   { out: "checkpointId", aliases: ["checkpointId", "checkpoint_id", "langgraph_checkpoint_id"] },
   {
     out: "checkpointNamespace",
@@ -170,6 +177,7 @@ const LANGGRAPH_ALIASES: readonly LangGraphAlias[] = [
 const LANGGRAPH_SUMMARY_ALIASES: readonly LangGraphAlias[] = [
   { out: "checkpointSummary", aliases: ["checkpoint", "langgraph_checkpoint"] },
   { out: "branchSummary", aliases: ["branches", "langgraph_branches", "langgraph_triggers"] },
+  { out: "subgraphSummary", aliases: ["subgraphs", "langgraph_subgraphs"] },
   { out: "taskSummary", aliases: ["tasks", "langgraph_tasks"] },
 ] as const;
 
@@ -268,6 +276,15 @@ export function extractLangGraphMetadata(value: unknown): Record<string, unknown
     for (const key of ["langgraph", "configurable"] as const) {
       const nested = value[key];
       if (isRecord(nested)) sources.push(nested);
+    }
+    const langGraph = value.langgraph;
+    if (isRecord(langGraph)) {
+      const configurable = langGraph.configurable;
+      if (isRecord(configurable)) sources.push(configurable);
+      const nestedConfig = langGraph.config;
+      if (isRecord(nestedConfig) && isRecord(nestedConfig.configurable)) {
+        sources.push(nestedConfig.configurable);
+      }
     }
     const config = value.config;
     if (isRecord(config) && isRecord(config.configurable)) {

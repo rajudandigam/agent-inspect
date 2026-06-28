@@ -225,7 +225,7 @@ Full API: [API.md](./API.md) §9.
 
 ### LangGraph boundary
 
-LangGraph support is expected to ride through this same `@agent-inspect/langchain` callback boundary first. v1.8 adds executable no-network fixtures before claiming broader LangGraph support. A dedicated LangGraph package remains deferred until fixtures prove that LangGraph exposes important lifecycle data unavailable through LangChain callbacks.
+LangGraph support rides through this same `@agent-inspect/langchain` callback boundary first. The v2.3 fixtures cover graph/node identity, subgraphs, checkpoint/session IDs, stream modes, handoffs, and parallel branch hints without adding a separate package. A dedicated LangGraph package remains deferred until fixtures prove that LangGraph exposes important lifecycle data unavailable through LangChain callbacks.
 
 Future LangGraph examples must keep the same safety defaults: explicit callback installation, metadata-only capture, no raw prompt/output/tool payload capture by default, no hosted sink, and local persistence only when `persist: true` is set.
 

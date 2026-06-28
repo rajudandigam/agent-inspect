@@ -4,69 +4,68 @@
 
 ```yaml
 train: "v2.3.0"
-chunk: "v2.3-3-langchain-langgraph-hardening"
+chunk: "v2.3-4-adapter-conformance-runner-upgrade"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.3-2-openai-agents-adapter-hardening"
+dependsOn: "v2.3-3-langchain-langgraph-hardening"
 ```
 
 ## Goal
 
-Improve LangGraph-through-LangChain coverage without adding a new package unless the existing adapter cannot express the needed metadata safely.
+Upgrade executable adapter conformance so official adapter fixtures are reusable release evidence rather than one-off assertions.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
-- `docs/ADAPTERS.md`
 - `docs/ADAPTER-CONFORMANCE.md`
-- `packages/langchain/src/`
-- `packages/langchain/test/`
-- `examples/recipes/langgraph-callback-local/`
+- `docs/implementation/adapter-conformance-matrix.json`
+- `packages/core/test/adapter-executable-conformance.test.ts`
+- `packages/core/test/adapter-conformance-utils.ts`
+- relevant official adapter tests only as needed
 
 ## Current Evidence
 
-- v2.3 chunk 1 hardened AI SDK coverage for isolated parallel integrations and route-style local telemetry.
-- v2.3 chunk 2 hardened OpenAI Agents local-only replacement guidance, metadata-only fixtures, and no-upload recipe coverage.
-- LangChain remains the existing path for LangGraph callback telemetry; the v2.3 plan defers any new `@agent-inspect/langgraph` package unless demand and extension-point evidence justify it.
-- The current goal is better trace usefulness for graph-shaped LangChain/LangGraph callback flows while preserving optional dependency boundaries.
+- v2.3 chunk 1 hardened AI SDK route-style and parallel telemetry coverage.
+- v2.3 chunk 2 hardened OpenAI Agents local-only replacement mode and no-upload fixtures.
+- v2.3 chunk 3 hardened LangGraph-through-LangChain metadata for graph/node identity, subgraphs, stream modes, parallel branch hints, and session/checkpoint IDs.
+- Shared conformance is executable today, but the v2.3 plan calls for more reusable fixtures and release-gate evidence.
 
 ## In Scope
 
-1. Improve LangGraph-through-LangChain fixture coverage for graph node identity, stream-ish callback flow, parallel branches, and session/thread metadata where the existing callback surface supports it.
-2. Clarify limitations in docs without introducing a separate package.
-3. Preserve no-network, no-root-dependency behavior.
-4. Keep changes inside the LangChain adapter, fixtures, recipes, and docs/state.
+1. Improve the shared adapter conformance test/helper structure without adding a public registry or certification surface.
+2. Add or document a compact fixture manifest if it helps release readiness.
+3. Ensure official adapters continue passing lifecycle, parentage, streaming, token, redaction/no-raw-payload, and reader round-trip checks.
+4. Update conformance docs/state to reflect the upgraded release-gate path.
 
 ## Out Of Scope
 
 - package versions, changesets, tags, releases, or publishing;
-- new `@agent-inspect/langgraph` package without an explicit demand gate;
-- LangGraph, OpenTelemetry, or provider dependencies in root/core;
-- hosted upload, vendor exporter, or provider call behavior;
-- raw prompt/output/tool payload capture by default;
+- third-party certification, hosted registry, or external service calls;
+- new adapter packages;
+- root/core framework/provider dependencies;
 - schema changes;
-- AI SDK/OpenAI Agents/Mastra/Nest runtime changes.
+- adapter runtime behavior changes unless required by conformance correctness.
 
 ## Acceptance Criteria
 
-- LangGraph-through-LangChain fixtures produce useful local trace identity and metadata for graph-shaped flows.
-- Docs explain the current LangChain callback path and limitations without promising unsupported LangGraph-native behavior.
-- No root/core dependency or package export drift is introduced.
-- Existing LangChain imports remain compatible.
+- Adapter conformance is easier to reuse as release evidence.
+- Official adapters pass the shared conformance gate.
+- Docs explain how the conformance gate is used without overstating certification.
+- No package export drift or dependency drift is introduced.
 - Validation passes.
 
 ## Suggested Commit
 
 ```text
-feat(langchain): improve LangGraph trace mapping
+test: add executable adapter conformance suite
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/langchain/test/agent-inspect-callback.test.ts packages/langchain/test/langgraph-through-langchain.test.ts packages/core/test/adapter-executable-conformance.test.ts
+pnpm exec vitest run packages/core/test/adapter-executable-conformance.test.ts packages/core/test/adapter-conformance-matrix.test.ts
 ```
 
 ## Chunk Gate
@@ -81,4 +80,4 @@ git diff --check
 
 ## Stop Condition
 
-Stop if LangGraph usefulness requires a new public API, schema change, new package, root/core dependency, default network/upload behavior, raw payload capture by default, package-version/change-set work, or validation failure outside the LangChain/LangGraph hardening scope.
+Stop if the conformance upgrade requires a public certification program, schema change, new package, root/core framework dependency, network behavior, package-version/change-set work, or validation failure outside this conformance scope.

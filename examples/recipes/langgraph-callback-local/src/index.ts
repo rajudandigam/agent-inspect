@@ -45,8 +45,11 @@ await callback.handleChainStart(
       graphName: "SupportGraph",
       threadId: "thread-1",
       checkpointId: "checkpoint-1",
+      streamMode: "updates",
       checkpoint: { privateState: "raw checkpoint secret", version: 1 },
       branchPath: ["__start__", "router"],
+      branches: ["router", "policy"],
+      subgraphs: [{ name: "safety-subgraph", private: "raw subgraph state secret" }],
     },
   },
   "support_graph",
@@ -67,6 +70,33 @@ await callback.handleChainStart(
   "router",
   "graph-root",
 );
+
+await callback.handleChainStart(
+  serialized("RunnableLambda"),
+  { request: "raw parallel branch input secret" },
+  "node-policy",
+  "chain",
+  ["langgraph:node", "langgraph:parallel"],
+  {
+    langgraph: {
+      langgraph_node: "policy",
+      subgraphName: "safety-subgraph",
+      branch: "parallel-policy",
+      stream_mode: "debug",
+      parallel_group_id: "fanout-1",
+      branch_index: 1,
+      config: {
+        configurable: {
+          thread_id: "thread-1",
+          checkpoint_ns: "policy:checkpoint",
+        },
+      },
+    },
+  },
+  "policy",
+  "graph-root",
+);
+await callback.handleChainEnd({ decision: "allow" }, "node-policy", "graph-root");
 
 await callback.handleToolStart(
   serialized("lookupTool"),
@@ -120,7 +150,9 @@ const serializedEvents = JSON.stringify({ memoryEvents, persistedEvents });
 const rawSensitiveTextPersisted = [
   "raw graph state secret",
   "raw checkpoint secret",
+  "raw subgraph state secret",
   "raw node input secret",
+  "raw parallel branch input secret",
   "raw tool input secret",
   "raw tool output secret",
   "raw prompt secret",
