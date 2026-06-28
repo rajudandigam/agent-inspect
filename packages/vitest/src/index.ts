@@ -1,6 +1,15 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  createReporterArtifactPath,
+  createTraceArtifactManifest,
+  type TraceArtifact,
+  type TraceArtifactManifest,
+  type TraceArtifactRedactionProfile,
+  type TraceReporterDiagnostic,
+} from "agent-inspect/reporters";
+
 export type AgentInspectVitestStatus = "failed" | "passed" | "skipped";
 
 /**
@@ -29,7 +38,8 @@ export interface AgentInspectVitestDiagnostic {
   readonly code:
     | "artifact-write-failed"
     | "github-summary-write-failed"
-    | "on-diagnostic-failed";
+    | "on-diagnostic-failed"
+    | "unsafe-artifact-path";
   readonly message: string;
   readonly testId?: string;
 }
@@ -52,6 +62,10 @@ export interface AgentInspectVitestReporterOptions {
   readonly retainSuccessful?: boolean | number;
   /** Upper bound for retained passing-test artifacts. Defaults to 20. */
   readonly maxSuccessfulTraces?: number;
+  /** Redaction profile recorded on generated artifacts. Defaults to `share`. */
+  readonly redactionProfile?: TraceArtifactRedactionProfile;
+  /** Deterministic manifest timestamp. Defaults to the Unix epoch. */
+  readonly generatedAt?: string;
   /** Resolve explicit test-to-trace associations from a Vitest task/result. */
   readonly resolveTrace?: (
     test: unknown,
@@ -66,6 +80,7 @@ export interface AgentInspectVitestArtifact {
   readonly summaryPath: string;
   readonly status: AgentInspectVitestStatus;
   readonly testId: string;
+  readonly manifest: TraceArtifactManifest;
 }
 
 /**
@@ -108,11 +123,11 @@ type ResultLike = {
 };
 
 const PACKAGE_NAME = "@agent-inspect/vitest";
-const ARTIFACT_SCHEMA_VERSION = "agent-inspect.vitest-artifact.v1";
 const DEFAULT_ARTIFACT_DIR = ".agent-inspect/vitest-artifacts";
 const DEFAULT_SUCCESS_LIMIT = 20;
 const MAX_SUCCESS_LIMIT = 100;
 const MAX_TEXT = 180;
+const DEFAULT_GENERATED_AT = "1970-01-01T00:00:00.000Z";
 
 /**
  * Create the experimental AgentInspect Vitest reporter.
@@ -177,8 +192,10 @@ export function createAgentInspectVitestReporter(
       const artifact = await writeSafeArtifact({
         artifactDir: options.artifactDir ?? DEFAULT_ARTIFACT_DIR,
         association,
+        generatedAt: options.generatedAt ?? DEFAULT_GENERATED_AT,
         identity,
         reserveArtifactName,
+        redactionProfile: options.redactionProfile ?? "share",
         status,
       });
       artifacts.push(artifact);
@@ -342,7 +359,9 @@ function readIdentity(test: object): TestIdentity {
 async function writeSafeArtifact(input: {
   readonly artifactDir: string;
   readonly association: AgentInspectVitestTraceAssociation;
+  readonly generatedAt: string;
   readonly identity: TestIdentity;
+  readonly redactionProfile: TraceArtifactRedactionProfile;
   readonly reserveArtifactName: (seed: string) => string;
   readonly status: AgentInspectVitestStatus;
 }): Promise<AgentInspectVitestArtifact> {
@@ -352,68 +371,122 @@ async function writeSafeArtifact(input: {
     input.identity.name ??
     input.status;
   const artifactName = input.reserveArtifactName(artifactSeed);
-  const directory = path.join(input.artifactDir, artifactName);
+  const manifestPathResult = createReporterArtifactPath({
+    outputDir: input.artifactDir,
+    testId: artifactName,
+    name: input.identity.name,
+    file: input.identity.file,
+    kind: "report",
+    format: "json",
+  });
+  const summaryPathResult = createReporterArtifactPath({
+    outputDir: input.artifactDir,
+    testId: artifactName,
+    name: input.identity.name,
+    file: input.identity.file,
+    kind: "summary",
+    format: "md",
+  });
+
+  if (
+    !manifestPathResult.ok ||
+    manifestPathResult.absolutePath === undefined ||
+    manifestPathResult.relativePath === undefined
+  ) {
+    throw new Error(formatPathDiagnostics(manifestPathResult.diagnostics));
+  }
+  if (
+    !summaryPathResult.ok ||
+    summaryPathResult.absolutePath === undefined ||
+    summaryPathResult.relativePath === undefined
+  ) {
+    throw new Error(formatPathDiagnostics(summaryPathResult.diagnostics));
+  }
+
+  const directory = path.dirname(manifestPathResult.absolutePath);
   await mkdir(directory, { recursive: true });
 
   const traceFile =
     input.association.tracePath === undefined
       ? undefined
       : path.basename(input.association.tracePath);
-  const manifest = {
-    schemaVersion: ARTIFACT_SCHEMA_VERSION,
-    package: PACKAGE_NAME,
-    test: {
-      id: input.identity.id,
-      name: input.identity.name,
-      file: input.identity.file,
-      status: input.status,
-    },
-    trace: {
-      runId: safeOptional(input.association.runId),
-      file: safeOptional(traceFile),
-    },
+  const manifestArtifact: TraceArtifact = {
+    kind: "report",
+    path: manifestPathResult.relativePath,
+    format: "json",
+    redactionProfile: input.redactionProfile,
+  };
+  const summaryArtifact: TraceArtifact = {
+    kind: "summary",
+    path: summaryPathResult.relativePath,
+    format: "md",
+    redactionProfile: input.redactionProfile,
+  };
+  const manifest = createTraceArtifactManifest({
+    framework: "vitest",
+    generatedAt: input.generatedAt,
+    results: [
+      {
+        testId: input.identity.id,
+        name: input.identity.name,
+        ...(input.identity.file === undefined ? {} : { file: input.identity.file }),
+        status: input.status,
+        tracePath: safeOptional(traceFile),
+        artifacts: [manifestArtifact, summaryArtifact],
+        diagnostics: [],
+      },
+    ],
+    artifacts: [manifestArtifact, summaryArtifact],
+    diagnostics: [],
+  });
+  const trace = {
+    runId: safeOptional(input.association.runId),
+    file: safeOptional(traceFile),
   };
 
-  const manifestPath = path.join(directory, "manifest.json");
-  const summaryPath = path.join(directory, "summary.md");
-
-  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  await writeFile(summaryPath, renderSummary(manifest), "utf-8");
+  await writeFile(
+    manifestPathResult.absolutePath,
+    `${JSON.stringify({ package: PACKAGE_NAME, manifest, trace }, null, 2)}\n`,
+  );
+  const summaryPath = summaryPathResult.absolutePath;
+  await writeFile(summaryPath, renderSummary(manifest, trace), "utf-8");
 
   return {
     directory,
-    manifestPath,
+    manifest,
+    manifestPath: manifestPathResult.absolutePath,
     status: input.status,
     summaryPath,
     testId: input.identity.id,
   };
 }
 
-function renderSummary(manifest: {
-  readonly test: {
-    readonly id: string;
-    readonly name: string;
-    readonly file?: string;
-    readonly status: string;
-  };
-  readonly trace: {
-    readonly runId?: string;
-    readonly file?: string;
-  };
-}): string {
+function renderSummary(
+  manifest: TraceArtifactManifest,
+  trace: { readonly runId?: string; readonly file?: string },
+): string {
+  const result = manifest.results[0];
   return [
     "# AgentInspect Vitest Artifact",
     "",
-    `- Test: ${manifest.test.name}`,
-    `- Test id: ${manifest.test.id}`,
-    `- Status: ${manifest.test.status}`,
-    `- File: ${manifest.test.file ?? "unknown"}`,
-    `- Trace run: ${manifest.trace.runId ?? "unknown"}`,
-    `- Trace file: ${manifest.trace.file ?? "unknown"}`,
+    `- Test: ${result?.name ?? "unknown"}`,
+    `- Test id: ${result?.testId ?? "unknown"}`,
+    `- Status: ${result?.status ?? "unknown"}`,
+    `- File: ${result?.file ?? "unknown"}`,
+    `- Trace run: ${trace.runId ?? "unknown"}`,
+    `- Trace file: ${result?.tracePath ?? "unknown"}`,
+    `- Manifest schema: ${manifest.schemaVersion}`,
     "",
     "Trace contents are intentionally not embedded in this artifact.",
     "",
   ].join("\n");
+}
+
+function formatPathDiagnostics(
+  diagnostics: readonly TraceReporterDiagnostic[],
+): string {
+  if (diagnostics.length === 0) return "Unsafe AgentInspect Vitest artifact path.";
+  return diagnostics.map((diagnostic) => diagnostic.message).join("; ");
 }
 
 function* collectTasks(input: unknown, seen = new WeakSet<object>()): Iterable<unknown> {

@@ -60,6 +60,8 @@ Reporter packages remain out of root exports. Root/core must not depend on test 
 | `@agent-inspect/redact` | redaction profiles and findings for artifacts | reporter lifecycle or test runner integration |
 | `@agent-inspect/eval` | deterministic eval summaries consumed by artifacts | reporter artifact layout ownership |
 
+Chunk 2 keeps `@agent-inspect/vitest` private while making the reporter behavior adoption-ready. The package should only become public after the maintainer confirms first-publication setup before the v2.2 release.
+
 ## Shared Artifact Contract
 
 The shared contract should be implemented before framework-specific reporters:

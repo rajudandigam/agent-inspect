@@ -41,6 +41,16 @@ describe("@agent-inspect/vitest reporter", () => {
     const summary = await readFile(artifacts[0]!.summaryPath, "utf-8");
     const manifest = await readFile(artifacts[0]!.manifestPath, "utf-8");
     const combined = `${summary}\n${manifest}`;
+    const parsed = JSON.parse(manifest) as {
+      manifest: {
+        schemaVersion: string;
+        framework: string;
+        results: Array<{
+          status: string;
+          artifacts: Array<{ path: string; redactionProfile: string }>;
+        }>;
+      };
+    };
 
     expect(combined).toContain("failing agent");
     expect(combined).toContain(path.basename(tracePath));
@@ -49,6 +59,18 @@ describe("@agent-inspect/vitest reporter", () => {
     expect(combined).not.toContain("Bearer");
     expect(combined).not.toContain("sk-secret123456789");
     expect(combined).toContain("[REDACTED]");
+    expect(parsed.manifest.schemaVersion).toBe("0.1");
+    expect(parsed.manifest.framework).toBe("vitest");
+    expect(parsed.manifest.results[0]?.status).toBe("failed");
+    expect(parsed.manifest.results[0]?.artifacts.map((artifact) => artifact.path)).toEqual([
+      "tests/manual/failing-agent-failing-agent/report.json",
+      "tests/manual/failing-agent-failing-agent/summary.md",
+    ]);
+    expect(
+      parsed.manifest.results[0]?.artifacts.every(
+        (artifact) => artifact.redactionProfile === "share",
+      ),
+    ).toBe(true);
   });
 
   it("requires explicit association and does not guess by timestamp or trace directory", async () => {
@@ -59,6 +81,27 @@ describe("@agent-inspect/vitest reporter", () => {
       id: "missing-trace",
       name: "missing trace",
       result: { state: "failed" },
+    });
+
+    expect(reporter.getArtifacts()).toEqual([]);
+    expect(reporter.getDiagnostics()).toEqual([]);
+  });
+
+  it("keeps successful tests quiet by default even when traces are associated", async () => {
+    const artifactDir = path.join(await makeTmpDir(), "artifacts");
+    const reporter = createAgentInspectVitestReporter({ artifactDir });
+
+    await reporter.onTestCaseResult({
+      id: "passing-associated",
+      name: "passing associated",
+      result: { state: "passed" },
+      meta: {
+        agentInspect: {
+          artifactLabel: "passing-associated",
+          runId: "run-passing",
+          tracePath: "/tmp/passing-associated.jsonl",
+        },
+      },
     });
 
     expect(reporter.getArtifacts()).toEqual([]);
