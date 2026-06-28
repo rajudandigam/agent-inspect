@@ -2,9 +2,23 @@
 
 AgentInspect is **framework-agnostic** at its core. Optional adapter packages integrate specific frameworks without monkey-patching, vendor sinks, or network upload.
 
+## v2.3 hardening scorecard
+
+v2.3 hardens existing official adapters before adding new ones. Priority is based on the current package set, open issue/adoption signals, conformance coverage, and how directly a framework can produce useful local traces without root/core dependencies.
+
+| Priority | Adapter path | Decision | v2.3 focus |
+| -------- | ------------ | -------- | ---------- |
+| 1 | AI SDK (`@agent-inspect/ai-sdk`) | Harden first | Improve low-friction `generateText`, `streamText`, tool-call, parallel-call, abort/error, token metadata, and Next.js route coverage while keeping `recordInputs: false` and `recordOutputs: false` as required host controls. |
+| 2 | OpenAI Agents JS (`@agent-inspect/openai-agents`) | Harden second | Make local-only replacement vs additional processor modes unmistakable, with fixtures for agents, generations, tools, handoffs, guardrails, and no default upload confusion. |
+| 3 | LangChain/LangGraph (`@agent-inspect/langchain`) | Harden third | Improve LangGraph-through-LangChain mapping for node identity, subgraphs, checkpoints, stream modes, branches, handoffs, and session/thread IDs without adding a separate package unless the callback surface proves insufficient. |
+| Defer | Mastra | No package in v2.3 chunk 0 | Keep demand-gated until there is explicit user demand and a verified extension point that avoids hidden monkey-patching or root dependencies. |
+| Defer | NestJS | No framework adapter in v2.3 chunk 0 | Continue with logging and harness-style recipes unless concrete demand justifies a narrow helper. Do not add a Nest package only to wrap app bootstrap. |
+
+Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public packages as of v2.2, but they are CI/test artifact reporters rather than framework trace adapters. They stay outside the v2.3 adapter-hardening priority order.
+
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
-**Status:** experimental adapter — optional package published in the aligned v1.8.0 package set.
+**Status:** experimental adapter — optional package published in the aligned v2.2.0 package set.
 
 The v1.8 train has hardened lifecycle identity and parallel integration isolation. The adapter remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
 
@@ -83,7 +97,7 @@ Full API: [API.md](./API.md) §11.
 
 ## LangChain.js (`@agent-inspect/langchain`)
 
-**Status:** experimental — programmatic API may evolve independently of stable core tracing.
+**Status:** experimental adapter — optional package published in the aligned v2.2.0 package set; programmatic API may evolve independently of stable core tracing.
 
 ### Install
 
@@ -236,7 +250,7 @@ Requires an interactive terminal. See [API.md](./API.md) §10.
 
 ## Vitest (`@agent-inspect/vitest`)
 
-**Status:** experimental workspace package, private/unpublished.
+**Status:** experimental reporter package — optional package published in the aligned v2.2.0 package set.
 
 ```bash
 npm install agent-inspect @agent-inspect/vitest vitest
@@ -285,7 +299,7 @@ Full API: [API.md](./API.md) §12.
 
 ## Jest (`@agent-inspect/jest`)
 
-**Status:** experimental workspace package, private/unpublished.
+**Status:** experimental reporter package — optional package published in the aligned v2.2.0 package set.
 
 ```bash
 npm install agent-inspect @agent-inspect/jest jest
@@ -328,7 +342,7 @@ Full API: [API.md](./API.md) §13.
 
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
 
-**Status:** experimental adapter — optional package published in the aligned v1.8.0 package set.
+**Status:** experimental adapter — optional package published in the aligned v2.2.0 package set.
 
 The safe integration boundary is documented in [OPENAI-AGENTS-JS-TRACING.md](./proposals/OPENAI-AGENTS-JS-TRACING.md). Install the AgentInspect processor by replacing processors:
 
@@ -368,6 +382,7 @@ Runnable local recipe: [openai-agents-local-tracing](../examples/recipes/openai-
 Direction only — see [ROADMAP.md](../ROADMAP.md):
 
 - **NestJS / logging bridges** — deeper recipes or helper patterns beyond [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)
+- **Mastra** — deferred until demand and extension-point evidence justify a narrow explicit integration
 
 No automatic universal instrumentation. Integrations remain explicit and opt-in.
 

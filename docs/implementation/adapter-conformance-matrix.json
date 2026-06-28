@@ -1,7 +1,7 @@
 {
   "$schema": "./adapter-conformance-matrix.schema.json",
   "version": 1,
-  "updatedAt": "2026-06-26",
+  "updatedAt": "2026-06-28",
   "defaults": {
     "network": "none",
     "upload": "none",
@@ -83,7 +83,7 @@
     {
       "id": "openai-agents",
       "packageName": "@agent-inspect/openai-agents",
-      "status": "implemented-experimental-private",
+      "status": "implemented-experimental",
       "fixtureScope": "packages/openai-agents/test/api-stability.test.ts",
       "installMode": "setTraceProcessors-replacement",
       "dependencyBoundary": "optional-package-peer-dependency",

@@ -83,6 +83,26 @@ It must never transmit automatically.
 
 ## Product gates
 
+### v2.3 adapter hardening snapshot
+
+Snapshot date: 2026-06-28.
+
+Current evidence:
+
+- npm package records and GitHub releases exist for the aligned v2.2.0 public package set.
+- npm downloads API, last-week windows ending 2026-06-26 or 2026-06-27, reported directional package activity for root and long-published adapter packages: `agent-inspect` 816, `@agent-inspect/ai-sdk` 552, `@agent-inspect/langchain` 835, `@agent-inspect/openai-agents` 306, and `@agent-inspect/tui` 839. Newer v2.1/v2.2 packages may report `n/a` until npm has enough download-window data.
+- Open GitHub adapter issues include AI SDK design/manual-instrumentation work (#30, #23) and LangChain persisted/streaming work (#29, #14).
+- No open GitHub issue currently asks for a Mastra adapter.
+- NestJS appears in design-partner targets and logging recipes, but there is no current issue demanding a dedicated Nest adapter package.
+
+v2.3 decisions:
+
+- Harden AI SDK first because it has explicit open adapter work, direct package usage, and a framework-native telemetry boundary.
+- Harden OpenAI Agents second because the package is now public and the main risk is user confusion between local-only replacement and additional processor modes.
+- Harden LangChain/LangGraph third because fixtures exist, but remaining value is deeper graph-shape fidelity rather than a new package.
+- Defer Mastra until there is explicit demand plus verified extension-point evidence.
+- Defer a NestJS package; keep Nest work in logging recipes or a narrow harness/helper gate unless demand changes.
+
 ### After v1.6
 
 - two external `open` users;

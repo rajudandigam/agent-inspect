@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.3.0"
-chunk: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
-status: "active"
+chunk: "v2.3-1-ai-sdk-adapter-hardening"
+status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.2-version-packages-pr-and-publication"
+dependsOn: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
 ```
 
 ## Goal
 
-Start the v2.3 adapter hardening train by reconciling v2.2 publication evidence and documenting adapter priorities before runtime adapter work.
+Harden `@agent-inspect/ai-sdk` as the first v2.3 framework adapter priority while preserving metadata-only, explicit telemetry, and no root/core AI SDK dependency boundaries.
 
 ## Read first
 
@@ -21,62 +21,64 @@ Start the v2.3 adapter hardening train by reconciling v2.2 publication evidence 
 - `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
 - `docs/ADAPTERS.md`
 - `docs/ADAPTER-CONFORMANCE.md`
-- `docs/product/ADOPTION-METRICS.md`
+- `docs/implementation/adapter-conformance-matrix.json`
+- `packages/ai-sdk/src/`
+- `packages/ai-sdk/test/`
 
 ## Current Evidence
 
-- v2.2 Version Packages PR #44 was merged to `main` at `6be4e92a492c9df20b73a1fe9a75503f456960bc`.
-- GitHub Actions CI run `28311954628` passed for the v2.2 merge commit.
-- GitHub Actions Publish run `28311954633` passed and published the linked v2.2 public package set.
-- npm `latest` resolves to `2.2.0` for `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/openai-agents`, `@agent-inspect/tui`, `@agent-inspect/redact`, `@agent-inspect/eval`, `@agent-inspect/vitest`, and `@agent-inspect/jest`.
-- Git tags and GitHub releases exist for the nine v2.2.0 public package releases.
+- v2.3 chunk 0 documented adapter priorities and demand gates.
+- AI SDK is v2.3 priority 1 because it has explicit open adapter work, direct package usage, and a framework-native telemetry boundary.
+- Required host controls remain `experimental_telemetry.isEnabled: true`, `recordInputs: false`, and `recordOutputs: false`.
+- The adapter must remain optional-package-only and must not add AI SDK, framework, provider, or telemetry dependencies to root/core.
 
 ## In Scope
 
-1. Record v2.2 publication evidence in state/readiness docs.
-2. Inventory official adapter package status and conformance gaps.
-3. Document adapter priority order for v2.3 hardening.
-4. Record Mastra/Nest demand-gate inputs and explicit go/no-go posture.
-5. Keep chunk 0 docs/planning-only unless the active plan requires a narrowly scoped source/test inspection.
+1. Improve AI SDK adapter coverage for `generateText`, `streamText`, tool calls, Next.js/local route-style usage, parallel calls, abort/error lifecycle, token metadata, and privacy defaults.
+2. Add or update no-network fixtures/tests under the AI SDK package.
+3. Update recipes/docs only as needed for accurate adoption guidance.
+4. Preserve package ESM/CJS/declaration compatibility and package smoke expectations.
 
 ## Out Of Scope
 
 - package versions, changesets, tags, releases, or publishing;
-- new adapter runtime implementation;
-- Mastra/Nest packages or hidden monkey-patching;
-- root/core framework or provider dependencies;
-- schema changes;
-- default network behavior.
+- AI SDK dependency in root/core;
+- `recordInputs` or `recordOutputs` true by default;
+- raw prompt/output/tool payload capture by default;
+- provider calls, hosted telemetry, replay, or cassette behavior;
+- Mastra/Nest/OpenAI/LangChain runtime changes;
+- schema changes.
 
 ## Acceptance Criteria
 
-- v2.2 publication evidence is recorded and non-conflicting.
-- Adapter priorities and known conformance gaps are documented.
-- Mastra/Nest posture is explicit and demand-gated.
-- No runtime code, dependency, schema, package version, tag, or publish changes are made in chunk 0.
+- AI SDK adapter tests cover the prioritized host shapes without network calls.
+- Privacy defaults and required host controls remain documented and tested.
+- No root/core dependency or package export drift is introduced.
+- Existing AI SDK imports remain compatible.
 - Validation passes.
 
 ## Suggested Commit
 
 ```text
-docs: start v2.3 adapter hardening train
+feat(ai-sdk): harden telemetry adapter
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm typecheck
-pnpm test
+pnpm exec vitest run packages/ai-sdk/test/api-stability.test.ts packages/core/test/adapter-executable-conformance.test.ts
 ```
 
 ## Chunk Gate
 
 ```bash
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm pack:smoke
 git diff --check
 ```
 
 ## Stop Condition
 
-Stop if v2.2 publication evidence conflicts, registry/tag/release state regresses, adapter priorities require a maintainer product decision, Mastra/Nest demand evidence is ambiguous, validation fails outside this docs/planning scope, or unrelated worktree changes appear.
+Stop if the AI SDK integration needs a new public API, schema change, root/core dependency, default network behavior, raw payload capture by default, package-version/change-set work, or validation failure outside the AI SDK hardening scope.

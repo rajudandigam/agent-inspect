@@ -12,7 +12,7 @@ The machine-readable matrix lives at [docs/implementation/adapter-conformance-ma
 - streaming metadata
 - metadata bounds and privacy controls
 
-The v1.7 matrix is declarative coverage guidance. v1.8 makes conformance executable and requires canonical-reader round trips before adapter output is used by checks.
+The v1.7 matrix began as declarative coverage guidance. v1.8 made the core conformance path executable and requires canonical-reader round trips before adapter output is used by checks. v2.3 uses that foundation to harden official adapters without adding shallow new adapter packages.
 
 Executable shared assertions live in `packages/core/test/adapter-executable-conformance.test.ts` and `packages/core/test/adapter-conformance-utils.ts`. Adapter-specific suites may add deeper fixture coverage, but the shared suite owns the cross-adapter defaults: local-only execution, no raw payload persistence, lifecycle identity, parentage, streaming summaries, token usage where exposed, and reader round trips.
 
@@ -20,10 +20,22 @@ Executable shared assertions live in `packages/core/test/adapter-executable-conf
 
 | Adapter | Package | Status | Default install mode | Boundary |
 | --- | --- | --- | --- | --- |
-| AI SDK | `@agent-inspect/ai-sdk` | implemented experimental; v1.8 correctness hardening pending | AI SDK telemetry integration | optional package peer dependency |
-| LangChain | `@agent-inspect/langchain` | implemented experimental | explicit callback | optional package peer dependency |
-| OpenAI Agents JS | `@agent-inspect/openai-agents` | implemented experimental; public package, with v1.9 publication recovery tracked separately | `setTraceProcessors()` replacement | optional package peer dependency |
+| AI SDK | `@agent-inspect/ai-sdk` | implemented experimental; v2.3 priority 1 | AI SDK telemetry integration | optional package peer dependency |
+| OpenAI Agents JS | `@agent-inspect/openai-agents` | implemented experimental; v2.3 priority 2 | `setTraceProcessors()` replacement | optional package peer dependency |
+| LangChain | `@agent-inspect/langchain` | implemented experimental; v2.3 priority 3 | explicit callback | optional package peer dependency |
 | LangGraph | `@agent-inspect/langchain` | fixture-backed through LangChain callback | explicit LangChain callback | existing LangChain adapter first |
+
+## v2.3 scorecard
+
+| Adapter path | Current coverage | Hardening gap | Decision |
+| ------------ | ---------------- | ------------- | -------- |
+| AI SDK | Shared conformance marks run, step, tool, LLM, error, streaming, and metadata bounds covered. | More adoption-grade fixtures for `generateText`, `streamText`, tool calls, Next.js route usage, parallel calls, abort/error lifecycle, and token metadata. | Harden first. |
+| OpenAI Agents JS | Shared conformance covers run, step, tool, LLM, error, and metadata bounds; streaming remains planned in the matrix. | More explicit local-only vs additional processor fixtures and docs for agents, generations, tools, handoffs, guardrails, and default exporter confusion. | Harden second. |
+| LangChain/LangGraph | LangChain and LangGraph-through-LangChain fixtures cover shared signals. | Better LangGraph node/subgraph/checkpoint/branch/handoff/session mapping and documentation of callback-surface limits. | Harden third. |
+| Mastra | No official package, no conformance fixture, no root dependency. | Demand and extension-point evidence are not yet sufficient. | Defer. |
+| NestJS | Logging recipes exist; no official framework adapter or conformance fixture. | Demand may justify recipes or a harness helper, not a broad monkey-patching adapter. | Defer package; keep recipe/helper gate. |
+
+`@agent-inspect/vitest` and `@agent-inspect/jest` are public reporter packages, not framework trace adapters. Their artifact-manifest behavior is covered by reporter tests and CI-summary tests rather than this adapter conformance matrix.
 
 ## Required defaults
 

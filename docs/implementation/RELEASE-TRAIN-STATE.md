@@ -9,8 +9,8 @@ currentTrain: "v2.3.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "6be4e92a492c9df20b73a1fe9a75503f456960bc"
-lastValidationLevel: "v2.2-version-packages-pr-and-publication"
+lastConfirmedCommit: "0637ce6796711375f32b737be51de815ecc3b750"
+lastValidationLevel: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -76,9 +76,10 @@ completedChunks:
   - "v2.2-reporter-first-publication-bootstrap-prep"
   - "v2.2-release-prep"
   - "v2.2-version-packages-pr-and-publication"
-currentChunk: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
+  - "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
+currentChunk: "v2.3-1-ai-sdk-adapter-hardening"
 pendingManualGate: "none"
-nextAction: "Start v2.3 chunk 0: reconcile v2.2 publication evidence, document adapter priorities, and record Mastra/Nest go/no-go inputs without runtime adapter implementation."
+nextAction: "Start v2.3 chunk 1: harden the AI SDK adapter with focused generateText, streamText, tool-call, route, parallel, abort/error, token metadata, privacy-default, and package smoke coverage."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -87,6 +88,6 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
-- **Active proposal:** none for chunk 0; use adapter docs and package evidence.
+- **Active proposal:** none for chunk 1; use the active execution plan, adapter docs, and AI SDK package tests.
 - **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
