@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.1.0"
-publishedVersion: "2.1.0"
-currentTrain: "v2.2.0"
-trainStatus: "release_prep_ready"
+baselineVersion: "2.2.0"
+publishedVersion: "2.2.0"
+currentTrain: "v2.3.0"
+trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "0080bf30e02b8855261862b15c346280a00323ca"
-lastValidationLevel: "v2.2-release-prep"
+lastConfirmedCommit: "6be4e92a492c9df20b73a1fe9a75503f456960bc"
+lastValidationLevel: "v2.2-version-packages-pr-and-publication"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -75,9 +75,10 @@ completedChunks:
   - "v2.2-5-reporter-docs-package-smoke-and-readiness"
   - "v2.2-reporter-first-publication-bootstrap-prep"
   - "v2.2-release-prep"
-currentChunk: "v2.2-release-prep"
-pendingManualGate: "none; reporter npm bootstrap and Trusted Publishing setup confirmed"
-nextAction: "Push v2.2 release-prep changes, wait for the Changesets Version Packages PR, verify it contains exactly the expected linked v2.2.0 minor bumps, then merge after checks are green."
+  - "v2.2-version-packages-pr-and-publication"
+currentChunk: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
+pendingManualGate: "none"
+nextAction: "Start v2.3 chunk 0: reconcile v2.2 publication evidence, document adapter priorities, and record Mastra/Nest go/no-go inputs without runtime adapter implementation."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -85,8 +86,7 @@ updatedAt: "2026-06-28"
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
-- **Active plan:** [release-trains/V2.2.0-EXECUTION-PLAN.md](./release-trains/V2.2.0-EXECUTION-PLAN.md)
-- **Active proposal:** [../proposals/CI-REPORTERS.md](../proposals/CI-REPORTERS.md)
+- **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
+- **Active proposal:** none for chunk 0; use adapter docs and package evidence.
 - **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
-- **Reporter bootstrap:** [release-trains/V2.2.0-REPORTER-FIRST-PUBLICATION-BOOTSTRAP.md](./release-trains/V2.2.0-REPORTER-FIRST-PUBLICATION-BOOTSTRAP.md)
 - **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)

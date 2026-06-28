@@ -3,86 +3,80 @@
 ## Identity
 
 ```yaml
-train: "v2.2.0"
-chunk: "v2.2-release-prep"
-status: "release-prep"
+train: "v2.3.0"
+chunk: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
+status: "active"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.2-reporter-first-publication-bootstrap"
+dependsOn: "v2.2-version-packages-pr-and-publication"
 ```
 
 ## Goal
 
-Prepare the v2.2.0 linked minor release after maintainer manual bootstrap and Trusted Publishing setup for `@agent-inspect/vitest` and `@agent-inspect/jest`.
+Start the v2.3 adapter hardening train by reconciling v2.2 publication evidence and documenting adapter priorities before runtime adapter work.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
-- `docs/implementation/release-trains/V2.2.0-RELEASE-READINESS.md`
-- `docs/proposals/CI-REPORTERS.md`
+- `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
+- `docs/ADAPTERS.md`
+- `docs/ADAPTER-CONFORMANCE.md`
+- `docs/product/ADOPTION-METRICS.md`
 
 ## Current Evidence
 
-- Vitest and Jest reporters write shared `0.1` artifact manifests through `agent-inspect/reporters`.
-- `agent-inspect ci-summary` reads reporter manifests and writes deterministic Markdown/JSON summaries without reading trace contents.
-- GitHub Actions artifact recipes rely on user-controlled `upload-artifact`; AgentInspect performs no uploads or GitHub API writes.
-- `@agent-inspect/vitest` and `@agent-inspect/jest` are visible on npm at `2.1.0` with `bootstrap` and `latest` dist-tags.
-- Maintainer confirmed Trusted Publishing is enabled for both reporter package records.
-- v2.2 release-readiness validation passed locally in `docs/implementation/release-trains/V2.2.0-RELEASE-READINESS.md`.
+- v2.2 Version Packages PR #44 was merged to `main` at `6be4e92a492c9df20b73a1fe9a75503f456960bc`.
+- GitHub Actions CI run `28311954628` passed for the v2.2 merge commit.
+- GitHub Actions Publish run `28311954633` passed and published the linked v2.2 public package set.
+- npm `latest` resolves to `2.2.0` for `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/openai-agents`, `@agent-inspect/tui`, `@agent-inspect/redact`, `@agent-inspect/eval`, `@agent-inspect/vitest`, and `@agent-inspect/jest`.
+- Git tags and GitHub releases exist for the nine v2.2.0 public package releases.
 
 ## In Scope
 
-1. Remove `@agent-inspect/vitest` and `@agent-inspect/jest` from Changesets ignore.
-2. Add both reporter packages to the linked public package set.
-3. Add a linked minor changeset for v2.2.0 across the public package set.
-4. Validate the Changesets plan and release-prep gates.
-5. Push release-prep changes to `main` and wait for the Version Packages PR.
+1. Record v2.2 publication evidence in state/readiness docs.
+2. Inventory official adapter package status and conformance gaps.
+3. Document adapter priority order for v2.3 hardening.
+4. Record Mastra/Nest demand-gate inputs and explicit go/no-go posture.
+5. Keep chunk 0 docs/planning-only unless the active plan requires a narrowly scoped source/test inspection.
 
 ## Out Of Scope
 
-- Manual package version edits;
-- local `npm publish` / `pnpm publish`;
-- direct tag creation;
-- manual GitHub releases;
-- runtime reporter behavior changes;
-- GitHub API comments/checks;
-- artifact upload by AgentInspect;
-- new dependencies;
-- schema changes.
+- package versions, changesets, tags, releases, or publishing;
+- new adapter runtime implementation;
+- Mastra/Nest packages or hidden monkey-patching;
+- root/core framework or provider dependencies;
+- schema changes;
+- default network behavior.
 
 ## Acceptance Criteria
 
-- Changesets status reports exactly nine linked public packages planned for minor v2.2.0.
-- Reporter packages are no longer ignored by Changesets.
-- No package versions are hand-edited.
+- v2.2 publication evidence is recorded and non-conflicting.
+- Adapter priorities and known conformance gaps are documented.
+- Mastra/Nest posture is explicit and demand-gated.
+- No runtime code, dependency, schema, package version, tag, or publish changes are made in chunk 0.
 - Validation passes.
-- Version Packages PR is created by automation after push.
 
 ## Suggested Commit
 
 ```text
-chore: prepare v2.2 release
+docs: start v2.3 adapter hardening train
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec changeset status --verbose
+pnpm typecheck
+pnpm test
 ```
 
 ## Chunk Gate
 
 ```bash
-pnpm build
-pnpm test:all
-pnpm fixtures:check
-pnpm recipes:check
-pnpm pack:smoke
-pnpm compat:smoke
+pnpm typecheck
+pnpm test
 git diff --check
 ```
 
 ## Stop Condition
 
-Stop if Changesets plans a patch/major release, omits a public linked package, includes a private package, validation fails outside this release-prep scope, the Version Packages PR diff is broader than expected, or publish automation partially fails.
+Stop if v2.2 publication evidence conflicts, registry/tag/release state regresses, adapter priorities require a maintainer product decision, Mastra/Nest demand evidence is ambiguous, validation fails outside this docs/planning scope, or unrelated worktree changes appear.
