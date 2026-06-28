@@ -73,6 +73,8 @@
     "tsup.harness.config.ts",
     "tsup.redact.config.ts",
     "tsup.eval.config.ts",
+    "tsup.mcp.config.ts",
+    "tsup.guardrails.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

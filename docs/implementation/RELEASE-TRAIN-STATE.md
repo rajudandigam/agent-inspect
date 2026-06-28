@@ -9,8 +9,8 @@ currentTrain: "v2.5.0"
 trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "b85476f"
-lastValidationLevel: "v2.5-0-guardrail-circuit-rfc"
+lastConfirmedCommit: "36f6b6b"
+lastValidationLevel: "v2.5-1-guardrails-package"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -95,9 +95,9 @@ completedChunks:
   - "v2.4-version-packages-pr-and-publication"
   - "v2.4-mcp-first-publish-bootstrap"
   - "v2.4-publication-complete"
-  - "v2.5-0-guardrail-circuit-rfc"
-currentChunk: "v2.5-1-guardrails-package"
-nextAction: "Chunk 1 — @agent-inspect/guardrails scaffold and built-in rules."
+  - "v2.5-1-guardrails-package"
+currentChunk: "v2.5-2-circuit-package"
+nextAction: "Chunk 2 — @agent-inspect/circuit scaffold and trace analyzers."
 updatedAt: "2026-06-04"
 ```
 

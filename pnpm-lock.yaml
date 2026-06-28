@@ -357,6 +357,12 @@ importers:
         specifier: workspace:*
         version: link:../..
 
+  packages/guardrails:
+    dependencies:
+      '@agent-inspect/redact':
+        specifier: workspace:*
+        version: link:../redact
+
   packages/harness:
     dependencies:
       agent-inspect:

@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.5.0"
-chunk: "v2.5-0-guardrail-circuit-rfc"
+chunk: "v2.5-1-guardrails-package"
 status: "complete"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-publication-complete"
+dependsOn: "v2.5-0-guardrail-circuit-rfc"
 ```
 
 ## Goal
 
-Define deterministic local guardrail/circuit contracts before runtime packages.
+Add `@agent-inspect/guardrails` with deterministic built-in rules and package smoke.
 
 ## Suggested Commit
 
 ```text
-docs: define guardrail and circuit contracts
+feat(guardrails): add deterministic guardrail package
 ```

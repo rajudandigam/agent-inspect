@@ -286,6 +286,33 @@ const optionalPackageChecks = [
       void client;
     `,
   },
+  {
+    dir: "packages/guardrails",
+    name: "@agent-inspect/guardrails",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { runGuardrails } from "@agent-inspect/guardrails";
+      const result = runGuardrails({ text: "hello" }, {
+        rules: ["guardrail.banned-phrase"],
+        bannedPhrase: { phrases: ["blocked"] },
+      });
+      if (!result.ok) throw new Error("unexpected fail");
+    `,
+    cjs: `
+      const { runGuardrails } = require("@agent-inspect/guardrails");
+      const result = runGuardrails({ text: "hello" }, {
+        rules: ["guardrail.banned-phrase"],
+        bannedPhrase: { phrases: ["blocked"] },
+      });
+      if (!result.ok) throw new Error("unexpected fail");
+    `,
+    ts: `
+      import { runGuardrails, type GuardrailRunResult } from "@agent-inspect/guardrails";
+      const result: GuardrailRunResult = runGuardrails({ text: "hello" });
+      void result;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {
