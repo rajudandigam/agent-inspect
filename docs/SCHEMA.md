@@ -131,6 +131,7 @@ Unknown status must **not** be treated as success.
 
 - Runs may include `metadata` on `run_started`.
 - **Correlation metadata (v1.3.0+):** optional `correlationId`, `requestId`, `decisionId`, and `groupId` on `run_started.metadata` when passed via `inspectRun` / `maybeInspectRun` options. Event names remain unchanged (`run_started`, `step_started`, `step_completed`, `run_completed`). `stats --correlation-id` and `--group-id` filter by these fields; `list` / `view` do not filter by correlation yet.
+- **Session and workflow metadata (v2.4.0+, additive):** optional fields for multi-run causality — see [SESSIONS-AND-WORKFLOW-CAUSALITY.md](./proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md). Recommended placement: `run_started.metadata` (manual v0.1) or persisted `attributes` (v0.2/v1.0). Common keys: `sessionId`, `conversationId`, `parentGroupId`, `attempt`, `retryOf`, `handoffFrom`, `handoffTo`, `subAgentId`, `subAgentName`, `jobId`, `queueName`, `workflowName`, `workflowStep`, `toolCallId`, `mcpToolCallId`, `linkedStepId`. All optional; missing keys mean unknown. Readers must not infer handoff/retry links from timestamps alone. Existing traces without these fields remain fully readable.
 - Steps may include `metadata` on `step_started`.
 - Manual traces intentionally avoid full prompt/output capture by default.
 - **Redaction (default on):** before disk, `inspectRun` / `step` redact sensitive keys using the shared `Redactor` defaults (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Opt out with `redact: false`.

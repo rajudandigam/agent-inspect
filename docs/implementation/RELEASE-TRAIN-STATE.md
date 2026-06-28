@@ -9,8 +9,8 @@ currentTrain: "v2.4.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "ed477b6be9d89b53da2edf122b693b343bb12ec4"
-lastValidationLevel: "v2.3-version-packages-pr-and-publication"
+lastConfirmedCommit: "0e3e11d"
+lastValidationLevel: "v2.4-0-docs-gate"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -85,9 +85,10 @@ completedChunks:
   - "v2.3-6-adapter-docs-and-release-readiness"
   - "v2.3-release-prep"
   - "v2.3-version-packages-pr-and-publication"
-currentChunk: "v2.4-0-session-model-rfc-and-compatibility-plan"
+  - "v2.4-0-session-model-rfc-and-compatibility-plan"
+currentChunk: "v2.4-1-session-aware-reader-and-index-helpers"
 pendingManualGate: "none"
-nextAction: "Start v2.4 chunk 0: define the additive session and workflow causality model before runtime changes."
+nextAction: "Implement v2.4 chunk 1: buildSessionIndex, session/group aggregation, handoff edges, critical path model, fixtures, and tests."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -96,6 +97,5 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.4.0-EXECUTION-PLAN.md](./release-trains/V2.4.0-EXECUTION-PLAN.md)
-- **Active proposal:** `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md` to create in chunk 0.
+- **Active proposal:** [SESSIONS-AND-WORKFLOW-CAUSALITY.md](../proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md)
 - **Latest readiness:** [release-trains/V2.3.0-RELEASE-READINESS.md](./release-trains/V2.3.0-RELEASE-READINESS.md)
-- **Previous readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)

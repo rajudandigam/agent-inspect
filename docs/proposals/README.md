@@ -24,6 +24,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [REDACT-PACKAGE.md](./REDACT-PACKAGE.md) | v2.1.0 | Standalone deterministic redaction package boundary, detector/profile semantics, findings, and CLI shape |
 | [EVAL-PACKAGE.md](./EVAL-PACKAGE.md) | v2.1.0 | Deterministic local eval package boundary, result schema, CLI shape, and artifact interaction |
 | [CI-REPORTERS.md](./CI-REPORTERS.md) | v2.2.0 | Optional Vitest/Jest reporter package boundary, shared artifact contract, and CI summary workflow |
+| [SESSIONS-AND-WORKFLOW-CAUSALITY.md](./SESSIONS-AND-WORKFLOW-CAUSALITY.md) | v2.4.0 | Additive session/workflow metadata, handoff/retry rules, MCP telemetry boundary |
 
 ## Rules
 
