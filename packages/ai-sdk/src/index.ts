@@ -22,7 +22,7 @@ import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 /**
  * Experimental capture mode for the AI SDK adapter.
  *
- * @experimental This package is part of the v1.7 adapter train.
+ * @experimental This package is part of the framework adapter train.
  */
 export type AgentInspectAiSdkCaptureMode = "metadata-only" | "preview";
 
@@ -34,17 +34,17 @@ export type AgentInspectAiSdkCaptureMode = "metadata-only" | "preview";
  */
 export interface AgentInspectAiSdkOptions {
   /**
-   * Explicit local writer for future runtime integration.
+   * Explicit local writer for runtime integration.
    */
   writer?: TraceWriter;
 
   /**
-   * Convenience local trace directory for future writer-owned persistence.
+   * Convenience local trace directory for writer-owned persistence.
    */
   traceDir?: string;
 
   /**
-   * Optional run name used by future lifecycle mapping.
+   * Optional run name used by lifecycle mapping.
    */
   runName?: string;
 

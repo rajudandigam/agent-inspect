@@ -9,8 +9,8 @@ currentTrain: "v2.3.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "0637ce6796711375f32b737be51de815ecc3b750"
-lastValidationLevel: "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
+lastConfirmedCommit: "312668746eac3535dbffed276caf218fe0e6e53a"
+lastValidationLevel: "v2.3-1-ai-sdk-adapter-hardening"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -77,9 +77,10 @@ completedChunks:
   - "v2.2-release-prep"
   - "v2.2-version-packages-pr-and-publication"
   - "v2.3-0-post-v2.2-reconciliation-and-adapter-scorecard"
-currentChunk: "v2.3-1-ai-sdk-adapter-hardening"
+  - "v2.3-1-ai-sdk-adapter-hardening"
+currentChunk: "v2.3-2-openai-agents-adapter-hardening"
 pendingManualGate: "none"
-nextAction: "Start v2.3 chunk 1: harden the AI SDK adapter with focused generateText, streamText, tool-call, route, parallel, abort/error, token metadata, privacy-default, and package smoke coverage."
+nextAction: "Start v2.3 chunk 2: harden the OpenAI Agents adapter with clear local-only replacement vs additional processor modes, no-upload wording, and focused processor fixtures."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -88,6 +89,6 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
-- **Active proposal:** none for chunk 1; use the active execution plan, adapter docs, and AI SDK package tests.
+- **Active proposal:** [../proposals/OPENAI-AGENTS-JS-TRACING.md](../proposals/OPENAI-AGENTS-JS-TRACING.md)
 - **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)

@@ -1,5 +1,5 @@
 /**
- * v1.7 AI SDK adapter recipe.
+ * AI SDK adapter recipe.
  * Uses AI SDK test utilities only: no provider calls, no API keys, no upload.
  */
 import { mkdir } from "node:fs/promises";

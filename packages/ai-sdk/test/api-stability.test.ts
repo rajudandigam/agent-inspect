@@ -386,6 +386,110 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     expectNoRawText(events, "raw generated answer");
   });
 
+  it("keeps parallel generateText calls isolated with one integration per call", async () => {
+    const writerA = memoryWriter();
+    const writerB = memoryWriter();
+    const integrationA = agentInspect({
+      writer: writerA,
+      runName: "parallel-a",
+      capture: "metadata-only",
+    });
+    const integrationB = agentInspect({
+      writer: writerB,
+      runName: "parallel-b",
+      capture: "metadata-only",
+    });
+
+    await Promise.all([
+      generateText({
+        model: new MockLanguageModelV3({
+          provider: "fixture-provider",
+          modelId: "parallel-model-a",
+          doGenerate: {
+            content: [{ type: "text", text: "raw parallel answer a" }],
+            finishReason: { unified: "stop", raw: "stop" },
+            usage,
+            response: {
+              id: "parallel-response-a",
+              modelId: "parallel-model-a",
+              timestamp: new Date("2026-06-25T00:00:00.000Z"),
+            },
+            warnings: [],
+          },
+        }),
+        prompt: "raw parallel prompt a",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: false,
+          recordOutputs: false,
+          integrations: [integrationA],
+        },
+      }),
+      generateText({
+        model: new MockLanguageModelV3({
+          provider: "fixture-provider",
+          modelId: "parallel-model-b",
+          doGenerate: {
+            content: [{ type: "text", text: "raw parallel answer b" }],
+            finishReason: { unified: "stop", raw: "stop" },
+            usage,
+            response: {
+              id: "parallel-response-b",
+              modelId: "parallel-model-b",
+              timestamp: new Date("2026-06-25T00:00:00.000Z"),
+            },
+            warnings: [],
+          },
+        }),
+        prompt: "raw parallel prompt b",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: false,
+          recordOutputs: false,
+          integrations: [integrationB],
+        },
+      }),
+    ]);
+
+    const eventsA = writerA.getEvents();
+    const eventsB = writerB.getEvents();
+    expect(eventsA.map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+      ["LLM", "ok"],
+      ["RUN", "ok"],
+    ]);
+    expect(eventsB.map((event) => [event.kind, event.status])).toEqual([
+      ["RUN", "running"],
+      ["LLM", "running"],
+      ["LLM", "ok"],
+      ["RUN", "ok"],
+    ]);
+    expect(eventsA[0]?.runId).not.toBe(eventsB[0]?.runId);
+    expect(eventsA[0]?.name).toBe("parallel-a");
+    expect(eventsB[0]?.name).toBe("parallel-b");
+    expect(eventsA[2]?.attributes).toMatchObject({
+      responseId: "parallel-response-a",
+      responseModelId: "parallel-model-a",
+    });
+    expect(eventsB[2]?.attributes).toMatchObject({
+      responseId: "parallel-response-b",
+      responseModelId: "parallel-model-b",
+    });
+    expect(integrationA.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 0,
+    });
+    expect(integrationB.getDiagnostics()).toMatchObject({
+      writeFailures: 0,
+      lifecycleWarnings: 0,
+    });
+    expectNoRawText(eventsA, "raw parallel prompt a");
+    expectNoRawText(eventsA, "raw parallel answer a");
+    expectNoRawText(eventsB, "raw parallel prompt b");
+    expectNoRawText(eventsB, "raw parallel answer b");
+  });
+
   it("falls back from preview capture with explicit diagnostics and no raw text", async () => {
     const writer = memoryWriter();
     const integration = agentInspect({

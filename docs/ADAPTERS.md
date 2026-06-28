@@ -20,7 +20,7 @@ Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public package
 
 **Status:** experimental adapter — optional package published in the aligned v2.2.0 package set.
 
-The v1.8 train has hardened lifecycle identity and parallel integration isolation. The adapter remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
+The adapter has hardened lifecycle identity and parallel integration isolation. It remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
 
 ### Install
 
@@ -63,9 +63,11 @@ const result = await generateText({
 
 [examples/recipes/ai-sdk-local-telemetry](../examples/recipes/ai-sdk-local-telemetry/) uses AI SDK test utilities only (`MockLanguageModelV3`, `simulateReadableStream`) and writes local v0.2 adapter events for `agent-inspect open`.
 
+[examples/recipes/ai-sdk-next-route](../examples/recipes/ai-sdk-next-route/) shows a route-style telemetry factory that creates one AgentInspect integration per request while keeping the same no-network, metadata-only defaults.
+
 ### Common host shapes
 
-Use the same explicit telemetry block for route handlers, streaming, and tool calls. The adapter does not wrap providers or change host-call settings.
+Use the same explicit telemetry block shape for route handlers, streaming, and tool calls. Create a fresh `agentInspect(...)` integration per concurrent request/generation. The adapter does not wrap providers or change host-call settings.
 
 ```ts
 const telemetry = {

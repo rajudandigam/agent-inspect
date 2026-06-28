@@ -2,7 +2,7 @@
 
 ## What this demonstrates
 
-A **v1.7 AI SDK adapter workflow** that records local AgentInspect traces from AI SDK v6 telemetry callbacks.
+An AI SDK adapter workflow that records local AgentInspect traces from AI SDK v6 telemetry callbacks.
 
 The recipe uses `MockLanguageModelV3` and `simulateReadableStream` from `ai/test`, so it has no provider calls, no API keys, no network dependency, and no upload behavior.
 
@@ -35,5 +35,5 @@ See `expected-output.txt`.
 ## Notes and limitations
 
 - This recipe is for local inspection and adapter validation; it is not a replay or hosted telemetry example.
-- The `@agent-inspect/ai-sdk` package is experimental and published in the aligned v1.7+ package set.
+- The `@agent-inspect/ai-sdk` package is experimental and published in the aligned public package set.
 - The adapter cannot force AI SDK host-call telemetry options from inside the integration object, so callers must set `recordInputs: false` and `recordOutputs: false`.

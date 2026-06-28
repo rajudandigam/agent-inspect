@@ -1,0 +1,5 @@
+AI SDK route-style telemetry recipe complete
+Trace directory: <repo>/examples/recipes/ai-sdk-next-route/.agent-inspect-runs
+
+Inspect the local v0.2 adapter traces:
+  npx agent-inspect open <trace-dir>

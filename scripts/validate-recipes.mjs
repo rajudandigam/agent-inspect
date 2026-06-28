@@ -26,6 +26,7 @@ const RECIPES = [
   "what-report-inspect",
   "runtime-and-ingestion",
   "ai-sdk-local-telemetry",
+  "ai-sdk-next-route",
   "openai-agents-local-tracing",
   "langgraph-callback-local",
   "harness-basic",
@@ -76,7 +77,9 @@ function checkBannedImports(rel, text) {
   if (!/\.tsx?$/i.test(rel)) return;
   const allowAiSdkFixture =
     rel.startsWith(path.join("examples", "recipes", "ai-sdk-local-telemetry")) ||
-    rel.startsWith("examples/recipes/ai-sdk-local-telemetry/");
+    rel.startsWith("examples/recipes/ai-sdk-local-telemetry/") ||
+    rel.startsWith(path.join("examples", "recipes", "ai-sdk-next-route")) ||
+    rel.startsWith("examples/recipes/ai-sdk-next-route/");
   const allowOpenAiAgentsFixture =
     rel.startsWith(path.join("examples", "recipes", "openai-agents-local-tracing")) ||
     rel.startsWith("examples/recipes/openai-agents-local-tracing/");
