@@ -40,7 +40,7 @@ See `expected-output.txt` (`Run nest_run_01`, `tool:search`, `llm:plan`, `confid
 ## Notes and limitations
 
 - Recipe uses static sample lines only—no Nest bootstrap, no HTTP server.
-- Future optional package: `@agent-inspect/nest` (see `.github/ISSUE_DRAFTS/023-add-agent-inspect-nest-package.md`).
+- v2.3 decision: no `@agent-inspect/nest` package. Keep NestJS support on explicit structured logs unless future demand proves a narrow local-only harness/bootstrap helper is worth maintaining.
 
 ## Version ownership
 

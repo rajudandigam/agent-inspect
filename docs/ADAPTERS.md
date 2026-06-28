@@ -11,8 +11,8 @@ v2.3 hardens existing official adapters before adding new ones. Priority is base
 | 1 | AI SDK (`@agent-inspect/ai-sdk`) | Harden first | Improve low-friction `generateText`, `streamText`, tool-call, parallel-call, abort/error, token metadata, and Next.js route coverage while keeping `recordInputs: false` and `recordOutputs: false` as required host controls. |
 | 2 | OpenAI Agents JS (`@agent-inspect/openai-agents`) | Harden second | Make local-only replacement vs additional processor modes unmistakable, with fixtures for agents, generations, tools, handoffs, guardrails, and no default upload confusion. |
 | 3 | LangChain/LangGraph (`@agent-inspect/langchain`) | Harden third | Improve LangGraph-through-LangChain mapping for node identity, subgraphs, checkpoints, stream modes, branches, handoffs, and session/thread IDs without adding a separate package unless the callback surface proves insufficient. |
-| Defer | Mastra | No package in v2.3 chunk 0 | Keep demand-gated until there is explicit user demand and a verified extension point that avoids hidden monkey-patching or root dependencies. |
-| Defer | NestJS | No framework adapter in v2.3 chunk 0 | Continue with logging and harness-style recipes unless concrete demand justifies a narrow helper. Do not add a Nest package only to wrap app bootstrap. |
+| Defer | Mastra | No package in v2.3 | Current evidence does not justify an official package. Revisit only when there is explicit user demand and a verified extension point that avoids hidden monkey-patching, hosted sinks, or root dependencies. |
+| Defer | NestJS | No framework adapter in v2.3 | Keep the supported path at structured-log ingestion via the existing NestJS JSON logging recipe. Revisit a narrow harness/bootstrap helper only with concrete demand; do not add a package only to wrap app bootstrap. |
 
 Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public packages as of v2.2, but they are CI/test artifact reporters rather than framework trace adapters. They stay outside the v2.3 adapter-hardening priority order.
 
@@ -380,12 +380,38 @@ Runnable local recipe: [openai-agents-local-tracing](../examples/recipes/openai-
 
 ---
 
+## Demand-gated framework decisions
+
+### Mastra
+
+**v2.3 decision:** no official package, recipe, or conformance fixture.
+
+The v2.3 evidence review found no open adapter request and no verified extension point in this repository that would produce useful local AgentInspect traces without hidden framework patching or new root/core dependencies. A future Mastra path must first prove:
+
+- explicit user demand, such as an issue, design-partner request, or retained external recipe;
+- a stable, framework-native callback/export hook;
+- metadata-only local trace output with no hosted upload or provider calls by default;
+- no dependency leakage into `agent-inspect` root or `@agent-inspect/core`;
+- no raw prompt, output, tool payload, header, or request/response capture by default.
+
+Until those are true, Mastra stays outside the official adapter set rather than shipping a shallow package.
+
+### NestJS
+
+**v2.3 decision:** no official framework adapter package.
+
+NestJS remains covered through structured-log ingestion, not app bootstrap wrapping. The supported recipe is [examples/recipes/nestjs-json-logging](../examples/recipes/nestjs-json-logging), which maps Nest-shaped JSON lines into local execution trees without importing `@nestjs/*`, starting an HTTP server, or changing application behavior.
+
+A future Nest helper remains demand-gated and must be narrower than a framework adapter. Acceptable evidence would be a repeated need to reduce logging/harness setup friction while preserving explicit opt-in, local-only output, and zero root/core Nest dependency. Broad interceptors, automatic module scanning, monkey-patching, request body capture, or default telemetry upload remain out of scope.
+
+---
+
 ## Future adapters (not shipped)
 
 Direction only — see [ROADMAP.md](../ROADMAP.md):
 
-- **NestJS / logging bridges** — deeper recipes or helper patterns beyond [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)
-- **Mastra** — deferred until demand and extension-point evidence justify a narrow explicit integration
+- **NestJS helper patterns** — only if demand proves a narrow harness/bootstrap helper is worth maintaining beyond [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md) and the current NestJS logging recipe.
+- **Mastra** — deferred until demand and extension-point evidence justify a narrow explicit integration.
 
 No automatic universal instrumentation. Integrations remain explicit and opt-in.
 

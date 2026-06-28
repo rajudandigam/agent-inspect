@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.3.0"
-chunk: "v2.3-5-demand-gated-mastra-nest-decision"
+chunk: "v2.3-6-adapter-docs-and-release-readiness"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.3-4-adapter-conformance-runner-upgrade"
+dependsOn: "v2.3-5-demand-gated-mastra-nest-decision"
 ```
 
 ## Goal
 
-Record defensible Mastra and NestJS adapter decisions without adding shallow packages or broad monkey-patching.
+Make v2.3 adapter adoption paths visible and produce release-readiness evidence before release prep.
 
 ## Read first
 
@@ -20,60 +20,68 @@ Record defensible Mastra and NestJS adapter decisions without adding shallow pac
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
 - `docs/ADAPTERS.md`
-- `docs/product/ADOPTION-METRICS.md`
-- `examples/recipes/`
+- `docs/ADAPTER-CONFORMANCE.md`
+- `examples/recipes/README.md`
+- `README.md`
+- `CHANGELOG.md`
 
 ## Current Evidence
 
-- v2.3 chunks 1-4 hardened the official AI SDK, OpenAI Agents, LangChain/LangGraph, and shared conformance paths.
-- The v2.3 plan explicitly defers Mastra/Nest packages unless demand and extension-point evidence justify narrow helpers.
-- Product boundary disallows universal monkey-patching, hidden telemetry, root framework dependencies, hosted upload, and shallow adapters.
+- v2.3 chunks 1-4 hardened AI SDK, OpenAI Agents, LangChain/LangGraph, and shared conformance paths.
+- v2.3 chunk 5 explicitly deferred Mastra and NestJS packages while keeping NestJS structured-log ingestion as the supported recipe path.
+- The release plan requires README/adapter docs alignment, recipe visibility, package smoke, conformance evidence, and a v2.3 readiness file.
 
 ## In Scope
 
-1. Review existing demand/adoption evidence for Mastra and NestJS.
-2. Record whether each path ships a package, recipe/helper, or explicit deferral.
-3. Add or update a recipe only if it stays dependency-light, local-only, and does not imply broad framework instrumentation.
-4. Update adapter docs/product evidence/state.
+1. Align README, adapter docs, and recipe index with the hardened v2.3 official adapter paths.
+2. Add `docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md`.
+3. Record adapter conformance, recipe, package-smoke, compatibility, dependency, schema, security, and known-limit evidence.
+4. Update CHANGELOG Unreleased notes only if needed for v2.3 readiness.
+5. Update release-train state and current task for release prep after validation.
 
 ## Out Of Scope
 
 - package versions, changesets, tags, releases, or publishing;
-- new packages without demand evidence;
-- Mastra/Nest dependencies in root/core;
-- hidden monkey-patching or automatic instrumentation;
-- hosted upload, provider calls, or network behavior;
+- version-package PR creation or merging;
+- new adapter implementation;
+- package publication;
+- new root/core dependencies;
+- hosted upload, provider calls, network behavior, schema changes, or public breaking changes;
 - schema changes;
-- AI SDK/OpenAI Agents/LangChain runtime changes.
+- Mastra/Nest implementation.
 
 ## Acceptance Criteria
 
-- Mastra and NestJS decisions are explicit and defensible.
-- No shallow adapter package is added.
-- Docs explain any recipe/helper path and its limitations.
+- README and docs lead users to the strongest supported adapter paths.
+- v2.3 release-readiness evidence exists and matches local validation.
+- Conformance and recipe coverage are visible.
 - Validation passes.
 
 ## Suggested Commit
 
 ```text
-docs: record demand-gated adapter decisions
+docs: prepare v2.3 release readiness
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm recipes:check
+pnpm exec vitest run packages/core/test/adapter-executable-conformance.test.ts packages/core/test/adapter-conformance-matrix.test.ts
 pnpm typecheck
+pnpm pack:smoke
 ```
 
 ## Chunk Gate
 
 ```bash
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm recipes:check
+pnpm pack:smoke
 git diff --check
 ```
 
 ## Stop Condition
 
-Stop if a decision requires a new public package, schema change, root/core dependency, framework monkey-patching, network behavior, package-version/change-set work, or maintainer judgment about demand evidence.
+Stop if readiness uncovers a release-blocking validation failure, dependency drift, schema/API conflict, package-version work, partial publication, or maintainer decision that cannot be handled inside the docs/readiness scope.
