@@ -207,11 +207,23 @@ export type {
 } from "../sessions/index.js";
 export {
   SESSION_WORKFLOW_KEYS,
+  aggregateSessionCheckResults,
   buildSessionIndex,
-  extractSessionWorkflowMetadata,
   enrichSessionRunRecord,
+  extractSessionWorkflowMetadata,
+  filterMetasBySessionScope,
+  groupSessionCohorts,
   loadSessionRunRecords,
   sessionKeyForRun,
+  traceMetasToSessionRunRecords,
+} from "../sessions/index.js";
+export type {
+  GroupSessionCohortsOptions,
+  SessionCohort,
+  SessionCohortKind,
+  SessionScopeOptions,
+  SessionScopeResult,
+  TraceSessionCheckResult,
 } from "../sessions/index.js";
 
 export { isAgentInspectTrace } from "../trace-verification.js";

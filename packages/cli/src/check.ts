@@ -7,6 +7,14 @@ import {
   openTrace,
 } from "@agent-inspect/core/readers";
 import {
+  TraceDirectory,
+  aggregateSessionCheckResults,
+  filterMetasBySessionScope,
+  loadSessionRunRecords,
+  loadTraceMetadataList,
+  resolveTraceDir,
+} from "@agent-inspect/core/advanced";
+import {
   createLlmUsageRule,
   createRunDepthRule,
   createRunDurationRule,
@@ -46,6 +54,9 @@ export interface CheckCommandOptions {
   forbiddenTool?: string[];
   allowedModel?: string[];
   maxTotalTokens?: string;
+  session?: string;
+  group?: string;
+  correlateGroup?: boolean;
 }
 
 type CheckConfig = {
@@ -309,6 +320,18 @@ function printJson(result: TraceCheckResult): void {
 }
 
 function printHuman(result: TraceCheckResult): void {
+  const scoped = result as {
+    scopeKind?: string;
+    scopeLabel?: string;
+    runIds?: string[];
+    runResults?: Array<{ runId: string; status: string }>;
+  };
+  if (scoped.scopeLabel) {
+    console.log(`Scope: ${scoped.scopeKind} ${scoped.scopeLabel}`);
+    if (scoped.runIds?.length) {
+      console.log(`Runs: ${scoped.runIds.join(", ")}`);
+    }
+  }
   console.log(`Check status: ${result.status}`);
   console.log(`Format: ${result.format}`);
   if (result.runId !== undefined) console.log(`Run: ${result.runId}`);
@@ -320,7 +343,9 @@ function printHuman(result: TraceCheckResult): void {
   }
   for (const finding of result.findings) {
     const path = finding.evidence[0]?.path;
-    console.log(`- ${finding.ruleId}: ${finding.message}${path ? ` (${path})` : ""}`);
+    const run = finding.evidence[0]?.runId;
+    const runPrefix = run ? `[${run}] ` : "";
+    console.log(`- ${runPrefix}${finding.ruleId}: ${finding.message}${path ? ` (${path})` : ""}`);
   }
 }
 
@@ -348,12 +373,57 @@ export async function checkCommand(
   let result: TraceCheckResult;
   let phase: "config" | "read" = "config";
 
+  const sessionId = options.session?.trim();
+  const groupId = options.group?.trim();
+  const useSessionScope = Boolean(sessionId || groupId);
+
   try {
     const config = await loadConfig(options.config);
     const built = buildRules(config, options);
     if (built.diagnostics.some((item) => item.severity === "error")) {
       result = errorResult("AI_CHECK_INVALID_CONFIG", "Invalid check configuration.");
       result.diagnostics = [...built.diagnostics];
+    } else if (useSessionScope) {
+      phase = "read";
+      const traceDir = resolveTraceDir({ dir: options.dir });
+      const td = new TraceDirectory({ dir: traceDir });
+      const files = await td.list();
+      const metas = await loadTraceMetadataList(traceDir, files, (fileName) =>
+        td.getPath(fileName),
+      );
+      const records = await loadSessionRunRecords(metas);
+      const scoped = filterMetasBySessionScope(metas, records, {
+        ...(sessionId ? { sessionId } : {}),
+        ...(groupId ? { groupId } : {}),
+        correlateByGroupId: options.correlateGroup === true,
+      });
+      const perRun: TraceCheckResult[] = [];
+      for (const meta of scoped.metas) {
+        const read = await openTrace(
+          { type: "file", path: meta.filePath },
+          {
+            ...(options.format !== undefined ? { format: options.format } : {}),
+          },
+        );
+        perRun.push(
+          runTraceChecks(
+            { read },
+            {
+              rules: built.rules,
+              select: built.select,
+              runId: meta.runId,
+            },
+          ),
+        );
+      }
+      result = aggregateSessionCheckResults(perRun, {
+        scopeKind: scoped.scopeKind,
+        scopeLabel: scoped.scopeLabel,
+        runIds: scoped.runIds,
+        sessionWarnings: scoped.warnings,
+        notFound: scoped.notFound,
+        empty: scoped.metas.length === 0,
+      });
     } else {
       phase = "read";
       const input = await inputFromTarget(target, options, stdin);

@@ -80,4 +80,23 @@ describe("search CLI", () => {
       durationMs: 500,
     });
   });
+
+  it("filters results by session id", async () => {
+    const fixtures = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/sessions/multi-agent-handoff",
+    );
+    await cp(path.join(fixtures, "handoff-planner.jsonl"), path.join(tmpDir, "handoff-planner.jsonl"));
+    await cp(path.join(fixtures, "handoff-worker.jsonl"), path.join(tmpDir, "handoff-worker.jsonl"));
+    await searchCommand({ dir: tmpDir, session: "sess-handoff-001", json: true });
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0])) as Array<{
+      runId: string;
+      sessionId?: string;
+    }>;
+    expect(parsed.map((row) => row.runId).sort()).toEqual([
+      "handoff-planner",
+      "handoff-worker",
+    ]);
+    expect(parsed.every((row) => row.sessionId === "sess-handoff-001")).toBe(true);
+  });
 });

@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -179,6 +179,32 @@ describe("check command", () => {
 
     expect(process.exitCode).toBe(2);
     expect(result.diagnostics?.[0]?.code).toBe("AI_CHECK_RUN_SELECTION_REQUIRED");
+  });
+
+  it("checks all runs in a session scope", async () => {
+    const fixtures = path.resolve(
+      testDir,
+      "../../../fixtures/sessions/multi-agent-handoff",
+    );
+    await cp(path.join(fixtures, "handoff-planner.jsonl"), path.join(tmp, "handoff-planner.jsonl"));
+    await cp(path.join(fixtures, "handoff-worker.jsonl"), path.join(tmp, "handoff-worker.jsonl"));
+
+    const result = await runCheck(".", {
+      dir: tmp,
+      session: "sess-handoff-001",
+    }) as {
+      scopeLabel?: string;
+      runIds?: string[];
+      status?: string;
+      runResults?: Array<{ runId: string; status: string }>;
+    };
+
+    expect(result.scopeLabel).toBe("sess-handoff-001");
+    expect(result.runIds?.sort()).toEqual(["handoff-planner", "handoff-worker"]);
+    expect(result.runResults?.map((item) => item.runId).sort()).toEqual([
+      "handoff-planner",
+      "handoff-worker",
+    ]);
   });
 });
 

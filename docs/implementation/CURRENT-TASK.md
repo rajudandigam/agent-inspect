@@ -4,49 +4,45 @@
 
 ```yaml
 train: "v2.4.0"
-chunk: "v2.4-3-session-aware-search-checks"
+chunk: "v2.4-4-mcp-telemetry-package"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-2-sessions-session-cli"
+dependsOn: "v2.4-3-session-aware-search-checks"
 ```
 
 ## Goal
 
-Add session-aware search and checks: `search --session`, session/group check input, cohort grouping.
+Add `@agent-inspect/mcp` local MCP client tool-call tracing (telemetry only).
 
 ## Read first
 
-- `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md`
-- `packages/core/src/search.ts`
-- `packages/core/src/checks/`
-- `packages/cli/src/search.ts`
-- `packages/cli/src/check.ts`
+- `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md` §10
+- `docs/implementation/release-trains/V2.4.0-EXECUTION-PLAN.md` chunk 4
+- Existing optional package patterns (`packages/redact`, `packages/eval`)
 
 ## In Scope
 
-1. `search --session <id>` filter runs by session.
-2. Check CLI/config accepts session or group scope.
-3. Cohort grouping by session/group with evidence references.
-4. Tests and docs; old search behavior unchanged without flags.
+1. `packages/mcp/` package scaffold with client wrap for tools/list and tools/call.
+2. Bounded summaries, duration, errors, session metadata on tool spans.
+3. Tests, recipe, tsup config.
 
 ## Out Of Scope
 
-- MCP package (chunk 4);
-- viewer or network behavior.
+- MCP server/gateway
+- Root/core new deps
 
 ## Suggested Commit
 
 ```text
-feat: add session-aware search and checks
+feat(mcp): add local MCP tool-call tracing
 ```
 
 ## Chunk Gate
 
 ```bash
-pnpm exec vitest run packages/cli/test/search.test.ts packages/cli/test/check.test.ts packages/core/test/search.test.ts packages/core/test/sessions
+pnpm exec vitest run packages/mcp/test
 pnpm build
 pnpm typecheck
 pnpm test
-pnpm fixtures:check
 git diff --check
 ```

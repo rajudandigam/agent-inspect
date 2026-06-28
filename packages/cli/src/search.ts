@@ -1,5 +1,7 @@
 import {
   TraceDirectory,
+  filterMetasBySessionScope,
+  loadSessionRunRecords,
   loadTraceMetadataList,
   parseDuration,
   parseDurationFilter,
@@ -17,6 +19,8 @@ export interface SearchCommandOptions {
   tool?: string;
   duration?: string;
   limit?: string;
+  session?: string;
+  correlateGroup?: boolean;
   json?: boolean;
 }
 
@@ -42,9 +46,28 @@ export async function searchCommand(
     }
 
     const files = await td.list();
-    const metas = await loadTraceMetadataList(traceDir, files, (f) =>
+    let metas = await loadTraceMetadataList(traceDir, files, (f) =>
       td.getPath(f),
     );
+
+    const sessionId = options.session?.trim();
+    if (sessionId) {
+      const records = await loadSessionRunRecords(metas);
+      const scoped = filterMetasBySessionScope(metas, records, {
+        sessionId,
+        correlateByGroupId: options.correlateGroup === true,
+      });
+      if (scoped.notFound) {
+        if (options.json) {
+          console.log(JSON.stringify([], null, 2));
+        } else {
+          console.log(`Session not found: ${sessionId}`);
+          console.log(`Trace directory: ${traceDir}`);
+        }
+        return;
+      }
+      metas = scoped.metas;
+    }
 
     const status =
       options.status === "success" ||
@@ -64,6 +87,8 @@ export async function searchCommand(
       tool: options.tool,
       duration: options.duration,
       limit: parseLimit(options.limit),
+      ...(sessionId ? { session: sessionId } : {}),
+      ...(options.correlateGroup ? { correlateGroup: true } : {}),
     });
 
     if (options.json) {

@@ -307,6 +307,9 @@ Options:
 - `--max-duration-ms <number>`: add `run.duration`
 - `--required-tool <name>` / `--forbidden-tool <name>`: add `tool.usage`
 - `--allowed-model <model>` / `--max-total-tokens <number>`: add `llm.usage`
+- `--session <id>`: check all runs in a workflow session (uses `--dir`; target may be `.`)
+- `--group <id>`: check all runs sharing a `groupId` metadata value
+- `--correlate-group`: when using `--session`, also match synthetic `group:` session keys
 
 By default, `check` runs `run.status`. Additional built-in rules can be selected with `--rule` or config when their options are available.
 
@@ -331,6 +334,7 @@ Examples:
 npx agent-inspect check fixtures/traces-v0.2/manual-basic.jsonl --json
 npx agent-inspect check minimal-success --dir fixtures/traces --rule run.status
 npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool search_docs --json
+npx agent-inspect check . --dir ./.agent-inspect --session sess-handoff-001 --json
 ```
 
 Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
@@ -636,6 +640,8 @@ Options:
 - `--tool <query>` — substring on tool step name or `metadata.toolName`
 - `--duration <expr>` — e.g. `>5s`, `>=500ms`
 - `--limit <number>` — default 50
+- `--session <id>` — limit to runs in one workflow session
+- `--correlate-group` — when using `--session`, also match synthetic `group:` keys
 - `--json`
 
 Examples:
@@ -644,6 +650,7 @@ Examples:
 npx agent-inspect search --status error --dir ./.agent-inspect
 npx agent-inspect search --kind tool --name search
 npx agent-inspect search --duration ">100ms" --json
+npx agent-inspect search --session sess-retry-001 --dir ./.agent-inspect
 ```
 
 ![Search traces by status error](../assets/demos/search.gif)

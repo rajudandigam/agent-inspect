@@ -345,3 +345,19 @@ export type {
 } from "./types.js";
 export { SESSION_WORKFLOW_KEYS } from "./types.js";
 export { enrichSessionRunRecord, loadSessionRunRecords } from "./load.js";
+export {
+  filterMetasBySessionScope,
+  traceMetasToSessionRunRecords,
+  type SessionScopeOptions,
+  type SessionScopeResult,
+} from "./scope.js";
+export {
+  groupSessionCohorts,
+  type GroupSessionCohortsOptions,
+  type SessionCohort,
+  type SessionCohortKind,
+} from "./cohort.js";
+export {
+  aggregateSessionCheckResults,
+  type TraceSessionCheckResult,
+} from "./checks.js";

@@ -15,6 +15,8 @@ export interface TraceSearchOptions {
   tool?: string;
   duration?: string;
   limit?: number;
+  session?: string;
+  correlateGroup?: boolean;
 }
 
 export interface TraceSearchResult {
@@ -29,6 +31,7 @@ export interface TraceSearchResult {
   matchReason: string;
   matchedFields: string[];
   filePath: string;
+  sessionId?: string;
 }
 
 export interface ParsedDurationFilter {
@@ -90,6 +93,7 @@ export async function searchTraces(
     durationFilter = parseDurationFilter(options.duration);
   }
   const limit = options.limit ?? 50;
+  const sessionId = options.session?.trim();
 
   const hasContentFilter = Boolean(
     options.status ||
@@ -100,6 +104,7 @@ export async function searchTraces(
   );
 
   const results: TraceSearchResult[] = [];
+  const sessionLabel = sessionId && sessionId !== "" ? sessionId : undefined;
 
   if (!hasContentFilter) {
     for (const m of filtered) {
@@ -109,9 +114,12 @@ export async function searchTraces(
         runStatus: m.status,
         timestamp: m.startedAt,
         durationMs: m.durationMs,
-        matchReason: "trace in directory",
-        matchedFields: ["run"],
+        matchReason: sessionLabel
+          ? `trace in session ${sessionLabel}`
+          : "trace in directory",
+        matchedFields: sessionLabel ? ["run", "session"] : ["run"],
         filePath: m.filePath,
+        ...(sessionLabel ? { sessionId: sessionLabel } : {}),
       });
     }
     return results.slice(0, limit);

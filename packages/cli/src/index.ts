@@ -314,6 +314,12 @@ export function createCliProgram(): Command {
       value,
     ])
     .option("--max-total-tokens <number>", "add llm.usage with a max total-token budget")
+    .option("--session <id>", "check all runs in a workflow session (requires --dir)")
+    .option("--group <id>", "check all runs sharing a groupId (requires --dir)")
+    .option(
+      "--correlate-group",
+      "when using --session, also match synthetic group: session keys",
+    )
     .action((target: string, opts: CheckCommandOptions) => {
       runCommand(() => checkCommand(target, opts));
     });
@@ -540,6 +546,11 @@ export function createCliProgram(): Command {
       "duration filter on run or step (e.g. >5s, >=500ms)",
     )
     .option("--limit <number>", "max results (default 50)")
+    .option("--session <id>", "limit search to one workflow session")
+    .option(
+      "--correlate-group",
+      "when using --session, also match synthetic group: keys",
+    )
     .option("--json", "print results as JSON")
     .action((opts: SearchCommandOptions) => {
       runCommand(() => searchCommand(opts));
