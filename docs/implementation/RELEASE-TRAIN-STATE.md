@@ -9,8 +9,8 @@ currentTrain: "v2.2.0"
 trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "c15955cfb2bdad2cb81252543f828016ab488939"
-lastValidationLevel: "v2.1-publication-verified"
+lastConfirmedCommit: "abaf970f48cc9c2669d7a1b3af7404f77ea50c9a"
+lastValidationLevel: "v2.2-0-local-gate"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -67,9 +67,10 @@ completedChunks:
   - "v2.1-9-release-readiness"
   - "v2.1-release-prep"
   - "v2.1-version-packages-pr-and-publication"
-currentChunk: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
+  - "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
+currentChunk: "v2.2-1-shared-reporter-contract-and-artifact-manifest"
 pendingManualGate: "none"
-nextAction: "Start v2.2 chunk 0: verify v2.1 publication, reconcile reporter scope, and align v2.2 execution plan/current task before implementation."
+nextAction: "Implement v2.2 chunk 1: shared reporter artifact contract and manifest helpers."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -78,5 +79,6 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.2.0-EXECUTION-PLAN.md](./release-trains/V2.2.0-EXECUTION-PLAN.md)
+- **Active proposal:** [../proposals/CI-REPORTERS.md](../proposals/CI-REPORTERS.md)
 - **Latest readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.0.0-RELEASE-READINESS.md](./release-trains/V2.0.0-RELEASE-READINESS.md)

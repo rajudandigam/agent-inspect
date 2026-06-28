@@ -23,6 +23,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [TRACE-CHECKS.md](./TRACE-CHECKS.md) | v1.8.0 | Deterministic local trace check contract, rule/evidence model, CLI semantics, and baseline boundary |
 | [REDACT-PACKAGE.md](./REDACT-PACKAGE.md) | v2.1.0 | Standalone deterministic redaction package boundary, detector/profile semantics, findings, and CLI shape |
 | [EVAL-PACKAGE.md](./EVAL-PACKAGE.md) | v2.1.0 | Deterministic local eval package boundary, result schema, CLI shape, and artifact interaction |
+| [CI-REPORTERS.md](./CI-REPORTERS.md) | v2.2.0 | Optional Vitest/Jest reporter package boundary, shared artifact contract, and CI summary workflow |
 
 ## Rules
 

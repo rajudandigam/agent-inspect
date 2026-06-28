@@ -4,84 +4,92 @@
 
 ```yaml
 train: "v2.2.0"
-chunk: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
+chunk: "v2.2-1-shared-reporter-contract-and-artifact-manifest"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.1-version-packages-pr-and-publication"
+dependsOn: "v2.2-0-post-v2.1-reconciliation-and-reporter-scope-freeze"
 ```
 
 ## Goal
 
-Start the v2.2 reporter train by reconciling the v2.1 publication state, confirming reporter package scope, and aligning the active v2.2 plan before implementation.
+Define the shared reporter artifact contract and manifest helpers used by future Vitest/Jest reporter chunks.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/ROADMAP-V2.1-TO-V3.md`
-- `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
-- `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
 - `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
 - `docs/proposals/CI-REPORTERS.md`
-- relevant package manifests for `@agent-inspect/vitest` and `@agent-inspect/jest`
+- relevant existing artifact/report/redaction helpers and tests
 
 ## Prior chunk evidence
 
-- v2.1 release-prep commit: `1e5e88911c73799ac8c084cf05d6a9a54ef9ac41`.
-- Version Packages PR #43 merged as `c15955cfb2bdad2cb81252543f828016ab488939`.
-- Publish workflow `28306794996` completed successfully.
-- npm shows `2.1.0` on `latest` for:
-  - `agent-inspect`;
-  - `@agent-inspect/ai-sdk`;
-  - `@agent-inspect/langchain`;
-  - `@agent-inspect/openai-agents`;
-  - `@agent-inspect/tui`;
-  - `@agent-inspect/redact`;
-  - `@agent-inspect/eval`.
-- GitHub releases and remote tags exist for all seven `2.1.0` packages.
+- v2.1 publication verified for all seven public packages at `2.1.0`.
+- v2.2 execution plan baseline set to `2.1.0`.
+- v2.2 execution mode aligned to `autonomous-release-train`.
+- Added `docs/proposals/CI-REPORTERS.md`.
+- Reporter package scope frozen:
+  - `@agent-inspect/vitest` and `@agent-inspect/jest` are currently private workspace packages.
+  - v2.2 may promote them to public optional packages only after package smoke/compat coverage.
+  - first-publication setup is a maintainer gate before v2.2 release if either package becomes public.
 
 ## In Scope
 
-1. Verify v2.1 publication state remains reconciled.
-2. Resolve the v2.2 plan executionMode wording mismatch with `AGENTS.md` if needed.
-3. Refresh `docs/proposals/CI-REPORTERS.md` to freeze Vitest/Jest reporter scope.
-4. Update state/current-task docs for v2.2 chunk 1 readiness.
-5. Do not publish or version anything in this chunk.
+1. Add shared reporter contract types/helpers.
+2. Add deterministic artifact manifest creation.
+3. Add safe artifact path/layout helpers.
+4. Add focused unit tests for manifest ordering, safe paths, and failure diagnostics.
+5. Update docs/proposal details if implementation names are refined.
 
 ## Out Of Scope
 
-- reporter runtime implementation;
-- public package publication for reporter packages;
-- package version changes;
+- Vitest reporter lifecycle implementation;
+- Jest reporter lifecycle implementation;
+- package privacy/publication changes;
 - changesets;
 - tags;
 - publishing;
-- GitHub releases;
+- GitHub API comments;
 - hosted uploads;
-- PR comments or GitHub API posting behavior;
-- new root/core dependencies.
+- new root/core runtime dependencies;
+- schema changes to persisted traces.
 
 ## Acceptance Criteria
 
-- v2.1 publication remains verified.
-- v2.2 reporter package scope is explicit.
-- Any executionMode wording conflict is resolved or called out.
-- No runtime source, package version, dependency, schema, changeset, tag, publish, or GitHub release change is introduced.
+- Manifest output is deterministic.
+- Artifact paths are safe and relative to an explicit output directory.
+- Reporter helper failures are diagnostic-rich and do not mask test/application failures.
+- No framework dependency enters root/core.
+- Existing package exports and trace schema compatibility remain intact.
 
 ## Suggested Commit
 
 ```text
-docs: start v2.2 reporter train
+feat: add trace reporter artifact contract
 ```
 
-## Validation
+## Focused Tests
 
 ```bash
+pnpm exec vitest run packages/core/test/reporters
+```
+
+## Chunk Gate
+
+```bash
+pnpm build
 pnpm typecheck
 pnpm test
+pnpm test:coverage
+pnpm size
+pnpm test:all
+pnpm fixtures:check
+pnpm pack:smoke
 git diff --check
 ```
 
+Add `pnpm compat:smoke` if exports/package boundaries change.
+
 ## Stop Condition
 
-Stop on unrelated worktree changes, validation failures outside this docs/scope chunk, public package publication decisions for reporter packages, root/core dependency requirements, network behavior expansion, schema changes, or reporter API decisions that materially change the v2.2 plan.
+Stop on unrelated worktree changes, reporter package publication decisions, root/core dependency requirements, schema changes, network behavior expansion, framework lifecycle decisions that belong to Vitest/Jest chunks, or validation failures that cannot be repaired in this chunk.
