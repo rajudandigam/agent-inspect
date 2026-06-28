@@ -55,6 +55,12 @@ This document states what AgentInspect **does not** provide today. It complement
 - **Metadata truncation** applies to string values and nested structures; very large metadata may be replaced with a truncation marker when `maxEventBytes` is exceeded (default 64 KiB per JSONL line).
 - **Redaction is not encryption.** Local trace files remain readable on disk; treat `.agent-inspect-runs/` like any developer artifact that may contain operational data.
 
+## Guardrails and circuits (v2.5 planning)
+
+- **Guardrails and circuits are deterministic local utilities, not compliance certification.** `@agent-inspect/guardrails` and `@agent-inspect/circuit` (planned v2.5) evaluate text, JSON, and trace patterns with bounded evidence; they do not prove safety for every sharing context or replace human review.
+- **No LLM judge or remote policy engine.** Built-in rules use pattern lists, redact findings, and structural heuristics only.
+- **No automatic remediation by default.** Results are advisory unless caller code maps failures to errors, trace events, or enforcement.
+
 ## Checks, artifacts, and test reporters
 
 - **Checks are deterministic local rules, not compliance certification.** `check`, `scan`, and `verify-safe` surface bounded findings and diagnostics over supported local inputs; they do not prove a trace is safe for every sharing context.

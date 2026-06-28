@@ -66,6 +66,13 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 | Local JSON/JSONL copy for review | `share` or `strict` | `redact <file> --profile share --json` |
 | Security incident or secret leak suspicion | — | Do not post traces publicly; use [SECURITY.md](../SECURITY.md) |
 
+## Guardrails and circuits (v2.5 planning)
+
+- Optional `@agent-inspect/guardrails` and `@agent-inspect/circuit` packages evaluate local text/JSON/trace patterns deterministically.
+- They reuse `@agent-inspect/redact` for PII-style findings where applicable — same best-effort limits as redaction profiles.
+- They are **not** compliance tools and do not guarantee an artifact is safe to publish.
+- Circuits detect repetition, retries, and width in traces or explicit counters; they do not stop runaway agents unless your code enforces results.
+
 ## What this guide does not claim
 
 - Redaction profiles are **not** GDPR/HIPAA/SOC2 compliance tools.

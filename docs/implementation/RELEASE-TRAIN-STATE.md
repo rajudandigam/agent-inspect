@@ -5,12 +5,12 @@
 ```yaml
 baselineVersion: "2.4.0"
 publishedVersion: "2.4.0"
-currentTrain: "v2.4.0"
-trainStatus: "published"
+currentTrain: "v2.5.0"
+trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "34af81a"
-lastValidationLevel: "v2.4-publication-complete"
+lastConfirmedCommit: "b85476f"
+lastValidationLevel: "v2.5-0-guardrail-circuit-rfc"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -95,15 +95,15 @@ completedChunks:
   - "v2.4-version-packages-pr-and-publication"
   - "v2.4-mcp-first-publish-bootstrap"
   - "v2.4-publication-complete"
-currentChunk: "v2.4-publication-complete"
-nextAction: "Begin v2.5.0 train — chunk 0 guardrail/circuit RFC."
-publishedAt: "2026-06-04"
+  - "v2.5-0-guardrail-circuit-rfc"
+currentChunk: "v2.5-1-guardrails-package"
+nextAction: "Chunk 1 — @agent-inspect/guardrails scaffold and built-in rules."
 updatedAt: "2026-06-04"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
-- **Active plan:** [release-trains/V2.4.0-EXECUTION-PLAN.md](./release-trains/V2.4.0-EXECUTION-PLAN.md)
-- **Active proposal:** [SESSIONS-AND-WORKFLOW-CAUSALITY.md](../proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md)
+- **Active plan:** [release-trains/V2.5.0-EXECUTION-PLAN.md](./release-trains/V2.5.0-EXECUTION-PLAN.md)
+- **Active proposal:** [GUARDRAILS-AND-CIRCUITS.md](../proposals/GUARDRAILS-AND-CIRCUITS.md)
 - **Latest readiness:** [release-trains/V2.4.0-RELEASE-READINESS.md](./release-trains/V2.4.0-RELEASE-READINESS.md)

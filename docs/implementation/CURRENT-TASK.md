@@ -3,23 +3,19 @@
 ## Identity
 
 ```yaml
-train: "v2.4.0"
-chunk: "v2.4-publication-complete"
+train: "v2.5.0"
+chunk: "v2.5-0-guardrail-circuit-rfc"
 status: "complete"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-mcp-first-publish-bootstrap"
+dependsOn: "v2.4-publication-complete"
 ```
 
 ## Goal
 
-Record full v2.4.0 publication after maintainer completed `@agent-inspect/mcp` first publish and Trusted Publisher setup.
-
-## Evidence
-
-- All ten linked packages at `2.4.0` on npm (`latest`), including `@agent-inspect/mcp`.
+Define deterministic local guardrail/circuit contracts before runtime packages.
 
 ## Suggested Commit
 
 ```text
-docs: record v2.4 publication complete
+docs: define guardrail and circuit contracts
 ```
