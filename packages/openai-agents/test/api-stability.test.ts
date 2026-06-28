@@ -159,6 +159,10 @@ describe("@agent-inspect/openai-agents processor", () => {
       kind: "RUN",
       name: "fixture-workflow",
       status: "running",
+      attributes: {
+        installMode: "setTraceProcessors",
+        capture: "metadata-only",
+      },
       trace: { traceId: "trace_openai_agents_1" },
     });
 
@@ -208,6 +212,7 @@ describe("@agent-inspect/openai-agents processor", () => {
     expectNoRawText(events, "raw output secret");
     expectNoRawText(events, "raw tool input secret");
     expectNoRawText(events, "raw tool output secret");
+    expectNoRawText(events, "raw mcp data secret");
     expectNoRawText(events, "raw trace metadata");
     expectNoRawText(events, "raw span metadata");
     expectNoRawText(events, "sk-should-not-persist");
@@ -338,6 +343,8 @@ describe("@agent-inspect/openai-agents processor", () => {
     const processor: AgentInspectOpenAiAgentsProcessor = agentInspectProcessor();
 
     expect(Object.keys(processor).sort()).toEqual(["installMode", "localOnly"].sort());
+    expect(processor.installMode).toBe("setTraceProcessors");
+    expect(processor.localOnly).toBe(true);
     expect(processor.installMode).not.toBe("addTraceProcessor");
   });
 });

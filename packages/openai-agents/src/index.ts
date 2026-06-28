@@ -19,7 +19,7 @@ import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 /**
  * Experimental capture mode for the OpenAI Agents JS adapter.
  *
- * @experimental This package is part of the v1.8 adapter train. `preview` is
+ * @experimental This package is part of the framework adapter train. `preview` is
  * currently rejected with diagnostics and falls back to metadata-only capture.
  */
 export type AgentInspectOpenAiAgentsCaptureMode = "metadata-only" | "preview";
@@ -84,7 +84,10 @@ export interface AgentInspectOpenAiAgentsDiagnostics {
 
 export interface AgentInspectOpenAiAgentsProcessor extends TracingProcessor {
   /**
-   * Documents the only safe default install mode for this adapter.
+   * Documents the local-only replacement install mode for this adapter.
+   *
+   * `addTraceProcessor()` remains an advanced user-owned choice outside this
+   * package because it can preserve existing/default exporters.
    */
   readonly installMode: "setTraceProcessors";
 

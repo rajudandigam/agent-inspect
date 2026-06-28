@@ -4,69 +4,69 @@
 
 ```yaml
 train: "v2.3.0"
-chunk: "v2.3-2-openai-agents-adapter-hardening"
+chunk: "v2.3-3-langchain-langgraph-hardening"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.3-1-ai-sdk-adapter-hardening"
+dependsOn: "v2.3-2-openai-agents-adapter-hardening"
 ```
 
 ## Goal
 
-Harden `@agent-inspect/openai-agents` by making local-only replacement mode and additional processor mode clear, tested, and safe by default.
+Improve LangGraph-through-LangChain coverage without adding a new package unless the existing adapter cannot express the needed metadata safely.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
-- `docs/proposals/OPENAI-AGENTS-JS-TRACING.md`
 - `docs/ADAPTERS.md`
 - `docs/ADAPTER-CONFORMANCE.md`
-- `packages/openai-agents/src/`
-- `packages/openai-agents/test/`
+- `packages/langchain/src/`
+- `packages/langchain/test/`
+- `examples/recipes/langgraph-callback-local/`
 
 ## Current Evidence
 
 - v2.3 chunk 1 hardened AI SDK coverage for isolated parallel integrations and route-style local telemetry.
-- OpenAI Agents is v2.3 priority 2 because the public package exists and user safety depends on clear processor mode choice.
-- The documented safe default remains local-only replacement via `setTraceProcessors([agentInspectProcessor(...)])`.
-- `addTraceProcessor(agentInspectProcessor(...))` remains an advanced user-owned choice because it can preserve existing/default exporters.
+- v2.3 chunk 2 hardened OpenAI Agents local-only replacement guidance, metadata-only fixtures, and no-upload recipe coverage.
+- LangChain remains the existing path for LangGraph callback telemetry; the v2.3 plan defers any new `@agent-inspect/langgraph` package unless demand and extension-point evidence justify it.
+- The current goal is better trace usefulness for graph-shaped LangChain/LangGraph callback flows while preserving optional dependency boundaries.
 
 ## In Scope
 
-1. Clarify local-only replacement vs additional processor behavior in tests/docs.
-2. Cover agents/generations/tools/handoffs/guardrails where the existing processor fixture surface supports it.
-3. Preserve metadata-only defaults and no-upload behavior.
-4. Keep OpenAI SDK dependency isolated to the optional package.
+1. Improve LangGraph-through-LangChain fixture coverage for graph node identity, stream-ish callback flow, parallel branches, and session/thread metadata where the existing callback surface supports it.
+2. Clarify limitations in docs without introducing a separate package.
+3. Preserve no-network, no-root-dependency behavior.
+4. Keep changes inside the LangChain adapter, fixtures, recipes, and docs/state.
 
 ## Out Of Scope
 
 - package versions, changesets, tags, releases, or publishing;
-- OpenAI SDK dependency in root/core;
-- silent default processor changes;
+- new `@agent-inspect/langgraph` package without an explicit demand gate;
+- LangGraph, OpenTelemetry, or provider dependencies in root/core;
 - hosted upload, vendor exporter, or provider call behavior;
 - raw prompt/output/tool payload capture by default;
 - schema changes;
-- AI SDK/LangChain/Mastra/Nest runtime changes.
+- AI SDK/OpenAI Agents/Mastra/Nest runtime changes.
 
 ## Acceptance Criteria
 
-- Users can choose local-only replacement vs additional mode from docs/tests without ambiguity.
-- OpenAI Agents processor fixtures cover the prioritized lifecycle shapes available in local fixtures.
+- LangGraph-through-LangChain fixtures produce useful local trace identity and metadata for graph-shaped flows.
+- Docs explain the current LangChain callback path and limitations without promising unsupported LangGraph-native behavior.
 - No root/core dependency or package export drift is introduced.
-- Existing OpenAI Agents imports remain compatible.
+- Existing LangChain imports remain compatible.
 - Validation passes.
 
 ## Suggested Commit
 
 ```text
-feat(openai-agents): harden local trace processor
+feat(langchain): improve LangGraph trace mapping
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/openai-agents/test/api-stability.test.ts packages/core/test/adapter-executable-conformance.test.ts
+pnpm exec vitest run packages/langchain/test/agent-inspect-callback.test.ts packages/langchain/test/langgraph-through-langchain.test.ts packages/core/test/adapter-executable-conformance.test.ts
 ```
 
 ## Chunk Gate
@@ -81,4 +81,4 @@ git diff --check
 
 ## Stop Condition
 
-Stop if the OpenAI Agents integration needs a new public API, schema change, root/core dependency, default network/upload behavior, raw payload capture by default, package-version/change-set work, or validation failure outside the OpenAI Agents hardening scope.
+Stop if LangGraph usefulness requires a new public API, schema change, new package, root/core dependency, default network/upload behavior, raw payload capture by default, package-version/change-set work, or validation failure outside the LangChain/LangGraph hardening scope.

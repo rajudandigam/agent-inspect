@@ -1,5 +1,5 @@
 /**
- * v1.8 OpenAI Agents adapter recipe.
+ * v2.3 OpenAI Agents adapter hardening recipe.
  * Uses deterministic tracing-processor calls only: no provider calls, no API keys, no upload.
  */
 import { mkdir } from "node:fs/promises";
@@ -91,11 +91,46 @@ const generationSpan = span(
   },
   "span_agent",
 );
+const functionSpan = span(
+  "span_function",
+  {
+    type: "function",
+    name: "lookupFixture",
+    input: { secret: "raw tool input secret" },
+    output: { secret: "raw tool output secret" },
+    mcp_data: { secret: "raw mcp data secret" },
+  },
+  "span_agent",
+);
+const handoffSpan = span(
+  "span_handoff",
+  {
+    type: "handoff",
+    from_agent: "LocalFixtureAgent",
+    to_agent: "ReviewFixtureAgent",
+  },
+  "span_agent",
+);
+const guardrailSpan = span(
+  "span_guardrail",
+  {
+    type: "guardrail",
+    name: "local-policy-check",
+    triggered: false,
+  },
+  "span_agent",
+);
 
 await processor.onTraceStart(trace);
 await processor.onSpanStart(agentSpan);
 await processor.onSpanStart(generationSpan);
 await processor.onSpanEnd(generationSpan);
+await processor.onSpanStart(functionSpan);
+await processor.onSpanEnd(functionSpan);
+await processor.onSpanStart(handoffSpan);
+await processor.onSpanEnd(handoffSpan);
+await processor.onSpanStart(guardrailSpan);
+await processor.onSpanEnd(guardrailSpan);
 await processor.onSpanEnd(agentSpan);
 await processor.onTraceEnd(trace);
 await processor.forceFlush();
@@ -106,6 +141,9 @@ const allPersistedText = JSON.stringify(events);
 const rawSensitiveTextPersisted = [
   "raw prompt secret",
   "raw answer secret",
+  "raw tool input secret",
+  "raw tool output secret",
+  "raw mcp data secret",
   "raw trace metadata secret",
   "raw span metadata secret",
   "sk-should-not-persist",

@@ -1,8 +1,8 @@
 OpenAI Agents local tracing recipe complete
 Install mode: setTraceProcessors
 Local only: true
-Events written: 6
-Kinds: RUN, AGENT, LLM
+Events written: 12
+Kinds: RUN, AGENT, LLM, TOOL, DECISION
 Raw sensitive text persisted: no
 Diagnostics: writeFailures=0 flushFailures=0 shutdownFailures=0
 Trace directory: ./examples/recipes/openai-agents-local-tracing/.agent-inspect-runs

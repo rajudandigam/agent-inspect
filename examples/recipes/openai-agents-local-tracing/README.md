@@ -2,9 +2,9 @@
 
 ## What this demonstrates
 
-A **v1.8 OpenAI Agents adapter workflow** that records local AgentInspect traces from the OpenAI Agents JS tracing processor interface.
+A **v2.3 OpenAI Agents adapter workflow** that records local AgentInspect traces from the OpenAI Agents JS tracing processor interface.
 
-The recipe calls the processor with deterministic local fixtures. It does not run an agent, model, hosted tool, provider SDK call, API key path, OpenAI exporter, or network request.
+The recipe calls the processor with deterministic local fixtures for agent, generation, function tool, handoff, and guardrail spans. It does not run an agent, model, hosted tool, provider SDK call, API key path, OpenAI exporter, or network request.
 
 ## Why this matters
 
@@ -32,6 +32,7 @@ See `expected-output.txt`.
 ## What to look for
 
 - The safe local default uses `setTraceProcessors([agentInspectProcessor(...)])`, which replaces existing processors instead of adding AgentInspect beside the SDK default exporter.
+- `addTraceProcessor(agentInspectProcessor(...))` is intentionally not used here; it is only for users who explicitly want AgentInspect as an additional processor and accept any existing exporter behavior.
 - `capture: "metadata-only"` records trace/span IDs, parentage, safe names, timing, status, token usage, and bounded summaries.
 - Raw prompts, generated text, tool inputs, tool outputs, custom data, trace metadata, and exporter credentials are not persisted by default.
 - `forceFlush()` and `shutdown()` are explicit and diagnostic-safe.
