@@ -14,7 +14,9 @@
       "@agent-inspect/eval",
       "@agent-inspect/vitest",
       "@agent-inspect/jest",
-      "@agent-inspect/mcp"
+      "@agent-inspect/mcp",
+      "@agent-inspect/guardrails",
+      "@agent-inspect/circuit"
     ]
   ],
   "access": "public",
