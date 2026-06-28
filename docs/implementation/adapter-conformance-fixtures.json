@@ -1,0 +1,43 @@
+{
+  "$schema": "./adapter-conformance-fixtures.schema.json",
+  "version": 1,
+  "updatedAt": "2026-06-28",
+  "scope": "official-adapters-only",
+  "certification": "none",
+  "releaseGateCommand": "pnpm exec vitest run packages/core/test/adapter-executable-conformance.test.ts packages/core/test/adapter-conformance-matrix.test.ts",
+  "defaults": {
+    "network": "none",
+    "upload": "none",
+    "capture": "metadata-only"
+  },
+  "fixtures": [
+    {
+      "adapterId": "ai-sdk",
+      "testFile": "packages/core/test/adapter-executable-conformance.test.ts",
+      "adapterTestFile": "packages/ai-sdk/test/api-stability.test.ts",
+      "covers": ["run", "step", "tool", "llm", "streaming", "metadata-bounds"],
+      "notes": "Uses direct AI SDK telemetry callback fixtures; no provider calls."
+    },
+    {
+      "adapterId": "langchain",
+      "testFile": "packages/core/test/adapter-executable-conformance.test.ts",
+      "adapterTestFile": "packages/langchain/test",
+      "covers": ["run", "step", "tool", "llm", "error", "streaming", "metadata-bounds"],
+      "notes": "Uses LangChain callback fixtures with explicit local persistence."
+    },
+    {
+      "adapterId": "langgraph",
+      "testFile": "packages/core/test/adapter-executable-conformance.test.ts",
+      "adapterTestFile": "packages/langchain/test/langgraph-through-langchain.test.ts",
+      "covers": ["run", "step", "tool", "llm", "streaming", "metadata-bounds"],
+      "notes": "Uses LangGraph-shaped metadata through the existing LangChain callback adapter."
+    },
+    {
+      "adapterId": "openai-agents",
+      "testFile": "packages/core/test/adapter-executable-conformance.test.ts",
+      "adapterTestFile": "packages/openai-agents/test/api-stability.test.ts",
+      "covers": ["run", "step", "tool", "llm", "metadata-bounds"],
+      "notes": "Uses direct OpenAI Agents tracing processor fixtures; no provider calls or exporters."
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 AgentInspect optional framework adapters must stay local-first, dependency-isolated, and metadata-only by default.
 
-The machine-readable matrix lives at [docs/implementation/adapter-conformance-matrix.json](./implementation/adapter-conformance-matrix.json). It tracks expected coverage for:
+The machine-readable matrix lives at [docs/implementation/adapter-conformance-matrix.json](./implementation/adapter-conformance-matrix.json). The release-evidence fixture manifest lives at [docs/implementation/adapter-conformance-fixtures.json](./implementation/adapter-conformance-fixtures.json). These files track expected coverage for:
 
 - run lifecycle
 - generic steps
@@ -15,6 +15,14 @@ The machine-readable matrix lives at [docs/implementation/adapter-conformance-ma
 The v1.7 matrix began as declarative coverage guidance. v1.8 made the core conformance path executable and requires canonical-reader round trips before adapter output is used by checks. v2.3 uses that foundation to harden official adapters without adding shallow new adapter packages.
 
 Executable shared assertions live in `packages/core/test/adapter-executable-conformance.test.ts` and `packages/core/test/adapter-conformance-utils.ts`. Adapter-specific suites may add deeper fixture coverage, but the shared suite owns the cross-adapter defaults: local-only execution, no raw payload persistence, lifecycle identity, parentage, streaming summaries, token usage where exposed, and reader round trips.
+
+Release evidence gate:
+
+```bash
+pnpm exec vitest run packages/core/test/adapter-executable-conformance.test.ts packages/core/test/adapter-conformance-matrix.test.ts
+```
+
+This is an internal official-adapter gate, not a third-party certification program.
 
 ## Current matrix
 
