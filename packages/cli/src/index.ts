@@ -320,6 +320,16 @@ export function createCliProgram(): Command {
       "--correlate-group",
       "when using --session, also match synthetic group: session keys",
     )
+    .option(
+      "--guardrails <rule>",
+      "run optional guardrail rules (repeatable): banned-phrase, pii-leak, prompt-injection, ...",
+      (value, previous: string[] = []) => [...previous, value],
+    )
+    .option(
+      "--circuit <rule>",
+      "run optional circuit rules (repeatable): same-tool-repetition, max-retries, ...",
+      (value, previous: string[] = []) => [...previous, value],
+    )
     .action((target: string, opts: CheckCommandOptions) => {
       runCommand(() => checkCommand(target, opts));
     });

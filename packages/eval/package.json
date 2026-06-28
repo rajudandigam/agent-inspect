@@ -37,6 +37,8 @@
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "dependencies": {
+    "@agent-inspect/circuit": "workspace:*",
+    "@agent-inspect/guardrails": "workspace:*",
     "agent-inspect": "workspace:*"
   },
   "publishConfig": {

@@ -41,6 +41,7 @@ import {
 } from "@agent-inspect/core/checks";
 
 import { inputFromTarget } from "./trace-input.js";
+import { mergeSafetyExtensions } from "./safety-extensions.js";
 
 export interface CheckCommandOptions {
   dir?: string;
@@ -57,6 +58,8 @@ export interface CheckCommandOptions {
   session?: string;
   group?: string;
   correlateGroup?: boolean;
+  guardrails?: string[];
+  circuit?: string[];
 }
 
 type CheckConfig = {
@@ -406,12 +409,19 @@ export async function checkCommand(
           },
         );
         perRun.push(
-          runTraceChecks(
-            { read },
+          mergeSafetyExtensions(
+            runTraceChecks(
+              { read },
+              {
+                rules: built.rules,
+                select: built.select,
+                runId: meta.runId,
+              },
+            ),
+            read,
             {
-              rules: built.rules,
-              select: built.select,
-              runId: meta.runId,
+              ...(options.guardrails ? { guardrails: options.guardrails } : {}),
+              ...(options.circuit ? { circuits: options.circuit } : {}),
             },
           ),
         );
@@ -430,12 +440,19 @@ export async function checkCommand(
       const read = await openTrace(input, {
         ...(options.format !== undefined ? { format: options.format } : {}),
       });
-      result = runTraceChecks(
-        { read },
+      result = mergeSafetyExtensions(
+        runTraceChecks(
+          { read },
+          {
+            rules: built.rules,
+            select: built.select,
+            ...(options.run !== undefined ? { runId: options.run } : {}),
+          },
+        ),
+        read,
         {
-          rules: built.rules,
-          select: built.select,
-          ...(options.run !== undefined ? { runId: options.run } : {}),
+          ...(options.guardrails ? { guardrails: options.guardrails } : {}),
+          ...(options.circuit ? { circuits: options.circuit } : {}),
         },
       );
     }

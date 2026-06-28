@@ -1042,3 +1042,10 @@ export function renderEvalMarkdown(result: EvalRunResult): string {
 
   return `${lines.join("\n")}\n`;
 }
+
+export {
+  createEvalCircuitRule,
+  createEvalGuardrailRule,
+  type EvalCircuitRuleOptions,
+  type EvalGuardrailRuleOptions,
+} from "./safety-rules.js";

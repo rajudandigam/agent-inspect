@@ -15,8 +15,10 @@
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "dependencies": {
+    "@agent-inspect/circuit": "workspace:*",
     "@agent-inspect/core": "workspace:*",
     "@agent-inspect/eval": "workspace:*",
+    "@agent-inspect/guardrails": "workspace:*",
     "commander": "^12.1.0"
   },
   "devDependencies": {

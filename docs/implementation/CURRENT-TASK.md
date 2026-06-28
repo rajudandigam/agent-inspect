@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.5.0"
-chunk: "v2.5-1-guardrails-package"
+chunk: "v2.5-3-check-eval-integration"
 status: "complete"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.5-0-guardrail-circuit-rfc"
+dependsOn: "v2.5-2-circuit-package"
 ```
 
 ## Goal
 
-Add `@agent-inspect/guardrails` with deterministic built-in rules and package smoke.
+Integrate guardrails/circuit with check CLI flags and eval rule factories.
 
 ## Suggested Commit
 
 ```text
-feat(guardrails): add deterministic guardrail package
+feat: integrate guardrails with checks and eval
 ```

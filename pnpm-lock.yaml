@@ -326,14 +326,22 @@ importers:
         specifier: ^6.0.210
         version: 6.0.210(zod@4.4.3)
 
+  packages/circuit: {}
+
   packages/cli:
     dependencies:
+      '@agent-inspect/circuit':
+        specifier: workspace:*
+        version: link:../circuit
       '@agent-inspect/core':
         specifier: workspace:*
         version: link:../core
       '@agent-inspect/eval':
         specifier: workspace:*
         version: link:../eval
+      '@agent-inspect/guardrails':
+        specifier: workspace:*
+        version: link:../guardrails
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -353,6 +361,12 @@ importers:
 
   packages/eval:
     dependencies:
+      '@agent-inspect/circuit':
+        specifier: workspace:*
+        version: link:../circuit
+      '@agent-inspect/guardrails':
+        specifier: workspace:*
+        version: link:../guardrails
       agent-inspect:
         specifier: workspace:*
         version: link:../..
