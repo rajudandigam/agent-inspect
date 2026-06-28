@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.3.0"
+baselineVersion: "2.4.0"
 publishedVersion: "2.4.0"
 currentTrain: "v2.4.0"
-trainStatus: "partial-publication"
+trainStatus: "published"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "7eba1b7"
-lastValidationLevel: "v2.4-version-packages-pr-merged"
+lastConfirmedCommit: "34af81a"
+lastValidationLevel: "v2.4-publication-complete"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -93,11 +93,12 @@ completedChunks:
   - "v2.4-5-docs-and-release-readiness"
   - "v2.4-release-prep"
   - "v2.4-version-packages-pr-and-publication"
-currentChunk: "v2.4-mcp-first-publish-bootstrap"
-pendingManualGate: "mcp-first-npm-publish-and-trusted-publisher"
-nextAction: "Maintainer first-publishes @agent-inspect/mcp@2.4.0, configures Trusted Publisher, re-runs Publish workflow."
-publishedAt: "2026-06-28"
-updatedAt: "2026-06-28"
+  - "v2.4-mcp-first-publish-bootstrap"
+  - "v2.4-publication-complete"
+currentChunk: "v2.4-publication-complete"
+nextAction: "Begin v2.5.0 train — chunk 0 guardrail/circuit RFC."
+publishedAt: "2026-06-04"
+updatedAt: "2026-06-04"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
@@ -105,4 +106,4 @@ updatedAt: "2026-06-28"
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.4.0-EXECUTION-PLAN.md](./release-trains/V2.4.0-EXECUTION-PLAN.md)
 - **Active proposal:** [SESSIONS-AND-WORKFLOW-CAUSALITY.md](../proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md)
-- **Latest readiness:** [release-trains/V2.3.0-RELEASE-READINESS.md](./release-trains/V2.3.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V2.4.0-RELEASE-READINESS.md](./release-trains/V2.4.0-RELEASE-READINESS.md)

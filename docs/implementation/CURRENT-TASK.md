@@ -4,25 +4,22 @@
 
 ```yaml
 train: "v2.4.0"
-chunk: "v2.4-mcp-first-publish-bootstrap"
-status: "pending"
+chunk: "v2.4-publication-complete"
+status: "complete"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-version-packages-pr-and-publication"
+dependsOn: "v2.4-mcp-first-publish-bootstrap"
 ```
 
 ## Goal
 
-Complete v2.4 publication by first-publishing `@agent-inspect/mcp@2.4.0` on npm (Trusted Publisher + initial publish), then re-run Publish workflow.
+Record full v2.4.0 publication after maintainer completed `@agent-inspect/mcp` first publish and Trusted Publisher setup.
 
-## Maintainer steps
+## Evidence
 
-1. `pnpm build` at repo root
-2. `cd packages/mcp && npm publish --access public` (maintainer npm account)
-3. Add Trusted Publisher on npm for `@agent-inspect/mcp` → `publish.yml`
-4. `gh workflow run publish.yml --ref main`
+- All ten linked packages at `2.4.0` on npm (`latest`), including `@agent-inspect/mcp`.
 
 ## Suggested Commit
 
 ```text
-docs: record v2.4 partial publication and mcp bootstrap gate
+docs: record v2.4 publication complete
 ```
