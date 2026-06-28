@@ -153,7 +153,7 @@ describe("package manifest (experimental AI SDK adapter)", () => {
 });
 
 describe("package manifest (experimental Vitest reporter)", () => {
-  it("keeps the optional package private and dependency-isolated until release readiness", () => {
+  it("keeps the optional package publishable and dependency-isolated", () => {
     const raw = readFileSync(
       path.join(repoRoot, "packages", "vitest", "package.json"),
       "utf-8",
@@ -161,8 +161,9 @@ describe("package manifest (experimental Vitest reporter)", () => {
     const pkg = JSON.parse(raw) as Record<string, unknown>;
 
     expect(pkg.name).toBe("@agent-inspect/vitest");
-    expect(pkg.private).toBe(true);
+    expect(pkg.private).toBeUndefined();
     expect(pkg.sideEffects).toBe(false);
+    expect(pkg.publishConfig).toEqual({ access: "public" });
 
     const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
     const rootExport = exportsField?.["."];
@@ -182,7 +183,7 @@ describe("package manifest (experimental Vitest reporter)", () => {
 });
 
 describe("package manifest (experimental Jest reporter)", () => {
-  it("keeps the optional package private and dependency-isolated until release readiness", () => {
+  it("keeps the optional package publishable and dependency-isolated", () => {
     const raw = readFileSync(
       path.join(repoRoot, "packages", "jest", "package.json"),
       "utf-8",
@@ -190,8 +191,9 @@ describe("package manifest (experimental Jest reporter)", () => {
     const pkg = JSON.parse(raw) as Record<string, unknown>;
 
     expect(pkg.name).toBe("@agent-inspect/jest");
-    expect(pkg.private).toBe(true);
+    expect(pkg.private).toBeUndefined();
     expect(pkg.sideEffects).toBe(false);
+    expect(pkg.publishConfig).toEqual({ access: "public" });
 
     const exportsField = pkg.exports as Record<string, DualExportEntry> | undefined;
     const rootExport = exportsField?.["."];
@@ -200,6 +202,9 @@ describe("package manifest (experimental Jest reporter)", () => {
     expect(rootExport?.import?.default).toContain("index.mjs");
     expect(rootExport?.require?.types).toContain("index.d.cts");
     expect(rootExport?.require?.default).toContain("index.cjs");
+
+    const peerDependencies = pkg.peerDependencies as Record<string, string> | undefined;
+    expect(peerDependencies?.jest).toBe("^29.0.0 || ^30.0.0");
 
     const dependencies = pkg.dependencies as Record<string, string> | undefined;
     expect(dependencies?.["agent-inspect"]).toBe("workspace:*");

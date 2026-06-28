@@ -6,11 +6,11 @@
 baselineVersion: "2.1.0"
 publishedVersion: "2.1.0"
 currentTrain: "v2.2.0"
-trainStatus: "ready_for_release_authorization"
+trainStatus: "first_publication_bootstrap_ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "5de92e1ac42c361ac22d92685784d4a609c1d269"
-lastValidationLevel: "v2.2-5-release-readiness-gate"
+lastConfirmedCommit: "59fdcfeb12554582d468e62d4d251595ac61b9ff"
+lastValidationLevel: "v2.2-reporter-bootstrap-prep-gate"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -73,9 +73,10 @@ completedChunks:
   - "v2.2-3-public-jest-reporter"
   - "v2.2-4-ci-summary-command-and-recipes"
   - "v2.2-5-reporter-docs-package-smoke-and-readiness"
-currentChunk: "v2.2-release-prep-manual-gate"
-pendingManualGate: "confirm first-publication setup and release authorization for @agent-inspect/vitest and @agent-inspect/jest before v2.2 versioning"
-nextAction: "Await maintainer confirmation before v2.2 release prep: reporter first-publication setup, linked package-set decision, versioning, tags, GitHub releases, and npm publication authorization."
+  - "v2.2-reporter-first-publication-bootstrap-prep"
+currentChunk: "v2.2-reporter-first-publication-bootstrap"
+pendingManualGate: "manually publish @agent-inspect/vitest@2.1.0 and @agent-inspect/jest@2.1.0 with bootstrap tag, then enable Trusted Publishing before v2.2 versioning"
+nextAction: "Await maintainer npm bootstrap confirmation for @agent-inspect/vitest and @agent-inspect/jest; after Trusted Publishing is enabled, proceed to v2.2 release prep."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -86,4 +87,5 @@ updatedAt: "2026-06-28"
 - **Active plan:** [release-trains/V2.2.0-EXECUTION-PLAN.md](./release-trains/V2.2.0-EXECUTION-PLAN.md)
 - **Active proposal:** [../proposals/CI-REPORTERS.md](../proposals/CI-REPORTERS.md)
 - **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
+- **Reporter bootstrap:** [release-trains/V2.2.0-REPORTER-FIRST-PUBLICATION-BOOTSTRAP.md](./release-trains/V2.2.0-REPORTER-FIRST-PUBLICATION-BOOTSTRAP.md)
 - **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)

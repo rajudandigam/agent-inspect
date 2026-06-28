@@ -85,8 +85,9 @@ describe("package boundaries", () => {
     expect(reporter.dependencies?.vitest).toBeUndefined();
   });
 
-  it("@agent-inspect/jest does not add jest as a workspace dependency before publication", async () => {
+  it("@agent-inspect/jest keeps jest as peer (not dependency)", async () => {
     const reporter = await readPkg("packages/jest/package.json");
+    expect(reporter.peerDependencies?.jest).toBeDefined();
     expect(reporter.dependencies?.jest).toBeUndefined();
   });
 

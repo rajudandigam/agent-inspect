@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/vitest",
-  "version": "1.7.0",
+  "version": "2.1.0",
   "license": "MIT",
   "type": "module",
   "description": "Optional Vitest reporter for AgentInspect local trace artifacts",
@@ -13,7 +13,6 @@
     "url": "https://github.com/rajudandigam/agent-inspect/issues"
   },
   "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
-  "private": true,
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

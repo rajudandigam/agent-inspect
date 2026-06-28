@@ -5,3 +5,4 @@ packages:
   - "examples/recipes/*"
 allowBuilds:
   esbuild: true
+  unrs-resolver: false
