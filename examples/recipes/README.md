@@ -58,6 +58,20 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [langgraph-callback-local](langgraph-callback-local) | LangGraph-shaped metadata through LangChain callbacks | `@agent-inspect/langchain`, callback metadata, local JSONL | yes | no |
 | [harness-basic](harness-basic) | v1.9 fixture harness basics | `@agent-inspect/harness`, fixture JSON, expected output | yes | no |
 | [harness-adapter-local](harness-adapter-local) | Adapter-shaped local harness target | `@agent-inspect/harness`, bootstrap/resolve/invoke, expected output | yes | no |
+| [mcp-client-tracing](mcp-client-tracing) | v2.4 MCP client wrap with mock client | `@agent-inspect/mcp`, `inspectRun`, `sessions` / `session` CLI | yes | no |
+
+## Multi-run sessions (v2.4)
+
+Recipes and fixtures that span multiple runs should set optional `sessionId`, `groupId`, `handoffFrom`/`handoffTo`, `retryOf`, and `attempt` on `run_started.metadata`. Browse grouped runs with:
+
+```bash
+npx agent-inspect sessions --dir ./.agent-inspect-runs
+npx agent-inspect session <session-id> --timeline --dir ./.agent-inspect-runs
+npx agent-inspect search --session <session-id> --dir ./.agent-inspect-runs
+npx agent-inspect check . --session <session-id> --dir ./.agent-inspect-runs --json
+```
+
+See [fixtures/sessions](../../fixtures/sessions/README.md) and [SESSIONS-AND-WORKFLOW-CAUSALITY](../../docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md).
 
 ## Safety
 

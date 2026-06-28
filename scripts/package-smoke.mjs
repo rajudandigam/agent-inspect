@@ -255,6 +255,37 @@ const optionalPackageChecks = [
       void result;
     `,
   },
+  {
+    dir: "packages/mcp",
+    name: "@agent-inspect/mcp",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { wrapMcpClient, summarizeMcpValue } from "@agent-inspect/mcp";
+      const summary = summarizeMcpValue({ ok: true });
+      if (!summary.includes("ok")) throw new Error("summarize failed");
+      const client = wrapMcpClient({
+        async callTool() { return { content: [] }; },
+      });
+      if (typeof client.callTool !== "function") throw new Error("wrap failed");
+    `,
+    cjs: `
+      const { wrapMcpClient, summarizeMcpValue } = require("@agent-inspect/mcp");
+      const summary = summarizeMcpValue({ ok: true });
+      if (!summary.includes("ok")) throw new Error("summarize failed");
+      const client = wrapMcpClient({
+        async callTool() { return { content: [] }; },
+      });
+      if (typeof client.callTool !== "function") throw new Error("wrap failed");
+    `,
+    ts: `
+      import { wrapMcpClient, type McpClientLike } from "@agent-inspect/mcp";
+      const client: McpClientLike = wrapMcpClient({
+        async callTool() { return { content: [] }; },
+      });
+      void client;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

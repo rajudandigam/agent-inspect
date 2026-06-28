@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release line: **2.1.x** for the existing public packages. v2.1.0 adds deterministic local eval and reusable redaction utilities on top of the stable v2 trace contract: small root API, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit non-destructive migration workflow.
+Current npm release line: **2.3.x** for the existing public packages. **v2.4.0** (release prep) adds multi-run **session** navigation (`sessions` / `session` CLI), session-aware `search` and `check`, and optional **`@agent-inspect/mcp`** client telemetry — all local-first on top of the stable v2 trace contract.
 
 ```bash
 npm install agent-inspect
@@ -334,13 +334,15 @@ AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 - Instrument runs with `inspectRun` and `step`
 - Write and read **local JSONL traces** (`schemaVersion: "0.1"` manual traces remain readable; schema 1.0 persisted rows are the v2 writer target)
-- Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**, **`timeline`**, **`stats`**, **`search`**
+- Inspect with **`list`**, **`view`**, **`clean`**, **`logs`**, **`tail`**, **`export`**, **`diff`**, **`timeline`**, **`stats`**, **`search`**, **`sessions`**, **`session`**
 
 **Stable root APIs:** `createInspector()`, `inspectRun()`, `maybeInspectRun()`, `step()`, `step.llm()`, `step.tool()`, `observe()`, `getCurrentCorrelationMetadata()`.
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
-**v2.3 train status:** adapter hardening is ready for release prep. AI SDK, OpenAI Agents JS, and LangChain/LangGraph paths have no-network recipes and executable conformance coverage. Mastra and NestJS framework packages remain demand-gated; NestJS is covered through structured-log ingestion.
+**v2.4 train status:** session/workflow causality helpers ship on `agent-inspect/advanced` (`buildSessionIndex`, scope/cohort helpers). CLI adds `sessions`, `session`, `search --session`, and `check --session` / `--group`. Optional `@agent-inspect/mcp` wraps MCP client `tools/list` and `tools/call` as local tool steps with bounded summaries — no gateway or server product.
+
+**v2.3 shipped:** adapter hardening for AI SDK, OpenAI Agents JS, and LangChain/LangGraph with no-network recipes and executable conformance coverage. Mastra and NestJS framework packages remain demand-gated; NestJS is covered through structured-log ingestion.
 
 **Shipped in 2.2.0:** public optional Vitest/Jest reporter packages, shared `agent-inspect/reporters` helpers, and `agent-inspect ci-summary` for deterministic local reporter artifact summaries. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents`, `@agent-inspect/redact`, `@agent-inspect/eval`, `@agent-inspect/vitest`, and `@agent-inspect/jest` at **2.2.0**.
 
@@ -358,7 +360,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
-**Roadmap beyond current release work:** v2.4 adds sessions/MCP telemetry, followed by guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
+**Roadmap beyond current release work:** v2.5 guardrails/circuit patterns, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
@@ -412,6 +414,30 @@ const events = callback.getEvents();
 
 See [examples/08-langchain-adapter](examples/08-langchain-adapter/README.md) and [docs/ADAPTERS.md](docs/ADAPTERS.md).
 
+### MCP client telemetry (`@agent-inspect/mcp`)
+
+Optional package for **local MCP client** tracing only. Wrap `tools/list` and `tools/call` so they emit tool steps with `source.type: mcp-client`, bounded argument summaries, server identity, and optional `sessionId` metadata.
+
+```bash
+pnpm add agent-inspect @agent-inspect/mcp
+```
+
+```ts
+import { inspectRun } from "agent-inspect";
+import { wrapMcpClient } from "@agent-inspect/mcp";
+
+const traced = wrapMcpClient(mcpClient, {
+  serverName: "docs-server",
+  sessionId: "sess-123",
+});
+
+await inspectRun("agent-with-mcp", async () => {
+  await traced.callTool({ name: "search", arguments: { query: "sessions" } });
+});
+```
+
+No-network recipe: [mcp-client-tracing](examples/recipes/mcp-client-tracing/). This is **not** an MCP server, gateway, or hosted broker — see [docs/ADAPTERS.md](docs/ADAPTERS.md).
+
 ### TUI viewer (`@agent-inspect/tui`)
 
 Optional **Ink/React** package, installed separately. Use with an interactive terminal:
@@ -458,6 +484,9 @@ Reporter artifact behavior and API details are documented in [docs/API.md](docs/
 | [examples/recipes/test-reporter-artifacts](examples/recipes/test-reporter-artifacts) | Vitest/Jest reporter artifact patterns |
 | [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
 | [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |
+| [examples/recipes/mcp-client-tracing](examples/recipes/mcp-client-tracing) | v2.4 MCP client tool-call tracing |
+
+**Multi-run sessions:** set `sessionId` (and optional handoff/retry metadata) on `run_started`, then browse with `npx agent-inspect sessions` and `npx agent-inspect session <id> --timeline`. See [SESSIONS-AND-WORKFLOW-CAUSALITY](docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md).
 
 **Recipes** are deterministic and require **no external services** by default. Index: [examples/README.md](examples/README.md), [examples/recipes/README.md](examples/recipes/README.md).
 

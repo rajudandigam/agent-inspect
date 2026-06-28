@@ -1,0 +1,13 @@
+{
+  "name": "agent-inspect-recipe-mcp-client-tracing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/mcp": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

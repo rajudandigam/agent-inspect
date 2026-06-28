@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.4.0"
-chunk: "v2.4-5-docs-and-release-readiness"
+chunk: "v2.4-release-prep"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-4-mcp-telemetry-package"
+dependsOn: "v2.4-5-docs-and-release-readiness"
 ```
 
 ## Goal
 
-Document v2.4 sessions/MCP workflows and prepare release readiness.
+Create v2.4 linked minor changeset and release-prep commit; wait for Version Packages PR / publish workflow.
 
 ## Suggested Commit
 
 ```text
-docs: prepare v2.4 release readiness
+chore: prepare v2.4 release
 ```

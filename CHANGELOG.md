@@ -18,6 +18,14 @@
 
 ## Unreleased
 
+### Draft v2.4.0 Notes
+
+- Added session/workflow causality model and `agent-inspect/advanced` session index helpers (`buildSessionIndex`, scope/cohort helpers, session fixtures).
+- Added `agent-inspect sessions` and `agent-inspect session` CLI for multi-run handoff/retry navigation with timeline, critical-path, diagnostics, and JSON output.
+- Added session-aware `search --session` and `check --session` / `--group` with aggregated per-run evidence.
+- Added public optional `@agent-inspect/mcp` for local MCP **client** `tools/list` and `tools/call` telemetry with bounded summaries and `source.type: mcp-client` metadata.
+- No schema version change, no MCP gateway/server, no timestamp-only causality inference, and no root/core dependency on MCP SDKs.
+
 ### Draft v2.3.0 Notes
 
 - Hardened the official adapter paths for AI SDK, OpenAI Agents JS, and LangChain/LangGraph with no-network recipes, local-only defaults, clearer lifecycle coverage, and executable adapter conformance evidence.

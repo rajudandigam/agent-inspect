@@ -34,6 +34,7 @@ const RECIPES = [
   "eval-local-checks",
   "redact-share-safe-file",
   "eval-ci-artifacts",
+  "mcp-client-tracing",
 ];
 
 const LOG_RECIPE_FILES = {

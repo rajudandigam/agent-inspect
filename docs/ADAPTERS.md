@@ -406,6 +406,53 @@ A future Nest helper remains demand-gated and must be narrower than a framework 
 
 ---
 
+## MCP client telemetry (`@agent-inspect/mcp`)
+
+**Status:** experimental optional package — v2.4.0 train.
+
+`@agent-inspect/mcp` traces **MCP client** `tools/list` and `tools/call` as local AgentInspect tool steps. It records server identity (name + URL hash), tool name, bounded argument/result summaries, duration, errors, and optional session metadata (`sessionId`, `toolCallId`, `mcpToolCallId`).
+
+### Install
+
+```bash
+npm install agent-inspect @agent-inspect/mcp
+```
+
+### Wrap a client
+
+```ts
+import { inspectRun } from "agent-inspect";
+import { wrapMcpClient } from "@agent-inspect/mcp";
+
+const traced = wrapMcpClient(mcpClient, {
+  serverName: "docs-server",
+  serverUrl: process.env.MCP_SERVER_URL,
+  sessionId: "sess-123",
+});
+
+await inspectRun("support-agent", async () => {
+  await traced.listTools?.();
+  await traced.callTool({ name: "search", arguments: { query: "refund policy" } });
+});
+```
+
+`wrapMcpClient` accepts any object matching the documented `McpClientLike` shape. It does **not** require `@modelcontextprotocol/sdk` at runtime.
+
+### Boundaries (v2.4)
+
+| In scope | Out of scope |
+| -------- | ------------ |
+| Client-side `tools/list` and `tools/call` wrapping | MCP **server** implementation |
+| Bounded summaries on tool step metadata | Gateway, proxy, or hosted MCP broker |
+| `source.type: mcp-client` on tool steps | Invoking tools on behalf of the user from AgentInspect |
+| Session metadata attachment when provided | Default trace upload |
+
+Recipe: [examples/recipes/mcp-client-tracing](../examples/recipes/mcp-client-tracing/).
+
+Session navigation for multi-run workflows uses `agent-inspect sessions` / `session` and optional `search --session` / `check --session` — see [CLI.md](./CLI.md) and [SESSIONS-AND-WORKFLOW-CAUSALITY.md](./proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md).
+
+---
+
 ## Future adapters (not shipped)
 
 Direction only — see [ROADMAP.md](../ROADMAP.md):

@@ -1,0 +1,6 @@
+MCP client tracing recipe complete
+Trace directory: ./.agent-inspect-runs
+
+Inspect with:
+  npx agent-inspect sessions --dir ./.agent-inspect-runs
+  npx agent-inspect session sess-mcp-recipe-001 --dir ./.agent-inspect-runs --timeline

@@ -131,7 +131,7 @@ Published sequence after **v2.0.0** — directional, not delivery guarantees.
 | **v2.1.0** | Eval/redact utility triangle | Public optional eval and redact utilities, shared redaction engine, and deterministic local eval workflows. |
 | **v2.2.0** | Reporters and CI | Public Vitest/Jest reporters, CI summaries, trace/eval artifacts, and quiet success mode. |
 | **v2.3.0** | Adapter hardening | AI SDK, OpenAI Agents, and LangGraph-through-LangChain polish; new adapters only when demand is proven. |
-| **v2.4.0** | Sessions and MCP telemetry | Session navigation, handoffs, retries, sub-agents, and MCP tool tracing without becoming a gateway product. |
+| **v2.4.0** | Sessions and MCP telemetry | Session navigation, handoffs, retries, sub-agents, and MCP client tool tracing without becoming a gateway product. |
 | **v2.5.0** | Guardrails and circuit breakers | Deterministic local safety utilities built on checks, redaction, eval, and trace events. |
 | **v2.6.0** | Optional viewer and IDE/MCP surfaces | Local read-only viewer, read-only MCP server, and optional editor surfaces if user demand is proven. |
 
@@ -183,8 +183,8 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v2.0.0** — Stable trace contract | **Released** 2026-06-27 | [V2.0.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.0.0-RELEASE-READINESS.md) |
 | **v2.1.0** — Eval/redact utility triangle | **Active** | [V2.1.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md) |
 | **v2.2.0** — Reporters and CI | Planned | [V2.2.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md) |
-| **v2.3.0** — Adapter hardening | Planned | [V2.3.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md) |
-| **v2.4.0** — Sessions and MCP telemetry | Planned | [V2.4.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.4.0-EXECUTION-PLAN.md) |
+| **v2.3.0** — Adapter hardening | **Released** 2026-06-28 | [V2.3.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md) |
+| **v2.4.0** — Sessions and MCP telemetry | **Release prep** | [V2.4.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.4.0-RELEASE-READINESS.md) |
 | **v2.5.0** — Guardrails and circuit breakers | Planned | [V2.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.5.0-EXECUTION-PLAN.md) |
 | **v2.6.0** — Optional viewer and IDE/MCP surfaces | Planned | [V2.6.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.6.0-EXECUTION-PLAN.md) |
 | **v3.0.0** — Conditional extensibility | Conditional | [V3.0.0-READINESS-AND-EXECUTION-PLAN.md](docs/implementation/release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md) |
