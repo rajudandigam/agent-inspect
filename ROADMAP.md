@@ -184,7 +184,7 @@ Maintainers ship **small validated chunks** but publish **fewer npm releases** b
 | **v2.1.0** — Eval/redact utility triangle | **Active** | [V2.1.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md) |
 | **v2.2.0** — Reporters and CI | Planned | [V2.2.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md) |
 | **v2.3.0** — Adapter hardening | **Released** 2026-06-28 | [V2.3.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md) |
-| **v2.4.0** — Sessions and MCP telemetry | **Release prep** | [V2.4.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.4.0-RELEASE-READINESS.md) |
+| **v2.4.0** — Sessions and MCP telemetry | **Partial publish** (9/10 npm) | [V2.4.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.4.0-RELEASE-READINESS.md) |
 | **v2.5.0** — Guardrails and circuit breakers | Planned | [V2.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.5.0-EXECUTION-PLAN.md) |
 | **v2.6.0** — Optional viewer and IDE/MCP surfaces | Planned | [V2.6.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.6.0-EXECUTION-PLAN.md) |
 | **v3.0.0** — Conditional extensibility | Conditional | [V3.0.0-READINESS-AND-EXECUTION-PLAN.md](docs/implementation/release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md) |

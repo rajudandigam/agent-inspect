@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release line: **2.3.x** for the existing public packages. **v2.4.0** (release prep) adds multi-run **session** navigation (`sessions` / `session` CLI), session-aware `search` and `check`, and optional **`@agent-inspect/mcp`** client telemetry — all local-first on top of the stable v2 trace contract.
+Current npm release line: **2.4.0** for the linked public packages (`agent-inspect`, adapters, reporters, redact, eval). **v2.4.0** adds multi-run **session** navigation (`sessions` / `session` CLI), session-aware `search` and `check`, and optional **`@agent-inspect/mcp`** client telemetry (first npm publish pending maintainer bootstrap).
 
 ```bash
 npm install agent-inspect
@@ -340,7 +340,7 @@ AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
-**v2.4 train status:** session/workflow causality helpers ship on `agent-inspect/advanced` (`buildSessionIndex`, scope/cohort helpers). CLI adds `sessions`, `session`, `search --session`, and `check --session` / `--group`. Optional `@agent-inspect/mcp` wraps MCP client `tools/list` and `tools/call` as local tool steps with bounded summaries — no gateway or server product.
+**v2.4 shipped:** sessions/MCP client telemetry on `main@2.4.0`. Nine linked packages published at `2.4.0`; `@agent-inspect/mcp` awaits first-time npm bootstrap (Trusted Publisher + initial publish).
 
 **v2.3 shipped:** adapter hardening for AI SDK, OpenAI Agents JS, and LangChain/LangGraph with no-network recipes and executable conformance coverage. Mastra and NestJS framework packages remain demand-gated; NestJS is covered through structured-log ingestion.
 

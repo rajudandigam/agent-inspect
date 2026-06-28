@@ -4,13 +4,13 @@
 
 ```yaml
 baselineVersion: "2.3.0"
-publishedVersion: "2.3.0"
+publishedVersion: "2.4.0"
 currentTrain: "v2.4.0"
-trainStatus: "release-prep"
+trainStatus: "partial-publication"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "b1fce2a"
-lastValidationLevel: "v2.4-5-docs-and-release-readiness"
+lastConfirmedCommit: "7eba1b7"
+lastValidationLevel: "v2.4-version-packages-pr-merged"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -91,9 +91,11 @@ completedChunks:
   - "v2.4-3-session-aware-search-checks"
   - "v2.4-4-mcp-telemetry-package"
   - "v2.4-5-docs-and-release-readiness"
-currentChunk: "v2.4-release-prep"
-pendingManualGate: "version-packages-pr-and-publish"
-nextAction: "Create v2.4 linked minor changeset, push release-prep, merge Version Packages PR after CI."
+  - "v2.4-release-prep"
+  - "v2.4-version-packages-pr-and-publication"
+currentChunk: "v2.4-mcp-first-publish-bootstrap"
+pendingManualGate: "mcp-first-npm-publish-and-trusted-publisher"
+nextAction: "Maintainer first-publishes @agent-inspect/mcp@2.4.0, configures Trusted Publisher, re-runs Publish workflow."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```

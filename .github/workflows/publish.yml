@@ -43,7 +43,7 @@ jobs:
 
       # npm Trusted Publishing (OIDC): configure on npmjs.com for EACH published package:
       #   agent-inspect, @agent-inspect/ai-sdk, @agent-inspect/langchain,
-      #   @agent-inspect/tui, @agent-inspect/openai-agents
+      #   @agent-inspect/tui, @agent-inspect/openai-agents, @agent-inspect/mcp,
       # Package → Settings → Trusted Publisher → GitHub Actions:
       #   owner: rajudandigam, repo: agent-inspect, workflow: publish.yml
       # E404 on scoped packages usually means Trusted Publisher is missing on that package.
