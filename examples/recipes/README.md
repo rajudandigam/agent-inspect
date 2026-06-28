@@ -59,6 +59,8 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [harness-basic](harness-basic) | v1.9 fixture harness basics | `@agent-inspect/harness`, fixture JSON, expected output | yes | no |
 | [harness-adapter-local](harness-adapter-local) | Adapter-shaped local harness target | `@agent-inspect/harness`, bootstrap/resolve/invoke, expected output | yes | no |
 | [mcp-client-tracing](mcp-client-tracing) | v2.4 MCP client wrap with mock client | `@agent-inspect/mcp`, `inspectRun`, `sessions` / `session` CLI | yes | no |
+| [guardrails-basic](guardrails-basic) | v2.5 deterministic guardrail samples | `@agent-inspect/guardrails`, phrase/PII/injection rules | yes | no |
+| [circuit-breaker-basic](circuit-breaker-basic) | v2.5 circuit repetition analysis | `@agent-inspect/circuit`, tool/args repetition | yes | no |
 
 ## Multi-run sessions (v2.4)
 

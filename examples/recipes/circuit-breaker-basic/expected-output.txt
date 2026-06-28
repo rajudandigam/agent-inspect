@@ -1,0 +1,2 @@
+Circuit breaker basic recipe complete
+Synthetic tool repetition triggers circuit.open findings in JSON output.

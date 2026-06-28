@@ -9,8 +9,8 @@ currentTrain: "v2.5.0"
 trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "ac0b661"
-lastValidationLevel: "v2.5-3-check-eval-integration"
+lastConfirmedCommit: "c04cadc"
+lastValidationLevel: "v2.5-4-recipes-and-release-readiness"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -96,9 +96,9 @@ completedChunks:
   - "v2.4-mcp-first-publish-bootstrap"
   - "v2.4-publication-complete"
   - "v2.5-2-circuit-package"
-  - "v2.5-3-check-eval-integration"
-currentChunk: "v2.5-4-recipes-and-release-readiness"
-nextAction: "Chunk 4 — recipes, docs, v2.5 release readiness."
+  - "v2.5-4-recipes-and-release-readiness"
+currentChunk: "v2.5-release-prep"
+nextAction: "Create v2.5 linked changeset and Version Packages PR."
 updatedAt: "2026-06-04"
 ```
 

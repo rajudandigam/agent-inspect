@@ -88,6 +88,15 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/circuit-breaker-basic:
+    dependencies:
+      '@agent-inspect/circuit':
+        specifier: workspace:*
+        version: link:../../../packages/circuit
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/deterministic-ci-checks:
     dependencies:
       agent-inspect:
@@ -123,6 +132,15 @@ importers:
       agent-inspect:
         specifier: workspace:*
         version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/guardrails-basic:
+    dependencies:
+      '@agent-inspect/guardrails':
+        specifier: workspace:*
+        version: link:../../../packages/guardrails
       tsx:
         specifier: ^4.19.0
         version: 4.21.0

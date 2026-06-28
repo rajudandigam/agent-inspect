@@ -1,0 +1,2 @@
+Guardrails basic recipe complete
+Sample outputs include pass/fail guardrail results for text and JSON inputs.

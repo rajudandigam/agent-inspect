@@ -107,12 +107,32 @@ describe("package boundaries", () => {
     expect(keys(redact.peerDependencies)).toEqual([]);
   });
 
-  it("@agent-inspect/eval is public and depends only on agent-inspect", async () => {
+  it("@agent-inspect/eval is public and depends on agent-inspect plus safety packages", async () => {
     const evalPkg = await readPkg("packages/eval/package.json");
     expect(evalPkg.name).toBe("@agent-inspect/eval");
     expect(evalPkg.private).toBeUndefined();
-    expect(keys(evalPkg.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(evalPkg.dependencies)).toEqual([
+      "@agent-inspect/circuit",
+      "@agent-inspect/guardrails",
+      "agent-inspect",
+    ]);
     expect(keys(evalPkg.peerDependencies)).toEqual([]);
+  });
+
+  it("@agent-inspect/guardrails is public and depends on redact", async () => {
+    const guardrails = await readPkg("packages/guardrails/package.json");
+    expect(guardrails.name).toBe("@agent-inspect/guardrails");
+    expect(guardrails.private).toBeUndefined();
+    expect(keys(guardrails.dependencies)).toEqual(["@agent-inspect/redact"]);
+    expect(keys(guardrails.peerDependencies)).toEqual([]);
+  });
+
+  it("@agent-inspect/circuit is dependency-free and public", async () => {
+    const circuit = await readPkg("packages/circuit/package.json");
+    expect(circuit.name).toBe("@agent-inspect/circuit");
+    expect(circuit.private).toBeUndefined();
+    expect(keys(circuit.dependencies)).toEqual([]);
+    expect(keys(circuit.peerDependencies)).toEqual([]);
   });
 
   it("@agent-inspect/mcp is public and depends only on agent-inspect", async () => {

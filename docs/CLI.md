@@ -310,6 +310,8 @@ Options:
 - `--session <id>`: check all runs in a workflow session (uses `--dir`; target may be `.`)
 - `--group <id>`: check all runs sharing a `groupId` metadata value
 - `--correlate-group`: when using `--session`, also match synthetic `group:` session keys
+- `--guardrails <rule>`: optional deterministic guardrail rules (`banned-phrase`, `pii-leak`, `prompt-injection`, …); repeatable
+- `--circuit <rule>`: optional circuit analyzers (`same-tool-repetition`, `max-retries`, …); repeatable
 
 By default, `check` runs `run.status`. Additional built-in rules can be selected with `--rule` or config when their options are available.
 
@@ -334,7 +336,8 @@ Examples:
 npx agent-inspect check fixtures/traces-v0.2/manual-basic.jsonl --json
 npx agent-inspect check minimal-success --dir fixtures/traces --rule run.status
 npx agent-inspect check trace.jsonl --max-duration-ms 30000 --required-tool search_docs --json
-npx agent-inspect check . --dir ./.agent-inspect --session sess-handoff-001 --json
+npx agent-inspect check trace.jsonl --guardrails pii-leak --guardrails prompt-injection --json
+npx agent-inspect check trace.jsonl --circuit same-tool-repetition --circuit max-retries --json
 ```
 
 Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)

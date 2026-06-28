@@ -35,6 +35,8 @@ const RECIPES = [
   "redact-share-safe-file",
   "eval-ci-artifacts",
   "mcp-client-tracing",
+  "guardrails-basic",
+  "circuit-breaker-basic",
 ];
 
 const LOG_RECIPE_FILES = {

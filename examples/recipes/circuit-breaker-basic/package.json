@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-recipe-circuit-breaker-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/circuit": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}
