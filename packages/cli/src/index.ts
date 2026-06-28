@@ -26,6 +26,8 @@ import type { StatsCommandOptions } from "./stats.js";
 import { statsCommand } from "./stats.js";
 import type { SearchCommandOptions } from "./search.js";
 import { searchCommand } from "./search.js";
+import type { SessionsCommandOptions, SessionCommandOptions } from "./sessions.js";
+import { sessionsCommand, sessionCommand } from "./sessions.js";
 import type { WhatCommandOptions } from "./what.js";
 import { whatCommand } from "./what.js";
 import type { ReportCommandOptions } from "./report.js";
@@ -541,6 +543,32 @@ export function createCliProgram(): Command {
     .option("--json", "print results as JSON")
     .action((opts: SearchCommandOptions) => {
       runCommand(() => searchCommand(opts));
+    });
+
+  program
+    .command("sessions")
+    .description("List workflow sessions grouped from local trace metadata (read-only)")
+    .option("--dir <path>", "trace directory")
+    .option(
+      "--correlate-group",
+      "treat shared groupId as a synthetic session when sessionId is absent",
+    )
+    .option("--json", "print sessions index as JSON")
+    .action((opts: SessionsCommandOptions) => {
+      runCommand(() => sessionsCommand(opts));
+    });
+
+  program
+    .command("session")
+    .description("Inspect one workflow session: runs, handoffs, retries (read-only)")
+    .argument("<session-id>", "session id (from sessions output)")
+    .option("--dir <path>", "trace directory")
+    .option("--timeline", "include per-run timelines")
+    .option("--critical-path", "include critical path section")
+    .option("--diagnostics", "include ambiguity warnings")
+    .option("--json", "print session view as JSON")
+    .action((sessionId: string, opts: SessionCommandOptions) => {
+      runCommand(() => sessionCommand(sessionId, opts));
     });
 
   program

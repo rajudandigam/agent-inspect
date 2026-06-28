@@ -38,6 +38,8 @@ Core commands:
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
 - `search` — deterministic local search over traces
+- `sessions` — list workflow sessions from trace metadata
+- `session` — inspect one session (handoffs, retries, optional timeline)
 - `what` — concise summary of a single run (local JSONL)
 - `report` — markdown or HTML inspection report for a single run
 - `explain` — deterministic local facts/inferences for a trace, with dry-run payloads
@@ -646,7 +648,51 @@ npx agent-inspect search --duration ">100ms" --json
 
 ![Search traces by status error](../assets/demos/search.gif)
 
-### 6.19 `what`
+### 6.19 `sessions`
+
+List workflow sessions grouped from local trace metadata (`sessionId`, optional `groupId` correlation). Read-only; no network.
+
+```bash
+agent-inspect sessions [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--correlate-group` — treat shared `groupId` as a synthetic session when `sessionId` is absent
+- `--json` — `SessionIndex` JSON (`sessions`, `unscopedRunIds`, `warnings`)
+
+Example:
+
+```bash
+npx agent-inspect sessions --dir ./.agent-inspect
+npx agent-inspect sessions --json
+```
+
+### 6.20 `session`
+
+Inspect one workflow session: runs, handoffs, retries, and optional per-run timelines. Uses the same session index as `sessions`.
+
+```bash
+agent-inspect session <session-id> [options]
+```
+
+Options:
+
+- `--dir <path>`
+- `--timeline` — include per-run timelines (human or JSON `timelines`)
+- `--critical-path` — include critical path section
+- `--diagnostics` — include ambiguity warnings for the session
+- `--json` — structured session view
+
+Example:
+
+```bash
+npx agent-inspect session sess-handoff-001 --timeline
+npx agent-inspect session sess-retry-001 --critical-path --json
+```
+
+### 6.21 `what`
 
 Concise human-readable summary of one local trace run. Read-only; accepts v0.1 manual JSONL and v0.2 persisted-event JSONL through the shared dual-format normalization path. Vocabulary: [TRACE-VOCABULARY-V1.5.md](./proposals/TRACE-VOCABULARY-V1.5.md).
 

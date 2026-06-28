@@ -4,46 +4,46 @@
 
 ```yaml
 train: "v2.4.0"
-chunk: "v2.4-2-sessions-session-cli"
+chunk: "v2.4-3-session-aware-search-checks"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.4-1-session-aware-reader-and-index-helpers"
+dependsOn: "v2.4-2-sessions-session-cli"
 ```
 
 ## Goal
 
-Add `agent-inspect sessions` and `agent-inspect session` read-only CLI commands.
+Add session-aware search and checks: `search --session`, session/group check input, cohort grouping.
 
 ## Read first
 
 - `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md`
-- `packages/core/src/sessions/`
-- `packages/cli/src/` command patterns (`timeline`, `stats`, `list`)
-- `docs/CLI.md`
+- `packages/core/src/search.ts`
+- `packages/core/src/checks/`
+- `packages/cli/src/search.ts`
+- `packages/cli/src/check.ts`
 
 ## In Scope
 
-1. `packages/cli/src/sessions.ts` — list sessions from trace dir.
-2. `agent-inspect session <sessionId>` — view with `--timeline`, `--critical-path`, `--json`, `--diagnostics`.
-3. CLI tests and `docs/CLI.md` updates.
-4. Stable JSON output; no mutation.
+1. `search --session <id>` filter runs by session.
+2. Check CLI/config accepts session or group scope.
+3. Cohort grouping by session/group with evidence references.
+4. Tests and docs; old search behavior unchanged without flags.
 
 ## Out Of Scope
 
-- search/check session flags (chunk 3);
 - MCP package (chunk 4);
 - viewer or network behavior.
 
 ## Suggested Commit
 
 ```text
-feat: add session inspection commands
+feat: add session-aware search and checks
 ```
 
 ## Chunk Gate
 
 ```bash
-pnpm exec vitest run packages/cli/test/sessions.test.ts packages/core/test/sessions
+pnpm exec vitest run packages/cli/test/search.test.ts packages/cli/test/check.test.ts packages/core/test/search.test.ts packages/core/test/sessions
 pnpm build
 pnpm typecheck
 pnpm test

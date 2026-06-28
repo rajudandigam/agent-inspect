@@ -209,6 +209,8 @@ export {
   SESSION_WORKFLOW_KEYS,
   buildSessionIndex,
   extractSessionWorkflowMetadata,
+  enrichSessionRunRecord,
+  loadSessionRunRecords,
   sessionKeyForRun,
 } from "../sessions/index.js";
 
