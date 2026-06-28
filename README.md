@@ -340,6 +340,10 @@ AgentInspect is the **local-first trace workbench** for TypeScript AI agents:
 
 Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInspectRun` with `AGENT_INSPECT=1` to toggle tracing in eval or CI — see [docs/API.md](docs/API.md).
 
+**v2.3 train status:** adapter hardening is ready for release prep. AI SDK, OpenAI Agents JS, and LangChain/LangGraph paths have no-network recipes and executable conformance coverage. Mastra and NestJS framework packages remain demand-gated; NestJS is covered through structured-log ingestion.
+
+**Shipped in 2.2.0:** public optional Vitest/Jest reporter packages, shared `agent-inspect/reporters` helpers, and `agent-inspect ci-summary` for deterministic local reporter artifact summaries. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents`, `@agent-inspect/redact`, `@agent-inspect/eval`, `@agent-inspect/vitest`, and `@agent-inspect/jest` at **2.2.0**.
+
 **Shipped in 2.1.0:** deterministic local eval and redaction utilities. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents`, `@agent-inspect/redact`, and `@agent-inspect/eval` at **2.1.0**.
 
 **Shipped in 2.0.0:** stable root API contract, schema 1.0 persisted writer path, v0.1/v0.2/v1.0 read compatibility, and explicit trace migration workflow. Linked release aligns `agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, and `@agent-inspect/openai-agents` at **2.0.0**.
@@ -354,7 +358,7 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 
 **Shipped in 1.5.0:** non-breaking subpath exports; `what` and `report` CLI; dual-format read path (v0.1 + v0.2 JSONL); [what-report-inspect recipe](examples/recipes/what-report-inspect/). Linked release aligns all three npm packages at **1.5.0**.
 
-**Roadmap beyond current release work:** v2.2 prepares test reporters and CI workflows, followed by adapter hardening, sessions/MCP telemetry, guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
+**Roadmap beyond current release work:** v2.4 adds sessions/MCP telemetry, followed by guardrails, optional viewer/IDE surfaces, and conditional v3 extensibility. See [ROADMAP.md](ROADMAP.md).
 
 **Shipped in 1.4.0:** CI artifact recipe ([docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md)); `timeline`, `stats`, and `search` CLI; core helpers `buildRunTimeline`, `buildTraceStats`, `searchTraces`. Linked release aligns all three npm packages at **1.4.0**.
 
@@ -369,6 +373,16 @@ Pass `enabled: false` to `inspectRun` for a no-trace passthrough. Use `maybeInsp
 **Honest boundaries:** log parsing, export, diff, LangChain/TUI programmatic APIs, and OpenInference/OTLP JSON exports are **experimental or compatibility-oriented**. Nothing performs **vendor upload** by default.
 
 ## Optional packages
+
+### Framework adapters (`@agent-inspect/ai-sdk`, `@agent-inspect/openai-agents`, `@agent-inspect/langchain`)
+
+Official framework adapters are optional packages and stay explicit, local-first, and metadata-only by default:
+
+- **AI SDK:** pass `agentInspect(...)` through AI SDK telemetry with `recordInputs: false` and `recordOutputs: false`.
+- **OpenAI Agents JS:** use `setTraceProcessors([agentInspectProcessor(...)])` for the documented local-only replacement path.
+- **LangChain/LangGraph:** pass `new AgentInspectCallback(...)` through callbacks; LangGraph support rides through the LangChain callback boundary.
+
+No-network recipes: [ai-sdk-local-telemetry](examples/recipes/ai-sdk-local-telemetry/), [ai-sdk-next-route](examples/recipes/ai-sdk-next-route/), [openai-agents-local-tracing](examples/recipes/openai-agents-local-tracing/), and [langgraph-callback-local](examples/recipes/langgraph-callback-local/). Conformance and limits are documented in [docs/ADAPTERS.md](docs/ADAPTERS.md) and [docs/ADAPTER-CONFORMANCE.md](docs/ADAPTER-CONFORMANCE.md).
 
 ### LangChain callback adapter (`@agent-inspect/langchain`)
 
@@ -411,7 +425,7 @@ The TUI is available as a separate optional package; its programmatic API is exp
 
 ### Test reporter artifacts (`@agent-inspect/vitest`, `@agent-inspect/jest`)
 
-Optional Vitest/Jest reporter packages are implemented in the workspace for local failure artifacts, but remain private/unpublished until the maintainer clears first-publication setup for a v2.2 release. They write shared `schemaVersion: "0.1"` reporter manifests with safe relative artifact paths and bounded structural metadata. Use `agent-inspect ci-summary` to summarize those local manifests in CI without reading trace contents or calling GitHub APIs.
+Optional Vitest/Jest reporter packages are public as of v2.2. They write shared `schemaVersion: "0.1"` reporter manifests with safe relative artifact paths and bounded structural metadata. Use `agent-inspect ci-summary` to summarize those local manifests in CI without reading trace contents or calling GitHub APIs.
 
 Reporter artifact behavior and API details are documented in [docs/API.md](docs/API.md) and [docs/CI-ARTIFACTS.md](docs/CI-ARTIFACTS.md).
 

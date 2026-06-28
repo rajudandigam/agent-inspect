@@ -4,70 +4,69 @@
 
 ```yaml
 train: "v2.3.0"
-chunk: "v2.3-6-adapter-docs-and-release-readiness"
+chunk: "v2.3-release-prep"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.3-5-demand-gated-mastra-nest-decision"
+dependsOn: "v2.3-6-adapter-docs-and-release-readiness"
 ```
 
 ## Goal
 
-Make v2.3 adapter adoption paths visible and produce release-readiness evidence before release prep.
+Prepare the standard Changesets release workflow for the v2.3.0 linked minor release.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
 - `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
-- `docs/ADAPTERS.md`
-- `docs/ADAPTER-CONFORMANCE.md`
-- `examples/recipes/README.md`
-- `README.md`
+- `docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md`
+- `.changeset/config.json`
 - `CHANGELOG.md`
+- root and public optional package manifests
 
 ## Current Evidence
 
-- v2.3 chunks 1-4 hardened AI SDK, OpenAI Agents, LangChain/LangGraph, and shared conformance paths.
-- v2.3 chunk 5 explicitly deferred Mastra and NestJS packages while keeping NestJS structured-log ingestion as the supported recipe path.
-- The release plan requires README/adapter docs alignment, recipe visibility, package smoke, conformance evidence, and a v2.3 readiness file.
+- v2.3 readiness passed locally at commit `06646dc4870593805eff96c39b433c7e7fc31372` plus readiness docs edits.
+- npm registry currently reports `latest: 2.2.0` for all nine public packages.
+- `.changeset/config.json` links the nine public packages and ignores only private/internal packages plus examples/recipes.
+- The maintainer authorized continuing the release workflow for minor releases.
 
 ## In Scope
 
-1. Align README, adapter docs, and recipe index with the hardened v2.3 official adapter paths.
-2. Add `docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md`.
-3. Record adapter conformance, recipe, package-smoke, compatibility, dependency, schema, security, and known-limit evidence.
-4. Update CHANGELOG Unreleased notes only if needed for v2.3 readiness.
-5. Update release-train state and current task for release prep after validation.
+1. Add a Changesets markdown file for a linked minor `2.3.0` release of the nine public packages.
+2. Verify `changeset status --verbose` shows exactly nine minor releases and no patch/major releases.
+3. Run the release-prep validation gate.
+4. Commit and push the release-prep changes to `main`.
+5. Wait for the standard Changesets Version Packages PR, inspect it, merge only if checks are green and the diff is exactly expected, then watch publish and verify npm/tags/releases.
 
 ## Out Of Scope
 
-- package versions, changesets, tags, releases, or publishing;
-- version-package PR creation or merging;
-- new adapter implementation;
-- package publication;
+- hand-editing package versions or changelog release sections outside Changesets automation;
+- local `npm publish` or `pnpm publish`;
+- manual tags or GitHub releases;
+- new adapter implementation or package;
 - new root/core dependencies;
 - hosted upload, provider calls, network behavior, schema changes, or public breaking changes;
-- schema changes;
 - Mastra/Nest implementation.
 
 ## Acceptance Criteria
 
-- README and docs lead users to the strongest supported adapter paths.
-- v2.3 release-readiness evidence exists and matches local validation.
-- Conformance and recipe coverage are visible.
+- Changesets status shows exactly the intended linked v2.3 minor release set.
+- Release-prep validation passes.
+- Remote CI/Publish checks pass for the release-prep commit.
+- Any Version Packages PR is reviewed for expected linked `2.3.0` bumps before merge.
 - Validation passes.
 
 ## Suggested Commit
 
 ```text
-docs: prepare v2.3 release readiness
+chore: prepare v2.3 release
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/core/test/adapter-executable-conformance.test.ts packages/core/test/adapter-conformance-matrix.test.ts
-pnpm typecheck
+pnpm exec changeset status --verbose
 pnpm pack:smoke
 ```
 
@@ -75,13 +74,14 @@ pnpm pack:smoke
 
 ```bash
 pnpm build
-pnpm typecheck
-pnpm test
+pnpm test:all
+pnpm fixtures:check
 pnpm recipes:check
 pnpm pack:smoke
+pnpm compat:smoke
 git diff --check
 ```
 
 ## Stop Condition
 
-Stop if readiness uncovers a release-blocking validation failure, dependency drift, schema/API conflict, package-version work, partial publication, or maintainer decision that cannot be handled inside the docs/readiness scope.
+Stop if Changesets status shows any patch/major release, the linked public package set is wrong, validation fails and cannot be repaired inside release-prep scope, the Version Packages PR diff is not exactly expected, required CI fails, publication is partial, credentials/trusted publishing are missing, or any manual maintainer decision is required.

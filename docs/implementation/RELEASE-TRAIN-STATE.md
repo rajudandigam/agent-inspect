@@ -9,8 +9,8 @@ currentTrain: "v2.3.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "8d234d05039b263bc47b0d4f9fe387101fdd1845"
-lastValidationLevel: "v2.3-5-demand-gated-mastra-nest-decision"
+lastConfirmedCommit: "06646dc4870593805eff96c39b433c7e7fc31372"
+lastValidationLevel: "v2.3-6-adapter-docs-and-release-readiness"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -82,9 +82,10 @@ completedChunks:
   - "v2.3-3-langchain-langgraph-hardening"
   - "v2.3-4-adapter-conformance-runner-upgrade"
   - "v2.3-5-demand-gated-mastra-nest-decision"
-currentChunk: "v2.3-6-adapter-docs-and-release-readiness"
+  - "v2.3-6-adapter-docs-and-release-readiness"
+currentChunk: "v2.3-release-prep"
 pendingManualGate: "none"
-nextAction: "Start v2.3 chunk 6: prepare adapter docs and v2.3 release readiness evidence."
+nextAction: "Start v2.3 release prep: create the linked minor changeset and prepare the standard Changesets release workflow."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -93,6 +94,6 @@ updatedAt: "2026-06-28"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
-- **Active proposal:** none for the current conformance chunk.
-- **Latest readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
-- **Previous readiness:** [release-trains/V2.1.0-RELEASE-READINESS.md](./release-trains/V2.1.0-RELEASE-READINESS.md)
+- **Active proposal:** none for the current release-prep step.
+- **Latest readiness:** [release-trains/V2.3.0-RELEASE-READINESS.md](./release-trains/V2.3.0-RELEASE-READINESS.md)
+- **Previous readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)

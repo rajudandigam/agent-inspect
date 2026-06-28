@@ -10,11 +10,14 @@
 
 ## Unreleased
 
-### Draft v2.2.0 Notes
+### Draft v2.3.0 Notes
 
-- Prepared the v2.2 reporter and CI workflow release notes for local Vitest/Jest reporter artifacts, the shared `agent-inspect/reporters` manifest helpers, and `agent-inspect ci-summary`.
-- Reporter artifacts remain local-only and metadata-bounded. `ci-summary` reads reporter manifest JSON only, validates relative artifact paths, and does not read trace contents, upload artifacts, call GitHub APIs, or mutate repository state.
-- `@agent-inspect/vitest` and `@agent-inspect/jest` remain private/unpublished until maintainer first-publication setup is explicitly cleared before release prep.
+- Hardened the official adapter paths for AI SDK, OpenAI Agents JS, and LangChain/LangGraph with no-network recipes, local-only defaults, clearer lifecycle coverage, and executable adapter conformance evidence.
+- AI SDK coverage now includes route-style telemetry factory guidance, per-request integration isolation, tool/stream/error/parallel fixtures, token metadata, and the required `recordInputs: false` / `recordOutputs: false` host settings.
+- OpenAI Agents JS documentation and fixtures distinguish local-only replacement via `setTraceProcessors()` from advanced additional processor usage.
+- LangGraph support remains through `@agent-inspect/langchain`, with graph/node identity, subgraphs, checkpoint/session IDs, stream modes, handoffs, and parallel branch hints covered through callback metadata.
+- Mastra and NestJS framework packages remain explicitly deferred. NestJS support stays on structured-log ingestion unless future demand proves a narrow local-only helper is worth maintaining.
+- No root/core framework dependency, hosted upload, provider call, schema change, or public breaking change is added in this train.
 
 ## 2.1.0
 
