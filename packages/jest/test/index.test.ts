@@ -3,11 +3,21 @@ import os from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
+import type { TraceArtifactManifest } from "agent-inspect/reporters";
 
 import {
   AgentInspectJestReporter,
   createAgentInspectJestReporter,
 } from "../src/index.js";
+
+type JestArtifactDocument = {
+  readonly package: string;
+  readonly manifest: TraceArtifactManifest;
+  readonly trace: {
+    readonly runId?: string;
+    readonly file?: string;
+  };
+};
 
 async function makeTmpDir(): Promise<string> {
   return mkdtemp(path.join(os.tmpdir(), "agent-inspect-jest-"));
@@ -54,6 +64,8 @@ describe("@agent-inspect/jest reporter", () => {
           tracePath,
         },
       },
+      generatedAt: "2026-06-28T00:00:00.000Z",
+      redactionProfile: "strict",
     });
 
     await reporter.onTestResult(
@@ -64,18 +76,49 @@ describe("@agent-inspect/jest reporter", () => {
     const artifacts = reporter.getArtifacts();
     expect(artifacts).toHaveLength(1);
     expect(artifacts[0]?.status).toBe("failed");
+    expect(artifacts[0]?.testId).toBe("agent.test.cjs::agent suite agent workflow");
 
     const summary = await readFile(artifacts[0]!.summaryPath, "utf-8");
     const manifest = await readFile(artifacts[0]!.manifestPath, "utf-8");
     const combined = `${summary}\n${manifest}`;
+    const document = JSON.parse(manifest) as JestArtifactDocument;
 
     expect(combined).toContain("agent suite agent workflow");
     expect(combined).toContain(path.basename(tracePath));
     expect(combined).not.toContain(tracePath);
+    expect(combined).not.toContain(testFilePath);
     expect(combined).not.toContain("raw prompt");
     expect(combined).not.toContain("Bearer");
     expect(combined).not.toContain("sk-secret123456789");
     expect(combined).toContain("[REDACTED]");
+    expect(document.package).toBe("@agent-inspect/jest");
+    expect(document.manifest).toEqual(artifacts[0]?.manifest);
+    expect(document.manifest.schemaVersion).toBe("0.1");
+    expect(document.manifest.framework).toBe("jest");
+    expect(document.manifest.generatedAt).toBe("2026-06-28T00:00:00.000Z");
+    expect(document.manifest.results[0]).toMatchObject({
+      testId: "agent.test.cjs::agent suite agent workflow",
+      file: "agent.test.cjs",
+      status: "failed",
+      tracePath: "trace-with-secret.jsonl",
+    });
+    expect(document.manifest.artifacts).toEqual([
+      {
+        kind: "report",
+        path: "tests/agent/agent-suite-agent-workflow-jest-agent/report.json",
+        format: "json",
+        redactionProfile: "strict",
+        diagnostics: [],
+      },
+      {
+        kind: "summary",
+        path: "tests/agent/agent-suite-agent-workflow-jest-agent/summary.md",
+        format: "md",
+        redactionProfile: "strict",
+        diagnostics: [],
+      },
+    ]);
+    expect(summary).toContain("Manifest schema: 0.1");
   });
 
   it("requires explicit association and does not guess by timestamp or trace directory", async () => {
@@ -87,6 +130,33 @@ describe("@agent-inspect/jest reporter", () => {
       makeJestResult({
         status: "failed",
         testFilePath: path.join(artifactDir, "missing.test.cjs"),
+      }),
+    );
+
+    expect(reporter.getArtifacts()).toEqual([]);
+    expect(reporter.getDiagnostics()).toEqual([]);
+  });
+
+  it("keeps successful associated tests quiet by default", async () => {
+    const dir = await makeTmpDir();
+    const artifactDir = path.join(dir, "artifacts");
+    const file = path.join(dir, "passing-default.test.cjs");
+    const reporter = createAgentInspectJestReporter({
+      artifactDir,
+      associations: {
+        [`${file}::agent suite passes quietly`]: {
+          runId: "run-pass",
+          tracePath: "/tmp/passes.jsonl",
+        },
+      },
+    });
+
+    await reporter.onTestResult(
+      undefined,
+      makeJestResult({
+        status: "passed",
+        testFilePath: file,
+        title: "passes quietly",
       }),
     );
 

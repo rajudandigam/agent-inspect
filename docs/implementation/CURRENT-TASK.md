@@ -4,15 +4,15 @@
 
 ```yaml
 train: "v2.2.0"
-chunk: "v2.2-3-public-jest-reporter"
+chunk: "v2.2-4-ci-summary-command-and-recipes"
 status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.2-2-public-vitest-reporter"
+dependsOn: "v2.2-3-public-jest-reporter"
 ```
 
 ## Goal
 
-Promote the Jest reporter/helper toward public adoption-ready behavior using the shared reporter artifact contract and the Vitest reporter precedent.
+Add a local `agent-inspect ci-summary` workflow that can read reporter artifact manifests and write deterministic CI-safe summaries without uploading artifacts or calling hosted APIs.
 
 ## Read first
 
@@ -21,58 +21,59 @@ Promote the Jest reporter/helper toward public adoption-ready behavior using the
 - `docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md`
 - `docs/proposals/CI-REPORTERS.md`
 - `packages/core/src/reporters/index.ts`
-- `packages/vitest/src/index.ts`
-- `packages/jest/package.json`
-- relevant existing Jest reporter source/tests
+- `packages/cli/src/index.ts`
+- relevant CLI tests and recipe validation scripts
 
 ## Prior chunk evidence
 
-- Vitest reporter now writes shared `0.1` artifact manifests through `agent-inspect/reporters`.
+- Vitest and Jest reporters now write shared `0.1` artifact manifests through `agent-inspect/reporters`.
 - Failed associated tests produce deterministic local report/summary artifact paths.
 - Successful tests remain quiet by default, even when trace metadata is present.
-- Reporter write failures remain diagnostics and do not throw through Vitest hooks.
-- `@agent-inspect/vitest` remains private pending maintainer first-publication setup before v2.2 release.
+- Reporter write failures remain diagnostics and do not throw through runner hooks.
+- `@agent-inspect/vitest` and `@agent-inspect/jest` remain private pending maintainer first-publication setup before v2.2 release.
 
 ## In Scope
 
-1. Implement Jest reporter/helper lifecycle around the shared reporter contract.
-2. Preserve Jest CJS-style consumer compatibility.
-3. Preserve quiet success by default.
-4. Generate useful local artifacts for failed tests only.
-5. Preserve original Jest failures and exit behavior.
-6. Add focused Jest reporter tests and compatibility coverage as needed.
-7. Keep package publication/private-state decisions explicit.
+1. Add a CLI `ci-summary` command that reads local reporter artifact manifest files.
+2. Support deterministic Markdown output suitable for `$GITHUB_STEP_SUMMARY`.
+3. Support deterministic JSON output for downstream local tooling if the existing CLI pattern supports it cleanly.
+4. Keep artifact links relative and safe.
+5. Add documentation and a GitHub Actions artifact recipe.
+6. Add focused CLI tests and recipe validation coverage.
 
 ## Out Of Scope
 
-- Vitest behavior changes;
-- hosted uploads;
 - GitHub API comments/checks;
+- OAuth or GitHub App behavior;
+- artifact upload by AgentInspect;
+- network calls;
+- reporter package publication;
 - changesets;
 - tags;
-- publishing;
+- package versions;
 - root/core framework dependencies;
-- schema changes to persisted traces;
-- first publication without maintainer confirmation.
+- schema changes to persisted traces.
 
 ## Acceptance Criteria
 
-- Failed Jest tests produce deterministic local artifact metadata.
-- Successful Jest tests remain quiet by default.
-- Reporter failures become diagnostics and do not mask test failures.
-- Jest remains absent from root/core dependencies.
-- If `@agent-inspect/jest` is made public, the first-publication gate remains documented for the maintainer before v2.2 release.
+- `agent-inspect ci-summary` summarizes local reporter manifests deterministically.
+- Markdown output is safe for CI step summaries and does not embed trace contents.
+- JSON mode is stable if implemented.
+- The recipe relies on the user's CI artifact upload mechanism, not AgentInspect uploads.
+- Invalid or unsafe manifest paths fail conservatively with actionable messages.
+- No new network behavior or root/core dependencies are introduced.
 
 ## Suggested Commit
 
 ```text
-feat(jest): publish trace test reporter
+feat: add CI summary workflow
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec vitest run packages/jest/test
+pnpm exec vitest run packages/cli/test
+pnpm recipes:check
 ```
 
 ## Chunk Gate
@@ -85,6 +86,7 @@ pnpm test:coverage
 pnpm size
 pnpm test:all
 pnpm fixtures:check
+pnpm recipes:check
 pnpm pack:smoke
 git diff --check
 ```
@@ -93,4 +95,4 @@ Add `pnpm compat:smoke` if exports/package boundaries change.
 
 ## Stop Condition
 
-Stop on unrelated worktree changes, maintainer-only publication setup, reporter package publication decisions that require npm setup, root/core dependency requirements, schema changes, network behavior expansion, Vitest-specific regressions, or validation failures that cannot be repaired in this chunk.
+Stop on unrelated worktree changes, hosted/network behavior requests, GitHub API write requirements, schema changes, reporter package publication decisions, root/core dependency requirements, or validation failures that cannot be repaired in this chunk.
