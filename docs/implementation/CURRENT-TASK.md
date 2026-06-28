@@ -3,85 +3,80 @@
 ## Identity
 
 ```yaml
-train: "v2.3.0"
-chunk: "v2.3-release-prep"
+train: "v2.4.0"
+chunk: "v2.4-0-session-model-rfc-and-compatibility-plan"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.3-6-adapter-docs-and-release-readiness"
+dependsOn: "v2.3-version-packages-pr-and-publication"
 ```
 
 ## Goal
 
-Prepare the standard Changesets release workflow for the v2.3.0 linked minor release.
+Define the additive session and workflow causality model for v2.4 before runtime implementation.
 
 ## Read first
 
 - `AGENTS.md`
 - `docs/implementation/RELEASE-TRAIN-STATE.md`
-- `docs/implementation/release-trains/V2.3.0-EXECUTION-PLAN.md`
-- `docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md`
-- `.changeset/config.json`
-- `CHANGELOG.md`
-- root and public optional package manifests
+- `docs/implementation/release-trains/V2.4.0-EXECUTION-PLAN.md`
+- `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
+- `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
+- `docs/SCHEMA.md`
+- relevant existing docs/proposals for trace relationships, checks, adapters, and MCP boundaries
 
 ## Current Evidence
 
-- v2.3 readiness passed locally at commit `06646dc4870593805eff96c39b433c7e7fc31372` plus readiness docs edits.
-- npm registry currently reports `latest: 2.2.0` for all nine public packages.
-- `.changeset/config.json` links the nine public packages and ignores only private/internal packages plus examples/recipes.
-- The maintainer authorized continuing the release workflow for minor releases.
+- v2.3.0 published on 2026-06-28 through the standard Changesets workflow.
+- Merged release commit: `ed477b6be9d89b53da2edf122b693b343bb12ec4`.
+- npm registry reports `latest: 2.3.0` for all nine public packages.
+- Git tags and GitHub releases exist for `agent-inspect@2.3.0` and the eight public optional packages.
+- Merged-commit CI and Publish workflows passed.
 
 ## In Scope
 
-1. Add a Changesets markdown file for a linked minor `2.3.0` release of the nine public packages.
-2. Verify `changeset status --verbose` shows exactly nine minor releases and no patch/major releases.
-3. Run the release-prep validation gate.
-4. Commit and push the release-prep changes to `main`.
-5. Wait for the standard Changesets Version Packages PR, inspect it, merge only if checks are green and the diff is exactly expected, then watch publish and verify npm/tags/releases.
+1. Create `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md`.
+2. Define additive fields and relationship rules for `sessionId`, `conversationId`, `groupId`, `parentGroupId`, `attempt`, handoff, sub-agent, job/queue/workflow metadata, and MCP semantic boundaries.
+3. Update `docs/SCHEMA.md` only for additive optional metadata guidance, with old trace readability preserved.
+4. Update the v2.4 execution plan if chunk 0 produces clarified acceptance criteria.
+5. Preserve ambiguity and confidence policy: do not infer causality from timestamps alone.
 
 ## Out Of Scope
 
-- hand-editing package versions or changelog release sections outside Changesets automation;
-- local `npm publish` or `pnpm publish`;
-- manual tags or GitHub releases;
-- new adapter implementation or package;
+- runtime session index helpers;
+- CLI session/search/check commands;
+- MCP telemetry implementation, package creation, server, or gateway behavior;
+- package versions, changesets, tags, GitHub releases, or npm publication;
 - new root/core dependencies;
 - hosted upload, provider calls, network behavior, schema changes, or public breaking changes;
-- Mastra/Nest implementation.
+- viewer work, MCP read-only server, IDE surfaces, or v3 extensibility implementation.
 
 ## Acceptance Criteria
 
-- Changesets status shows exactly the intended linked v2.3 minor release set.
-- Release-prep validation passes.
-- Remote CI/Publish checks pass for the release-prep commit.
-- Any Version Packages PR is reviewed for expected linked `2.3.0` bumps before merge.
-- Validation passes.
+- Session/workflow model is additive and compatible with existing v0.1, v0.2, and v1.0 traces.
+- Relationship rules preserve source/confidence, warn on ambiguity, and avoid timestamp-only invented causality.
+- MCP boundary is limited to telemetry semantics, not a gateway/server product.
+- Docs clearly separate chunk 0 model decisions from later implementation chunks.
 
 ## Suggested Commit
 
 ```text
-chore: prepare v2.3 release
+docs: define session and workflow causality model
 ```
 
 ## Focused Tests
 
 ```bash
-pnpm exec changeset status --verbose
-pnpm pack:smoke
+pnpm typecheck
 ```
 
 ## Chunk Gate
 
 ```bash
-pnpm build
-pnpm test:all
-pnpm fixtures:check
-pnpm recipes:check
-pnpm pack:smoke
-pnpm compat:smoke
+pnpm typecheck
+pnpm test
 git diff --check
 ```
 
 ## Stop Condition
 
-Stop if Changesets status shows any patch/major release, the linked public package set is wrong, validation fails and cannot be repaired inside release-prep scope, the Version Packages PR diff is not exactly expected, required CI fails, publication is partial, credentials/trusted publishing are missing, or any manual maintainer decision is required.
+Stop if the model requires a schema-breaking rewrite, new persisted model, new root/core dependency, network behavior, MCP gateway/server behavior, public breaking change, or a maintainer decision about ambiguous causality.

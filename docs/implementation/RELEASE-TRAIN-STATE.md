@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.2.0"
-publishedVersion: "2.2.0"
-currentTrain: "v2.3.0"
+baselineVersion: "2.3.0"
+publishedVersion: "2.3.0"
+currentTrain: "v2.4.0"
 trainStatus: "active"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "06646dc4870593805eff96c39b433c7e7fc31372"
-lastValidationLevel: "v2.3-6-adapter-docs-and-release-readiness"
+lastConfirmedCommit: "ed477b6be9d89b53da2edf122b693b343bb12ec4"
+lastValidationLevel: "v2.3-version-packages-pr-and-publication"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -83,9 +83,11 @@ completedChunks:
   - "v2.3-4-adapter-conformance-runner-upgrade"
   - "v2.3-5-demand-gated-mastra-nest-decision"
   - "v2.3-6-adapter-docs-and-release-readiness"
-currentChunk: "v2.3-release-prep"
+  - "v2.3-release-prep"
+  - "v2.3-version-packages-pr-and-publication"
+currentChunk: "v2.4-0-session-model-rfc-and-compatibility-plan"
 pendingManualGate: "none"
-nextAction: "Start v2.3 release prep: create the linked minor changeset and prepare the standard Changesets release workflow."
+nextAction: "Start v2.4 chunk 0: define the additive session and workflow causality model before runtime changes."
 publishedAt: "2026-06-28"
 updatedAt: "2026-06-28"
 ```
@@ -93,7 +95,7 @@ updatedAt: "2026-06-28"
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
-- **Active plan:** [release-trains/V2.3.0-EXECUTION-PLAN.md](./release-trains/V2.3.0-EXECUTION-PLAN.md)
-- **Active proposal:** none for the current release-prep step.
+- **Active plan:** [release-trains/V2.4.0-EXECUTION-PLAN.md](./release-trains/V2.4.0-EXECUTION-PLAN.md)
+- **Active proposal:** `docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md` to create in chunk 0.
 - **Latest readiness:** [release-trains/V2.3.0-RELEASE-READINESS.md](./release-trains/V2.3.0-RELEASE-READINESS.md)
 - **Previous readiness:** [release-trains/V2.2.0-RELEASE-READINESS.md](./release-trains/V2.2.0-RELEASE-READINESS.md)
