@@ -11,7 +11,9 @@
       "@agent-inspect/ai-sdk",
       "@agent-inspect/openai-agents",
       "@agent-inspect/redact",
-      "@agent-inspect/eval"
+      "@agent-inspect/eval",
+      "@agent-inspect/vitest",
+      "@agent-inspect/jest"
     ]
   ],
   "access": "public",
@@ -34,8 +36,6 @@
     "agent-inspect-recipe-eval-local-checks",
     "agent-inspect-recipe-redact-share-safe-file",
     "agent-inspect-recipe-eval-ci-artifacts",
-    "@agent-inspect/harness",
-    "@agent-inspect/vitest",
-    "@agent-inspect/jest"
+    "@agent-inspect/harness"
   ]
 }
