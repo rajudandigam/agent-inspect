@@ -1,6 +1,7 @@
-import { runCircuits, type CircuitRuleId, type RunCircuitsOptions } from "@agent-inspect/circuit";
+import { runCircuits, type CircuitResult, type CircuitRuleId, type RunCircuitsOptions } from "@agent-inspect/circuit";
 import {
   runGuardrails,
+  type GuardrailResult,
   type GuardrailRuleId,
   type RunGuardrailsOptions,
 } from "@agent-inspect/guardrails";
@@ -66,7 +67,7 @@ export function createEvalGuardrailRule(options: EvalGuardrailRuleOptions): Eval
     evaluate(context) {
       const text = collectAnswerText(context);
       const run = runGuardrails({ text, value: context.events }, options);
-      return run.results.flatMap((result) => {
+      return run.results.flatMap((result: GuardrailResult) => {
         if (result.status === "pass") return [pass(result.ruleId, result.message)];
         if (result.status === "warn") return [warnFinding(result.ruleId, result.message)];
         return [failFinding(result.ruleId, result.message)];
@@ -93,7 +94,7 @@ export function createEvalCircuitRule(options: EvalCircuitRuleOptions): EvalRule
         status: event.status,
       }));
       const run = runCircuits(events, options);
-      return run.results.flatMap((result) => {
+      return run.results.flatMap((result: CircuitResult) => {
         if (result.status === "closed") return [pass(result.ruleId, result.message)];
         if (result.status === "warn") return [warnFinding(result.ruleId, result.message, result.evidence[0]?.count)];
         return [failFinding(result.ruleId, result.message, result.evidence[0]?.threshold, result.evidence[0]?.count)];

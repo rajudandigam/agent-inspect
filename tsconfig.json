@@ -55,6 +55,12 @@
       "@agent-inspect/redact/*": ["packages/redact/src/*"],
       "@agent-inspect/eval": ["packages/eval/src/index.ts"],
       "@agent-inspect/eval/*": ["packages/eval/src/*"],
+      "@agent-inspect/mcp": ["packages/mcp/src/index.ts"],
+      "@agent-inspect/mcp/*": ["packages/mcp/src/*"],
+      "@agent-inspect/guardrails": ["packages/guardrails/src/index.ts"],
+      "@agent-inspect/guardrails/*": ["packages/guardrails/src/*"],
+      "@agent-inspect/circuit": ["packages/circuit/src/index.ts"],
+      "@agent-inspect/circuit/*": ["packages/circuit/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },

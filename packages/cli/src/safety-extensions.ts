@@ -67,8 +67,7 @@ function guardrailFinding(result: GuardrailResult): TraceCheckFinding {
     message: result.message,
     evidence: result.evidence.map(
       (item): TraceCheckEvidence => ({
-        path: item.path,
-        preview: item.preview,
+        path: item.preview ? `${item.path ?? "value"} (${item.preview})` : item.path,
       }),
     ),
   };
@@ -127,7 +126,7 @@ function collectGuardrailInputs(read: TraceReadResult): Array<{
       if (typeof value === "string") inputs.push({ text: value });
       else if (value !== undefined) inputs.push({ value });
     }
-    if (event.kind === "tool" || event.name.startsWith("tool:")) {
+    if (event.kind === "TOOL" || event.name.startsWith("tool:")) {
       inputs.push({
         toolName: String(attrs.toolName ?? attrs.tool ?? event.name),
         toolArgs: attrs.arguments ?? attrs.args ?? attrs.input,
@@ -202,7 +201,7 @@ export function mergeSafetyExtensions(
   return {
     ...result,
     ok,
-    status: failed > 0 ? "fail" : warnings > 0 ? "warning" : result.status,
+    status: failed > 0 ? "fail" : result.status,
     summary: {
       passed,
       failed,
