@@ -75,6 +75,7 @@
     "tsup.eval.config.ts",
     "tsup.mcp.config.ts",
     "tsup.guardrails.config.ts",
+    "tsup.circuit.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

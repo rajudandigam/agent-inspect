@@ -313,6 +313,27 @@ const optionalPackageChecks = [
       void result;
     `,
   },
+  {
+    dir: "packages/circuit",
+    name: "@agent-inspect/circuit",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { runCircuits } from "@agent-inspect/circuit";
+      const result = runCircuits([], { rules: [] });
+      if (!result.ok) throw new Error("unexpected fail");
+    `,
+    cjs: `
+      const { runCircuits } = require("@agent-inspect/circuit");
+      const result = runCircuits([], { rules: [] });
+      if (!result.ok) throw new Error("unexpected fail");
+    `,
+    ts: `
+      import { runCircuits, type CircuitRunResult } from "@agent-inspect/circuit";
+      const result: CircuitRunResult = runCircuits([]);
+      void result;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {
