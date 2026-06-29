@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.6.0"
-chunk: "v2.6-3-ide-surface-decision"
+chunk: "v2.6-4-viewer-mcp-release-readiness"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.6-2-read-only-mcp-server"
+dependsOn: "v2.6-3-ide-surface-decision"
 ```
 
 ## Goal
 
-Document IDE surface decision (defer extension unless demand gate passes).
+Finalize viewer/MCP docs and v2.6 release readiness gate.
 
 ## Suggested Commit
 
 ```text
-docs: record IDE surface decision
+docs: prepare v2.6 release readiness
 ```

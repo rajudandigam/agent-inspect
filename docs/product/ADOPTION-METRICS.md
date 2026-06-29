@@ -105,20 +105,23 @@ v2.3 decisions:
 
 ### v2.6 optional surfaces gate
 
-Snapshot date: 2026-06-29.
+Snapshot date: 2026-06-04.
 
 Current evidence:
 
-- v2.4 sessions/MCP client and v2.5 guardrails/circuit utilities shipped on `main`.
-- CLI-first workflows (`check`, `sessions`, `search`, eval) are documented with recipes.
+- v2.4 sessions/MCP client and v2.5 guardrails/circuit utilities shipped.
+- v2.6 optional surfaces implemented on `main`: `@agent-inspect/viewer` + `agent-inspect serve`, `@agent-inspect/mcp-server` read-only tools (commit `688857c`).
+- CLI-first workflows (`check`, `sessions`, `search`, eval) remain documented with recipes.
 - npm directional activity on root/adapters remains non-zero per v2.3 snapshot methodology.
-- No demand signal yet for a full IDE extension; viewer and read-only MCP server address inspect-in-IDE requests without mutation.
+- No demand signal for a full IDE extension; viewer and read-only MCP server address inspect-in-IDE requests without mutation.
 
 v2.6 decisions:
 
 - Ship optional localhost viewer (`agent-inspect serve`) as read-only complement to CLI.
 - Ship read-only MCP server tools for IDE agents; keep `@agent-inspect/mcp` client-only.
-- Defer IDE extension until post-v2.6 adoption review.
+- **Defer IDE extension** until post-v2.6 adoption review — see [IDE-SURFACES.md](../IDE-SURFACES.md).
+
+IDE extension demand gate (summary): ≥3 unrelated teams with 30-day retention on CLI/optional surfaces, read-only scope only, and maintainer capacity for extension CI.
 
 ### After v1.6
 
