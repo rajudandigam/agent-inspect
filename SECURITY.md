@@ -76,5 +76,22 @@ For a practical pre-share workflow, see `docs/SAFE-TRACE-SHARING.md`. For schema
 
 - Prefer Node.js built-ins over new dependencies.
 - Do not add vendor SDKs, OpenTelemetry SDKs, or framework dependencies to the main `agent-inspect` package.
-- Keep optional integrations (`@agent-inspect/langchain`, `@agent-inspect/tui`) separate so users do not pull them in by default.
+- Keep optional integrations (`@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/viewer`, `@agent-inspect/mcp-server`) separate so users do not pull them in by default.
+
+## Optional surfaces (v2.6)
+
+### Local viewer (`agent-inspect serve`)
+
+- Binds **localhost by default** (`127.0.0.1`). Binding to all interfaces exposes local traces on the network.
+- **Read-only** HTTP routes — no trace mutation APIs.
+- Does not upload data. Review traces before sharing screenshots or exported copies.
+
+### Read-only MCP server (`@agent-inspect/mcp-server`)
+
+- Exposes **read-only** MCP tools over a configured trace directory.
+- Default tool output redaction profile is **`share`** (not `local`).
+- Does not invoke user agent tools or mutate traces.
+- Configure via `AGENT_INSPECT_TRACE_DIR` and `AGENT_INSPECT_MCP_REDACTION_PROFILE` when documented.
+
+IDE marketplace extension is **deferred** — see [docs/IDE-SURFACES.md](docs/IDE-SURFACES.md).
 

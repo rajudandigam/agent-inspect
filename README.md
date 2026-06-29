@@ -438,6 +438,34 @@ await inspectRun("agent-with-mcp", async () => {
 
 No-network recipe: [mcp-client-tracing](examples/recipes/mcp-client-tracing/). This is **not** an MCP server, gateway, or hosted broker — see [docs/ADAPTERS.md](docs/ADAPTERS.md).
 
+### Local viewer (`@agent-inspect/viewer`)
+
+Optional **localhost read-only** HTTP viewer. Start from the CLI:
+
+```bash
+pnpm add agent-inspect @agent-inspect/viewer
+npx agent-inspect serve --dir ./.agent-inspect-runs
+```
+
+Binds `127.0.0.1` by default. Serves trace list, timeline, and check JSON from disk — no upload, no mutation. Recipe: [read-only viewer workflow](examples/recipes/read-only-mcp-server/) (also covers MCP server tools).
+
+### Read-only MCP server (`@agent-inspect/mcp-server`)
+
+Optional package exposing **read-only** MCP tools (`list_traces`, `read_trace`, `search_traces`, `run_checks`, `create_share_safe_report`, and analysis helpers) over a local trace directory. Distinct from `@agent-inspect/mcp` (client telemetry). Default redaction profile is `share`.
+
+```bash
+pnpm add agent-inspect @agent-inspect/mcp-server
+```
+
+```ts
+import { runReadOnlyMcpServer } from "@agent-inspect/mcp-server";
+
+// stdio MCP server — configure trace dir via AGENT_INSPECT_TRACE_DIR
+await runReadOnlyMcpServer({ redactionProfile: "share" });
+```
+
+IDE extension is **deferred** — see [docs/IDE-SURFACES.md](docs/IDE-SURFACES.md).
+
 ### TUI viewer (`@agent-inspect/tui`)
 
 Optional **Ink/React** package, installed separately. Use with an interactive terminal:
@@ -485,6 +513,9 @@ Reporter artifact behavior and API details are documented in [docs/API.md](docs/
 | [examples/recipes/what-report-inspect](examples/recipes/what-report-inspect/) | `what` + `report` inspection |
 | [examples/recipes/runtime-and-ingestion](examples/recipes/runtime-and-ingestion/) | v1.6 runtime writers + universal ingestion |
 | [examples/recipes/mcp-client-tracing](examples/recipes/mcp-client-tracing) | v2.4 MCP client tool-call tracing |
+| [examples/recipes/guardrails-basic](examples/recipes/guardrails-basic) | v2.5 deterministic guardrails |
+| [examples/recipes/circuit-breaker-basic](examples/recipes/circuit-breaker-basic) | v2.5 circuit analyzers |
+| [examples/recipes/read-only-mcp-server](examples/recipes/read-only-mcp-server) | v2.6 read-only MCP trace tools |
 
 **Multi-run sessions:** set `sessionId` (and optional handoff/retry metadata) on `run_started`, then browse with `npx agent-inspect sessions` and `npx agent-inspect session <id> --timeline`. See [SESSIONS-AND-WORKFLOW-CAUSALITY](docs/proposals/SESSIONS-AND-WORKFLOW-CAUSALITY.md).
 

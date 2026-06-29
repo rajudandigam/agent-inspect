@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.6.0"
-chunk: "v2.6-4-viewer-mcp-release-readiness"
+chunk: "v2.6-release-prep"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.6-3-ide-surface-decision"
+dependsOn: "v2.6-4-viewer-mcp-release-readiness"
 ```
 
 ## Goal
 
-Finalize viewer/MCP docs and v2.6 release readiness gate.
+Add changeset for v2.6.0 (viewer + mcp-server linked), open Version Packages PR.
 
 ## Suggested Commit
 
 ```text
-docs: prepare v2.6 release readiness
+chore: prepare v2.6.0 release
 ```

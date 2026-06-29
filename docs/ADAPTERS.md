@@ -453,6 +453,47 @@ Session navigation for multi-run workflows uses `agent-inspect sessions` / `sess
 
 ---
 
+## Local viewer (`@agent-inspect/viewer`)
+
+**Status:** optional package — v2.6.0 train.
+
+Read-only localhost HTTP server for browsing traces on disk. Wired through `agent-inspect serve`.
+
+| In scope | Out of scope |
+| -------- | ------------ |
+| `127.0.0.1` default bind | Cloud hosting or accounts |
+| Trace list, timeline, check JSON routes | Trace mutation or replay |
+| Reads through `agent-inspect/readers` | SQLite or remote fetch |
+
+```bash
+npm install agent-inspect @agent-inspect/viewer
+npx agent-inspect serve --dir ./.agent-inspect-runs
+```
+
+---
+
+## Read-only MCP server (`@agent-inspect/mcp-server`)
+
+**Status:** optional package — v2.6.0 train.
+
+Stdio MCP server exposing **read-only** tools (`list_traces`, `read_trace`, `search_traces`, `find_first_error`, `find_slowest_path`, `compare_runs`, `run_checks`, `create_share_safe_report`). Distinct from `@agent-inspect/mcp` (client telemetry).
+
+| In scope | Out of scope |
+| -------- | ------------ |
+| Local trace directory tools | MCP client wrapping |
+| `share` redaction default | Unredacted prompts by default |
+| Bounded JSON responses | Tool invocation on user agents |
+
+```ts
+import { runReadOnlyMcpServer } from "@agent-inspect/mcp-server";
+
+await runReadOnlyMcpServer({ redactionProfile: "share" });
+```
+
+Recipe: [examples/recipes/read-only-mcp-server](../examples/recipes/read-only-mcp-server/). IDE extension deferred: [IDE-SURFACES.md](./IDE-SURFACES.md).
+
+---
+
 ## Future adapters (not shipped)
 
 Direction only — see [ROADMAP.md](../ROADMAP.md):

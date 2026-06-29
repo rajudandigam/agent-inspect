@@ -342,7 +342,24 @@ npx agent-inspect check trace.jsonl --circuit same-tool-repetition --circuit max
 
 Recipe: [examples/recipes/deterministic-ci-checks](../examples/recipes/deterministic-ci-checks/README.md)
 
-### 6.10 `eval`
+### 6.10 `serve`
+
+Start the optional **localhost read-only** trace viewer (`@agent-inspect/viewer`). Reads traces from disk only; no upload or mutation.
+
+```bash
+agent-inspect serve [options]
+```
+
+Options:
+
+- `--dir <path>`: trace directory to serve (default from `AGENT_INSPECT_TRACE_DIR` or `.agent-inspect-runs`)
+- `--host <host>`: bind host (default `127.0.0.1`)
+- `--port <number>`: bind port (default `7337`)
+- `--open`: open a browser when host is localhost
+
+Binding to `0.0.0.0` logs a warning — traces may be exposed on the network. Prefer `127.0.0.1` unless you accept that risk.
+
+### 6.11 `eval`
 
 Run deterministic local evals against an existing trace. This command reads through the same local reader pipeline as `open` and `check`; it does not rerun agents, call models, upload traces, mutate inputs, or create a hosted dataset.
 

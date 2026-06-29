@@ -366,19 +366,19 @@ const optionalPackageChecks = [
     installPeers: [],
     esm: `
       import { READ_ONLY_TOOLS, createMcpServerContext } from "@agent-inspect/mcp-server";
-      const context = createMcpServerContext({ traceDir: process.cwd() });
+      const context = createMcpServerContext({ traceDir: "." });
       if (READ_ONLY_TOOLS.length < 5) throw new Error("expected tools");
       void context;
     `,
     cjs: `
       const { READ_ONLY_TOOLS, createMcpServerContext } = require("@agent-inspect/mcp-server");
-      const context = createMcpServerContext({ traceDir: process.cwd() });
+      const context = createMcpServerContext({ traceDir: "." });
       if (READ_ONLY_TOOLS.length < 5) throw new Error("expected tools");
       void context;
     `,
     ts: `
       import { READ_ONLY_TOOLS, createMcpServerContext } from "@agent-inspect/mcp-server";
-      const context = createMcpServerContext({ traceDir: process.cwd() });
+      const context = createMcpServerContext({ traceDir: "." });
       void READ_ONLY_TOOLS;
       void context;
     `,

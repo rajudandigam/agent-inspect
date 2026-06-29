@@ -6,11 +6,9 @@
 baselineVersion: "2.5.0"
 publishedVersion: "2.5.0"
 currentTrain: "v2.6.0"
-trainStatus: "in-progress"
+trainStatus: "release-ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "e13b9dd"
-lastValidationLevel: "v2.6-0-viewer-mcp-rfc"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -103,13 +101,15 @@ completedChunks:
   - "v2.5-version-packages-pr-and-publication"
   - "v2.5-partial-publication"
   - "v2.6-0-viewer-mcp-rfc"
+  - "v2.6-1-viewer-package"
   - "v2.6-2-read-only-mcp-server"
   - "v2.6-3-ide-surface-decision"
-currentChunk: "v2.6-4-viewer-mcp-release-readiness"
-nextAction: "Chunk 4 — viewer/MCP docs and release readiness."
+  - "v2.6-4-viewer-mcp-release-readiness"
+currentChunk: "v2.6-release-prep"
+nextAction: "Release prep — changeset for viewer/mcp-server, Version Packages PR."
 pendingManualGate: "guardrails-circuit-first-npm-publish-and-trusted-publisher"
-lastConfirmedCommit: "688857c"
-lastValidationLevel: "v2.6-2-read-only-mcp-server"
+lastConfirmedCommit: "74f2bee"
+lastValidationLevel: "v2.6-4-viewer-mcp-release-readiness"
 updatedAt: "2026-06-04"
 ```
 
@@ -118,4 +118,4 @@ updatedAt: "2026-06-04"
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V2.6.0-EXECUTION-PLAN.md](./release-trains/V2.6.0-EXECUTION-PLAN.md)
 - **Active proposal:** [LOCAL-VIEWER.md](../proposals/LOCAL-VIEWER.md)
-- **Latest readiness:** [release-trains/V2.5.0-RELEASE-READINESS.md](./release-trains/V2.5.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V2.6.0-RELEASE-READINESS.md](./release-trains/V2.6.0-RELEASE-READINESS.md)
