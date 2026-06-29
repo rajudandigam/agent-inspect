@@ -3,10 +3,10 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.5.0"
-publishedVersion: "2.5.0"
-currentTrain: "v2.6.0"
-trainStatus: "release-ready"
+baselineVersion: "2.6.0"
+publishedVersion: "2.6.0"
+currentTrain: "v3.0.0"
+trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -107,11 +107,13 @@ completedChunks:
   - "v2.6-3-ide-surface-decision"
   - "v2.6-4-viewer-mcp-release-readiness"
   - "v2.6-release-prep"
-currentChunk: "v2.6-version-packages-pr"
-nextAction: "Merge Version Packages PR for v2.6.0; publish; manual first-publish viewer/mcp-server if E404."
+  - "v2.6-version-packages-pr-and-publication"
+  - "v2.6-partial-publication"
+currentChunk: "v3.0-0-readiness-assessment"
+nextAction: "Chunk 0 — v3 readiness assessment docs."
 pendingManualGate: "viewer-mcp-server-first-npm-publish-and-trusted-publisher"
-lastConfirmedCommit: "d8032aa"
-lastValidationLevel: "v2.6-4-viewer-mcp-release-readiness"
+lastConfirmedCommit: "3c0dcb3"
+lastValidationLevel: "v2.6-version-packages-pr-and-publication"
 updatedAt: "2026-06-04"
 ```
 
@@ -121,3 +123,4 @@ updatedAt: "2026-06-04"
 - **Active plan:** [release-trains/V2.6.0-EXECUTION-PLAN.md](./release-trains/V2.6.0-EXECUTION-PLAN.md)
 - **Active proposal:** [LOCAL-VIEWER.md](../proposals/LOCAL-VIEWER.md)
 - **Latest readiness:** [release-trains/V2.6.0-RELEASE-READINESS.md](./release-trains/V2.6.0-RELEASE-READINESS.md)
+- **Next train:** [release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md](./release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md)
