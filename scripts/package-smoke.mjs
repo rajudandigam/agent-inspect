@@ -183,6 +183,7 @@ const optionalPackageChecks = [
   {
     dir: "packages/eval",
     name: "@agent-inspect/eval",
+    bundledWorkspaceDirs: ["packages/redact", "packages/guardrails", "packages/circuit"],
     peerDependencies: {},
     installPeers: [],
     esm: `
@@ -289,6 +290,8 @@ const optionalPackageChecks = [
   {
     dir: "packages/guardrails",
     name: "@agent-inspect/guardrails",
+    requiresAgentInspectDependency: false,
+    bundledWorkspaceDirs: ["packages/redact"],
     peerDependencies: {},
     installPeers: [],
     esm: `
@@ -316,6 +319,7 @@ const optionalPackageChecks = [
   {
     dir: "packages/circuit",
     name: "@agent-inspect/circuit",
+    requiresAgentInspectDependency: false,
     peerDependencies: {},
     installPeers: [],
     esm: `
@@ -550,6 +554,18 @@ function smokeOptionalPackages(rootTgzPath, tmpRoot) {
   mkdirSync(tarballDir, { recursive: true });
   const smoked = [];
   const skipped = [];
+  const packedByDir = new Map();
+
+  function packOptionalByDir(dir) {
+    if (packedByDir.has(dir)) return packedByDir.get(dir);
+    const depCheck = optionalPackageChecks.find((item) => item.dir === dir);
+    if (!depCheck) {
+      fail(`unknown bundled workspace package dir for pack:smoke: ${dir}`);
+    }
+    const tgzPath = packWorkspacePackage(depCheck, tarballDir);
+    packedByDir.set(dir, tgzPath);
+    return tgzPath;
+  }
 
   for (const check of optionalPackageChecks) {
     const manifest = readJson(path.join(root, check.dir, "package.json"));
@@ -572,9 +588,11 @@ function smokeOptionalPackages(rootTgzPath, tmpRoot) {
     );
     mkdirSync(installDir, { recursive: true });
     writeConsumerPackageJson(installDir);
+    const bundledTarballs = (check.bundledWorkspaceDirs ?? []).map((dir) => packOptionalByDir(dir));
     npmInstall(`${check.name} clean install`, installDir, [
       rootTgzPath,
       optionalTgzPath,
+      ...bundledTarballs,
       ...check.installPeers,
     ]);
     runOptionalConsumer(check, installDir);
