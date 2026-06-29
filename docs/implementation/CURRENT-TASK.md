@@ -3,19 +3,19 @@
 ## Identity
 
 ```yaml
-train: "v2.6.0"
-chunk: "v2.6-version-packages-pr"
+train: "v3.0.0"
+chunk: "v3.0-1-extension-contract-rfc"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.6-release-prep"
+dependsOn: "v3.0-0-readiness-assessment"
 ```
 
 ## Goal
 
-Merge Version Packages PR for v2.6.0 and complete publication (manual first-publish for viewer/mcp-server if needed).
+Define stable v3 extension contracts (RFC).
 
 ## Suggested Commit
 
 ```text
-Version Packages
+docs: define v3 extension contracts
 ```

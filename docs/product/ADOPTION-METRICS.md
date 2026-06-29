@@ -123,6 +123,22 @@ v2.6 decisions:
 
 IDE extension demand gate (summary): ≥3 unrelated teams with 30-day retention on CLI/optional surfaces, read-only scope only, and maintainer capacity for extension CI.
 
+### v3 extensibility gate (2026-06-04)
+
+Snapshot after v2.6 partial publication.
+
+Current evidence:
+
+- v2.6 optional surfaces shipped on `main`; twelve packages at `2.6.0` on npm.
+- Conformance runner and `@agent-inspect/harness` exist for adapter validation.
+- No verified third-party adapter maintained outside the repo yet.
+- Extension demand is inferred from adapter-hardening trains, not a large public issue volume.
+
+v3 decision:
+
+- **Conditional proceed** with narrow extension-contract train — see [V3.0.0-READINESS-ASSESSMENT.md](../implementation/release-trains/V3.0.0-READINESS-ASSESSMENT.md).
+- Stop if implementation drifts toward SaaS, marketplace, or schema breaks without migration evidence.
+
 ### After v1.6
 
 - two external `open` users;
