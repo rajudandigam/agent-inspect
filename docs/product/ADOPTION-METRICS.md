@@ -103,6 +103,23 @@ v2.3 decisions:
 - Defer Mastra until there is explicit demand plus verified extension-point evidence for a local-only integration.
 - Defer a NestJS package; keep Nest work in the existing JSON logging recipe and leave any harness/bootstrap helper behind a demand gate.
 
+### v2.6 optional surfaces gate
+
+Snapshot date: 2026-06-29.
+
+Current evidence:
+
+- v2.4 sessions/MCP client and v2.5 guardrails/circuit utilities shipped on `main`.
+- CLI-first workflows (`check`, `sessions`, `search`, eval) are documented with recipes.
+- npm directional activity on root/adapters remains non-zero per v2.3 snapshot methodology.
+- No demand signal yet for a full IDE extension; viewer and read-only MCP server address inspect-in-IDE requests without mutation.
+
+v2.6 decisions:
+
+- Ship optional localhost viewer (`agent-inspect serve`) as read-only complement to CLI.
+- Ship read-only MCP server tools for IDE agents; keep `@agent-inspect/mcp` client-only.
+- Defer IDE extension until post-v2.6 adoption review.
+
 ### After v1.6
 
 - two external `open` users;
