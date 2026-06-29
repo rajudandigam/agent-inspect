@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 3.0.0
+
+### Major Changes
+
+- a1f743f: v3.0 extension contracts: `@agent-inspect/adapter-sdk` with registration, conformance, privacy helpers, transform/renderer contracts, optional rebuildable indexer, and community extension registry documentation. Linked major semver bump; persisted trace schema 1.0 unchanged.
+
 ## 2.6.0
 
 ### Minor Changes
