@@ -1,0 +1,13 @@
+{
+  "name": "agent-inspect-recipe-read-only-mcp-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/mcp-server": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

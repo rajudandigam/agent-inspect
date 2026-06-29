@@ -104,12 +104,12 @@ completedChunks:
   - "v2.5-partial-publication"
   - "v2.6-0-viewer-mcp-rfc"
   - "v2.6-1-viewer-package"
-currentChunk: "v2.6-2-read-only-mcp-server"
-nextAction: "Chunk 2 — @agent-inspect/mcp-server read-only tools."
+currentChunk: "v2.6-3-ide-surface-decision"
+nextAction: "Chunk 3 — IDE surface decision docs."
 pendingManualGate: "guardrails-circuit-first-npm-publish-and-trusted-publisher"
-lastConfirmedCommit: "pending"
-lastValidationLevel: "v2.6-1-viewer-package"
-updatedAt: "2026-06-29"
+lastConfirmedCommit: "22fb782"
+lastValidationLevel: "v2.6-2-read-only-mcp-server"
+updatedAt: "2026-06-04"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)

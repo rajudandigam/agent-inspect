@@ -61,6 +61,7 @@ Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scr
 | [mcp-client-tracing](mcp-client-tracing) | v2.4 MCP client wrap with mock client | `@agent-inspect/mcp`, `inspectRun`, `sessions` / `session` CLI | yes | no |
 | [guardrails-basic](guardrails-basic) | v2.5 deterministic guardrail samples | `@agent-inspect/guardrails`, phrase/PII/injection rules | yes | no |
 | [circuit-breaker-basic](circuit-breaker-basic) | v2.5 circuit repetition analysis | `@agent-inspect/circuit`, tool/args repetition | yes | no |
+| [read-only-mcp-server](read-only-mcp-server) | v2.6 read-only MCP trace tools | `@agent-inspect/mcp-server`, list/search/check tools | yes | no |
 
 ## Multi-run sessions (v2.4)
 

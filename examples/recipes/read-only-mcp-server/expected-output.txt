@@ -1,0 +1,11 @@
+"tools": [
+    "list_traces",
+    "read_trace",
+    "search_traces",
+    "find_first_error",
+    "find_slowest_path",
+    "compare_runs",
+    "run_checks",
+    "create_share_safe_report"
+  ],
+  "list": [

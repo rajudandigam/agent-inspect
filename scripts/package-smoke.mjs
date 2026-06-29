@@ -359,6 +359,30 @@ const optionalPackageChecks = [
       void createViewerServer(options);
     `,
   },
+  {
+    dir: "packages/mcp-server",
+    name: "@agent-inspect/mcp-server",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { READ_ONLY_TOOLS, createMcpServerContext } from "@agent-inspect/mcp-server";
+      const context = createMcpServerContext({ traceDir: process.cwd() });
+      if (READ_ONLY_TOOLS.length < 5) throw new Error("expected tools");
+      void context;
+    `,
+    cjs: `
+      const { READ_ONLY_TOOLS, createMcpServerContext } = require("@agent-inspect/mcp-server");
+      const context = createMcpServerContext({ traceDir: process.cwd() });
+      if (READ_ONLY_TOOLS.length < 5) throw new Error("expected tools");
+      void context;
+    `,
+    ts: `
+      import { READ_ONLY_TOOLS, createMcpServerContext } from "@agent-inspect/mcp-server";
+      const context = createMcpServerContext({ traceDir: process.cwd() });
+      void READ_ONLY_TOOLS;
+      void context;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

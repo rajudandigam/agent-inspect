@@ -150,4 +150,12 @@ describe("package boundaries", () => {
     expect(keys(viewer.dependencies)).toEqual(["agent-inspect"]);
     expect(keys(viewer.peerDependencies)).toEqual([]);
   });
+
+  it("@agent-inspect/mcp-server is public and depends on agent-inspect", async () => {
+    const mcpServer = await readPkg("packages/mcp-server/package.json");
+    expect(mcpServer.name).toBe("@agent-inspect/mcp-server");
+    expect(mcpServer.private).toBeUndefined();
+    expect(keys(mcpServer.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(mcpServer.peerDependencies)).toEqual([]);
+  });
 });

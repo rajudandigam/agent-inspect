@@ -37,6 +37,7 @@ const RECIPES = [
   "mcp-client-tracing",
   "guardrails-basic",
   "circuit-breaker-basic",
+  "read-only-mcp-server",
 ];
 
 const LOG_RECIPE_FILES = {

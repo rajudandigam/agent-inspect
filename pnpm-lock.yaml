@@ -271,6 +271,18 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/read-only-mcp-server:
+    dependencies:
+      '@agent-inspect/mcp-server':
+        specifier: workspace:*
+        version: link:../../../packages/mcp-server
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/redact-share-safe-file:
     dependencies:
       '@agent-inspect/redact':
@@ -425,6 +437,12 @@ importers:
         version: 1.1.45(@opentelemetry/api@1.9.1)(openai@6.45.0(ws@8.21.0)(zod@4.4.3))(ws@8.21.0)
 
   packages/mcp:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../..
+
+  packages/mcp-server:
     dependencies:
       agent-inspect:
         specifier: workspace:*

@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v2.6.0"
-chunk: "v2.6-2-read-only-mcp-server"
+chunk: "v2.6-3-ide-surface-decision"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.6-1-viewer-package"
+dependsOn: "v2.6-2-read-only-mcp-server"
 ```
 
 ## Goal
 
-Add `@agent-inspect/mcp-server` with read-only trace MCP tools.
+Document IDE surface decision (defer extension unless demand gate passes).
 
 ## Suggested Commit
 
 ```text
-feat(mcp-server): add read-only trace tools
+docs: record IDE surface decision
 ```
