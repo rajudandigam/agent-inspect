@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v3.0.0"
-chunk: "v3.0-2-adapter-sdk-package"
+chunk: "v3.0-3-transform-renderer-contracts"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.0-1-extension-contract-rfc"
+dependsOn: "v3.0-2-adapter-sdk-package"
 ```
 
 ## Goal
 
-Create optional `@agent-inspect/adapter-sdk` package scaffold with conformance helpers.
+Add trace transform and renderer contract types/APIs.
 
 ## Suggested Commit
 
 ```text
-feat(adapter-sdk): add adapter authoring toolkit
+feat: add trace transform and renderer contracts
 ```

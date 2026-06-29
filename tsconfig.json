@@ -65,6 +65,8 @@
       "@agent-inspect/viewer/*": ["packages/viewer/src/*"],
       "@agent-inspect/mcp-server": ["packages/mcp-server/src/index.ts"],
       "@agent-inspect/mcp-server/*": ["packages/mcp-server/src/*"],
+      "@agent-inspect/adapter-sdk": ["packages/adapter-sdk/src/index.ts"],
+      "@agent-inspect/adapter-sdk/*": ["packages/adapter-sdk/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
@@ -88,6 +90,7 @@
     "tsup.circuit.config.ts",
     "tsup.viewer.config.ts",
     "tsup.mcp-server.config.ts",
+    "tsup.adapter-sdk.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

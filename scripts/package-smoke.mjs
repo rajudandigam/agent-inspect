@@ -383,6 +383,32 @@ const optionalPackageChecks = [
       void context;
     `,
   },
+  {
+    dir: "packages/adapter-sdk",
+    name: "@agent-inspect/adapter-sdk",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { runPrivacyChecklist, createAdapterFixtureSkeleton } from "@agent-inspect/adapter-sdk";
+      const privacy = runPrivacyChecklist();
+      const skeleton = createAdapterFixtureSkeleton("smoke");
+      if (!privacy.ok && privacy.items.length === 0) throw new Error("unexpected");
+      void skeleton;
+    `,
+    cjs: `
+      const { runPrivacyChecklist, createAdapterFixtureSkeleton } = require("@agent-inspect/adapter-sdk");
+      const privacy = runPrivacyChecklist();
+      const skeleton = createAdapterFixtureSkeleton("smoke");
+      if (!privacy.ok && privacy.items.length === 0) throw new Error("unexpected");
+      void skeleton;
+    `,
+    ts: `
+      import { runPrivacyChecklist, createAdapterFixtureSkeleton } from "@agent-inspect/adapter-sdk";
+      const privacy = runPrivacyChecklist();
+      void createAdapterFixtureSkeleton("smoke");
+      void privacy;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

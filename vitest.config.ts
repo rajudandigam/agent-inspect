@@ -89,6 +89,10 @@ const mcpServerEntry = fileURLToPath(
   new URL("./packages/mcp-server/src/index.ts", import.meta.url),
 );
 
+const adapterSdkEntry = fileURLToPath(
+  new URL("./packages/adapter-sdk/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -131,6 +135,7 @@ export default defineConfig({
       "@agent-inspect/circuit": circuitEntry,
       "@agent-inspect/viewer": viewerEntry,
       "@agent-inspect/mcp-server": mcpServerEntry,
+      "@agent-inspect/adapter-sdk": adapterSdkEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -170,6 +175,7 @@ export default defineConfig({
       "@agent-inspect/circuit",
       "@agent-inspect/viewer",
       "@agent-inspect/mcp-server",
+      "@agent-inspect/adapter-sdk",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],

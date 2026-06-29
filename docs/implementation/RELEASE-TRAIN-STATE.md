@@ -113,11 +113,12 @@ completedChunks:
   - "v2.6-publication-complete"
   - "v3.0-0-readiness-assessment"
   - "v3.0-1-extension-contract-rfc"
-currentChunk: "v3.0-2-adapter-sdk-package"
-nextAction: "Chunk 2 — @agent-inspect/adapter-sdk scaffold."
+  - "v3.0-2-adapter-sdk-package"
+currentChunk: "v3.0-3-transform-renderer-contracts"
+nextAction: "Chunk 3 — trace transform and renderer contracts."
 pendingManualGate: ""
-lastConfirmedCommit: "acbdd03"
-lastValidationLevel: "v3.0-1-extension-contract-rfc"
+lastConfirmedCommit: "pending"
+lastValidationLevel: "v3.0-2-adapter-sdk-package"
 updatedAt: "2026-06-04"
 ```
 
