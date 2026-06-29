@@ -3,10 +3,10 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.6.0"
-publishedVersion: "2.6.0"
+baselineVersion: "3.0.0"
+publishedVersion: "3.0.0"
 currentTrain: "v3.0.0"
-trainStatus: "in-progress"
+trainStatus: "published"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -119,13 +119,13 @@ completedChunks:
   - "v3.0-4-optional-trace-indexer-contract"
   - "v3.0-5-community-extension-registry-docs"
   - "v3.0-6-v3-release-readiness"
-currentChunk: "v3.0-release-prep"
-nextAction: "Wait for Version Packages PR; merge when CI green; verify npm publish."
-trainStatus: "ready-for-version-packages-pr"
-pendingManualGate: ""
-lastConfirmedCommit: "a1f743f"
-lastValidationLevel: "v3.0-6-v3-release-readiness"
-updatedAt: "2026-06-04"
+  - "v3.0-version-packages-pr-and-publication"
+  - "v3.0-publication-complete"
+currentChunk: ""
+nextAction: "v3.0.0 train complete."
+lastConfirmedCommit: "73ed319"
+lastValidationLevel: "v3.0-publication-complete"
+updatedAt: "2026-06-29"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
