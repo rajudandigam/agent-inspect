@@ -4,13 +4,13 @@
 
 ```yaml
 baselineVersion: "2.5.0"
-publishedVersion: "2.4.0"
-currentTrain: "v2.5.0"
-trainStatus: "version-packages-merged"
+publishedVersion: "2.5.0"
+currentTrain: "v2.6.0"
+trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "44b3dcb"
-lastValidationLevel: "v2.5-version-packages-pr-merged"
+lastConfirmedCommit: "e13b9dd"
+lastValidationLevel: "v2.6-0-viewer-mcp-rfc"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -101,15 +101,20 @@ completedChunks:
   - "v2.5-4-recipes-and-release-readiness"
   - "v2.5-release-prep"
   - "v2.5-version-packages-pr-and-publication"
-currentChunk: "v2.5-guardrails-circuit-first-publish-bootstrap"
+  - "v2.5-partial-publication"
+  - "v2.6-0-viewer-mcp-rfc"
+  - "v2.6-1-viewer-package"
+currentChunk: "v2.6-2-read-only-mcp-server"
+nextAction: "Chunk 2 — @agent-inspect/mcp-server read-only tools."
 pendingManualGate: "guardrails-circuit-first-npm-publish-and-trusted-publisher"
-nextAction: "Fix publish verify gate; maintainer first-publishes @agent-inspect/guardrails and @agent-inspect/circuit, then re-run Publish workflow."
+lastConfirmedCommit: "pending"
+lastValidationLevel: "v2.6-1-viewer-package"
 updatedAt: "2026-06-29"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
-- **Active plan:** [release-trains/V2.5.0-EXECUTION-PLAN.md](./release-trains/V2.5.0-EXECUTION-PLAN.md)
-- **Active proposal:** [GUARDRAILS-AND-CIRCUITS.md](../proposals/GUARDRAILS-AND-CIRCUITS.md)
-- **Latest readiness:** [release-trains/V2.4.0-RELEASE-READINESS.md](./release-trains/V2.4.0-RELEASE-READINESS.md)
+- **Active plan:** [release-trains/V2.6.0-EXECUTION-PLAN.md](./release-trains/V2.6.0-EXECUTION-PLAN.md)
+- **Active proposal:** [LOCAL-VIEWER.md](../proposals/LOCAL-VIEWER.md)
+- **Latest readiness:** [release-trains/V2.5.0-RELEASE-READINESS.md](./release-trains/V2.5.0-RELEASE-READINESS.md)

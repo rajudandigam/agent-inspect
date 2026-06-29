@@ -61,6 +61,8 @@
       "@agent-inspect/guardrails/*": ["packages/guardrails/src/*"],
       "@agent-inspect/circuit": ["packages/circuit/src/index.ts"],
       "@agent-inspect/circuit/*": ["packages/circuit/src/*"],
+      "@agent-inspect/viewer": ["packages/viewer/src/index.ts"],
+      "@agent-inspect/viewer/*": ["packages/viewer/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"]
     },
@@ -82,6 +84,7 @@
     "tsup.mcp.config.ts",
     "tsup.guardrails.config.ts",
     "tsup.circuit.config.ts",
+    "tsup.viewer.config.ts",
     "tsup.tui.config.ts",
     "vitest.config.ts"
   ],

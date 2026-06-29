@@ -81,6 +81,10 @@ const circuitEntry = fileURLToPath(
   new URL("./packages/circuit/src/index.ts", import.meta.url),
 );
 
+const viewerEntry = fileURLToPath(
+  new URL("./packages/viewer/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -121,6 +125,7 @@ export default defineConfig({
       "@agent-inspect/mcp": mcpEntry,
       "@agent-inspect/guardrails": guardrailsEntry,
       "@agent-inspect/circuit": circuitEntry,
+      "@agent-inspect/viewer": viewerEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -158,6 +163,7 @@ export default defineConfig({
       "@agent-inspect/mcp",
       "@agent-inspect/guardrails",
       "@agent-inspect/circuit",
+      "@agent-inspect/viewer",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],

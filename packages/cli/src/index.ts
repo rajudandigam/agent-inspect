@@ -41,7 +41,9 @@ import { openCommand } from "./open.js";
 import type { MigrateCommandOptions } from "./migrate.js";
 import { migrateCommand } from "./migrate.js";
 import type { CheckCommandOptions } from "./check.js";
+import type { ServeCommandOptions } from "./serve.js";
 import { checkCommand } from "./check.js";
+import { serveCommand } from "./serve.js";
 import type { EvalCommandOptions } from "./eval.js";
 import { evalCommand } from "./eval.js";
 import type { SafetyCommandOptions } from "./safety.js";
@@ -332,6 +334,17 @@ export function createCliProgram(): Command {
     )
     .action((target: string, opts: CheckCommandOptions) => {
       runCommand(() => checkCommand(target, opts));
+    });
+
+  program
+    .command("serve")
+    .description("Start optional localhost read-only trace viewer")
+    .option("--dir <path>", "trace directory to serve")
+    .option("--host <host>", "bind host (default 127.0.0.1)", "127.0.0.1")
+    .option("--port <number>", "bind port (default 7337)", "7337")
+    .option("--open", "open browser locally when host is localhost")
+    .action((opts: ServeCommandOptions) => {
+      runCommand(() => serveCommand(opts));
     });
 
   program

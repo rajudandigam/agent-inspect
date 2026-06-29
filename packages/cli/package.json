@@ -19,6 +19,7 @@
     "@agent-inspect/core": "workspace:*",
     "@agent-inspect/eval": "workspace:*",
     "@agent-inspect/guardrails": "workspace:*",
+    "@agent-inspect/viewer": "workspace:*",
     "commander": "^12.1.0"
   },
   "devDependencies": {

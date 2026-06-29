@@ -142,4 +142,12 @@ describe("package boundaries", () => {
     expect(keys(mcpPkg.dependencies)).toEqual(["agent-inspect"]);
     expect(keys(mcpPkg.peerDependencies)).toEqual([]);
   });
+
+  it("@agent-inspect/viewer is public and depends on agent-inspect", async () => {
+    const viewer = await readPkg("packages/viewer/package.json");
+    expect(viewer.name).toBe("@agent-inspect/viewer");
+    expect(viewer.private).toBeUndefined();
+    expect(keys(viewer.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(viewer.peerDependencies)).toEqual([]);
+  });
 });

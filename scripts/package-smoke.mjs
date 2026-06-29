@@ -338,6 +338,27 @@ const optionalPackageChecks = [
       void result;
     `,
   },
+  {
+    dir: "packages/viewer",
+    name: "@agent-inspect/viewer",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { createViewerServer } from "@agent-inspect/viewer";
+      const server = createViewerServer({ port: 0 });
+      if (typeof server.listen !== "function") throw new Error("server missing");
+    `,
+    cjs: `
+      const { createViewerServer } = require("@agent-inspect/viewer");
+      const server = createViewerServer({ port: 0 });
+      if (typeof server.listen !== "function") throw new Error("server missing");
+    `,
+    ts: `
+      import { createViewerServer, type ViewerServerOptions } from "@agent-inspect/viewer";
+      const options: ViewerServerOptions = { port: 7337 };
+      void createViewerServer(options);
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

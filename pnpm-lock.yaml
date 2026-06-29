@@ -360,6 +360,9 @@ importers:
       '@agent-inspect/guardrails':
         specifier: workspace:*
         version: link:../guardrails
+      '@agent-inspect/viewer':
+        specifier: workspace:*
+        version: link:../viewer
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -453,6 +456,12 @@ importers:
       '@types/react':
         specifier: ^18.3.18
         version: 18.3.28
+
+  packages/viewer:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../..
 
   packages/vitest:
     dependencies:
