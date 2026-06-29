@@ -116,11 +116,11 @@ completedChunks:
   - "v3.0-2-adapter-sdk-package"
   - "v3.0-2-adapter-sdk-bootstrap"
   - "v3.0-3-transform-renderer-contracts"
-currentChunk: "v3.0-4-optional-trace-indexer-contract"
-nextAction: "Chunk 4 — optional trace indexer contract."
-pendingManualGate: ""
-lastConfirmedCommit: "9ce43a2"
-lastValidationLevel: "v3.0-3-transform-renderer-contracts"
+  - "v3.0-4-optional-trace-indexer-contract"
+currentChunk: "v3.0-5-community-extension-registry-docs"
+nextAction: "Chunk 5 — community extension registry docs."
+lastConfirmedCommit: "fa522cb"
+lastValidationLevel: "v3.0-4-optional-trace-indexer-contract"
 updatedAt: "2026-06-04"
 ```
 

@@ -48,3 +48,16 @@ export type {
   TraceRendererResult,
 } from "./renderer.js";
 export { defineRenderer, renderWithSafety } from "./renderer.js";
+
+export type {
+  TraceIndexEntry,
+  TraceIndexOptions,
+  TraceIndexSnapshot,
+  TraceIndexer,
+} from "./indexer.js";
+export {
+  createTraceDirectoryIndexer,
+  defineIndexer,
+  indexIsStale,
+  shouldInvalidateIndex,
+} from "./indexer.js";
