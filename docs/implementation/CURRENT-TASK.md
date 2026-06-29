@@ -4,18 +4,25 @@
 
 ```yaml
 train: "v2.5.0"
-chunk: "v2.5-3-check-eval-integration"
-status: "complete"
+chunk: "v2.5-guardrails-circuit-first-publish-bootstrap"
+status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v2.5-2-circuit-package"
+dependsOn: "v2.5-version-packages-pr-and-publication"
 ```
 
 ## Goal
 
-Integrate guardrails/circuit with check CLI flags and eval rule factories.
+Complete v2.5 publication after verify-gate fix and maintainer first-publish for `@agent-inspect/guardrails` and `@agent-inspect/circuit`.
+
+## Maintainer steps
+
+1. Merge vitest alias fix on `main`
+2. Re-run `gh workflow run publish.yml --ref main` (expect partial failure on new packages)
+3. First-publish `@agent-inspect/guardrails@2.5.0` and `@agent-inspect/circuit@2.5.0`; add Trusted Publisher entries
+4. Re-run Publish workflow
 
 ## Suggested Commit
 
 ```text
-feat: integrate guardrails with checks and eval
+fix: add vitest aliases for guardrails and circuit packages
 ```

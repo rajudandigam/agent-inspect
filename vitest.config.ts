@@ -69,6 +69,18 @@ const evalEntry = fileURLToPath(
   new URL("./packages/eval/src/index.ts", import.meta.url),
 );
 
+const mcpEntry = fileURLToPath(
+  new URL("./packages/mcp/src/index.ts", import.meta.url),
+);
+
+const guardrailsEntry = fileURLToPath(
+  new URL("./packages/guardrails/src/index.ts", import.meta.url),
+);
+
+const circuitEntry = fileURLToPath(
+  new URL("./packages/circuit/src/index.ts", import.meta.url),
+);
+
 const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
@@ -106,6 +118,9 @@ export default defineConfig({
       "@agent-inspect/harness": harnessEntry,
       "@agent-inspect/redact": redactEntry,
       "@agent-inspect/eval": evalEntry,
+      "@agent-inspect/mcp": mcpEntry,
+      "@agent-inspect/guardrails": guardrailsEntry,
+      "@agent-inspect/circuit": circuitEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
     },
@@ -140,6 +155,9 @@ export default defineConfig({
       "@agent-inspect/harness",
       "@agent-inspect/redact",
       "@agent-inspect/eval",
+      "@agent-inspect/mcp",
+      "@agent-inspect/guardrails",
+      "@agent-inspect/circuit",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
     ],

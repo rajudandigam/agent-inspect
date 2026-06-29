@@ -3,14 +3,14 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "2.4.0"
+baselineVersion: "2.5.0"
 publishedVersion: "2.4.0"
 currentTrain: "v2.5.0"
-trainStatus: "in-progress"
+trainStatus: "version-packages-merged"
 executionMode: "autonomous-release-train"
 branch: "main"
-lastConfirmedCommit: "c04cadc"
-lastValidationLevel: "v2.5-4-recipes-and-release-readiness"
+lastConfirmedCommit: "44b3dcb"
+lastValidationLevel: "v2.5-version-packages-pr-merged"
 completedChunks:
   - "v1.6.0-published"
   - "v1.7.0-published"
@@ -95,11 +95,16 @@ completedChunks:
   - "v2.4-version-packages-pr-and-publication"
   - "v2.4-mcp-first-publish-bootstrap"
   - "v2.4-publication-complete"
-  - "v2.5-2-circuit-package"
+  - "v2.5-0-guardrail-circuit-rfc"
+  - "v2.5-1-guardrails-package"
+  - "v2.5-3-check-eval-integration"
   - "v2.5-4-recipes-and-release-readiness"
-currentChunk: "v2.5-release-prep"
-nextAction: "Create v2.5 linked changeset and Version Packages PR."
-updatedAt: "2026-06-04"
+  - "v2.5-release-prep"
+  - "v2.5-version-packages-pr-and-publication"
+currentChunk: "v2.5-guardrails-circuit-first-publish-bootstrap"
+pendingManualGate: "guardrails-circuit-first-npm-publish-and-trusted-publisher"
+nextAction: "Fix publish verify gate; maintainer first-publishes @agent-inspect/guardrails and @agent-inspect/circuit, then re-run Publish workflow."
+updatedAt: "2026-06-29"
 ```
 
 - **Active roadmap:** [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md)
