@@ -117,10 +117,11 @@ completedChunks:
   - "v3.0-2-adapter-sdk-bootstrap"
   - "v3.0-3-transform-renderer-contracts"
   - "v3.0-4-optional-trace-indexer-contract"
-currentChunk: "v3.0-5-community-extension-registry-docs"
-nextAction: "Chunk 5 — community extension registry docs."
-lastConfirmedCommit: "e68622e"
-lastValidationLevel: "v3.0-4-optional-trace-indexer-contract"
+  - "v3.0-5-community-extension-registry-docs"
+currentChunk: "v3.0-6-v3-release-readiness"
+nextAction: "Chunk 6 — v3 release readiness and changeset prep."
+lastConfirmedCommit: "2a8166a"
+lastValidationLevel: "v3.0-5-community-extension-registry-docs"
 updatedAt: "2026-06-04"
 ```
 

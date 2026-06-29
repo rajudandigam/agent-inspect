@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v3.0.0"
-chunk: "v3.0-5-community-extension-registry-docs"
+chunk: "v3.0-6-v3-release-readiness"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.0-4-optional-trace-indexer-contract"
+dependsOn: "v3.0-5-community-extension-registry-docs"
 ```
 
 ## Goal
 
-Document community extension registry process (compatibility matrix, badges, contribution policy).
+Prepare v3.0.0 release readiness docs and changeset linking adapter-sdk into the version train.
 
 ## Suggested Commit
 
 ```text
-docs: add community extension registry process
+docs: prepare v3.0.0 release readiness
 ```
