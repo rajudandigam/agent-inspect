@@ -120,7 +120,7 @@ completedChunks:
   - "v3.0-5-community-extension-registry-docs"
 currentChunk: "v3.0-6-v3-release-readiness"
 nextAction: "Chunk 6 — v3 release readiness and changeset prep."
-lastConfirmedCommit: "2a8166a"
+lastConfirmedCommit: "4dc49cd"
 lastValidationLevel: "v3.0-5-community-extension-registry-docs"
 updatedAt: "2026-06-04"
 ```
