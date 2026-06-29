@@ -109,12 +109,15 @@ completedChunks:
   - "v2.6-release-prep"
   - "v2.6-version-packages-pr-and-publication"
   - "v2.6-partial-publication"
+  - "v2.6-viewer-mcp-server-bootstrap"
+  - "v2.6-publication-complete"
   - "v3.0-0-readiness-assessment"
-currentChunk: "v3.0-1-extension-contract-rfc"
-nextAction: "Chunk 1 — v3 extension contract RFC."
-pendingManualGate: "viewer-mcp-server-first-npm-publish-and-trusted-publisher"
-lastConfirmedCommit: "8f1454e"
-lastValidationLevel: "v3.0-0-readiness-assessment"
+  - "v3.0-1-extension-contract-rfc"
+currentChunk: "v3.0-2-adapter-sdk-package"
+nextAction: "Chunk 2 — @agent-inspect/adapter-sdk scaffold."
+pendingManualGate: ""
+lastConfirmedCommit: "aa05818"
+lastValidationLevel: "v3.0-1-extension-contract-rfc"
 updatedAt: "2026-06-04"
 ```
 
@@ -122,6 +125,6 @@ updatedAt: "2026-06-04"
 - **Full roadmap:** [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md)
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md](./release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md)
-- **Active proposal:** [LOCAL-VIEWER.md](../proposals/LOCAL-VIEWER.md)
+- **Active proposal:** [V3-EXTENSION-CONTRACTS.md](../proposals/V3-EXTENSION-CONTRACTS.md)
 - **Latest readiness:** [release-trains/V2.6.0-RELEASE-READINESS.md](./release-trains/V2.6.0-RELEASE-READINESS.md)
 - **Next train:** [release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md](./release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md)
