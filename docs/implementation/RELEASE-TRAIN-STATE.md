@@ -119,7 +119,7 @@ completedChunks:
   - "v3.0-4-optional-trace-indexer-contract"
 currentChunk: "v3.0-5-community-extension-registry-docs"
 nextAction: "Chunk 5 — community extension registry docs."
-lastConfirmedCommit: "fa522cb"
+lastConfirmedCommit: "e68622e"
 lastValidationLevel: "v3.0-4-optional-trace-indexer-contract"
 updatedAt: "2026-06-04"
 ```
