@@ -123,7 +123,7 @@ currentChunk: "v3.0-release-prep"
 nextAction: "Wait for Version Packages PR; merge when CI green; verify npm publish."
 trainStatus: "ready-for-version-packages-pr"
 pendingManualGate: ""
-lastConfirmedCommit: "fc5f3c6"
+lastConfirmedCommit: "a1f743f"
 lastValidationLevel: "v3.0-6-v3-release-readiness"
 updatedAt: "2026-06-04"
 ```
