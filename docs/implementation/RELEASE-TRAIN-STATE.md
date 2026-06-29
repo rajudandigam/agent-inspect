@@ -116,7 +116,7 @@ completedChunks:
 currentChunk: "v3.0-2-adapter-sdk-package"
 nextAction: "Chunk 2 — @agent-inspect/adapter-sdk scaffold."
 pendingManualGate: ""
-lastConfirmedCommit: "aa05818"
+lastConfirmedCommit: "acbdd03"
 lastValidationLevel: "v3.0-1-extension-contract-rfc"
 updatedAt: "2026-06-04"
 ```
