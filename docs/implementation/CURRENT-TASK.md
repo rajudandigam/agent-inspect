@@ -4,18 +4,18 @@
 
 ```yaml
 train: "v3.0.0"
-chunk: "v3.0-3-transform-renderer-contracts"
+chunk: "v3.0-4-optional-trace-indexer-contract"
 status: "pending"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.0-2-adapter-sdk-package"
+dependsOn: "v3.0-3-transform-renderer-contracts"
 ```
 
 ## Goal
 
-Add trace transform and renderer contract types/APIs.
+Add optional trace indexer contract types/APIs.
 
 ## Suggested Commit
 
 ```text
-feat: add trace transform and renderer contracts
+feat: add optional trace indexer contract
 ```

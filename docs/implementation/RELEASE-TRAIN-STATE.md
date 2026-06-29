@@ -114,11 +114,13 @@ completedChunks:
   - "v3.0-0-readiness-assessment"
   - "v3.0-1-extension-contract-rfc"
   - "v3.0-2-adapter-sdk-package"
-currentChunk: "v3.0-3-transform-renderer-contracts"
-nextAction: "Chunk 3 — trace transform and renderer contracts."
+  - "v3.0-2-adapter-sdk-bootstrap"
+  - "v3.0-3-transform-renderer-contracts"
+currentChunk: "v3.0-4-optional-trace-indexer-contract"
+nextAction: "Chunk 4 — optional trace indexer contract."
 pendingManualGate: ""
-lastConfirmedCommit: "293063d"
-lastValidationLevel: "v3.0-2-adapter-sdk-package"
+lastConfirmedCommit: "9ce43a2"
+lastValidationLevel: "v3.0-3-transform-renderer-contracts"
 updatedAt: "2026-06-04"
 ```
 

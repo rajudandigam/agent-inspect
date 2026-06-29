@@ -29,3 +29,22 @@ export { createAdapterFixtureSkeleton, createConformanceFixtureMeta } from "./fi
 export { PRIVACY_CHECKLIST_ITEMS, runPrivacyChecklist } from "./privacy.js";
 
 export { findPairedLifecycle, runAdapterConformance } from "./conformance.js";
+
+export type {
+  TraceTransform,
+  TraceTransformResult,
+} from "./transform.js";
+export {
+  createKindFilterTransform,
+  defineTransform,
+  runTransformPipeline,
+} from "./transform.js";
+
+export type {
+  RenderRedactionProfile,
+  RenderSafetyOptions,
+  TraceRenderer,
+  TraceRendererOptions,
+  TraceRendererResult,
+} from "./renderer.js";
+export { defineRenderer, renderWithSafety } from "./renderer.js";
