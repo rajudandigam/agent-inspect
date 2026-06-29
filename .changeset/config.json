@@ -16,7 +16,9 @@
       "@agent-inspect/jest",
       "@agent-inspect/mcp",
       "@agent-inspect/guardrails",
-      "@agent-inspect/circuit"
+      "@agent-inspect/circuit",
+      "@agent-inspect/viewer",
+      "@agent-inspect/mcp-server"
     ]
   ],
   "access": "public",
