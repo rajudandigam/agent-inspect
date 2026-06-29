@@ -18,7 +18,8 @@
       "@agent-inspect/guardrails",
       "@agent-inspect/circuit",
       "@agent-inspect/viewer",
-      "@agent-inspect/mcp-server"
+      "@agent-inspect/mcp-server",
+      "@agent-inspect/adapter-sdk"
     ]
   ],
   "access": "public",

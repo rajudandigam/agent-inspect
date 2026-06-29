@@ -118,10 +118,13 @@ completedChunks:
   - "v3.0-3-transform-renderer-contracts"
   - "v3.0-4-optional-trace-indexer-contract"
   - "v3.0-5-community-extension-registry-docs"
-currentChunk: "v3.0-6-v3-release-readiness"
-nextAction: "Chunk 6 — v3 release readiness and changeset prep."
-lastConfirmedCommit: "4dc49cd"
-lastValidationLevel: "v3.0-5-community-extension-registry-docs"
+  - "v3.0-6-v3-release-readiness"
+currentChunk: "v3.0-release-prep"
+nextAction: "Wait for Version Packages PR; merge when CI green; verify npm publish."
+trainStatus: "ready-for-version-packages-pr"
+pendingManualGate: ""
+lastConfirmedCommit: "fc5f3c6"
+lastValidationLevel: "v3.0-6-v3-release-readiness"
 updatedAt: "2026-06-04"
 ```
 
@@ -130,5 +133,5 @@ updatedAt: "2026-06-04"
 - **Architecture guide:** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md](./release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md)
 - **Active proposal:** [V3-EXTENSION-CONTRACTS.md](../proposals/V3-EXTENSION-CONTRACTS.md)
-- **Latest readiness:** [release-trains/V2.6.0-RELEASE-READINESS.md](./release-trains/V2.6.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V3.0.0-RELEASE-READINESS.md](./release-trains/V3.0.0-RELEASE-READINESS.md)
 - **Next train:** [release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md](./release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md)

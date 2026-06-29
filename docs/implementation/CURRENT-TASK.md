@@ -4,18 +4,17 @@
 
 ```yaml
 train: "v3.0.0"
-chunk: "v3.0-6-v3-release-readiness"
-status: "pending"
+chunk: "v3.0-release-prep"
+status: "waiting"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.0-5-community-extension-registry-docs"
+dependsOn: "v3.0-6-v3-release-readiness"
 ```
 
 ## Goal
 
-Prepare v3.0.0 release readiness docs and changeset linking adapter-sdk into the version train.
+Merge Version Packages PR for linked `3.0.0` release; verify npm publish (15 packages).
 
-## Suggested Commit
+## Blocked On
 
-```text
-docs: prepare v3.0.0 release readiness
-```
+- GitHub Actions Version Packages PR creation
+- Maintainer merge authorization when CI is green
