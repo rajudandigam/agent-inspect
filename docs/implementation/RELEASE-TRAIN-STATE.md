@@ -11,14 +11,20 @@ executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
   - "v3.3-publication-complete"
-currentChunk: "v3.4-0-post-v3.3-reconciliation"
-nextAction: "Execute v3.4 performance and reliability train."
-pendingManualGate: "VS Code Marketplace first publish (extension code ready in packages/vscode)"
-lastConfirmedCommit: "e010b35"
-lastValidationLevel: "v3.3-publication-complete"
+  - "v3.4-1-performance-benchmarks"
+  - "v3.4-2-performance-scale-docs"
+  - "v3.4-3-large-directory-warnings"
+  - "v3.4-4-index-cli"
+  - "v3.4-5-stall-timeout-checks"
+  - "v3.4-6-streaming-limitations-guide"
+currentChunk: "v3.4-7-release-readiness"
+nextAction: "Version Packages PR for 3.4.0."
+pendingManualGate: "VS Code Marketplace first publish (extension in packages/vscode)"
+lastConfirmedCommit: "f8605d7"
+lastValidationLevel: "v3.4-release-prep"
 updatedAt: "2026-06-30"
 ```
 
 - **Active roadmap:** [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md)
 - **Active plan:** [release-trains/V3.4.0-EXECUTION-PLAN.md](./release-trains/V3.4.0-EXECUTION-PLAN.md)
-- **Latest readiness:** [release-trains/V3.3.0-RELEASE-READINESS.md](./release-trains/V3.3.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V3.4.0-RELEASE-READINESS.md](./release-trains/V3.4.0-RELEASE-READINESS.md)

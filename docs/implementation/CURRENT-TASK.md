@@ -1,13 +1,13 @@
 # Current Codex Task
 
 ```yaml
-train: "v3.3.0"
-chunk: "v3.3-1-vscode-scaffold"
+train: "v3.4.0"
+chunk: "v3.4-7-release-readiness"
 status: "in_progress"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.3-0-post-v3.2-reconciliation"
+dependsOn: "v3.4-6-streaming-limitations-guide"
 ```
 
 ## Goal
 
-Scaffold read-only VS Code extension (`packages/vscode`) per [VSCODE-EXTENSION-RFC.md](../../proposals/VSCODE-EXTENSION-RFC.md).
+Prepare v3.4.0 release readiness and changeset.
