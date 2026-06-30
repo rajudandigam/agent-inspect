@@ -1,24 +1,13 @@
 # Current Codex Task
 
-## Identity
-
 ```yaml
-train: "v3.1.0"
-chunk: "v3.1-release-prep"
-status: "blocked"
+train: "v3.2.0"
+chunk: "v3.2-6-release-readiness"
+status: "in_progress"
 executionMode: "autonomous-release-train"
+dependsOn: "v3.2-5-adapter-conformance-refresh"
 ```
 
-## Manual gate
+## Goal
 
-**Publish `@agent-inspect/harness` on npm** (see `docs/HARNESS.md` / prior instructions), then push local commits:
-
-```bash
-git push origin main
-```
-
-After harness is on npm, create Version Packages PR for v3.1.0.
-
-## Next train after v3.1 publish
-
-v3.2.0 framework adoption pack
+Prepare v3.2.0 release readiness and changeset.
