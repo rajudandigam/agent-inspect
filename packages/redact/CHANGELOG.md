@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 3.5.2
+
+### Patch Changes
+
+- 14d4ccc: v3.5.2 adoption demo kit: DEMO-SCRIPT, PITCH, Show HN draft, video script, SCREENSHOTS diagram index. Docs-only.
+
 ## 3.5.1
 
 ### Patch Changes

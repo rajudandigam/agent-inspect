@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "license": "MIT",
   "type": "module",
   "description": "Local-first execution-tree debugger for TypeScript AI agents",
