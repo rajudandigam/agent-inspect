@@ -5,10 +5,19 @@ AgentInspect is the local-first toolkit for TypeScript AI agents: trace what hap
 ## Start here
 
 - [Getting started](./GETTING-STARTED.md)
+- [First trace in 5 minutes](./FIRST-TRACE-IN-5-MINUTES.md)
+- [One-page quickstart](./ONE-PAGE-QUICKSTART.md)
+- [Adoption](./ADOPTION.md)
 - [API](./API.md)
 - [CLI](./CLI.md)
 - [Examples](../examples/README.md)
 - [Roadmap](../ROADMAP.md)
+
+## Adoption scenarios
+
+- [Use cases](./USE-CASES.md)
+- [Real-world scenarios](./REAL-WORLD-SCENARIOS.md)
+- [Team workflows](./TEAM-WORKFLOWS.md)
 
 ## Quick adoption paths
 
@@ -60,4 +69,6 @@ AgentInspect is the local-first toolkit for TypeScript AI agents: trace what hap
 
 - [Implementation docs index](./implementation/README.md)
 - [Release train state](./implementation/RELEASE-TRAIN-STATE.md)
-- [Active maintainer roadmap](./implementation/ROADMAP-V1.8.1-TO-V3.md)
+- [Post-v3.5 adoption plan](./implementation/POST-V3.5-ADOPTION-PLAN.md)
+- [Adoption polish plan](./implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md)
+- [Historical roadmap v3.0→v3.5](./implementation/ROADMAP-V3.0-TO-V3.5.md) (complete)

@@ -10,13 +10,15 @@ AgentInspect is **local-first**: traces stay on disk, checks run in CI, and shar
 
 ## 5-minute path
 
+See [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md).
+
 ```bash
 npm install agent-inspect
-npx agent-inspect init --framework ai-sdk --yes
-cd examples/demo && node run.mjs   # or your own traced script
+npx agent-inspect init --yes
+node examples/agent-inspect-demo.mjs
 npx agent-inspect list --dir .agent-inspect
 npx agent-inspect view <run-id> --dir .agent-inspect
-npx agent-inspect doctor
+npx agent-inspect verify-safe --dir .agent-inspect
 ```
 
 No API keys required for the init demo. See [examples/starters/](../examples/starters/README.md).
@@ -30,6 +32,7 @@ No API keys required for the init demo. See [examples/starters/](../examples/sta
 | OpenAI Agents JS | [openai-agents](../examples/starters/openai-agents/) — see [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md) |
 | LangChain | [langchain](../examples/starters/langchain/) |
 | CI eval + redact | [ci-eval-redact](../examples/starters/ci-eval-redact/) |
+| Broken agent debug | [broken-agent-debugging](../examples/starters/broken-agent-debugging/) |
 | NestJS harness | [harness-nestjs](../examples/starters/harness-nestjs/) — see [NESTJS.md](./NESTJS.md) |
 | VS Code (dev host) | [VSCODE.md](./VSCODE.md) — extension in-repo; Marketplace publish is manual |
 
