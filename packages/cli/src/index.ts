@@ -52,6 +52,10 @@ import type { ArtifactsCommandOptions } from "./artifacts.js";
 import { artifactsCommand } from "./artifacts.js";
 import type { CiSummaryCommandOptions } from "./ci-summary.js";
 import { ciSummaryCommand } from "./ci-summary.js";
+import type { InitCommandOptions } from "./init.js";
+import { initCommand } from "./init.js";
+import type { DoctorCommandOptions } from "./doctor.js";
+import { doctorCommand } from "./doctor.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -686,6 +690,44 @@ export function createCliProgram(): Command {
     )
     .action((target: string, opts: ExplainCommandOptions) => {
       runCommand(() => explainCommand(target, opts));
+    });
+
+  program
+    .command("init")
+    .description("Initialize a minimal local AgentInspect setup (no dependency install)")
+    .addOption(
+      new Option("--framework <framework>", "starter framework path").choices([
+        "ai-sdk",
+        "openai-agents",
+        "langchain",
+        "custom",
+      ]),
+    )
+    .addOption(new Option("--ci <provider>", "optional CI snippet").choices(["github"]))
+    .option("--dry-run", "print planned files without writing")
+    .option("--yes", "non-interactive; skip existing files")
+    .option("--json", "print deterministic JSON plan/result")
+    .action((opts: InitCommandOptions) => {
+      runCommand(() => initCommand(opts));
+    });
+
+  program
+    .command("doctor")
+    .description("Diagnose local AgentInspect setup (no network, no installs)")
+    .option("--json", "print deterministic JSON results")
+    .option("--trace-dir <path>", "trace directory to validate (default .agent-inspect)")
+    .option("--check-imports", "check local package resolution", true)
+    .option("--no-check-imports", "skip import resolution checks")
+    .addOption(
+      new Option("--framework <framework>", "check optional adapter packages").choices([
+        "ai-sdk",
+        "openai-agents",
+        "langchain",
+        "custom",
+      ]),
+    )
+    .action((opts: DoctorCommandOptions) => {
+      runCommand(() => doctorCommand(opts));
     });
 
   return program;

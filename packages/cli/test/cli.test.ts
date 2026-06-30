@@ -26,6 +26,8 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("export");
     expect(names).toContain("open");
     expect(names).toContain("migrate");
+    expect(names).toContain("init");
+    expect(names).toContain("doctor");
     expect(names).toContain("check");
     expect(names).toContain("eval");
     expect(names).toContain("scan");
