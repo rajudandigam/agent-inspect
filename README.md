@@ -22,7 +22,7 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 ## Install
 
-Current npm release line: **3.0.0** for the linked public packages (`agent-inspect`, adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, adapter-sdk). **v3.0.0** adds extension contracts and **`@agent-inspect/adapter-sdk`** for third-party adapter authoring; persisted trace schema remains **1.0**.
+Current npm release line: **3.1.0** for the linked public packages (`agent-inspect`, adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, adapter-sdk, harness). **v3.0.0** adds extension contracts and **`@agent-inspect/adapter-sdk`** for third-party adapter authoring; persisted trace schema remains **1.0**.
 
 **v3.1 adoption path (in progress):**
 
