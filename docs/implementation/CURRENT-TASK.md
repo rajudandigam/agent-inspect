@@ -1,13 +1,17 @@
 # Current Codex Task
 
 ```yaml
-train: "v3.5.0"
-chunk: "v3.5-6-release-readiness"
-status: "in_progress"
-executionMode: "autonomous-release-train"
-dependsOn: "v3.5-7-post-v3.5-handoff"
+train: "post-v3.5-adoption"
+chunk: "adoption-freeze"
+status: "idle"
+executionMode: "adoption-freeze"
+dependsOn: "v3.5-publication-complete"
 ```
 
 ## Goal
 
-Prepare v3.5.0 release readiness and changeset. VS Code Marketplace publish remains a manual gate.
+8–12 week adoption push per [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md). No new product surface without RFC.
+
+## Manual gate
+
+VS Code Marketplace first publish when ready (`packages/vscode`).
