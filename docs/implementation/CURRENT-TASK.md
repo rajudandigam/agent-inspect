@@ -2,15 +2,15 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "v3.5.1-release-prep"
-status: "awaiting_version_packages_pr"
+chunk: "v3.5.2-examples-visual"
+status: "idle"
 executionMode: "adoption-freeze"
-dependsOn: "v3.5-publication-complete"
+dependsOn: "v3.5.1-publication-complete"
 ```
 
 ## Goal
 
-Execute [V3.5.X-ADOPTION-POLISH-PLAN.md](./release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md) — docs, READMEs, examples, npm presentation. No new runtime features.
+v3.5.1 shipped (docs/npm polish). Continue optional v3.5.2/v3.5.3 adoption kit per [V3.5.X-ADOPTION-POLISH-PLAN.md](./release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md). No runtime features.
 
 ## Manual gate
 
