@@ -31,6 +31,7 @@ Local-first TypeScript AI agent toolkit: **trace → check → redact** on your 
 
 | Doc | Use |
 | --- | --- |
+| [TECHNICAL-GUIDE.md](./TECHNICAL-GUIDE.md) | **Full technical overview** — blogs, articles, outreach source |
 | [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | Live 3-minute demo |
 | [SCREENSHOTS.md](./SCREENSHOTS.md) | GIF demos and recording guide |
 | [DESIGN-PARTNER-GUIDE.md](./DESIGN-PARTNER-GUIDE.md) · [TEAM-WORKFLOWS.md](./TEAM-WORKFLOWS.md) | Team rollout |

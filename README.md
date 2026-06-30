@@ -96,7 +96,7 @@ Details: [Safe trace sharing](docs/SAFE-TRACE-SHARING.md) · [Security](SECURITY
 | ----- | --------- | -------- |
 | [Getting started](docs/GETTING-STARTED.md) | [API](docs/API.md) | [Adoption](docs/ADOPTION.md) |
 | [First trace in 5 min](docs/FIRST-TRACE-IN-5-MINUTES.md) | [CLI](docs/CLI.md) | [Demo script](docs/DEMO-SCRIPT.md) |
-| [Use cases](docs/USE-CASES.md) | [Adapters](docs/ADAPTERS.md) | [Compare](docs/COMPARE.md) |
+| [Use cases](docs/USE-CASES.md) | [Adapters](docs/ADAPTERS.md) | [Technical guide](docs/TECHNICAL-GUIDE.md) |
 | [Examples](https://github.com/rajudandigam/agent-inspect/tree/main/examples) | [Performance](docs/PERFORMANCE.md) | [Pitch](docs/PITCH.md) |
 
 Full index: [docs/README.md](docs/README.md) · Visual demos: [SCREENSHOTS.md](docs/SCREENSHOTS.md)
