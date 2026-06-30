@@ -92,6 +92,7 @@
     "tsup.mcp-server.config.ts",
     "tsup.adapter-sdk.config.ts",
     "tsup.tui.config.ts",
+    "tsup.vscode.config.ts",
     "vitest.config.ts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**"]

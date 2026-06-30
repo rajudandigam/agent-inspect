@@ -1,0 +1,135 @@
+{
+  "name": "agent-inspect-vscode",
+  "displayName": "AgentInspect",
+  "description": "Read-only local trace explorer for AgentInspect execution trees",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "rajudandigam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0",
+    "node": ">=20"
+  },
+  "categories": ["Debuggers", "Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.cjs",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agent-inspect",
+          "title": "AgentInspect",
+          "icon": "$(debug-alt)"
+        }
+      ]
+    },
+    "views": {
+      "agent-inspect": [
+        {
+          "id": "agentInspect.traces",
+          "name": "Traces"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "agentInspect.openTraceDirectory",
+        "title": "AgentInspect: Open Trace Directory",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "agentInspect.refreshTraces",
+        "title": "AgentInspect: Refresh Traces",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "agentInspect.runDoctor",
+        "title": "AgentInspect: Run Doctor"
+      },
+      {
+        "command": "agentInspect.viewTree",
+        "title": "AgentInspect: View Tree"
+      },
+      {
+        "command": "agentInspect.viewTimeline",
+        "title": "AgentInspect: View Timeline"
+      },
+      {
+        "command": "agentInspect.viewReport",
+        "title": "AgentInspect: View Report"
+      },
+      {
+        "command": "agentInspect.viewCheck",
+        "title": "AgentInspect: View Check Results"
+      },
+      {
+        "command": "agentInspect.verifySafe",
+        "title": "AgentInspect: Verify Safe"
+      },
+      {
+        "command": "agentInspect.openTraceFromEditor",
+        "title": "AgentInspect: Open Trace From Editor"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "agentInspect.refreshTraces",
+          "when": "view == agentInspect.traces",
+          "group": "navigation"
+        },
+        {
+          "command": "agentInspect.openTraceDirectory",
+          "when": "view == agentInspect.traces",
+          "group": "navigation"
+        },
+        {
+          "command": "agentInspect.runDoctor",
+          "when": "view == agentInspect.traces",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "agentInspect.viewTree",
+          "when": "view == agentInspect.traces && viewItem == traceRun",
+          "group": "inline"
+        },
+        {
+          "command": "agentInspect.viewTimeline",
+          "when": "view == agentInspect.traces && viewItem == traceRun",
+          "group": "inline"
+        },
+        {
+          "command": "agentInspect.viewReport",
+          "when": "view == agentInspect.traces && viewItem == traceRun",
+          "group": "inline"
+        },
+        {
+          "command": "agentInspect.viewCheck",
+          "when": "view == agentInspect.traces && viewItem == traceRun",
+          "group": "inline"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "agentInspect.openTraceFromEditor",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.vscode.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0"
+  }
+}
