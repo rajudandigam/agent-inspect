@@ -1,5 +1,9 @@
 # custom-observe starter
 
+Manual `inspectRun` / `step` tracing without framework adapters.
+
+Adoption: [docs/ADOPTION.md](../../../docs/ADOPTION.md)
+
 Deterministic `observe()` demo — no API keys.
 
 ```bash
