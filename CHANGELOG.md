@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.5.0
+
+### Minor Changes
+
+- 71e94de: v3.5 adoption kit: ADOPTION guide, demo scripts, design partner kit, starter polish, comparison refresh, post-v3.5 handoff.
+
 ## 3.4.0
 
 ### Minor Changes
