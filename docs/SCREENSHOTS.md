@@ -1,13 +1,45 @@
 # Visual demos
 
-Curated terminal recordings for AgentInspect **1.4.0**. They show what the local trace workbench captures and how to inspect it — without a hosted dashboard or vendor upload.
+Curated terminal recordings and static diagrams for AgentInspect **3.5.x**. They show what the local trace workbench captures and how to inspect it — without a hosted dashboard or vendor upload.
 
 **Synthetic output only:** demos use committed [fixtures](../fixtures/README.md), [examples](../examples/README.md), and recipes. No external LLM calls or API keys.
 
-**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball.
+**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball. Static SVG diagrams in `docs/assets/` are included in the root npm package.
 
-**Re-record guide:** [assets/demos/RECORDING.md](assets/demos/RECORDING.md)  
+**Re-record guide:** [assets/demos/RECORDING.md](assets/demos/RECORDING.md)
 **Maintainer audit:** [implementation/VISUAL-DEMO-AUDIT.md](implementation/VISUAL-DEMO-AUDIT.md)
+**Live demo script:** [DEMO-SCRIPT.md](DEMO-SCRIPT.md) (uses [broken-agent-debugging](../examples/starters/broken-agent-debugging/) starter)
+
+---
+
+## Product diagrams (static)
+
+No terminal recording required — safe for README and docs.
+
+| Diagram | Purpose |
+| ------- | ------- |
+| [agent-inspect-loop.svg](assets/agent-inspect-loop.svg) | Trace → check → redact → share (local only) |
+| [trace-check-redact.svg](assets/trace-check-redact.svg) | Workflow from JSONL to share-safe artifact |
+| [package-map.svg](assets/package-map.svg) | Core + adapter + quality + safety packages |
+
+Embedded in root [README](../README.md). Workflow: [FIRST-TRACE-IN-5-MINUTES.md](FIRST-TRACE-IN-5-MINUTES.md).
+
+---
+
+## Adoption demo (v3.5.2)
+
+Deterministic broken-agent flow — recommended for live demos and Show HN rehearsal.
+
+**Run:**
+
+```bash
+cd examples/starters/broken-agent-debugging
+pnpm install && pnpm start
+npx agent-inspect report <run-id> --dir .agent-inspect
+npx agent-inspect redact .agent-inspect/*.jsonl --profile share -o safe.jsonl
+```
+
+**GIF status:** re-record optional; use [error-handling.gif](assets/demos/error-handling.gif) as b-roll until a dedicated broken-agent GIF exists.
 
 ---
 

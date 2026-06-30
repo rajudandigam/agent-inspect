@@ -6,17 +6,21 @@
 
 **How it works:** `observe()` or a framework adapter writes JSONL under `.agent-inspect/`. No account. No upload. Your disk.
 
-**Frameworks:** AI SDK, OpenAI Agents JS, LangChain — plus manual steps and log ingest recipes.
+**Frameworks:** AI SDK, OpenAI Agents JS, LangChain — each with an npm package README. Manual steps and log-ingest recipes for everything else.
 
-**CI story:** `check`, `eval`, `redact`, `ci-summary` — artifacts you can gate merges on.
+**CI story:** `check`, `eval`, `redact`, `verify-safe` — artifacts you can gate merges on.
 
 **Not:** A hosted dashboard, prompt store, or replacement for LangSmith/Langfuse in production.
 
-**Try it:**
+**Try it (under 5 minutes):**
 
 ```bash
 npm install agent-inspect
-npx agent-inspect init --framework ai-sdk --yes
+npx agent-inspect init --yes
+node examples/agent-inspect-demo.mjs
+npx agent-inspect list --dir .agent-inspect
+npx agent-inspect report <run-id> --dir .agent-inspect
 ```
 
-Starters: [examples/starters/](../examples/starters/README.md) · Docs: [ADOPTION.md](./ADOPTION.md)
+**Demo flow:** [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/)
+**Guides:** [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) · [ADOPTION.md](./ADOPTION.md) · [Package map](https://github.com/rajudandigam/agent-inspect#package-map)

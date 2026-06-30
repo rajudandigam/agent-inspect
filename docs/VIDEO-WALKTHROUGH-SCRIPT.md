@@ -6,29 +6,33 @@ Use with [assets/demos/RECORDING.md](./assets/demos/RECORDING.md). Synthetic fix
 
 "AgentInspect turns TypeScript agent runs into local execution trees you can check in CI — without sending traces to the cloud."
 
+Show static loop diagram: [agent-inspect-loop.svg](./assets/agent-inspect-loop.svg)
+
 ## 0:30 — Install
 
 ```bash
 npm install agent-inspect
-npx agent-inspect init --framework custom --yes
+npx agent-inspect init --yes
+node examples/agent-inspect-demo.mjs
 ```
 
 Show `.agent-inspect/` and `agent-inspect.config.ts`.
 
-## 1:00 — First trace
+## 1:00 — Broken agent demo
 
-Run the generated demo or `examples/starters/custom-observe`.
+Switch to [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/):
 
 ```bash
-npx agent-inspect list --dir .agent-inspect
+cd examples/starters/broken-agent-debugging && pnpm install && pnpm start
+npx agent-inspect report <run-id> --dir .agent-inspect
 npx agent-inspect view <run-id> --dir .agent-inspect
 ```
 
-B-roll: [quickstart.gif](./assets/demos/quickstart.gif) if not recording live.
+B-roll: [error-handling.gif](./assets/demos/error-handling.gif) if not recording live.
 
 ## 2:00 — Framework path
 
-Switch to `examples/starters/ai-sdk` or mention adapter docs ([AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md)).
+Mention adapter package READMEs on npm. Quick cut to `examples/starters/ai-sdk` or [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md).
 
 ## 2:45 — Checks in CI
 
@@ -37,17 +41,22 @@ npx agent-inspect check .agent-inspect/*.jsonl --require-completed
 npx agent-inspect eval <run-id> --dir .agent-inspect
 ```
 
+Starter: [ci-eval-redact](../examples/starters/ci-eval-redact/)
+
 ## 3:30 — Redact before share
 
 ```bash
-npx agent-inspect redact trace.jsonl --profile share
+npx agent-inspect redact .agent-inspect/*.jsonl --profile share -o safe.jsonl
+npx agent-inspect verify-safe safe.jsonl
 ```
 
-## 4:00 — Report / viewer
+Diagram: [trace-check-redact.svg](./assets/trace-check-redact.svg)
+
+## 4:00 — Fix and diff (optional)
 
 ```bash
-npx agent-inspect report <run-id> --dir .agent-inspect
-# or: npx agent-inspect serve --dir .agent-inspect
+pnpm run fixed   # in broken-agent-debugging starter
+npx agent-inspect diff <before>.jsonl <after>.jsonl
 ```
 
 ## 4:30 — VS Code (optional)
@@ -60,4 +69,6 @@ Not a hosted dashboard. Complements LangSmith/Langfuse/OTel. See [COMPARE.md](./
 
 ## 5:30 — CTA
 
-"Pick a starter in `examples/starters/`, run `doctor` if stuck, open an issue with a redacted trace."
+"Pick a starter in `examples/starters/`, follow [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md), run `doctor` if stuck, open an issue with a redacted trace."
+
+Related: [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) · [SCREENSHOTS.md](./SCREENSHOTS.md)
