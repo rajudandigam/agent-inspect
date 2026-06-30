@@ -1,0 +1,46 @@
+{
+  "runIdKeys": ["runId", "requestId"],
+  "eventKey": "event",
+  "timestampKey": "timestamp",
+  "messageKey": "message",
+  "levelKey": "level",
+  "parentIdKey": "parentId",
+  "durationKey": "durationMs",
+  "statusKey": "status",
+  "mappings": {
+    "mcp_session_started": {
+      "kind": "RUN",
+      "name": "mcp:session",
+      "startsRun": true
+    },
+    "mcp_tool_call_started": {
+      "kind": "TOOL",
+      "name": "mcp:tool-call",
+      "startsStep": true
+    },
+    "mcp_tool_call_completed": {
+      "kind": "TOOL",
+      "name": "mcp:tool-call",
+      "endsStep": true
+    },
+    "mcp_tool_call_error": {
+      "kind": "ERROR",
+      "name": "mcp:tool-call-error",
+      "status": "error"
+    },
+    "mcp_session_completed": {
+      "kind": "RESULT",
+      "name": "mcp:session-completed",
+      "endsRun": true
+    }
+  },
+  "redact": [
+    "authorization",
+    "cookie",
+    "token",
+    "apiKey",
+    "password",
+    "secret",
+    "email"
+  ]
+}
