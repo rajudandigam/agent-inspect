@@ -8,9 +8,11 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** **3.0.0** — linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, and adapter-sdk. See [CHANGELOG.md](CHANGELOG.md#300).
+**Current release on npm:** **3.5.3** — sixteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#353).
 
-**Active direction (post-v3):** adoption-focused minors **v3.1 → v3.5** — harness, init/doctor, framework starters, minimal VS Code extension, performance hardening, demo kit. Maintainer plan: [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
+**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench — docs, examples, fixtures, adapter SDK examples, VS Code/viewer docs, performance fixtures, and standards graduation guides. Maintainer plan (completed train): [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
+
+**Core product gap (maintainer-owned):** one unified persisted run model across manual traces, structured logs, framework callbacks, CI artifacts, and standards exports — not a contributor starter issue.
 
 ---
 
@@ -104,23 +106,23 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ---
 
-## Now
+## Now — OSS contribution lanes (post-v3.5)
 
-**v2.1.0 utility triangle** — v2.0.0 is published with the stable trace contract. The active train turns that contract into a repeated local loop: trace what happened, eval what should have happened, and redact what should never leave your machine. See [ROADMAP-V2.1-TO-V3.md](docs/implementation/ROADMAP-V2.1-TO-V3.md).
+Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · hygiene plan: [docs/community/ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md) · prepared batch 03: [.github/LIVE_ISSUE_BATCH_03/](.github/LIVE_ISSUE_BATCH_03/)
 
-**OSS Activation Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) · **Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — contributor docs, recipes, fixtures, and design RFCs. **Batch 03 waits** until Batch 02 receives comments or PRs.
+| Lane | Intent | Example live issues |
+| ---- | ------ | ------------------- |
+| **OSS Hygiene** | Onboarding, roadmap/docs alignment, doctor messages | [#18](https://github.com/rajudandigam/agent-inspect/issues/18), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), [#9](https://github.com/rajudandigam/agent-inspect/issues/9) |
+| **Examples and Fixtures** | Recipes, cookbooks, fixture packs, streaming docs | [#10](https://github.com/rajudandigam/agent-inspect/issues/10), [#13](https://github.com/rajudandigam/agent-inspect/issues/13), [#27](https://github.com/rajudandigam/agent-inspect/issues/27), [#29](https://github.com/rajudandigam/agent-inspect/issues/29) |
+| **Adapter SDK Examples** | Third-party adapter examples, privacy checklist, transforms/renderers | Batch 03 drafts [#033–#037](.github/LIVE_ISSUE_BATCH_03/) |
+| **UI and Performance Polish** | VS Code docs, performance fixtures, viewer onboarding | Batch 03 drafts [#038–#041](.github/LIVE_ISSUE_BATCH_03/) |
+| **Standards and Graduation** | OpenInference/OTLP fixtures, Phoenix import guides | [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#25](https://github.com/rajudandigam/agent-inspect/issues/25) |
 
-Curated entry points: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · source bodies: `.github/LIVE_ISSUE_BATCH_01/` · `.github/LIVE_ISSUE_BATCH_02/`
+**Maintainer-owned (not good-first):** unified persisted InspectEvent model, schema evolution, redaction/security internals, package export policy, official adapter internals, OTLP sink architecture, release process.
 
-| Area | Intent |
-| ---- | ------ |
-| **Current train** | v2.1.0 eval/redact utility triangle while keeping new utilities optional, deterministic, and local-first. |
-| **Support contributor issues** | Triage and review PRs for [#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen) and [#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18). |
-| **Collect feedback** | [Discussions](https://github.com/rajudandigam/agent-inspect/discussions) and issues — map to published sequence without delivery promises. |
+**Recently shipped (close stale issues):** timeline/stats CLI (1.4.0), CI artifact recipe, `@agent-inspect/ai-sdk`, Winston/logging recipes, install smoke guide, safe trace sharing checklist — see [ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md).
 
-Release-train state: [RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md) · maintainer roadmap: [ROADMAP-V2.1-TO-V3.md](docs/implementation/ROADMAP-V2.1-TO-V3.md)
-
-Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/DISCUSSIONS-STARTERS.md](docs/community/DISCUSSIONS-STARTERS.md)
+Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/MONTHLY-OSS-HYGIENE.md](docs/community/MONTHLY-OSS-HYGIENE.md)
 
 ---
 

@@ -8,25 +8,22 @@ Not automated. No SLA implied.
 
 ## Issue and draft hygiene
 
-- [ ] **Close or archive stale completed drafts** in `.github/ISSUE_DRAFTS/` (especially items shipped in 1.0.x / 1.1.0 — e.g. CJS exports, redaction, LangChain persistence).
-- [ ] **Check whether [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) points to live issue links**, not only draft files.
-- [ ] **Review Batch 01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) — triage comments/PRs, close duplicates, adjust labels.
-- [ ] **Review Batch 02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) — triage comments/PRs; confirm [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) links stay current.
-- [ ] **Defer Batch 03** until Batch 02 receives comments or PRs — do not open another large issue wave immediately.
-- [ ] **Close or update issues** that become completed through merged PRs (link PR, remove from good-first lists).
-- [ ] **Move accepted design proposals** (e.g. [#30](https://github.com/rajudandigam/agent-inspect/issues/30) Vercel AI SDK adapter RFC) into [ROADMAP.md](../../ROADMAP.md) Next/Future with maintainer ack.
-- [ ] **Convert 3–5 useful drafts** into live GitHub issues — not the entire backlog. Use prepared batch folders under `.github/LIVE_ISSUE_BATCH_*/`.
-- [ ] **Do not reopen** completed 1.1.0 work as active issues unless tracking follow-up bugs.
-- [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live `#NNN` links and remove duplicates.
+- [ ] Run [ISSUE-HYGIENE-PLAN.md](./ISSUE-HYGIENE-PLAN.md) review after each minor release (v3.5.x+).
+- [ ] **Close or refresh stale issues** using `scripts/close-stale-issues-v3-oss.sh` and `scripts/update-existing-issues-v3-oss.sh` (DRY_RUN first).
+- [ ] **Create v3 milestones** if missing: `scripts/github-milestones-v3-oss.sh`.
+- [ ] **Batch 03:** review `.github/LIVE_ISSUE_BATCH_03/` then `scripts/create-live-issues-batch-03.sh` when ready (not automatic).
+- [ ] **Check [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)** — no closed issues listed as open; lane groupings current.
+- [ ] Close duplicates; link merged PRs on completed issues (#8, #20, #21, #26 shipped).
+- [ ] **Defer large issue waves** — prefer 3–5 live issues at a time from batch 03.
 
 ---
 
 ## Roadmap and docs
 
-- [ ] **Move finished work** from ROADMAP **Now** → **Released recently** when shipped.
-- [ ] Keep **Next** / **Future** non-committal (no delivery dates, no SaaS/dashboard claims).
+- [ ] **Align ROADMAP / README / CHANGELOG** with `package.json` version (currently **3.5.3**).
+- [ ] Move finished work from ROADMAP **Now** → **Released recently** when shipped.
+- [ ] Keep **Next** / **Future** non-committal (no SaaS/dashboard claims).
 - [ ] Re-read [CHANGELOG.md](../../CHANGELOG.md) top section matches npm latest.
-- [ ] Scan public docs for stale **Unreleased** or **pre-release** wording.
 
 ---
 

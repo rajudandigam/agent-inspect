@@ -111,7 +111,7 @@ Full index: [docs/README.md](docs/README.md) · Visual demos: [SCREENSHOTS.md](d
 
 ## Install details
 
-Current release: **3.5.2** (sixteen linked npm packages). Persisted trace schema **1.0**.
+Current release: **3.5.3** (sixteen linked npm packages). Persisted trace schema **1.0**.
 
 ```bash
 pnpm add agent-inspect

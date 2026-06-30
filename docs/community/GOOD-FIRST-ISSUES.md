@@ -8,9 +8,11 @@ Historical drafts (source material only): [.github/ISSUE_DRAFTS/](../../.github/
 
 ## Live issues
 
-OSS activation batches **01** ([#7–#14](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen)) and **02** ([#18–#30](https://github.com/rajudandigam/agent-inspect/issues/18)) are open on GitHub. Use the links below — not draft files — when picking work.
+Post-v3.5 OSS lanes — see [ISSUE-HYGIENE-PLAN.md](./ISSUE-HYGIENE-PLAN.md) and [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) for the current index. Batch 03 prepared: [.github/LIVE_ISSUE_BATCH_03/](../../.github/LIVE_ISSUE_BATCH_03/).
 
-**Batch 03 should wait** until Batch 02 receives comments or PRs.
+**Shipped (closed):** #8, #20, #21, #26 — see good-first index **Shipped** table.
+
+**Pending maintainer refresh/close:** use scripts in `scripts/*-v3-oss.sh` (DRY_RUN default).
 
 ### Batch 01
 
