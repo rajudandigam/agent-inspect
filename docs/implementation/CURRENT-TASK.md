@@ -2,15 +2,15 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "v3.5.3-docs-hygiene"
-status: "in_progress"
+chunk: "adoption-handoff"
+status: "idle"
 executionMode: "adoption-freeze"
-dependsOn: "v3.5.2-publication-complete"
+dependsOn: "v3.5.3-publication-complete"
 ```
 
 ## Goal
 
-Lean public docs index, archive stale files, remove unavailable hero SVG. See [V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md](./release-trains/V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md).
+Adoption polish train complete (v3.5.1–v3.5.3). No new runtime features without RFC. Outreach per [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md).
 
 ## Manual gate
 

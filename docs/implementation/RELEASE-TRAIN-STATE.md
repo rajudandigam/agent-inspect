@@ -4,21 +4,22 @@
 
 ```yaml
 baselineVersion: "3.5.2"
-publishedVersion: "3.5.2"
+publishedVersion: "3.5.3"
 currentTrain: "post-v3.5-adoption"
-trainStatus: "active"
+trainStatus: "complete"
 executionMode: "adoption-freeze"
 branch: "main"
 completedChunks:
+  - "v3.5.3-docs-hygiene"
   - "v3.5.2-demo-kit"
   - "v3.5.1-adoption-polish"
-currentChunk: "v3.5.3-docs-hygiene"
-nextAction: "Merge Version Packages PR for 3.5.3 when CI green"
+currentChunk: "adoption-handoff"
+nextAction: "Design partner outreach; optional hero SVG when assets ready"
 pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
-lastConfirmedCommit: "pending"
-lastValidationLevel: "v3.5.3-docs-hygiene"
+lastConfirmedCommit: "43feb00"
+lastValidationLevel: "v3.5.3-publish-complete"
 updatedAt: "2026-06-30"
 ```
 
 - **Hygiene readiness:** [release-trains/V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md](./release-trains/V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md)
-- **Polish plan:** [release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md](./release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md)
+- **Post-train:** [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md)
