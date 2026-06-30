@@ -56,6 +56,12 @@ import type { InitCommandOptions } from "./init.js";
 import { initCommand } from "./init.js";
 import type { DoctorCommandOptions } from "./doctor.js";
 import { doctorCommand } from "./doctor.js";
+import type { IndexCommandOptions } from "./index-cmd.js";
+import {
+  indexBuildCommand,
+  indexCleanCommand,
+  indexStatusCommand,
+} from "./index-cmd.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -320,6 +326,12 @@ export function createCliProgram(): Command {
       value,
     ])
     .option("--max-total-tokens <number>", "add llm.usage with a max total-token budget")
+    .option(
+      "--max-step-duration <duration>",
+      "add run.maxStepDuration (e.g. 30s, 5m)",
+    )
+    .option("--require-completed", "add run.requireCompleted")
+    .option("--detect-stalls", "add run.stall for running or incomplete events")
     .option("--session <id>", "check all runs in a workflow session (requires --dir)")
     .option("--group <id>", "check all runs sharing a groupId (requires --dir)")
     .option(
@@ -728,6 +740,38 @@ export function createCliProgram(): Command {
     )
     .action((opts: DoctorCommandOptions) => {
       runCommand(() => doctorCommand(opts));
+    });
+
+  const indexCmd = program
+    .command("index")
+    .description("Optional local trace directory index (rebuildable metadata cache)");
+
+  indexCmd
+    .command("build")
+    .description("Build or refresh .agent-inspect-index.json")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print JSON result")
+    .option("--max-entries <n>", "cap indexed entries (default 10000)")
+    .action((opts: IndexCommandOptions) => {
+      runCommand(() => indexBuildCommand(opts));
+    });
+
+  indexCmd
+    .command("status")
+    .description("Show index freshness and entry count")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print JSON result")
+    .action((opts: IndexCommandOptions) => {
+      runCommand(() => indexStatusCommand(opts));
+    });
+
+  indexCmd
+    .command("clean")
+    .description("Remove the local index file")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print JSON result")
+    .action((opts: IndexCommandOptions) => {
+      runCommand(() => indexCleanCommand(opts));
     });
 
   return program;

@@ -15,6 +15,7 @@
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "dependencies": {
+    "@agent-inspect/adapter-sdk": "workspace:*",
     "@agent-inspect/circuit": "workspace:*",
     "@agent-inspect/core": "workspace:*",
     "@agent-inspect/eval": "workspace:*",

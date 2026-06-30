@@ -366,6 +366,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@agent-inspect/adapter-sdk':
+        specifier: workspace:*
+        version: link:../adapter-sdk
       '@agent-inspect/circuit':
         specifier: workspace:*
         version: link:../circuit
