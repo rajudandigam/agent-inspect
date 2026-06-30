@@ -129,6 +129,7 @@
     "SECURITY.md",
     "CHANGELOG.md",
     "docs/GETTING-STARTED.md",
+    "docs/ADOPTION.md",
     "docs/API.md",
     "docs/CLI.md",
     "docs/SCHEMA.md",
@@ -143,7 +144,16 @@
     "docs/ADAPTER-CONFORMANCE.md",
     "docs/COMPARE.md",
     "docs/LOG-TO-TREE-QUICKSTART.md",
-    "docs/SCREENSHOTS.md"
+    "docs/SCREENSHOTS.md",
+    "docs/SAFE-TRACE-SHARING.md",
+    "docs/CI-ARTIFACTS.md",
+    "docs/PERFORMANCE.md",
+    "docs/FIRST-TRACE-IN-5-MINUTES.md",
+    "docs/ONE-PAGE-QUICKSTART.md",
+    "docs/USE-CASES.md",
+    "docs/assets/agent-inspect-loop.svg",
+    "docs/assets/trace-check-redact.svg",
+    "docs/assets/package-map.svg"
   ],
   "sideEffects": false,
   "keywords": [
