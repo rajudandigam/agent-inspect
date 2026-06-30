@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-starter-harness-nestjs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "@agent-inspect/harness": "workspace:*",
+    "agent-inspect": "workspace:*"
+  }
+}

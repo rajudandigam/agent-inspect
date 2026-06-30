@@ -10,6 +10,25 @@ AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agen
 pnpm add agent-inspect
 ```
 
+### Quick bootstrap (v3.1+)
+
+```bash
+npx agent-inspect init
+npx agent-inspect doctor
+```
+
+`init` writes `agent-inspect.config.ts`, `.agent-inspect/`, and a deterministic demo — **without installing dependencies**. `doctor` checks Node, trace directory permissions, and optional adapter packages (no network).
+
+Framework-specific init:
+
+```bash
+npx agent-inspect init --framework ai-sdk
+npx agent-inspect init --framework openai-agents
+npx agent-inspect init --framework langchain
+```
+
+Blessed starters: [examples/starters/](../examples/starters/README.md)
+
 The `agent-inspect` package includes the CLI binary via its `bin` field:
 
 ```bash

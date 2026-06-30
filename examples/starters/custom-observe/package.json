@@ -1,0 +1,11 @@
+{
+  "name": "agent-inspect-starter-custom-observe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  }
+}

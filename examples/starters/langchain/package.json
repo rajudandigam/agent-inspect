@@ -1,0 +1,11 @@
+{
+  "name": "agent-inspect-starter-langchain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  }
+}

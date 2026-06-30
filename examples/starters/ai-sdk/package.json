@@ -1,0 +1,11 @@
+{
+  "name": "agent-inspect-starter-ai-sdk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  }
+}
