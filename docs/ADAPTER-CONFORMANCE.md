@@ -57,3 +57,10 @@ This is an internal official-adapter gate, not a third-party certification progr
 ## Before claiming support
 
 An adapter can be documented as supported only after no-network fixtures cover run, step, tool, LLM, error, streaming, and metadata-bound expectations for that framework path.
+
+## v3.2 adoption evidence refresh
+
+- [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) — blessed AI SDK path (`generateText`, `streamText`, Next.js recipe, troubleshooting)
+- [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md) — additional vs replacement processor modes
+- [NESTJS.md](./NESTJS.md) — harness bootstrap path (no `@agent-inspect/nestjs` package in v3.2)
+- [proposals/MASTRA-ADAPTER-RFC.md](./proposals/MASTRA-ADAPTER-RFC.md) — deferred pending demand gates
