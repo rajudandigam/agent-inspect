@@ -1,65 +1,40 @@
-# Issue hygiene run log — 2026-06-09
+# Issue hygiene run log
 
-**Operator:** Cursor agent (local maintainer workspace)  
-**GH_APPLY:** not set — **no GitHub mutations applied**
+## 2026-06-09 — initial artifacts
 
-## Phase 0 audit
+**Operator:** Cursor agent  
+**GH_APPLY:** not set initially — scripts and docs prepared
 
-| Check | Result |
-| ----- | ------ |
-| `package.json` version | 3.5.3 |
-| `README.md` release line | 3.5.3 (updated this pass) |
-| `ROADMAP.md` release line | 3.5.3 (updated this pass) |
-| `CHANGELOG.md` | 3.5.3 |
-| Open GitHub issues | 18 (#7–#30 subset) |
-| Closed relevant | #8, #20, #21, #26 |
-| gh auth | OK (rajudandigam) |
+Created hygiene plan, update/close scripts, batch 03 bodies, initial ROADMAP/GOOD-FIRST-ISSUES pass.
 
-## Artifacts created
+## 2026-06-30 — GitHub apply + doc sync
 
-- `docs/community/ISSUE-HYGIENE-PLAN.md`
-- `.github/ISSUE_UPDATES_V3_OSS/` (9 refresh bodies + metadata)
-- `.github/ISSUE_CLOSE_NOTES_V3_OSS/` (7 close/reframe notes)
-- `.github/LIVE_ISSUE_BATCH_03/` (12 issue bodies + README)
-- `scripts/github-milestones-v3-oss.sh`
-- `scripts/update-existing-issues-v3-oss.sh`
-- `scripts/close-stale-issues-v3-oss.sh`
-- `scripts/create-live-issues-batch-03.sh`
+**Operator:** Maintainer + Cursor agent
 
-## Docs modified
+| Step | Status |
+| ---- | ------ |
+| Milestones (#5–#9) | Applied |
+| Refresh #7, #9, #10, #13, #18, #19, #25, #27, #29 | Applied |
+| Close #11, #12, #14, #23, #24, #30 | Applied |
+| Create batch #58–#69 | Applied |
+| Sync GOOD-FIRST-ISSUES + community index + ROADMAP lanes | This commit |
+| Close #22, #28, #58, #59 | With this push |
 
-- `ROADMAP.md` — current release 3.5.3, OSS contribution lanes
-- `README.md` — install version 3.5.3
-- `GOOD-FIRST-ISSUES.md` — v3 lane index
-- `docs/community/GOOD-FIRST-ISSUES.md` — pointer to hygiene plan
-- `docs/community/MONTHLY-OSS-HYGIENE.md` — v3 script checklist
+### Docs updated (2026-06-30)
 
-## Validation (completed)
+- `GOOD-FIRST-ISSUES.md` — live #58–#69, shipped table, removed stale “pending close”
+- `docs/community/GOOD-FIRST-ISSUES.md` — lane tables replace batch 01/02 stale index
+- `ROADMAP.md` — live issue links in Now section
+- `docs/community/MONTHLY-OSS-HYGIENE.md` — batch 03 triage note
+- `docs/community/ISSUE-HYGIENE-PLAN.md` — applied status
+
+### Validation
 
 ```bash
-chmod +x scripts/*-v3-oss.sh
-bash -n scripts/github-milestones-v3-oss.sh          # OK
-bash -n scripts/update-existing-issues-v3-oss.sh     # OK
-bash -n scripts/close-stale-issues-v3-oss.sh         # OK
-bash -n scripts/create-live-issues-batch-03.sh       # OK
-pnpm typecheck                                       # OK
-pnpm test                                            # OK — 148 files, 1229 tests
+pnpm typecheck   # OK
+pnpm test        # OK
 ```
 
-## Manual next steps
+### Constraints
 
-1. Review all artifacts listed above.
-2. Run DRY_RUN scripts.
-3. `GH_APPLY=1 ./scripts/github-milestones-v3-oss.sh`
-4. `GH_APPLY=1 ./scripts/update-existing-issues-v3-oss.sh`
-5. `GH_APPLY=1 ./scripts/close-stale-issues-v3-oss.sh`
-6. Decide on #22 and #28 (reframe vs close).
-7. `GH_APPLY=1 ./scripts/create-live-issues-batch-03.sh`
-8. Update GOOD-FIRST-ISSUES with live batch 03 issue numbers.
-
-## Constraints confirmed
-
-- No runtime code modified
-- No package.json version bump
-- No dependencies added
-- No GitHub apply without GH_APPLY=1
+- Docs/community only — no runtime, version, or dependency changes

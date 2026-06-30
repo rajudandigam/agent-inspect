@@ -11,7 +11,7 @@ Not automated. No SLA implied.
 - [ ] Run [ISSUE-HYGIENE-PLAN.md](./ISSUE-HYGIENE-PLAN.md) review after each minor release (v3.5.x+).
 - [ ] **Close or refresh stale issues** using `scripts/close-stale-issues-v3-oss.sh` and `scripts/update-existing-issues-v3-oss.sh` (DRY_RUN first).
 - [ ] **Create v3 milestones** if missing: `scripts/github-milestones-v3-oss.sh`.
-- [ ] **Batch 03:** review `.github/LIVE_ISSUE_BATCH_03/` then `scripts/create-live-issues-batch-03.sh` when ready (not automatic).
+- [ ] **Batch 03 (#58–#69):** triage comments/PRs; keep [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) lane tables current.
 - [ ] **Check [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)** — no closed issues listed as open; lane groupings current.
 - [ ] Close duplicates; link merged PRs on completed issues (#8, #20, #21, #26 shipped).
 - [ ] **Defer large issue waves** — prefer 3–5 live issues at a time from batch 03.

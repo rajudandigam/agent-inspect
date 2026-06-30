@@ -2,7 +2,7 @@
 
 **Generated:** 2026-06-09  
 **Local branch:** `main` @ `368678e` (docs: record v3.5.3 publication complete)  
-**GitHub apply status:** **NOT APPLIED** — scripts generated for maintainer review (`GH_APPLY=1` required)
+**GitHub apply status:** **Applied 2026-06-30** (milestones, refresh, closes, batch #58–#69). **Doc index sync:** 2026-06-30 (this commit).
 
 ---
 

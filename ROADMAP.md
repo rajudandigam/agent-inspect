@@ -108,14 +108,14 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now — OSS contribution lanes (post-v3.5)
 
-Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · hygiene plan: [docs/community/ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md) · prepared batch 03: [.github/LIVE_ISSUE_BATCH_03/](.github/LIVE_ISSUE_BATCH_03/)
+Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · hygiene plan: [docs/community/ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md)
 
 | Lane | Intent | Example live issues |
 | ---- | ------ | ------------------- |
-| **OSS Hygiene** | Onboarding, roadmap/docs alignment, doctor messages | [#18](https://github.com/rajudandigam/agent-inspect/issues/18), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), [#9](https://github.com/rajudandigam/agent-inspect/issues/9) |
-| **Examples and Fixtures** | Recipes, cookbooks, fixture packs, streaming docs | [#10](https://github.com/rajudandigam/agent-inspect/issues/10), [#13](https://github.com/rajudandigam/agent-inspect/issues/13), [#27](https://github.com/rajudandigam/agent-inspect/issues/27), [#29](https://github.com/rajudandigam/agent-inspect/issues/29) |
-| **Adapter SDK Examples** | Third-party adapter examples, privacy checklist, transforms/renderers | Batch 03 drafts [#033–#037](.github/LIVE_ISSUE_BATCH_03/) |
-| **UI and Performance Polish** | VS Code docs, performance fixtures, viewer onboarding | Batch 03 drafts [#038–#041](.github/LIVE_ISSUE_BATCH_03/) |
+| **OSS Hygiene** | Onboarding, roadmap/docs alignment, doctor messages | [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#18](https://github.com/rajudandigam/agent-inspect/issues/18), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), [#67](https://github.com/rajudandigam/agent-inspect/issues/67) |
+| **Examples and Fixtures** | Recipes, cookbooks, fixture packs, streaming docs | [#10](https://github.com/rajudandigam/agent-inspect/issues/10), [#13](https://github.com/rajudandigam/agent-inspect/issues/13), [#27](https://github.com/rajudandigam/agent-inspect/issues/27), [#29](https://github.com/rajudandigam/agent-inspect/issues/29), [#69](https://github.com/rajudandigam/agent-inspect/issues/69) |
+| **Adapter SDK Examples** | Third-party adapter examples, privacy checklist, transforms/renderers | [#60](https://github.com/rajudandigam/agent-inspect/issues/60)–[#64](https://github.com/rajudandigam/agent-inspect/issues/64) |
+| **UI and Performance Polish** | VS Code docs, performance fixtures, viewer onboarding | [#65](https://github.com/rajudandigam/agent-inspect/issues/65)–[#66](https://github.com/rajudandigam/agent-inspect/issues/66), [#68](https://github.com/rajudandigam/agent-inspect/issues/68) |
 | **Standards and Graduation** | OpenInference/OTLP fixtures, Phoenix import guides | [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#25](https://github.com/rajudandigam/agent-inspect/issues/25) |
 
 **Maintainer-owned (not good-first):** unified persisted InspectEvent model, schema evolution, redaction/security internals, package export policy, official adapter internals, OTLP sink architecture, release process.
