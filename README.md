@@ -24,6 +24,16 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 Current npm release line: **3.0.0** for the linked public packages (`agent-inspect`, adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, adapter-sdk). **v3.0.0** adds extension contracts and **`@agent-inspect/adapter-sdk`** for third-party adapter authoring; persisted trace schema remains **1.0**.
 
+**v3.1 adoption path (in progress):**
+
+1. `npx agent-inspect init` — local config + demo (no auto-install)
+2. `observe()` or a framework adapter
+3. `@agent-inspect/harness` for real project runners
+4. `npx agent-inspect doctor` when setup fails
+5. `check` / `eval` / `redact` / `report` for CI and safe sharing
+
+See [examples/starters/](examples/starters/README.md) and [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
+
 ```bash
 npm install agent-inspect
 ```

@@ -27,6 +27,8 @@ Core commands:
 - `export` — export manual traces to Markdown/HTML/OpenInference/OTLP JSON (local only)
 - `open` — read supported local trace files, directories, or stdin through the canonical reader pipeline
 - `migrate` — convert one local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output
+- `init` — scaffold local AgentInspect config and demo files (v3.1+)
+- `doctor` — diagnose local setup without network or installs (v3.1+)
 - `check` — run deterministic local trace checks with stable JSON and exit codes
 - `eval` — run deterministic local evals over existing traces
 - `redact` — redact a local JSON/JSONL file or trace copy

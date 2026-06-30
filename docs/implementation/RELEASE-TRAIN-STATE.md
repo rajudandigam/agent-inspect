@@ -13,16 +13,21 @@ completedChunks:
   - "v3.0-publication-complete"
   - "v3.1-0-planning-reset"
   - "v3.1-1-make-harness-public"
-currentChunk: "v3.1-2-implement-agent-inspect-init"
-nextAction: "Complete @agent-inspect/harness first publication; then implement agent-inspect init."
-pendingManualGate: "@agent-inspect/harness first publication and Trusted Publisher"
-lastConfirmedCommit: "65e45ca"
-lastValidationLevel: "v3.1-1-make-harness-public"
+  - "v3.1-2-implement-agent-inspect-init"
+  - "v3.1-3-implement-agent-inspect-doctor"
+  - "v3.1-4-add-starter-templates"
+  - "v3.1-5-readme-onboarding-update"
+  - "v3.1-6-v3.1-release-readiness"
+currentChunk: "v3.1-release-prep"
+nextAction: "Push commits; publish @agent-inspect/harness; Version Packages PR for 3.1.0."
+pendingManualGate: "@agent-inspect/harness first npm publication"
+lastConfirmedCommit: "a90659b"
+lastValidationLevel: "v3.1-6-v3.1-release-readiness"
 updatedAt: "2026-06-29"
 ```
 
 - **Active roadmap:** [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md)
 - **Architecture guide (historical):** [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md)
 - **Active plan:** [release-trains/V3.1.0-EXECUTION-PLAN.md](./release-trains/V3.1.0-EXECUTION-PLAN.md)
-- **Latest readiness:** [release-trains/V3.0.0-RELEASE-READINESS.md](./release-trains/V3.0.0-RELEASE-READINESS.md)
+- **Latest readiness:** [release-trains/V3.1.0-RELEASE-READINESS.md](./release-trains/V3.1.0-RELEASE-READINESS.md)
 - **Historical v3 contracts:** [V3-EXTENSION-CONTRACTS.md](../proposals/V3-EXTENSION-CONTRACTS.md)
