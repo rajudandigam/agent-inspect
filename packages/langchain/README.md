@@ -1,0 +1,69 @@
+# @agent-inspect/langchain
+
+LangChain callback handler → local AgentInspect traces.
+
+## When to use
+
+- LangChain or LangGraph apps using `@langchain/core` callbacks
+- You want `persist: true` local JSONL without a hosted backend
+
+## When not to use
+
+- Raw LangGraph without LangChain callbacks (wire callbacks at integration points)
+- Hosted LangSmith as replacement
+
+## Install
+
+```bash
+npm install agent-inspect @agent-inspect/langchain @langchain/core
+```
+
+**Peer:** `@langchain/core@^1.0.0`
+
+## Example
+
+```ts
+import { AgentInspectCallback } from "@agent-inspect/langchain";
+
+const handler = new AgentInspectCallback({
+  traceDir: ".agent-inspect",
+  runName: "my-chain",
+  persist: true,
+});
+
+// Pass handler to your chain / runnable callbacks
+```
+
+## Privacy
+
+- Local files only; metadata-only default
+- No AgentInspect network activity
+
+## API
+
+| Export | Purpose |
+| ------ | ------- |
+| `AgentInspectCallback` | LangChain `BaseCallbackHandler` |
+| `extractModelName`, `safePreview` | Metadata helpers |
+
+## CLI
+
+`npx agent-inspect view` · `check` · `eval`
+
+## Docs
+
+- [Adapters](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTERS.md)
+- [Starter](https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters/langchain)
+
+## Troubleshooting
+
+- **Empty trace:** Set `persist: true` and ensure callbacks are attached to the runnable
+- **LangGraph:** Route through LangChain callback surfaces where possible
+
+## Version
+
+`agent-inspect@3.5.x`
+
+## License
+
+MIT
