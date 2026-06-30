@@ -185,7 +185,11 @@ Described in [API.md](API.md) — optional `correlationId`, `requestId`, `decisi
 
 ---
 
-## Planned checklist (completed items)
+## VS Code (v3.3)
+
+Read-only sidebar trace explorer backed by the `agent-inspect` CLI. Develop with F5 from `packages/vscode`.
+
+Guide: [VSCODE.md](VSCODE.md)
 
 - [x] Basic trace tree (`inspectRun` + `step`)
 - [x] Failed step rendering
@@ -193,3 +197,4 @@ Described in [API.md](API.md) — optional `correlationId`, `requestId`, `decisi
 - [x] `agent-inspect diff` output
 - [x] Optional TUI (`view --tui`)
 - [x] `timeline`, `stats`, `search` (v1.4.0)
+- [x] VS Code read-only trace explorer (v3.3.0) — see [VSCODE.md](VSCODE.md); Marketplace GIF pending first publish
