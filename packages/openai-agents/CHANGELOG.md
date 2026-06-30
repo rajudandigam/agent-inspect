@@ -1,5 +1,16 @@
 # @agent-inspect/openai-agents
 
+## 3.2.0
+
+### Minor Changes
+
+- 80f8f30: v3.2 framework adoption pack: AI SDK and OpenAI Agents local-only guides, NestJS harness path, Mastra RFC (deferred), adapter conformance evidence refresh.
+
+### Patch Changes
+
+- Updated dependencies [80f8f30]
+  - agent-inspect@3.2.0
+
 ## 3.1.0
 
 ### Minor Changes
