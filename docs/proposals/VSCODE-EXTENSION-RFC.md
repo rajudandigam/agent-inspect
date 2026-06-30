@@ -23,4 +23,4 @@ Thin, read-only IDE surface that reuses the existing `agent-inspect` CLI. No hos
 
 ## Publication
 
-VS Code Marketplace first publish requires maintainer credentials — **manual gate** before public listing.
+VS Code Marketplace first publish requires maintainer credentials — **manual gate** (deferred; extension ships in-repo). npm linked releases are unaffected.
