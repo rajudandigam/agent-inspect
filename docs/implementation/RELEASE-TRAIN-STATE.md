@@ -11,11 +11,13 @@ executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
   - "v3.0-publication-complete"
-currentChunk: "v3.1-0-audit-current-package-state-and-publish-verification"
-nextAction: "Execute v3.1 train: public harness, init, doctor, starter templates."
-pendingManualGate: "first publication only for any package that is not yet public"
-lastConfirmedCommit: "c9ff385"
-lastValidationLevel: "v3.1-0-planning-reset"
+  - "v3.1-0-planning-reset"
+  - "v3.1-1-make-harness-public"
+currentChunk: "v3.1-2-implement-agent-inspect-init"
+nextAction: "Complete @agent-inspect/harness first publication; then implement agent-inspect init."
+pendingManualGate: "@agent-inspect/harness first publication and Trusted Publisher"
+lastConfirmedCommit: "65e45ca"
+lastValidationLevel: "v3.1-1-make-harness-public"
 updatedAt: "2026-06-29"
 ```
 

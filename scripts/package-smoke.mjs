@@ -409,6 +409,48 @@ const optionalPackageChecks = [
       void privacy;
     `,
   },
+  {
+    dir: "packages/harness",
+    name: "@agent-inspect/harness",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { createFixtureRunner, defineTarget } from "@agent-inspect/harness";
+      const runner = createFixtureRunner({
+        targets: {
+          echo: defineTarget({
+            resolve: () => () => "ok",
+            invoke: (target) => target(),
+          }),
+        },
+      });
+      if (runner.listTargets().length !== 1) throw new Error("expected one target");
+    `,
+    cjs: `
+      const { createFixtureRunner, defineTarget } = require("@agent-inspect/harness");
+      const runner = createFixtureRunner({
+        targets: {
+          echo: defineTarget({
+            resolve: () => () => "ok",
+            invoke: (target) => target(),
+          }),
+        },
+      });
+      if (runner.listTargets().length !== 1) throw new Error("expected one target");
+    `,
+    ts: `
+      import { createFixtureRunner, defineTarget } from "@agent-inspect/harness";
+      const runner = createFixtureRunner({
+        targets: {
+          echo: defineTarget({
+            resolve: () => () => "ok",
+            invoke: (target) => target(),
+          }),
+        },
+      });
+      void runner.listTargets();
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {

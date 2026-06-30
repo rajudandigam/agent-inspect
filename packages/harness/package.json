@@ -1,9 +1,9 @@
 {
   "name": "@agent-inspect/harness",
-  "version": "1.8.0",
+  "version": "3.0.0",
   "license": "MIT",
   "type": "module",
-  "description": "Experimental local fixture runner for AgentInspect traces",
+  "description": "Local fixture runner for AgentInspect traces in real project integrations",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rajudandigam/agent-inspect.git",
@@ -13,7 +13,6 @@
     "url": "https://github.com/rajudandigam/agent-inspect/issues"
   },
   "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
-  "private": true,
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -39,5 +38,8 @@
   },
   "dependencies": {
     "agent-inspect": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

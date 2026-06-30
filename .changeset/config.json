@@ -41,7 +41,6 @@
     "agent-inspect-recipe-winston-json-logs",
     "agent-inspect-recipe-eval-local-checks",
     "agent-inspect-recipe-redact-share-safe-file",
-    "agent-inspect-recipe-eval-ci-artifacts",
-    "@agent-inspect/harness"
+    "agent-inspect-recipe-eval-ci-artifacts"
   ]
 }

@@ -182,6 +182,55 @@ describe("@agent-inspect/harness", () => {
     ]);
   });
 
+  it("surfaces bootstrap failure", async () => {
+    const runner = createFixtureRunner({
+      trace: { mode: "off" },
+      targets: {
+        ok: defineTarget<undefined, () => string, undefined, string>({
+          resolve: () => () => "ok",
+          invoke: (target) => target(),
+        }),
+      },
+      bootstrap() {
+        throw new Error("boot fail");
+      },
+    });
+
+    await expect(runner.runTarget("ok", undefined)).rejects.toBeInstanceOf(HarnessError);
+    expect(runner.getDiagnostics()).toMatchObject([
+      {
+        code: "bootstrap_failed",
+        severity: "error",
+        targetName: "ok",
+        error: { message: "boot fail" },
+      },
+    ]);
+  });
+
+  it("respects maybeInspectRun gating when trace mode is run-if-enabled", async () => {
+    const traceDir = await mkdtemp(
+      path.join(os.tmpdir(), "agent-inspect-harness-gated-"),
+    );
+    const previous = process.env.AGENT_INSPECT;
+    process.env.AGENT_INSPECT = "0";
+    try {
+      const runner = createFixtureRunner({
+        trace: { mode: "run-if-enabled", traceDir, silent: true },
+        targets: {
+          echo: defineTarget<undefined, () => string, undefined, string>({
+            resolve: () => () => "ok",
+            invoke: (target) => target(),
+          }),
+        },
+      });
+      await expect(runner.runTarget("echo", undefined)).resolves.toBe("ok");
+      expect(await listTraceFiles(traceDir)).toHaveLength(0);
+    } finally {
+      if (previous === undefined) delete process.env.AGENT_INSPECT;
+      else process.env.AGENT_INSPECT = previous;
+    }
+  });
+
   it("writes local traces only when explicitly enabled", async () => {
     const traceDir = await mkdtemp(
       path.join(os.tmpdir(), "agent-inspect-harness-"),

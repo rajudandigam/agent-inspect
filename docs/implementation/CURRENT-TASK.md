@@ -4,18 +4,34 @@
 
 ```yaml
 train: "v3.1.0"
-chunk: "v3.1-0-audit-current-package-state-and-publish-verification"
-status: "in_progress"
+chunk: "v3.1-1-make-harness-public"
+status: "blocked"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.0-publication-complete"
+dependsOn: "v3.1-0-audit-current-package-state-and-publish-verification"
 ```
 
 ## Goal
 
-Post-v3 planning reset and v3.1 train setup. Next chunk: public `@agent-inspect/harness`.
+`@agent-inspect/harness` implementation complete; awaiting first npm publication.
 
-## Suggested Commit
+## Manual gate
 
-```text
-docs: start post-v3 adoption roadmap
+**MANUAL GATE — first publication / Trusted Publishing for `@agent-inspect/harness`**
+
+Package path: `packages/harness`  
+Package name: `@agent-inspect/harness`  
+Expected bootstrap version: `3.0.0` (linked minor `3.1.0` at release prep)
+
+```bash
+pnpm build
+mkdir -p /tmp/agent-inspect-harness-pack
+pnpm --dir packages/harness pack --pack-destination /tmp/agent-inspect-harness-pack
+TARBALL=$(ls /tmp/agent-inspect-harness-pack/*.tgz)
+npm publish "$TARBALL" --access public
 ```
+
+Trusted Publisher: `rajudandigam` / `agent-inspect` / `publish.yml`
+
+## Next chunk (after gate)
+
+`v3.1-2` — `agent-inspect init`
