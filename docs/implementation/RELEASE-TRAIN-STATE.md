@@ -16,8 +16,8 @@ completedChunks:
 currentChunk: "adoption-handoff"
 nextAction: "Design partner outreach; optional hero SVG when assets ready"
 pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
-lastConfirmedCommit: "43feb00"
-lastValidationLevel: "v3.5.3-publish-complete"
+lastConfirmedCommit: "64f6506"
+lastValidationLevel: "v3.5.3-docs-cleanup"
 updatedAt: "2026-06-30"
 ```
 

@@ -17,7 +17,7 @@ Durable repository behavior rules live in [../../AGENTS.md](../../AGENTS.md). Ad
 | `docs/implementation/CURRENT-TASK.md` | Exact current assignment |
 | `docs/proposals/*.md` | Architecture contracts |
 
-Historical roadmaps: [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) (complete) · [archive/](../archive/README.md)
+Historical roadmaps: [../archive/implementation/ROADMAP-V3.0-TO-V3.5.md](../archive/implementation/ROADMAP-V3.0-TO-V3.5.md) (complete) · [archive/](../archive/README.md)
 
 Do not paste the complete roadmap into every Codex prompt. Point Codex at the active files and the one relevant plan/RFC section.
 

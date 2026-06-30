@@ -1,10 +1,10 @@
 # Good first issues
 
-Curated entry points for contributors. Expanded notes: [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md) · hygiene plan: [docs/community/ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md)
+Curated entry points for contributors. Expanded notes: [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md)
 
-**Comment on an issue before opening a PR.** Pick a live `#NNN` link below — not a draft file under `.github/`.
+**Comment on an issue before opening a PR.** Pick a live `#NNN` link below.
 
-Historical bodies: [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/) · [.github/LIVE_ISSUE_BATCH_02/](.github/LIVE_ISSUE_BATCH_02/) · [.github/LIVE_ISSUE_BATCH_03/](.github/LIVE_ISSUE_BATCH_03/) · [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
+Historical issue drafts: [docs/archive/github/](docs/archive/github/) · [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/)
 
 ---
 
@@ -17,8 +17,6 @@ Historical bodies: [.github/LIVE_ISSUE_BATCH_01/](.github/LIVE_ISSUE_BATCH_01/) 
 | **Adapter SDK Examples** | [#60](https://github.com/rajudandigam/agent-inspect/issues/60)–[#64](https://github.com/rajudandigam/agent-inspect/issues/64) |
 | **UI and Performance Polish** | [#65](https://github.com/rajudandigam/agent-inspect/issues/65)–[#66](https://github.com/rajudandigam/agent-inspect/issues/66), [#68](https://github.com/rajudandigam/agent-inspect/issues/68) |
 | **Standards and Graduation** | [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#25](https://github.com/rajudandigam/agent-inspect/issues/25) |
-
-Maintainer hygiene scripts (already applied for v3.5.x): `scripts/*-v3-oss.sh` — see [ISSUE-HYGIENE-RUN-LOG.md](docs/community/ISSUE-HYGIENE-RUN-LOG.md).
 
 ---
 

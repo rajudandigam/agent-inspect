@@ -109,4 +109,4 @@ Do not post production customer data. See [SECURITY.md](../../SECURITY.md).
 
 - Pin only one discussion at a time to avoid clutter.
 - Summarize themes weekly into ROADMAP / Issues — do not promise delivery dates in replies.
-- Redirect implementation requests to live Issues once batch 01 is open.
+- Redirect implementation requests to live [Issues](https://github.com/rajudandigam/agent-inspect/issues) or [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md).

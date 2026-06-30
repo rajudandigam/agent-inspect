@@ -10,7 +10,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Current release on npm:** **3.5.3** — sixteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#353).
 
-**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench — docs, examples, fixtures, adapter SDK examples, VS Code/viewer docs, performance fixtures, and standards graduation guides. Maintainer plan (completed train): [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
+**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench — docs, examples, fixtures, adapter SDK examples, VS Code/viewer docs, performance fixtures, and standards graduation guides. v3.0→v3.5 train complete — see [CHANGELOG.md](CHANGELOG.md#353).
 
 **Core product gap (maintainer-owned):** one unified persisted run model across manual traces, structured logs, framework callbacks, CI artifacts, and standards exports — not a contributor starter issue.
 
@@ -108,7 +108,7 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ## Now — OSS contribution lanes (post-v3.5)
 
-Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · hygiene plan: [docs/community/ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md)
+Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md)
 
 | Lane | Intent | Example live issues |
 | ---- | ------ | ------------------- |
@@ -120,7 +120,7 @@ Focus contributor work on **activation** around the shipped v3 system — not an
 
 **Maintainer-owned (not good-first):** unified persisted InspectEvent model, schema evolution, redaction/security internals, package export policy, official adapter internals, OTLP sink architecture, release process.
 
-**Recently shipped (close stale issues):** timeline/stats CLI (1.4.0), CI artifact recipe, `@agent-inspect/ai-sdk`, Winston/logging recipes, install smoke guide, safe trace sharing checklist — see [ISSUE-HYGIENE-PLAN.md](docs/community/ISSUE-HYGIENE-PLAN.md).
+**Recently shipped (closed issues):** timeline/stats CLI (1.4.0), CI artifact recipe, `@agent-inspect/ai-sdk`, Winston/logging recipes, install smoke guide, safe trace sharing checklist — see [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md#shipped-closed--do-not-reopen).
 
 Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREACH-TEMPLATES.md) · [docs/community/CONTRIBUTOR-ROLES.md](docs/community/CONTRIBUTOR-ROLES.md) · [docs/community/MONTHLY-OSS-HYGIENE.md](docs/community/MONTHLY-OSS-HYGIENE.md)
 
@@ -168,32 +168,15 @@ AgentInspect **complements** LangSmith, Langfuse, Braintrust, Phoenix/OpenInfere
 
 ---
 
-## Maintainer release trains
+## Maintainer notes
 
-Maintainers ship **small validated chunks** but publish **fewer npm releases** by grouping work into trains. Do not version bump or publish per chunk.
+**Current npm release:** 3.5.3. Operational state: [docs/implementation/RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md).
 
-| Train | Status | Guide |
-| ----- | ------ | ----- |
-| **v1.2.0** — Unified persisted InspectEvent | **Released** 2026-06-11 | [V1.2.0-RELEASE-READINESS.md](docs/implementation/V1.2.0-RELEASE-READINESS.md) |
-| **v1.3.0** — Correlation, redaction profiles, LangChain streaming | **Released** 2026-06-12 | [V1.3.0-RELEASE-READINESS.md](docs/implementation/V1.3.0-RELEASE-READINESS.md) |
-| **v1.4.0** — CI artifacts, timeline, stats, search | **Released** 2026-06-12 | [V1.4.0-RELEASE-READINESS.md](docs/implementation/V1.4.0-RELEASE-READINESS.md) |
-| **v1.5.0** — API boundary, what/report, dual-format read | **Released** 2026-06-24 | [V1.5.0-RELEASE-READINESS.md](docs/implementation/V1.5.0-RELEASE-READINESS.md) |
-| **v1.5 corrective train** — internal fixes after v1.5.0 | **Complete on main; not a publish target by default** | [V1.5.1-RELEASE-READINESS.md](docs/implementation/V1.5.1-RELEASE-READINESS.md) |
-| **v1.6.0** — Runtime foundation + universal ingestion | **Released** 2026-06-25 | [V1.6.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.6.0-RELEASE-READINESS.md) |
-| **v1.7.0** — Framework-native adoption | **Released** 2026-06-26 | [V1.7.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.7.0-RELEASE-READINESS.md) |
-| **v1.8.0** — Deterministic checks, safe sharing, and CI | **Released** 2026-06-27 | [V1.8.0-RELEASE-READINESS.md](docs/implementation/release-trains/V1.8.0-RELEASE-READINESS.md) |
-| **v1.8.1** — Documentation truth and adoption polish | **Completed as reference cleanup; not a patch release target** | [V1.8.1-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.8.1-EXECUTION-PLAN.md) |
-| **v1.9.0** — Adoption leverage | **Released** 2026-06-27 | [V1.9.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md) |
-| **v2.0.0** — Stable trace contract | **Released** 2026-06-27 | [V2.0.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.0.0-RELEASE-READINESS.md) |
-| **v2.1.0** — Eval/redact utility triangle | **Active** | [V2.1.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.1.0-EXECUTION-PLAN.md) |
-| **v2.2.0** — Reporters and CI | Planned | [V2.2.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.2.0-EXECUTION-PLAN.md) |
-| **v2.3.0** — Adapter hardening | **Released** 2026-06-28 | [V2.3.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.3.0-RELEASE-READINESS.md) |
-| **v2.4.0** — Sessions and MCP telemetry | **Partial publish** (9/10 npm) | [V2.4.0-RELEASE-READINESS.md](docs/implementation/release-trains/V2.4.0-RELEASE-READINESS.md) |
-| **v2.5.0** — Guardrails and circuit breakers | Planned | [V2.5.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.5.0-EXECUTION-PLAN.md) |
-| **v2.6.0** — Optional viewer and IDE/MCP surfaces | Planned | [V2.6.0-EXECUTION-PLAN.md](docs/implementation/release-trains/V2.6.0-EXECUTION-PLAN.md) |
-| **v3.0.0** — Conditional extensibility | Conditional | [V3.0.0-READINESS-AND-EXECUTION-PLAN.md](docs/implementation/release-trains/V3.0.0-READINESS-AND-EXECUTION-PLAN.md) |
+The v3.5.x feature train is **complete**. Post-v3.5 work follows the adoption freeze in [POST-V3.5-ADOPTION-PLAN.md](docs/implementation/POST-V3.5-ADOPTION-PLAN.md) — no version bumps without explicit maintainer authorization.
 
-**Publish gate:** release-train readiness validation (`pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment) plus explicit maintainer publish instruction.
+Historical release train readouts (v1.2–v3.4 publication evidence, execution plans, and agent prompts) live under [docs/archive/implementation/](docs/archive/implementation/). Active v3.5 publication records: [docs/implementation/release-trains/](docs/implementation/release-trains/).
+
+**Publish gate:** `pnpm compat:smoke`, `pnpm pack:smoke`, README/CHANGELOG alignment, plus explicit maintainer publish instruction.
 
 ---
 

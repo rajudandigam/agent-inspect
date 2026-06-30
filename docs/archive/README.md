@@ -19,7 +19,9 @@ Historical and superseded documentation. **Do not use for current adoption.**
 
 ## Maintainer archive
 
-- [implementation/](./implementation/) — superseded roadmaps, prompts, templates
+- [implementation/](./implementation/) — superseded roadmaps, release trains, agent prompts
+- [github/](./github/) — OSS activation issue bodies (batches 01–03, applied)
+- [community/](./community/) — issue hygiene runbooks (applied 2026-06-30)
 - [HISTORICAL-REFERENCE.md](./HISTORICAL-REFERENCE.md) — one-page index
 - [../implementation/ARCHIVE-INDEX.md](../implementation/ARCHIVE-INDEX.md) — implementation train history
 

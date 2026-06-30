@@ -1,20 +1,17 @@
 # Monthly OSS hygiene
 
-Lightweight maintainer checklist for keeping AgentInspect's public open-source surface honest after 1.1.0. Run roughly **once per month** (or after a release).
+Lightweight maintainer checklist for keeping AgentInspect's public open-source surface honest. Run roughly **once per month** (or after a release).
 
 Not automated. No SLA implied.
 
 ---
 
-## Issue and draft hygiene
+## Issues and contributor index
 
-- [ ] Run [ISSUE-HYGIENE-PLAN.md](./ISSUE-HYGIENE-PLAN.md) review after each minor release (v3.5.x+).
-- [ ] **Close or refresh stale issues** using `scripts/close-stale-issues-v3-oss.sh` and `scripts/update-existing-issues-v3-oss.sh` (DRY_RUN first).
-- [ ] **Create v3 milestones** if missing: `scripts/github-milestones-v3-oss.sh`.
-- [ ] **Batch 03 (#58–#69):** triage comments/PRs; keep [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) lane tables current.
-- [ ] **Check [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)** — no closed issues listed as open; lane groupings current.
-- [ ] Close duplicates; link merged PRs on completed issues (#8, #20, #21, #26 shipped).
-- [ ] **Defer large issue waves** — prefer 3–5 live issues at a time from batch 03.
+- [ ] **Check [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)** — no closed issues listed as open; lane groupings match live GitHub milestones (#5–#9).
+- [ ] Triage open issues in **Now** lanes ([#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#9–#10](https://github.com/rajudandigam/agent-inspect/issues/9), [#13](https://github.com/rajudandigam/agent-inspect/issues/13), [#18–#19](https://github.com/rajudandigam/agent-inspect/issues/18), [#25](https://github.com/rajudandigam/agent-inspect/issues/25), [#27](https://github.com/rajudandigam/agent-inspect/issues/27), [#29](https://github.com/rajudandigam/agent-inspect/issues/29), [#60–#69](https://github.com/rajudandigam/agent-inspect/issues/60)).
+- [ ] Close duplicates; link merged PRs on completed issues.
+- [ ] Prefer **3–5 open good-first issues** at a time — defer large waves.
 
 ---
 

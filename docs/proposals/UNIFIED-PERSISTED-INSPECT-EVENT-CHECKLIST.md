@@ -2,8 +2,8 @@
 
 Tracks v1.2.0 release-train chunks for [UNIFIED-PERSISTED-INSPECT-EVENT.md](./UNIFIED-PERSISTED-INSPECT-EVENT.md).
 
-**Execution guide:** [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](../implementation/CURSOR-MAINTAINER-ROADMAP.md)  
-**Release readiness:** [docs/implementation/V1.2.0-RELEASE-READINESS.md](../implementation/V1.2.0-RELEASE-READINESS.md)  
+**Execution guide (historical):** [docs/archive/implementation/CURSOR-MAINTAINER-ROADMAP.md](../archive/implementation/CURSOR-MAINTAINER-ROADMAP.md)  
+**Release readiness (historical):** [docs/archive/implementation/V1.2.0-RELEASE-READINESS.md](../archive/implementation/V1.2.0-RELEASE-READINESS.md)  
 **Publish policy:** Merge chunks to `main`; publish **one** npm release when the full train passes release gates — not per chunk.
 
 ---

@@ -1,14 +1,12 @@
 # Good first issues (expanded)
 
-Quick index: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) · hygiene: [ISSUE-HYGIENE-PLAN.md](./ISSUE-HYGIENE-PLAN.md)
+Quick index: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)
 
-Historical draft bodies only: [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/) · batches 01–03 under [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) … [03/](../../.github/LIVE_ISSUE_BATCH_03/)
+Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/github/](../../docs/archive/github/).
 
 ---
 
 ## Live issues by lane (v3.5.x)
-
-Use GitHub `#NNN` links — not draft markdown files.
 
 ### OSS Hygiene
 

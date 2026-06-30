@@ -28,7 +28,7 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAI
 - Runnable recipes and examples
 - Canonical fixtures and validation scripts
 - Tests that lock behavior for approved issues
-- Issue draft → live issue **wording** suggestions (via PR to `.github/LIVE_ISSUE_BATCH_01/`)
+- Issue wording suggestions (via PR to [docs/archive/github/](../../docs/archive/github/) or a live issue comment)
 
 **Should not own yet:**
 
@@ -67,7 +67,7 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAI
 
 **Can own:**
 
-- Applying the repo's existing label set (see batch 01 labels on live issues)
+- Applying the repo's existing label set on live issues
 - Redirecting questions to [Discussions](./DISCUSSIONS-STARTERS.md)
 - Pointing contributors to validation commands in [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
@@ -112,13 +112,12 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAI
 - Package exports and compatibility
 - LangChain adapter persistence semantics
 - OTLP sink experiments (Future)
-- Running `scripts/create-live-issues-batch-01.sh` (after reviewing bodies)
 - [MONTHLY-OSS-HYGIENE.md](./MONTHLY-OSS-HYGIENE.md) pass
 
 **Community responsibilities:**
 
-- Enable Discussions and pin stack survey
-- Convert issue batches gradually (not all drafts at once)
+- Enable or maintain Discussions and pin stack survey
+- Keep [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) aligned with live issues
 - Update [CONTRIBUTORS.md](./CONTRIBUTORS.md) with permission
 
 ---

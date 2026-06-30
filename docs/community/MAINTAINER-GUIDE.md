@@ -70,29 +70,26 @@ Future releases should then use the normal Changesets publish workflow and skip 
 
 Maintainer-only historical checklists may exist under `docs-local/`; public release context lives in [ROADMAP.md](../../ROADMAP.md) and [CHANGELOG.md](../../CHANGELOG.md).
 
-**Cursor execution (v1.2.0 → v2.0 trains):** [docs/implementation/CURSOR-MAINTAINER-ROADMAP.md](../implementation/CURSOR-MAINTAINER-ROADMAP.md) · prompt stubs in [docs/implementation/prompts/](../implementation/prompts/).
+Agent operating model: [docs/implementation/CODEX-MAINTAINER-GUIDE.md](../implementation/CODEX-MAINTAINER-GUIDE.md) · [AGENTS.md](../../AGENTS.md).
 
-## Post-release follow-up (1.1.0+)
+## Post-release follow-up
 
 After a successful npm publish:
 
-- [ ] Create GitHub tag and release for the version (e.g. `v1.1.0`) if not already done
-- [ ] Convert selected `.github/ISSUE_DRAFTS/` into live GitHub issues (close implemented maintainer drafts)
+- [ ] Create GitHub tag and release for the version if not already done
 - [ ] Verify npm install in a clean temp project: `npm install agent-inspect@<version>`
 - [ ] Verify CLI: `npx agent-inspect --help` and `npx agent-inspect list`
 - [ ] Verify ESM import in a clean temp TypeScript project (`module: NodeNext`)
 - [ ] Verify CJS `require()` in a clean temp TypeScript project (`module: Node16`, `.cts` types)
-- [ ] Confirm scoped packages (`@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`) if published in the same release
+- [ ] Confirm scoped packages if published in the same release
+- [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) if issue lanes shifted
 
-## Open-source activation sprint (post-1.1.0)
+## Community activation (ongoing)
 
-- [x] GitHub labels for batch 01 (created manually)
-- [ ] Enable GitHub Discussions; pin stack survey — [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md)
-- [ ] Review [.github/LIVE_ISSUE_BATCH_01/](../../.github/LIVE_ISSUE_BATCH_01/) then run [scripts/create-live-issues-batch-01.sh](../../scripts/create-live-issues-batch-01.sh)
-- [ ] Update [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) with live issue numbers
+- [ ] Enable or maintain GitHub Discussions — [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md)
+- [ ] Keep [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) aligned with live GitHub issues
 - [ ] Use [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) for feedback-first outreach
-- [ ] Share [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md) when inviting repeat contributors
-- [ ] Schedule [MONTHLY-OSS-HYGIENE.md](./MONTHLY-OSS-HYGIENE.md) after activation settles
+- [ ] Schedule [MONTHLY-OSS-HYGIENE.md](./MONTHLY-OSS-HYGIENE.md) monthly or after releases
 
 ## Triage labels
 

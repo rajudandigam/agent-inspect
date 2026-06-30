@@ -1,22 +1,22 @@
-# Outreach templates (post-1.1.0)
+# Outreach templates
 
 Feedback-first messages for maintainers. Customize names and links. **No pressure for PRs.**
 
 Replace placeholders:
 
 - `{name}` — recipient name or handle
-- `{issue-url}` — live GitHub issue URL (after batch 01 is created)
+- `{issue-url}` — live GitHub issue URL from [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)
 - `{discussion-url}` — pinned stack survey Discussion URL
 
 ---
 
 ## General feedback-first message
 
-Subject: AgentInspect 1.1.0 — would love your feedback
+Subject: AgentInspect 3.5.3 — would love your feedback
 
 Hi {name},
 
-I maintain [AgentInspect](https://github.com/rajudandigam/agent-inspect) — a **local-first trace workbench** for TypeScript AI agents (manual traces, structured logs, optional LangChain adapter). **1.1.0** is on npm.
+I maintain [AgentInspect](https://github.com/rajudandigam/agent-inspect) — a **local-first trace workbench** for TypeScript AI agents (manual traces, structured logs, optional framework adapters). **3.5.3** is on npm.
 
 If you have 10 minutes, I'd value your honest take:
 
@@ -126,9 +126,9 @@ If you're up for another pass, {issue-url} might be a good fit — totally optio
 
 ---
 
-## Batch 02 outreach templates
+## Additional templates (live issues)
 
-Replace `{issue-url}` with the live GitHub issue after batch 02 is created. Use [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) tone — feedback first.
+Pick `{issue-url}` from [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md). Many below are open or recently shipped — verify before outreach.
 
 ### Winston logging recipe
 
