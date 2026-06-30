@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 3.3.0
+
+### Minor Changes
+
+- eaf8549: v3.3 VS Code surface: read-only extension scaffold, trace explorer, CLI-backed review commands, doctor output channel, adoption docs.
+
 ## 3.2.0
 
 ### Minor Changes
