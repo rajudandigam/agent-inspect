@@ -4,18 +4,20 @@
 
 Codex is the active development tool for AgentInspect. Cursor-era docs are historical references unless an active task explicitly reactivates them.
 
-Durable repository behavior rules live in [../../AGENTS.md](../../AGENTS.md). Product direction lives in [ROADMAP-V1.8.1-TO-V3.md](./ROADMAP-V1.8.1-TO-V3.md). Progress lives in [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md). The active commit-sized assignment lives in [CURRENT-TASK.md](./CURRENT-TASK.md).
+Durable repository behavior rules live in [../../AGENTS.md](../../AGENTS.md). Adoption work: [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md). Progress: [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md). Active assignment: [CURRENT-TASK.md](./CURRENT-TASK.md).
 
 ## Active files
 
 | File | Purpose |
 | --- | --- |
 | `AGENTS.md` | Durable AI behavior and repository constraints |
-| `docs/implementation/ROADMAP-V1.8.1-TO-V3.md` | Active maintainer roadmap |
+| `docs/implementation/POST-V3.5-ADOPTION-PLAN.md` | Post-v3.5 adoption outreach |
+| `docs/implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md` | Docs/npm polish patches |
 | `docs/implementation/RELEASE-TRAIN-STATE.md` | Current train/chunk/commit/gate |
 | `docs/implementation/CURRENT-TASK.md` | Exact current assignment |
-| `docs/implementation/release-trains/V1.9.0-EXECUTION-PLAN.md` | Active train chunks and acceptance criteria |
 | `docs/proposals/*.md` | Architecture contracts |
+
+Historical roadmaps: [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) (complete) · [archive/](../archive/README.md)
 
 Do not paste the complete roadmap into every Codex prompt. Point Codex at the active files and the one relevant plan/RFC section.
 

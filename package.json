@@ -149,11 +149,7 @@
     "docs/CI-ARTIFACTS.md",
     "docs/PERFORMANCE.md",
     "docs/FIRST-TRACE-IN-5-MINUTES.md",
-    "docs/ONE-PAGE-QUICKSTART.md",
-    "docs/USE-CASES.md",
-    "docs/assets/agent-inspect-loop.svg",
-    "docs/assets/trace-check-redact.svg",
-    "docs/assets/package-map.svg"
+    "docs/USE-CASES.md"
   ],
   "sideEffects": false,
   "keywords": [

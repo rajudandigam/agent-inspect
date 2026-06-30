@@ -7,8 +7,6 @@ No account · no upload · no hosted dashboard · metadata-only by default
 [![npm version](https://img.shields.io/npm/v/agent-inspect.svg)](https://www.npmjs.com/package/agent-inspect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![AgentInspect loop: trace → check → redact](docs/assets/agent-inspect-loop.svg)
-
 ```bash
 npm install agent-inspect
 ```
@@ -56,7 +54,7 @@ Blessed starters (no API keys): [examples/starters](https://github.com/rajudandi
 | Scenario | Doc |
 | -------- | --- |
 | Local debugging | [USE-CASES.md](docs/USE-CASES.md) |
-| CI failure review | [REAL-WORLD-SCENARIOS.md](docs/REAL-WORLD-SCENARIOS.md) |
+| CI failure review | [USE-CASES.md](docs/USE-CASES.md) § CI trace artifact |
 | Team adoption | [TEAM-WORKFLOWS.md](docs/TEAM-WORKFLOWS.md) · [Design partners](docs/DESIGN-PARTNER-GUIDE.md) |
 
 ## Package map
@@ -97,8 +95,8 @@ Details: [Safe trace sharing](docs/SAFE-TRACE-SHARING.md) · [Security](SECURITY
 | Start | Reference | Adoption |
 | ----- | --------- | -------- |
 | [Getting started](docs/GETTING-STARTED.md) | [API](docs/API.md) | [Adoption](docs/ADOPTION.md) |
-| [One-page quickstart](docs/ONE-PAGE-QUICKSTART.md) | [CLI](docs/CLI.md) | [Demo script](docs/DEMO-SCRIPT.md) |
-| [First trace in 5 min](docs/FIRST-TRACE-IN-5-MINUTES.md) | [Adapters](docs/ADAPTERS.md) | [Compare](docs/COMPARE.md) |
+| [First trace in 5 min](docs/FIRST-TRACE-IN-5-MINUTES.md) | [CLI](docs/CLI.md) | [Demo script](docs/DEMO-SCRIPT.md) |
+| [Use cases](docs/USE-CASES.md) | [Adapters](docs/ADAPTERS.md) | [Compare](docs/COMPARE.md) |
 | [Examples](https://github.com/rajudandigam/agent-inspect/tree/main/examples) | [Performance](docs/PERFORMANCE.md) | [Pitch](docs/PITCH.md) |
 
 Full index: [docs/README.md](docs/README.md) · Visual demos: [SCREENSHOTS.md](docs/SCREENSHOTS.md)
@@ -113,7 +111,7 @@ Full index: [docs/README.md](docs/README.md) · Visual demos: [SCREENSHOTS.md](d
 
 ## Install details
 
-Current release: **3.5.0** (sixteen linked npm packages). Persisted trace schema **1.0**.
+Current release: **3.5.2** (sixteen linked npm packages). Persisted trace schema **1.0**.
 
 ```bash
 pnpm add agent-inspect

@@ -12,7 +12,7 @@ pnpm add agent-inspect
 
 ### Quick bootstrap (v3.1+)
 
-See also [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) and [ONE-PAGE-QUICKSTART.md](./ONE-PAGE-QUICKSTART.md).
+See also [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md).
 
 ```bash
 npx agent-inspect init --yes

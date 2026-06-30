@@ -1,74 +1,44 @@
 # AgentInspect docs
 
-AgentInspect is the local-first toolkit for TypeScript AI agents: trace what happened, check what should have happened, and redact what should never leave your machine.
+Local-first TypeScript AI agent toolkit: **trace → check → redact** on your machine.
 
 ## Start here
 
-- [Getting started](./GETTING-STARTED.md)
-- [First trace in 5 minutes](./FIRST-TRACE-IN-5-MINUTES.md)
-- [One-page quickstart](./ONE-PAGE-QUICKSTART.md)
-- [Adoption](./ADOPTION.md)
-- [API](./API.md)
-- [CLI](./CLI.md)
-- [Examples](../examples/README.md)
-- [Roadmap](../ROADMAP.md)
+| Doc | For |
+| --- | --- |
+| [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) | Fastest path from install to share-safe artifact |
+| [GETTING-STARTED.md](./GETTING-STARTED.md) | Observe, manual steps, adapters |
+| [ADOPTION.md](./ADOPTION.md) | Team onboarding and starters |
+| [USE-CASES.md](./USE-CASES.md) | Problem → command → starter |
 
-## Adoption scenarios
+## Reference
 
-- [Use cases](./USE-CASES.md)
-- [Real-world scenarios](./REAL-WORLD-SCENARIOS.md)
-- [Team workflows](./TEAM-WORKFLOWS.md)
+| Doc | Topic |
+| --- | ----- |
+| [API.md](./API.md) · [CLI.md](./CLI.md) | Programmatic and terminal APIs |
+| [SCHEMA.md](./SCHEMA.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) | Data model and boundaries |
+| [ADAPTERS.md](./ADAPTERS.md) · [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md) | Framework integrations |
+| [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) · [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md) · [NESTJS.md](./NESTJS.md) | Framework guides |
+| [LOGS.md](./LOGS.md) · [LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md) · [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md) | Log ingest |
+| [DIFF.md](./DIFF.md) · [EXPORTS.md](./EXPORTS.md) | Compare and export |
+| [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) | CI / test artifacts |
+| [PERFORMANCE.md](./PERFORMANCE.md) · [SCALE-LIMITS.md](./SCALE-LIMITS.md) · [STREAMING-LIMITATIONS.md](./STREAMING-LIMITATIONS.md) | Scale and streaming |
+| [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [LIMITATIONS.md](./LIMITATIONS.md) · [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) | Safety and limits |
+| [COMPARE.md](./COMPARE.md) · [MIGRATION.md](./MIGRATION.md) | Positioning and upgrades |
+| [VSCODE.md](./VSCODE.md) | In-repo VS Code extension |
 
-## Quick adoption paths
+## Adoption kit
 
-- Path A — observe an existing object/class with `observe()`.
-- Path B — use a framework adapter for AI SDK, OpenAI Agents, or LangChain.
-- Path C — manually instrument custom flows with `inspectRun` and `step`.
-- Advanced ingestion: use structured log parsing when your app already emits structured logs.
+| Doc | Use |
+| --- | --- |
+| [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | Live 3-minute demo |
+| [SCREENSHOTS.md](./SCREENSHOTS.md) | GIF demos and recording guide |
+| [DESIGN-PARTNER-GUIDE.md](./DESIGN-PARTNER-GUIDE.md) · [TEAM-WORKFLOWS.md](./TEAM-WORKFLOWS.md) | Team rollout |
+| [PITCH.md](./PITCH.md) · [SHOW-HN-DRAFT.md](./SHOW-HN-DRAFT.md) | Launch copy |
 
-## CLI and API
+## Elsewhere
 
-- [API](./API.md)
-- [CLI](./CLI.md)
-- [Schema](./SCHEMA.md)
-- [Exports](./EXPORTS.md)
-- [Diff](./DIFF.md)
-- [Logs](./LOGS.md)
-- [Log-to-tree quickstart](./LOG-TO-TREE-QUICKSTART.md)
-- [Logging playbook](./LOGGING-PLAYBOOK.md)
-
-## Safety and sharing
-
-- [Safe trace sharing](./SAFE-TRACE-SHARING.md)
-- [Limitations](./LIMITATIONS.md)
-- [Known issues](./KNOWN-ISSUES.md)
-- [Security policy](../SECURITY.md)
-
-## Integrations and adapters
-
-- [Adapters](./ADAPTERS.md)
-- [Adapter conformance](./ADAPTER-CONFORMANCE.md)
-- [Compare with other tools](./COMPARE.md)
-- [Migration](./MIGRATION.md)
-
-## Reports, checks, and CI
-
-- [CI artifacts](./CI-ARTIFACTS.md)
-- [Exports](./EXPORTS.md)
-- [Screenshots and demos](./SCREENSHOTS.md)
-- [Recipes](../examples/recipes/README.md)
-
-## Standards and schema
-
-- [Schema](./SCHEMA.md)
-- [Exports](./EXPORTS.md)
-- [Architecture](./ARCHITECTURE.md)
-- [Proposal index](./proposals/README.md)
-
-## Maintainer/internal docs
-
-- [Implementation docs index](./implementation/README.md)
-- [Release train state](./implementation/RELEASE-TRAIN-STATE.md)
-- [Post-v3.5 adoption plan](./implementation/POST-V3.5-ADOPTION-PLAN.md)
-- [Adoption polish plan](./implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md)
-- [Historical roadmap v3.0→v3.5](./implementation/ROADMAP-V3.0-TO-V3.5.md) (complete)
+- [Examples](../examples/README.md) · [Starters](../examples/starters/README.md) · [Recipes](../examples/recipes/README.md)
+- [Roadmap](../ROADMAP.md) · [Security](../SECURITY.md)
+- [Archive](./archive/README.md) — historical docs
+- [Implementation](./implementation/README.md) — maintainer trains (internal)

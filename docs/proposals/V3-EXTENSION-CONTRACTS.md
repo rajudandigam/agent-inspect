@@ -238,7 +238,7 @@ Official adapters pass:
 2. Package boundary test (no undeclared root deps).
 3. Privacy checklist (metadata-only default, redaction hooks).
 
-Community listing is **documentation + badge criteria** (chunk 5) — not an npm marketplace. See [COMMUNITY-EXTENSION-REGISTRY.md](../COMMUNITY-EXTENSION-REGISTRY.md).
+Community listing is **documentation + badge criteria** — not an npm marketplace. See [ADAPTER-CONFORMANCE.md](../ADAPTER-CONFORMANCE.md) and [archive/public/COMMUNITY-EXTENSION-REGISTRY.md](../archive/public/COMMUNITY-EXTENSION-REGISTRY.md).
 
 ---
 

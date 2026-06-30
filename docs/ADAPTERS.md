@@ -494,7 +494,7 @@ import { runReadOnlyMcpServer } from "@agent-inspect/mcp-server";
 await runReadOnlyMcpServer({ redactionProfile: "share" });
 ```
 
-Recipe: [examples/recipes/read-only-mcp-server](../examples/recipes/read-only-mcp-server/). IDE extension deferred: [IDE-SURFACES.md](./IDE-SURFACES.md).
+Recipe: [examples/recipes/read-only-mcp-server](../examples/recipes/read-only-mcp-server/). VS Code: [VSCODE.md](./VSCODE.md).
 
 ---
 

@@ -42,5 +42,5 @@ If you only need log ingestion, see [examples/recipes/nestjs-json-logging](../ex
 
 ## Related
 
-- [HARNESS.md](./HARNESS.md)
+- [`@agent-inspect/harness`](../packages/harness/README.md)
 - [examples/starters/harness-nestjs](../examples/starters/harness-nestjs/)

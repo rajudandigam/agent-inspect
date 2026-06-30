@@ -93,5 +93,5 @@ For a practical pre-share workflow, see `docs/SAFE-TRACE-SHARING.md`. For schema
 - Does not invoke user agent tools or mutate traces.
 - Configure via `AGENT_INSPECT_TRACE_DIR` and `AGENT_INSPECT_MCP_REDACTION_PROFILE` when documented.
 
-IDE marketplace extension is **deferred** — see [docs/IDE-SURFACES.md](docs/IDE-SURFACES.md).
+IDE extension: see [VSCODE.md](docs/VSCODE.md) (in-repo; Marketplace deferred).
 

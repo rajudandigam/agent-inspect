@@ -73,7 +73,7 @@ v3.0 is a **linked npm major** for the public package family. **Persisted trace 
 ### What changes
 
 - New optional package [`@agent-inspect/adapter-sdk`](https://www.npmjs.com/package/@agent-inspect/adapter-sdk) for third-party adapter authoring (registration, conformance, privacy checklist, transform/renderer/indexer contracts).
-- Community extension process documented in [COMMUNITY-EXTENSION-REGISTRY.md](./COMMUNITY-EXTENSION-REGISTRY.md).
+- Community extensions: [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md) and [`@agent-inspect/adapter-sdk`](../packages/adapter-sdk/README.md).
 - Extension interfaces are versioned in `@agent-inspect/adapter-sdk@3.x`; breaking extension API changes ship there, not in silent root patches.
 
 ### What stays the same

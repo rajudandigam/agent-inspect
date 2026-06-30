@@ -6,8 +6,6 @@ Use with [assets/demos/RECORDING.md](./assets/demos/RECORDING.md). Synthetic fix
 
 "AgentInspect turns TypeScript agent runs into local execution trees you can check in CI — without sending traces to the cloud."
 
-Show static loop diagram: [agent-inspect-loop.svg](./assets/agent-inspect-loop.svg)
-
 ## 0:30 — Install
 
 ```bash
@@ -49,8 +47,6 @@ Starter: [ci-eval-redact](../examples/starters/ci-eval-redact/)
 npx agent-inspect redact .agent-inspect/*.jsonl --profile share -o safe.jsonl
 npx agent-inspect verify-safe safe.jsonl
 ```
-
-Diagram: [trace-check-redact.svg](./assets/trace-check-redact.svg)
 
 ## 4:00 — Fix and diff (optional)
 

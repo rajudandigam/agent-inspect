@@ -1,6 +1,6 @@
 # Implementation docs index
 
-Maintainer-facing docs. Public adoption docs live under `docs/` and the repository root.
+Maintainer-facing docs. **Public adoption docs:** [../README.md](../README.md).
 
 ## Active (post-v3.5 adoption freeze)
 
@@ -16,12 +16,14 @@ Maintainer-facing docs. Public adoption docs live under `docs/` and the reposito
 
 | File | Status |
 | ---- | ------ |
-| [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) | **Complete** — v3.5.0 shipped |
-| [release-trains/V3.5.0-RELEASE-READINESS.md](./release-trains/V3.5.0-RELEASE-READINESS.md) | Publication record |
+| [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) | **Complete** — v3.5.x shipped |
+| `release-trains/*-RELEASE-READINESS.md` | Publication evidence (keep) |
 
 ## Archive
 
-See [ARCHIVE-INDEX.md](./ARCHIVE-INDEX.md) and [archive/](./archive/README.md) for superseded roadmaps and one-off prompts.
+- [ARCHIVE-INDEX.md](./ARCHIVE-INDEX.md)
+- [../archive/README.md](../archive/README.md) — moved public + maintainer stale docs
+- [archive/README.md](./archive/README.md) — legacy archive policy
 
 ## Source-of-truth order
 

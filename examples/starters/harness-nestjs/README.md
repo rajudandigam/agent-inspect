@@ -7,4 +7,4 @@ pnpm install && pnpm start
 npx agent-inspect list --dir .agent-inspect
 ```
 
-See [docs/HARNESS.md](../../docs/HARNESS.md) and future `docs/NESTJS.md` (v3.2).
+See [packages/harness/README.md](../../packages/harness/README.md) and [docs/NESTJS.md](../../docs/NESTJS.md).

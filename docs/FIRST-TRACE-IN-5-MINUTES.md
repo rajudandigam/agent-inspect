@@ -2,6 +2,12 @@
 
 Goal: install → one trace → one check → one share-safe artifact.
 
+```bash
+npm install agent-inspect && npx agent-inspect init --yes && node examples/agent-inspect-demo.mjs
+npx agent-inspect list --dir .agent-inspect && npx agent-inspect report <run-id> --dir .agent-inspect
+npx agent-inspect check .agent-inspect/*.jsonl && npx agent-inspect verify-safe --dir .agent-inspect
+```
+
 ## Minutes 0–1: Install
 
 ```bash

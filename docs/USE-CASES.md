@@ -19,7 +19,7 @@ npx agent-inspect report <run-id> --dir .agent-inspect
 
 **Safety:** Metadata-only default. Redact before sharing: `npx agent-inspect redact --profile share`.
 
-**Starter:** [custom-observe](../examples/starters/custom-observe/README.md)
+**Starter:** [broken-agent-debugging](../examples/starters/broken-agent-debugging/README.md) (intentional failure) or [custom-observe](../examples/starters/custom-observe/README.md)
 
 **Not:** Live model replay or hosted trace UI.
 
@@ -113,4 +113,4 @@ npx agent-inspect check .agent-inspect/*.jsonl --require-completed
 
 ---
 
-See also: [Real-world scenarios](./REAL-WORLD-SCENARIOS.md) · [Team workflows](./TEAM-WORKFLOWS.md)
+See also: [Team workflows](./TEAM-WORKFLOWS.md)

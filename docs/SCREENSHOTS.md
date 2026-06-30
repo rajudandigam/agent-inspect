@@ -4,25 +4,11 @@ Curated terminal recordings and static diagrams for AgentInspect **3.5.x**. They
 
 **Synthetic output only:** demos use committed [fixtures](../fixtures/README.md), [examples](../examples/README.md), and recipes. No external LLM calls or API keys.
 
-**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball. Static SVG diagrams in `docs/assets/` are included in the root npm package.
+**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball.
 
 **Re-record guide:** [assets/demos/RECORDING.md](assets/demos/RECORDING.md)
 **Maintainer audit:** [implementation/VISUAL-DEMO-AUDIT.md](implementation/VISUAL-DEMO-AUDIT.md)
 **Live demo script:** [DEMO-SCRIPT.md](DEMO-SCRIPT.md) (uses [broken-agent-debugging](../examples/starters/broken-agent-debugging/) starter)
-
----
-
-## Product diagrams (static)
-
-No terminal recording required — safe for README and docs.
-
-| Diagram | Purpose |
-| ------- | ------- |
-| [agent-inspect-loop.svg](assets/agent-inspect-loop.svg) | Trace → check → redact → share (local only) |
-| [trace-check-redact.svg](assets/trace-check-redact.svg) | Workflow from JSONL to share-safe artifact |
-| [package-map.svg](assets/package-map.svg) | Core + adapter + quality + safety packages |
-
-Embedded in root [README](../README.md). Workflow: [FIRST-TRACE-IN-5-MINUTES.md](FIRST-TRACE-IN-5-MINUTES.md).
 
 ---
 

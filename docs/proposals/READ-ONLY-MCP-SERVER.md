@@ -94,4 +94,4 @@ No new root/core dependencies on MCP SDK if duck-typed protocol suffices (match 
 
 ## 9. IDE decision (chunk 3)
 
-IDE extension deferred unless explicit demand after viewer + MCP server ship. See [IDE-SURFACES.md](../IDE-SURFACES.md) (chunk 3).
+IDE extension: see [VSCODE.md](../VSCODE.md). Historical decision: [archive/public/IDE-SURFACES.md](../archive/public/IDE-SURFACES.md).
