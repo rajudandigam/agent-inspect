@@ -54,3 +54,12 @@ A voluntary `agent-inspect usage-report --output agent-inspect-usage.json` may b
 | SCREENSHOTS static diagram section | Done |
 | npm 3.5.2 | **Published** |
 | Dedicated broken-agent GIF | Optional re-record |
+
+## v3.5.3 docs hygiene (in progress)
+
+| Item | Status |
+| ---- | ------ |
+| Lean `docs/README.md` index | Done |
+| Archive stale public + maintainer docs | Done |
+| Remove unavailable hero SVG | Done |
+| npm 3.5.3 | Pending Version Packages PR |

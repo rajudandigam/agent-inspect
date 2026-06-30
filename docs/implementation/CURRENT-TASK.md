@@ -3,14 +3,14 @@
 ```yaml
 train: "post-v3.5-adoption"
 chunk: "v3.5.3-docs-hygiene"
-status: "idle"
+status: "in_progress"
 executionMode: "adoption-freeze"
 dependsOn: "v3.5.2-publication-complete"
 ```
 
 ## Goal
 
-v3.5.2 demo kit shipped. Optional v3.5.3: final link audit, archive notices, Show HN rehearsal. No runtime features.
+Lean public docs index, archive stale files, remove unavailable hero SVG. See [V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md](./release-trains/V3.5.3-ADOPTION-HYGIENE-RELEASE-READINESS.md).
 
 ## Manual gate
 
