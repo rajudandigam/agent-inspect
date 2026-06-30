@@ -32,12 +32,20 @@
 
 ## Unreleased
 
-Post-v3 adoption train (v3.1 → v3.5) in progress. See [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
+Post-v3.5 adoption polish (docs, package READMEs, npm presentation). No runtime feature changes planned without a new RFC.
 
-### v3.1 (in progress)
+See [docs/implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md](docs/implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md).
+
+---
+
+## Historical (pre-3.5 train notes)
+
+The v3.0→v3.5 feature train is complete. Older in-progress notes below are kept for history.
+
+### v3.1 (shipped in 3.1.0)
 
 - `agent-inspect init` and `agent-inspect doctor` CLI commands
-- Public `@agent-inspect/harness` (first publish pending)
+- Public `@agent-inspect/harness`
 - Adoption starters under `examples/starters/`
 
 ## 3.0.0

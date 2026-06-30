@@ -1,22 +1,28 @@
 # Implementation docs index
 
-These files are maintainer-facing. Public product docs live under `docs/` and the repository root.
+Maintainer-facing docs. Public adoption docs live under `docs/` and the repository root.
 
-## Active files
+## Active (post-v3.5 adoption freeze)
 
-- [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) — **active** post-v3 adoption roadmap (v3.1 → v3.5).
-- [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md) — current train status, validation level, and next action.
-- [CURRENT-TASK.md](./CURRENT-TASK.md) — active commit-sized Codex assignment.
-- [release-trains/V3.1.0-EXECUTION-PLAN.md](./release-trains/V3.1.0-EXECUTION-PLAN.md) — active v3.1.0 harness/init/doctor plan.
-- [CODEX-MAINTAINER-GUIDE.md](./CODEX-MAINTAINER-GUIDE.md) — Codex operating model for AgentInspect.
+| File | Purpose |
+| ---- | ------- |
+| [RELEASE-TRAIN-STATE.md](./RELEASE-TRAIN-STATE.md) | Current train status |
+| [CURRENT-TASK.md](./CURRENT-TASK.md) | Active assignment |
+| [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md) | 8–12 week adoption outreach |
+| [release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md](./release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md) | Patch-level docs/npm polish |
+| [CODEX-MAINTAINER-GUIDE.md](./CODEX-MAINTAINER-GUIDE.md) | Agent operating model |
 
-## Historical / context
+## Complete feature trains (historical)
 
-- [ROADMAP-V2.1-TO-V3.md](./ROADMAP-V2.1-TO-V3.md) — completed v2.1 → v3.0 train roadmap.
-- [ROADMAP-V2.1-TO-V3-FULL.md](./ROADMAP-V2.1-TO-V3-FULL.md) — supplemental full execution view.
-- [V2-TO-V3-ARCHITECTURE-GUIDE.md](./V2-TO-V3-ARCHITECTURE-GUIDE.md) — architecture boundaries for v2.1 through v3.0.
-- [release-trains/V3.0.0-RELEASE-READINESS.md](./release-trains/V3.0.0-RELEASE-READINESS.md) — v3.0 publication record.
+| File | Status |
+| ---- | ------ |
+| [ROADMAP-V3.0-TO-V3.5.md](./ROADMAP-V3.0-TO-V3.5.md) | **Complete** — v3.5.0 shipped |
+| [release-trains/V3.5.0-RELEASE-READINESS.md](./release-trains/V3.5.0-RELEASE-READINESS.md) | Publication record |
 
-## Where to look first
+## Archive
 
-Follow the source-of-truth order in [../../AGENTS.md](../../AGENTS.md): Git state, `AGENTS.md`, state/task files, **ROADMAP-V3.0-TO-V3.5**, active release plan, relevant RFCs, public roadmap, then historical docs.
+See [ARCHIVE-INDEX.md](./ARCHIVE-INDEX.md) and [archive/](./archive/README.md) for superseded roadmaps and one-off prompts.
+
+## Source-of-truth order
+
+Git state → `AGENTS.md` → state/task files → active adoption plan → public `docs/` → historical implementation docs.
