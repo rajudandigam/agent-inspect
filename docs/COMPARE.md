@@ -63,8 +63,21 @@ AgentInspect avoids SDK/collector setup for local debugging:
 | No-account CLI tracing | Strong fit |
 | Deterministic local eval heuristics | Good fit |
 | Share-safe local redaction copy | Good fit |
+| VS Code trace sidebar (in-repo / dev host) | Good fit — Marketplace listing separate |
 | Production dashboards | Not the goal |
 | Hosted eval datasets | Not the goal |
 | Prompt management | Not the goal |
 | Standards-aligned local export | Partial (compatibility-oriented) |
 | Full observability platform | Use a dedicated platform |
+
+## v3.5 positioning (local inner loop)
+
+AgentInspect v3.5 is the **adoption release** — not new runtime surface. Use it when:
+
+- You want **traces on disk** before/alongside hosted tools
+- You need **CI gates** (`check`, `eval`, `circuit`) without a vendor account
+- You want **metadata-only** defaults and explicit `redact` before sharing
+
+Keep using LangSmith, Langfuse, Braintrust, Phoenix, or OTel when you need hosted retention, fleet dashboards, dataset management, or org-wide production pipelines. AgentInspect is complementary.
+
+**Full adoption path:** [ADOPTION.md](./ADOPTION.md)

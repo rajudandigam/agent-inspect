@@ -24,15 +24,14 @@ agent-inspect gives those runs **structure**: an **execution tree** you can read
 
 Current npm release line: **3.4.0** for the linked public packages (`agent-inspect`, adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, adapter-sdk, harness). **v3.0.0** adds extension contracts and **`@agent-inspect/adapter-sdk`** for third-party adapter authoring; persisted trace schema remains **1.0**.
 
-**v3.1 adoption path (in progress):**
+**v3 adoption path (3.1–3.5):**
 
-1. `npx agent-inspect init` — local config + demo (no auto-install)
-2. `observe()` or a framework adapter
-3. `@agent-inspect/harness` for real project runners
+1. [ADOPTION.md](docs/ADOPTION.md) — blessed onboarding guide
+2. `npx agent-inspect init` + [examples/starters/](examples/starters/README.md)
+3. Framework guides: [AI SDK](docs/AI-SDK-ADOPTION.md), [OpenAI Agents](docs/OPENAI-AGENTS-LOCAL.md), [NestJS](docs/NESTJS.md)
 4. `npx agent-inspect doctor` when setup fails
-5. `check` / `eval` / `redact` / `report` for CI and safe sharing
-
-See [examples/starters/](examples/starters/README.md) and [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
+5. `check` / `eval` / `redact` / `report` for CI — [PERFORMANCE.md](docs/PERFORMANCE.md) at scale
+6. VS Code extension: develop from `packages/vscode` ([VSCODE.md](docs/VSCODE.md); Marketplace publish is manual)
 
 ```bash
 npm install agent-inspect
