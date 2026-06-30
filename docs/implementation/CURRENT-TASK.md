@@ -2,16 +2,16 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "adoption-freeze"
-status: "idle"
+chunk: "adoption-polish-plan"
+status: "in_progress"
 executionMode: "adoption-freeze"
 dependsOn: "v3.5-publication-complete"
 ```
 
 ## Goal
 
-8–12 week adoption push per [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md). No new product surface without RFC.
+Execute [V3.5.X-ADOPTION-POLISH-PLAN.md](./release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md) — docs, READMEs, examples, npm presentation. No new runtime features.
 
 ## Manual gate
 
-VS Code Marketplace first publish when ready (`packages/vscode`).
+VS Code Marketplace (`packages/vscode`) — deferred.
