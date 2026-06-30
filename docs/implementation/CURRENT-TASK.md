@@ -2,8 +2,8 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "v3.5.2-examples-visual"
-status: "idle"
+chunk: "v3.5.2-demo-kit"
+status: "in_progress"
 executionMode: "adoption-freeze"
 dependsOn: "v3.5.1-publication-complete"
 ```
