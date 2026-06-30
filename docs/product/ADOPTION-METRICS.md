@@ -45,11 +45,12 @@ A voluntary `agent-inspect usage-report --output agent-inspect-usage.json` may b
 | Static SVG hero assets | Done |
 | Changeset for 3.5.1 | **Published** (npm 3.5.1) |
 
-## v3.5.2 demo kit (in progress)
+## v3.5.2 demo kit (published)
 
 | Item | Status |
 | ---- | ------ |
 | DEMO-SCRIPT → broken-agent starter | Done |
 | PITCH / SHOW-HN / VIDEO scripts | Done |
 | SCREENSHOTS static diagram section | Done |
+| npm 3.5.2 | **Published** |
 | Dedicated broken-agent GIF | Optional re-record |
