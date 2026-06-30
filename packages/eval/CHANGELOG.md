@@ -1,5 +1,18 @@
 # @agent-inspect/eval
 
+## 3.4.0
+
+### Minor Changes
+
+- 2fef104: v3.4 performance hardening: scale warnings, optional index CLI, stall/timeout check rules, performance and streaming docs.
+
+### Patch Changes
+
+- Updated dependencies [2fef104]
+  - agent-inspect@3.4.0
+  - @agent-inspect/guardrails@3.4.0
+  - @agent-inspect/circuit@3.4.0
+
 ## 3.3.0
 
 ### Minor Changes
