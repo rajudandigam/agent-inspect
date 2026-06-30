@@ -1,13 +1,13 @@
 # Current Codex Task
 
 ```yaml
-train: "v3.4.0"
-chunk: "v3.4-7-release-readiness"
+train: "v3.5.0"
+chunk: "v3.5-6-release-readiness"
 status: "in_progress"
 executionMode: "autonomous-release-train"
-dependsOn: "v3.4-6-streaming-limitations-guide"
+dependsOn: "v3.5-7-post-v3.5-handoff"
 ```
 
 ## Goal
 
-Prepare v3.4.0 release readiness and changeset.
+Prepare v3.5.0 release readiness and changeset. VS Code Marketplace publish remains a manual gate.
