@@ -7,6 +7,8 @@ import {
   resolveTraceDir,
 } from "@agent-inspect/core/advanced";
 
+import { assessTraceDirectoryScale, emitScaleWarnings } from "./trace-dir-scale.js";
+
 export interface StatsCommandOptions {
   dir?: string;
   since?: string;
@@ -27,6 +29,8 @@ export async function statsCommand(
     }
 
     const files = await td.list();
+    const scale = await assessTraceDirectoryScale(td);
+    emitScaleWarnings(scale, { json: options.json });
     if (files.length === 0) {
       if (options.json) {
         console.log(

@@ -9,6 +9,8 @@ import {
   searchTraces,
 } from "@agent-inspect/core/advanced";
 
+import { assessTraceDirectoryScale, emitScaleWarnings } from "./trace-dir-scale.js";
+
 export interface SearchCommandOptions {
   dir?: string;
   since?: string;
@@ -46,6 +48,8 @@ export async function searchCommand(
     }
 
     const files = await td.list();
+    const scale = await assessTraceDirectoryScale(td);
+    emitScaleWarnings(scale, { json: options.json });
     let metas = await loadTraceMetadataList(traceDir, files, (f) =>
       td.getPath(f),
     );

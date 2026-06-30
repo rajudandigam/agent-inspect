@@ -11,6 +11,8 @@ import {
   type TraceMetadataStatus,
 } from "@agent-inspect/core/advanced";
 
+import { assessTraceDirectoryScale, emitScaleWarnings } from "./trace-dir-scale.js";
+
 export interface ListOptions {
   dir?: string;
   limit?: string;
@@ -69,6 +71,8 @@ export async function list(options: ListOptions = {}): Promise<void> {
     }
 
     const files = await td.list();
+    const scale = await assessTraceDirectoryScale(td);
+    emitScaleWarnings(scale, { json: options.json });
     if (files.length === 0) {
       if (options.json) {
         console.log("[]");
