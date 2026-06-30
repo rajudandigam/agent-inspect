@@ -2,8 +2,8 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "adoption-polish-plan"
-status: "in_progress"
+chunk: "v3.5.1-release-prep"
+status: "awaiting_version_packages_pr"
 executionMode: "adoption-freeze"
 dependsOn: "v3.5-publication-complete"
 ```

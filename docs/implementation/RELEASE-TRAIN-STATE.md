@@ -12,11 +12,11 @@ branch: "main"
 completedChunks:
   - "v3.5-publication-complete"
   - "v3-adoption-train-complete"
-currentChunk: "adoption-polish-plan"
-nextAction: "Execute adoption polish patches without new runtime product surface"
+currentChunk: "v3.5.1-release-prep"
+nextAction: "Merge Version Packages PR when CI green; monitor npm publish workflow"
 pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
-lastConfirmedCommit: "1dd933f"
-lastValidationLevel: "adoption-polish-plan"
+lastConfirmedCommit: "af17d04"
+lastValidationLevel: "v3.5.1-adoption-polish"
 updatedAt: "2026-06-30"
 ```
 

@@ -33,3 +33,14 @@ A voluntary `agent-inspect usage-report --output agent-inspect-usage.json` may b
 - 3 public case studies (anonymized OK)
 - 1 recorded demo on README / SCREENSHOTS
 - VS Code Marketplace listing (manual gate)
+
+## v3.5.1 adoption polish (complete in repo)
+
+| Item | Status |
+| ---- | ------ |
+| Root README rewrite | Done |
+| Package READMEs (15 public scoped) | Done |
+| npm `files` / link hygiene | Done |
+| Scenario docs + broken-agent starter | Done |
+| Static SVG hero assets | Done |
+| Changeset for 3.5.1 | Pending Version Packages PR |
