@@ -18,6 +18,8 @@ Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public package
 
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
+**Full guide:** [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md)
+
 **Status:** experimental adapter — optional package published in the aligned v2.2.0 package set and hardened in the v2.3 adapter train.
 
 The adapter has hardened lifecycle identity and parallel integration isolation. It remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics and fall back to metadata-only capture until bounded free-text previews are implemented.
@@ -343,6 +345,8 @@ Full API: [API.md](./API.md) §13.
 ---
 
 ## OpenAI Agents JS (`@agent-inspect/openai-agents`)
+
+**Local-only guide:** [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md)
 
 **Status:** experimental adapter — optional package published in the aligned v2.2.0 package set.
 
