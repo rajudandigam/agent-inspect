@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.0
+
+### Minor Changes
+
+- 70f3fb2: v3.1 adoption train: public `@agent-inspect/harness`, `agent-inspect init` and `doctor` commands, adoption starters, and onboarding docs.
+
 ## Unreleased
 
 Post-v3 adoption train (v3.1 → v3.5) in progress. See [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
