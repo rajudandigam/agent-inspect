@@ -209,6 +209,21 @@ export interface RunDurationRuleOptions {
 }
 
 /**
+ * Experimental options for the built-in max step duration rule.
+ */
+export interface MaxStepDurationRuleOptions {
+  maxDurationMs: number;
+}
+
+/**
+ * Experimental options for stall detection (running / incomplete events).
+ */
+export interface StallDetectionRuleOptions {
+  /** When true, events with startedAt but no endedAt also fail. */
+  requireEndedAt?: boolean;
+}
+
+/**
  * Experimental options for the built-in event count rule.
  *
  * @experimental Available through `agent-inspect/checks`; the checks API may
@@ -1227,6 +1242,125 @@ export function createRunDurationRule(options: RunDurationRuleOptions): TraceChe
           actual,
         ),
       ];
+    },
+  };
+}
+
+/**
+ * Fail when any step duration exceeds the configured maximum.
+ */
+export function createMaxStepDurationRule(options: MaxStepDurationRuleOptions): TraceCheckRule {
+  return {
+    id: "run.maxStepDuration",
+    category: "run",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const over = context.events.filter((event) => {
+        const duration = eventDurationMs(event);
+        return duration !== undefined && duration > options.maxDurationMs;
+      });
+      if (over.length === 0) return [];
+      return [
+        failFinding(
+          "run.maxStepDuration",
+          `${over.length} step(s) exceeded max duration ${options.maxDurationMs}ms.`,
+          over.map((event) => eventEvidence(event, "durationMs")),
+          { maxDurationMs: options.maxDurationMs },
+          over.map((event) => ({
+            eventId: event.eventId,
+            name: event.name,
+            durationMs: eventDurationMs(event),
+          })),
+        ),
+      ];
+    },
+  };
+}
+
+/**
+ * Detect stalled runs: running events and optionally started-but-unended events.
+ */
+export function createStallDetectionRule(
+  options: StallDetectionRuleOptions = {},
+): TraceCheckRule {
+  const requireEndedAt = options.requireEndedAt === true;
+  return {
+    id: "run.stall",
+    category: "run",
+    defaultSeverity: "warning",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      const running = context.events.filter((event) => event.status === "running");
+      if (running.length > 0) {
+        findings.push(
+          failFinding(
+            "run.stall",
+            `Found ${running.length} event(s) still running (possible stall).`,
+            running.map((event) => eventEvidence(event, "status")),
+            "no running events",
+            running.length,
+          ),
+        );
+      }
+      if (requireEndedAt) {
+        const incomplete = context.events.filter(
+          (event) =>
+            event.startedAt !== undefined &&
+            event.endedAt === undefined &&
+            event.status !== "running",
+        );
+        if (incomplete.length > 0) {
+          findings.push(
+            failFinding(
+              "run.stall",
+              `Found ${incomplete.length} started event(s) without endedAt.`,
+              incomplete.map((event) => eventEvidence(event, "endedAt")),
+              "endedAt for started events",
+              incomplete.length,
+            ),
+          );
+        }
+      }
+      return findings;
+    },
+  };
+}
+
+/**
+ * Require a completed run with no running events.
+ */
+export function createRequireCompletedRule(): TraceCheckRule {
+  return {
+    id: "run.requireCompleted",
+    category: "run",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const findings: TraceCheckFinding[] = [];
+      const runStatus = context.selectedRun?.status;
+      if (runStatus === "running") {
+        findings.push(
+          failFinding(
+            "run.requireCompleted",
+            "Run is still running.",
+            runEvidence(context.selectedRun),
+            "completed run",
+            runStatus,
+          ),
+        );
+      }
+      const running = context.events.filter((event) => event.status === "running");
+      if (running.length > 0) {
+        findings.push(
+          failFinding(
+            "run.requireCompleted",
+            `Run has ${running.length} incomplete running event(s).`,
+            running.map((event) => eventEvidence(event, "status")),
+            "no running events",
+            running.length,
+          ),
+        );
+      }
+      return findings;
     },
   };
 }

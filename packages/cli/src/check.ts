@@ -12,13 +12,17 @@ import {
   filterMetasBySessionScope,
   loadSessionRunRecords,
   loadTraceMetadataList,
+  parseDuration,
   resolveTraceDir,
 } from "@agent-inspect/core/advanced";
 import {
   createLlmUsageRule,
+  createMaxStepDurationRule,
+  createRequireCompletedRule,
   createRunDepthRule,
   createRunDurationRule,
   createRunStatusRule,
+  createStallDetectionRule,
   createSafetyOversizedAttributeRule,
   createSafetyRawContentRule,
   createSafetyRedactionRule,
@@ -60,6 +64,9 @@ export interface CheckCommandOptions {
   correlateGroup?: boolean;
   guardrails?: string[];
   circuit?: string[];
+  maxStepDuration?: string;
+  requireCompleted?: boolean;
+  detectStalls?: boolean;
 }
 
 type CheckConfig = {
@@ -194,6 +201,17 @@ function buildRules(
     parseNumber(options.maxDurationMs, "--max-duration-ms") ?? run.maxDurationMs;
   const maxTotalTokens =
     parseNumber(options.maxTotalTokens, "--max-total-tokens") ?? llm.maxTotalTokens;
+  let maxStepDurationMs: number | undefined;
+  if (options.maxStepDuration !== undefined) {
+    try {
+      maxStepDurationMs = parseDuration(options.maxStepDuration.trim());
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      diagnostics.push(
+        diagnostic("AI_CHECK_INVALID_ARGUMENTS", `--max-step-duration: ${message}`),
+      );
+    }
+  }
   const rules: TraceCheckRule[] = [
     createRunStatusRule(run),
     createStructureOrphanRule(),
@@ -204,6 +222,15 @@ function buildRules(
 
   if (maxDurationMs !== undefined) {
     rules.push(createRunDurationRule({ maxDurationMs }));
+  }
+  if (maxStepDurationMs !== undefined) {
+    rules.push(createMaxStepDurationRule({ maxDurationMs: maxStepDurationMs }));
+  }
+  if (options.requireCompleted) {
+    rules.push(createRequireCompletedRule());
+  }
+  if (options.detectStalls) {
+    rules.push(createStallDetectionRule({ requireEndedAt: true }));
   }
   if (run.maxDepth !== undefined) {
     rules.push(createRunDepthRule({ maxDepth: run.maxDepth }));

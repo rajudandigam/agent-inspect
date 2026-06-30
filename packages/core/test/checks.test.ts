@@ -10,6 +10,9 @@ import {
   createRunDurationRule,
   createRunEventCountRule,
   createRunStatusRule,
+  createMaxStepDurationRule,
+  createRequireCompletedRule,
+  createStallDetectionRule,
   createSafetyOversizedAttributeRule,
   createSafetyRawContentRule,
   createSafetyRedactionRule,
@@ -702,5 +705,37 @@ describe("built-in baseline regression checks", () => {
 
     expect(result.status).toBe("pass");
     expect(result.findings).toEqual([]);
+  });
+
+  it("flags steps over max step duration", () => {
+    const read = readResult([
+      persisted("step-a", { durationMs: 5_000, status: "ok" }),
+      persisted("step-b", { durationMs: 40_000, status: "ok" }),
+    ]);
+    const result = runTraceChecks(
+      { read },
+      { rules: [createMaxStepDurationRule({ maxDurationMs: 30_000 })] },
+    );
+    expect(result.status).toBe("fail");
+    expect(result.findings.some((f) => f.ruleId === "run.maxStepDuration")).toBe(true);
+  });
+
+  it("detects stalled running events", () => {
+    const read = readResult([persisted("step-running", { status: "running" })]);
+    const result = runTraceChecks(
+      { read },
+      { rules: [createStallDetectionRule()] },
+    );
+    expect(result.findings.some((f) => f.ruleId === "run.stall")).toBe(true);
+  });
+
+  it("requires completed runs", () => {
+    const read = readResult([persisted("step-running", { status: "running" })]);
+    const result = runTraceChecks(
+      { read },
+      { rules: [createRequireCompletedRule()] },
+    );
+    expect(result.status).toBe("fail");
+    expect(result.findings.some((f) => f.ruleId === "run.requireCompleted")).toBe(true);
   });
 });
