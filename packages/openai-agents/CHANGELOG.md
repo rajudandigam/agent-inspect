@@ -1,5 +1,16 @@
 # @agent-inspect/openai-agents
 
+## 3.3.0
+
+### Minor Changes
+
+- eaf8549: v3.3 VS Code surface: read-only extension scaffold, trace explorer, CLI-backed review commands, doctor output channel, adoption docs.
+
+### Patch Changes
+
+- Updated dependencies [eaf8549]
+  - agent-inspect@3.3.0
+
 ## 3.2.0
 
 ### Minor Changes
