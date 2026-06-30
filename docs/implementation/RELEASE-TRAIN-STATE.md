@@ -20,8 +20,8 @@ completedChunks:
   - "v3.1-6-v3.1-release-readiness"
 currentChunk: "v3.1-release-prep"
 nextAction: "Push commits; publish @agent-inspect/harness; Version Packages PR for 3.1.0."
-pendingManualGate: "@agent-inspect/harness first npm publication"
-lastConfirmedCommit: "a90659b"
+pendingManualGate: ""
+lastConfirmedCommit: "f6a6bfe"
 lastValidationLevel: "v3.1-6-v3.1-release-readiness"
 updatedAt: "2026-06-29"
 ```

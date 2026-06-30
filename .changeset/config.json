@@ -19,7 +19,8 @@
       "@agent-inspect/circuit",
       "@agent-inspect/viewer",
       "@agent-inspect/mcp-server",
-      "@agent-inspect/adapter-sdk"
+      "@agent-inspect/adapter-sdk",
+      "@agent-inspect/harness"
     ]
   ],
   "access": "public",
