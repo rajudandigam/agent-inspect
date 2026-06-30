@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 3.5.3
+
+### Patch Changes
+
+- 05546b5: v3.5.3 docs hygiene: lean docs index, archive stale files, remove unavailable hero SVG from npm package files. Docs-only.
+
 ## 3.5.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @agent-inspect/viewer
 
+## 3.5.3
+
+### Patch Changes
+
+- 05546b5: v3.5.3 docs hygiene: lean docs index, archive stale files, remove unavailable hero SVG from npm package files. Docs-only.
+- Updated dependencies [05546b5]
+  - agent-inspect@3.5.3
+
 ## 3.5.2
 
 ### Patch Changes
