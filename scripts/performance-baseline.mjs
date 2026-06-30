@@ -49,6 +49,7 @@ const {
 const {
   createRunEventCountRule,
   createRunStatusRule,
+  createMaxStepDurationRule,
   runTraceChecks,
 } = checks;
 
@@ -236,5 +237,32 @@ console.log(
   `run checks on ~1000-event trace: ${ms}ms status=${checkResult.status} findings=${checkResult.findings.length}`,
 );
 warnIfSlow("checks", ms, 600);
+
+console.log("\n[perf:baseline] Trace directory + large-run checks\n");
+
+const largeRunEvents = buildSyntheticTrace("perf_large", 499);
+t0 = performance.now();
+const largeRead = {
+  format: "agent-inspect-jsonl",
+  events: traceEventsToPersistedInspectEvents(largeRunEvents),
+  runs: traceEventsToPersistedRunTrees(largeRunEvents),
+  warnings: [],
+  unsupportedFields: [],
+  sourceFiles: ["synthetic-large-trace"],
+};
+const largeCheck = runTraceChecks(
+  { read: largeRead },
+  {
+    rules: [
+      createRunEventCountRule({ min: 1, max: largeRead.events.length }),
+      createMaxStepDurationRule({ maxDurationMs: 60_000 }),
+    ],
+  },
+);
+ms = elapsedMs(t0);
+console.log(
+  `checks on ~${largeRead.events.length}-event trace: ${ms}ms status=${largeCheck.status}`,
+);
+warnIfSlow("large checks", ms, 800);
 
 console.log("\n[perf:baseline] done");
