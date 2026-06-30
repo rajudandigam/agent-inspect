@@ -3,10 +3,19 @@
 ## Identity
 
 ```yaml
-train: "v3.0.0"
-status: "published"
+train: "v3.1.0"
+chunk: "v3.1-0-audit-current-package-state-and-publish-verification"
+status: "in_progress"
+executionMode: "autonomous-release-train"
+dependsOn: "v3.0-publication-complete"
 ```
 
-## Result
+## Goal
 
-v3.0.0 release complete — Version Packages PR #49 merged; all 15 linked packages at 3.0.0 on npm.
+Post-v3 planning reset and v3.1 train setup. Next chunk: public `@agent-inspect/harness`.
+
+## Suggested Commit
+
+```text
+docs: start post-v3 adoption roadmap
+```

@@ -8,7 +8,9 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** [2.0.0](CHANGELOG.md#200) (`agent-inspect`, `@agent-inspect/ai-sdk`, `@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/openai-agents` — all aligned).
+**Current release on npm:** **3.0.0** — linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, and adapter-sdk. See [CHANGELOG.md](CHANGELOG.md#300).
+
+**Active direction (post-v3):** adoption-focused minors **v3.1 → v3.5** — harness, init/doctor, framework starters, minimal VS Code extension, performance hardening, demo kit. Maintainer plan: [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
 
 ---
 

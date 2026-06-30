@@ -18,12 +18,12 @@ Use this order:
 2. `AGENTS.md`
 3. `docs/implementation/RELEASE-TRAIN-STATE.md`
 4. `docs/implementation/CURRENT-TASK.md`
-5. `docs/implementation/ROADMAP-V2.1-TO-V3.md`
-6. `docs/implementation/ROADMAP-V2.1-TO-V3-FULL.md`
-7. `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md`
-8. active release-train plan
-9. relevant RFC/proposal docs
-10. public `ROADMAP.md`
+5. `docs/implementation/ROADMAP-V3.0-TO-V3.5.md`
+6. active release-train plan
+7. relevant RFC/proposal docs
+8. `docs/implementation/V2-TO-V3-ARCHITECTURE-GUIDE.md` (historical architecture context)
+9. public `ROADMAP.md`
+10. `docs/implementation/ROADMAP-V2.1-TO-V3.md` and `ROADMAP-V2.1-TO-V3-FULL.md` (historical)
 11. historical implementation docs
 
 Report material conflicts; never resolve them silently.

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Post-v3 adoption train (v3.1 → v3.5) in progress. See [docs/implementation/ROADMAP-V3.0-TO-V3.5.md](docs/implementation/ROADMAP-V3.0-TO-V3.5.md).
+
 ## 3.0.0
 
 ### Major Changes
