@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 120" role="img" aria-label="AgentInspect loop: trace, check, redact">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect width="720" height="120" fill="#f8fafc" rx="8"/>
+  <g font-family="system-ui,sans-serif" font-size="14" fill="#0f172a">
+    <rect x="24" y="36" width="140" height="48" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="94" y="66" text-anchor="middle">Trace</text>
+    <rect x="220" y="36" width="140" height="48" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="290" y="66" text-anchor="middle">Check</text>
+    <rect x="416" y="36" width="140" height="48" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+    <text x="486" y="66" text-anchor="middle">Redact</text>
+    <rect x="572" y="36" width="124" height="48" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="634" y="66" text-anchor="middle">Share</text>
+    <line x1="164" y1="60" x2="212" y2="60" stroke="#334155" marker-end="url(#arrow)"/>
+    <line x1="360" y1="60" x2="408" y2="60" stroke="#334155" marker-end="url(#arrow)"/>
+    <line x1="556" y1="60" x2="564" y2="60" stroke="#334155" marker-end="url(#arrow)"/>
+    <text x="360" y="108" text-anchor="middle" font-size="12" fill="#64748b">local files only · no upload by default</text>
+  </g>
+</svg>
