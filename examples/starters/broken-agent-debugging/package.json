@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-starter-broken-agent-debugging",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node run.mjs",
+    "fixed": "node run-fixed.mjs"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  }
+}
