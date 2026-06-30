@@ -1,5 +1,13 @@
 # @agent-inspect/openai-agents
 
+## 3.5.1
+
+### Patch Changes
+
+- af17d04: v3.5.1 adoption polish: root README and npm presentation, package READMEs, adoption docs, link/tarball hygiene. Docs-only; no runtime API changes.
+- Updated dependencies [af17d04]
+  - agent-inspect@3.5.1
+
 ## 3.5.0
 
 ### Minor Changes
