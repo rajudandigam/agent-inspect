@@ -27,6 +27,11 @@ agent-inspect/
 5. Run validation (see root CONTRIBUTING.md).
 6. Use the [PR template](../../.github/PULL_REQUEST_TEMPLATE.md).
 
+For community extension or adapter registry proposals, start from the
+[extension submission template](EXTENSION-SUBMISSION-TEMPLATE.md). It captures
+package metadata, maintainer contact, privacy defaults, conformance evidence,
+and known gaps before a registry entry is reviewed.
+
 ## Package boundaries (detailed)
 
 ### Root `agent-inspect`
