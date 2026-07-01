@@ -43,6 +43,7 @@ export const registration = createAdapterRegistration({
 
 - [Adapter conformance](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTER-CONFORMANCE.md)
 - [Adapters](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTERS.md)
+- [Extension submission template](https://github.com/rajudandigam/agent-inspect/blob/main/docs/community/EXTENSION-SUBMISSION-TEMPLATE.md)
 
 ## Checklist for package authors
 
@@ -50,6 +51,7 @@ export const registration = createAdapterRegistration({
 2. Document peer dependencies
 3. No network in adapter code path
 4. Add conformance tests
+5. Use the extension submission template before proposing registry inclusion
 
 ## Version
 
