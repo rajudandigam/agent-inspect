@@ -2,7 +2,7 @@
 
 Thank you for helping improve **AgentInspect** — a local-first execution-tree debugger for TypeScript AI agents.
 
-This guide covers setup, boundaries, validation, and what we expect in pull requests. For deeper maintainer notes, see [docs/community/CONTRIBUTING.md](docs/community/CONTRIBUTING.md).
+This guide covers setup, boundaries, validation, and what we expect in pull requests. For a first contributor PR flow, see [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md). For deeper maintainer notes, see [docs/community/CONTRIBUTING.md](docs/community/CONTRIBUTING.md).
 
 ## What AgentInspect is (and is not)
 
@@ -134,6 +134,7 @@ Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
 ## Where to start
 
 - [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) — curated entry points
+- [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md) — fork, branch, validation, and PR flow
 - [ROADMAP.md](ROADMAP.md) — Now / Next / Future
 - [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md) — expanded list with issue draft links
 - Draft issues in [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/) — copy into GitHub Issues when ready
