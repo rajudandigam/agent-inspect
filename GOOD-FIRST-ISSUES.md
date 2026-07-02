@@ -1,6 +1,6 @@
 # Good first issues
 
-Curated entry points for contributors. Expanded notes: [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md)
+Curated entry points for contributors. Expanded notes: [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md). First PR walkthrough: [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md).
 
 **Comment on an issue before opening a PR.** Pick a live `#NNN` link below.
 
