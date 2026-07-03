@@ -13,7 +13,6 @@ Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/gith
 | Issue | Summary |
 | ----- | ------- |
 | [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | Production observability comparison doc (v3 package map) |
-| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | First PR walkthrough for new contributors |
 | [#19](https://github.com/rajudandigam/agent-inspect/issues/19) | Keep contributor docs synced with live issues |
 | [#67](https://github.com/rajudandigam/agent-inspect/issues/67) | Improve `agent-inspect doctor` troubleshooting messages |
 
@@ -35,7 +34,6 @@ Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/gith
 | [#61](https://github.com/rajudandigam/agent-inspect/issues/61) | Adapter SDK privacy checklist |
 | [#62](https://github.com/rajudandigam/agent-inspect/issues/62) | Custom renderer example |
 | [#63](https://github.com/rajudandigam/agent-inspect/issues/63) | Custom transform example |
-| [#64](https://github.com/rajudandigam/agent-inspect/issues/64) | Extension registry submission template |
 
 ### UI and Performance Polish
 
@@ -61,6 +59,7 @@ Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/gith
 | #8 | Diff CLI examples |
 | #11–#12 | timeline / stats CLI (v1.4.0) |
 | #14 | LangChain streaming metadata (v1.3.0) |
+| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | First PR walkthrough via [#71](https://github.com/rajudandigam/agent-inspect/pull/71) |
 | #20 | [INSTALL-SMOKE-TEST.md](../INSTALL-SMOKE-TEST.md) |
 | #21 | winston-json-logs recipe |
 | #22 | mcp-client-tracing recipe |
@@ -68,6 +67,7 @@ Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/gith
 | #26 | [SAFE-TRACE-SHARING.md](../SAFE-TRACE-SHARING.md) |
 | #28 | → [#68](https://github.com/rajudandigam/agent-inspect/issues/68) |
 | #58–#59 | Roadmap + good-first index hygiene (2026-06-30) |
+| [#64](https://github.com/rajudandigam/agent-inspect/issues/64) | Extension submission template via [#70](https://github.com/rajudandigam/agent-inspect/pull/70) |
 
 Full table: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md#shipped-closed--do-not-reopen).
 
@@ -75,7 +75,7 @@ Full table: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md#shipped-closed--do
 
 ## How to pick an issue
 
-1. Start from a **live issue** in the lane tables above — e.g. [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#18](https://github.com/rajudandigam/agent-inspect/issues/18), or [#64](https://github.com/rajudandigam/agent-inspect/issues/64) for first-time contributors.
+1. Start from a **live issue** in the lane tables above — e.g. [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), or [#60](https://github.com/rajudandigam/agent-inspect/issues/60) for first-time contributors.
 2. **Comment** on the issue before opening a PR.
 3. Match patterns in `fixtures/`, `examples/recipes/`, or `docs/`.
 4. Run validation from [CONTRIBUTING.md](../../CONTRIBUTING.md).
