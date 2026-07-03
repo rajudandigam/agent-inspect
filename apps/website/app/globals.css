@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-elevated: #ffffff;
+  --color-border: #e2e8f0;
+  --color-primary: #6366f1;
+  --color-secondary: #10b981;
+  --color-accent: #f59e0b;
+  --color-danger: #f43f5e;
+  --color-success: #22c55e;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+}
+
+.dark {
+  --color-bg: #070a12;
+  --color-surface: #0f172a;
+  --color-elevated: #111827;
+  --color-border: #1e293b;
+  --color-primary: #6366f1;
+  --color-secondary: #10b981;
+  --color-accent: #f59e0b;
+  --color-danger: #f43f5e;
+  --color-success: #22c55e;
+  --color-ink: #e2e8f0;
+  --color-muted: #94a3b8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.prose-docs h2 {
+  @apply mt-10 scroll-mt-28 text-xl font-semibold tracking-tight text-ink;
+}
+
+.prose-docs h3 {
+  @apply mt-6 scroll-mt-28 text-lg font-semibold text-ink;
+}
+
+.prose-docs p {
+  @apply mt-3 text-base leading-7 text-muted;
+}
+
+.prose-docs ul {
+  @apply mt-3 list-disc space-y-2 pl-5 text-muted;
+}
+
+.prose-docs a {
+  @apply font-medium text-primary underline-offset-4 hover:underline;
+}
+
+.prose-docs code:not(pre code) {
+  @apply rounded bg-elevated px-1.5 py-0.5 font-mono text-[0.9em] text-ink;
+}
