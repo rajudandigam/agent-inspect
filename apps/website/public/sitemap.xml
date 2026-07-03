@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://agent-inspect.dev/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/getting-started/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/concepts/local-first/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/concepts/trace-check-redact/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/integrations/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/integrations/ai-sdk/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/integrations/openai-agents/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/integrations/langchain/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/cli/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/safe-sharing/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/ci/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/compare/</loc></url>
+  <url><loc>https://agent-inspect.dev/docs/contributing/</loc></url>
+</urlset>

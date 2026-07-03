@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#070A12"/>
+  <rect x="72" y="72" width="1056" height="486" rx="28" fill="#0F172A" stroke="#1E293B" stroke-width="2"/>
+  <text x="110" y="190" fill="#6366F1" font-family="ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="600">agent-inspect</text>
+  <text x="110" y="270" fill="#E2E8F0" font-family="ui-sans-serif, system-ui, sans-serif" font-size="58" font-weight="700">Debug TypeScript AI agents locally</text>
+  <text x="110" y="340" fill="#94A3B8" font-family="ui-sans-serif, system-ui, sans-serif" font-size="30">Trace · Check · Redact · No account · No upload</text>
+  <rect x="110" y="400" width="420" height="64" rx="12" fill="#111827" stroke="#1E293B"/>
+  <text x="132" y="440" fill="#E2E8F0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">npm install agent-inspect</text>
+</svg>

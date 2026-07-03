@@ -193,7 +193,10 @@
     "perf:baseline": "node scripts/performance-baseline.mjs",
     "examples:check": "pnpm install && pnpm --filter agent-inspect-example-01-basic run start",
     "changeset": "changeset",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "website:dev": "pnpm --filter @agent-inspect/website dev",
+    "website:build": "pnpm --filter @agent-inspect/website build",
+    "website:typecheck": "pnpm --filter @agent-inspect/website typecheck"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
