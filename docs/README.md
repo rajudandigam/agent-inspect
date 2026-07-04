@@ -23,7 +23,7 @@ Local-first TypeScript AI agent toolkit: **trace → check → redact** on your 
 | [DIFF.md](./DIFF.md) · [EXPORTS.md](./EXPORTS.md) | Compare and export |
 | [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) | CI / test artifacts |
 | [PERFORMANCE.md](./PERFORMANCE.md) · [SCALE-LIMITS.md](./SCALE-LIMITS.md) · [STREAMING-LIMITATIONS.md](./STREAMING-LIMITATIONS.md) | Scale and streaming |
-| [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [LIMITATIONS.md](./LIMITATIONS.md) · [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) | Safety and limits |
+| [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [ADAPTER-SDK-PRIVACY.md](./ADAPTER-SDK-PRIVACY.md) · [LIMITATIONS.md](./LIMITATIONS.md) · [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) | Safety and limits |
 | [COMPARE.md](./COMPARE.md) · [MIGRATION.md](./MIGRATION.md) | Positioning and upgrades |
 | [VSCODE.md](./VSCODE.md) | In-repo VS Code extension |
 
