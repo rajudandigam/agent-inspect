@@ -1,5 +1,15 @@
 # @agent-inspect/eval
 
+## 3.5.4
+
+### Patch Changes
+
+- 1ffe989: v3.5.4 README adoption polish: centered brand header, product-loop visual, npm package files for linked docs/assets. Docs-only; no runtime API changes.
+- Updated dependencies [1ffe989]
+  - agent-inspect@3.5.4
+  - @agent-inspect/guardrails@3.5.4
+  - @agent-inspect/circuit@3.5.4
+
 ## 3.5.3
 
 ### Patch Changes
