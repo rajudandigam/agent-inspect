@@ -2,6 +2,8 @@
 
 Use with [assets/demos/RECORDING.md](./assets/demos/RECORDING.md). Synthetic fixtures only — no API keys.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
 ## 0:00 — Hook
 
 "AgentInspect turns TypeScript agent runs into local execution trees you can check in CI — without sending traces to the cloud."

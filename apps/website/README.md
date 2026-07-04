@@ -2,6 +2,9 @@
 
 Private marketing site and docs shell for AgentInspect.
 
+**Live site:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/)  
+**Live docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
 ## Local dev
 
 ```bash
@@ -30,38 +33,27 @@ pnpm --filter @agent-inspect/website typecheck
 
 ## Vercel setup
 
+This app uses Next.js **static export** (`output: "export"`). Vercel must treat it as a **static site**, not a Next.js server app.
+
 Project source:
 
 `rajudandigam/agent-inspect`
 
-Root Directory:
+| Setting | Value |
+| --- | --- |
+| **Root Directory** | `apps/website` |
+| **Framework Preset** | **Other** (not Next.js) |
+| **Build Command** | `pnpm build` |
+| **Output Directory** | `out` |
+| **Install Command** | `cd ../.. && pnpm install --frozen-lockfile` |
 
-`apps/website`
+`apps/website/vercel.json` sets the same values so redeploys stay consistent.
 
-Framework:
+### Why not Framework = Next.js?
 
-Next.js
+With static export, `next build` writes HTML/CSS/JS to `out/` and does **not** produce `routes-manifest.json`. The Next.js preset looks for that file and fails even when the build succeeds.
 
-Build Command:
-
-`pnpm build`
-
-Output Directory:
-
-`out`
-
-Install Command:
-
-`pnpm install --frozen-lockfile`
-
-Because this is a monorepo, configure Vercel with:
-
-- **Root Directory:** `apps/website`
-- **Install Command:** `cd ../.. && pnpm install --frozen-lockfile`
-- **Build Command:** `pnpm build`
-- **Output Directory:** `out`
-
-If Vercel monorepo install from the app directory fails to resolve the workspace, set the install command to run from the repository root as shown above.
+Install warnings about missing `packages/cli/dist/index.cjs` bins are harmless for the website build (the library packages are not built on this deploy path).
 
 ## Notes
 

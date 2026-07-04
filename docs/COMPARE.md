@@ -2,6 +2,8 @@
 
 AgentInspect is a local-first execution-tree debugger for TypeScript AI agents. It’s designed for inner-loop debugging, deterministic local eval heuristics, redaction, and quick inspection — not as a replacement for hosted observability, dataset evaluation, or production monitoring platforms.
 
+**Docs site:** [https://agentinspect.vercel.app/docs/compare/](https://agentinspect.vercel.app/docs/compare/)
+
 ## AgentInspect vs console.log
 
 - **console.log is flat**: logs are a stream of lines without run grouping or step boundaries.

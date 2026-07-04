@@ -2,6 +2,8 @@
 
 Thank you for trying AgentInspect early. This doc is the **evaluation contract** — what we ask you to try, what we measure, and what we won't do.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
 ## What we're validating
 
 1. **First trace < 30 minutes** from `npm install` (with `init` + a starter)

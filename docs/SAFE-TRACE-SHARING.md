@@ -1,5 +1,7 @@
 # Safe trace sharing checklist
 
+**Docs site:** [https://agentinspect.vercel.app/docs/safe-sharing/](https://agentinspect.vercel.app/docs/safe-sharing/)
+
 AgentInspect traces, log-ingest outputs, and exports are local files. They may still contain sensitive metadata that you attached manually, collected from logs, or included through optional preview settings. Use this checklist before sharing an artifact in a GitHub issue, Discussion, PR, support thread, or public post.
 
 This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **key-based safeguards**, not compliance-grade DLP.

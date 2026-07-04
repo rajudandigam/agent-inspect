@@ -1,5 +1,7 @@
 # CI trace artifacts
 
+**Docs site:** [https://agentinspect.vercel.app/docs/ci/](https://agentinspect.vercel.app/docs/ci/)
+
 AgentInspect helps you **write and export traces locally** in CI. Uploading artifacts is done by **your CI platform** (e.g. GitHub Actions `upload-artifact`) — AgentInspect does not upload anywhere.
 
 ## Quick pattern

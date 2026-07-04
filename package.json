@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/rajudandigam/agent-inspect/issues"
   },
-  "homepage": "https://github.com/rajudandigam/agent-inspect#readme",
+  "homepage": "https://agentinspect.vercel.app",
   "packageManager": "pnpm@9.15.0",
   "main": "./packages/core/dist/index.cjs",
   "module": "./packages/core/dist/index.mjs",

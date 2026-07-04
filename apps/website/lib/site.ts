@@ -14,7 +14,7 @@ export const site = {
     "AI agent CI checks",
     "safe trace sharing",
   ],
-  url: "https://agent-inspect.dev",
+  url: "https://agentinspect.vercel.app",
   github: "https://github.com/rajudandigam/agent-inspect",
   githubDocs: "https://github.com/rajudandigam/agent-inspect/blob/main/docs",
   npm: "https://www.npmjs.com/package/agent-inspect",

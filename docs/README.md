@@ -2,6 +2,11 @@
 
 Local-first TypeScript AI agent toolkit: **trace → check → redact** on your machine.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/)  
+**Docs site:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
+This folder remains the full canonical reference. The public docs site is a starter shell that links here during migration.
+
 ## Start here
 
 | Doc | For |
@@ -39,6 +44,7 @@ Local-first TypeScript AI agent toolkit: **trace → check → redact** on your 
 
 ## Elsewhere
 
+- [Website](https://agentinspect.vercel.app/) · [Docs site](https://agentinspect.vercel.app/docs/)
 - [Examples](../examples/README.md) · [Starters](../examples/starters/README.md) · [Recipes](../examples/recipes/README.md)
 - [Roadmap](../ROADMAP.md) · [Security](../SECURITY.md)
 - [Archive](./archive/README.md) — historical docs

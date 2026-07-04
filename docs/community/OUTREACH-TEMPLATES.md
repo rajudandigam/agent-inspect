@@ -16,7 +16,7 @@ Subject: AgentInspect 3.5.3 — would love your feedback
 
 Hi {name},
 
-I maintain [AgentInspect](https://github.com/rajudandigam/agent-inspect) — a **local-first trace workbench** for TypeScript AI agents (manual traces, structured logs, optional framework adapters). **3.5.3** is on npm.
+I maintain [AgentInspect](https://agentinspect.vercel.app/) ([GitHub](https://github.com/rajudandigam/agent-inspect)) — a **local-first trace workbench** for TypeScript AI agents (manual traces, structured logs, optional framework adapters). **3.5.3** is on npm. Docs: https://agentinspect.vercel.app/docs/
 
 If you have 10 minutes, I'd value your honest take:
 

@@ -2,6 +2,8 @@
 
 This document expands [CONTRIBUTING.md](../../CONTRIBUTING.md) with community-specific detail. Start with the root guide for the essentials.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
 ## Repository layout
 
 ```text

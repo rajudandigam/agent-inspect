@@ -22,5 +22,7 @@ npx agent-inspect list --dir .agent-inspect
 npx agent-inspect report <run-id> --dir .agent-inspect
 ```
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
+
 **Demo flow:** [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/)
 **Guides:** [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) · [ADOPTION.md](./ADOPTION.md) · [Package map](https://github.com/rajudandigam/agent-inspect#package-map)

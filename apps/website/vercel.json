@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "out"
+}

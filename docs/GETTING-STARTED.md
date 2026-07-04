@@ -2,6 +2,8 @@
 
 AgentInspect is a **local-first execution-tree debugger** for TypeScript AI agents. It helps you produce and inspect an execution tree of steps, safely and deterministically, without uploading data anywhere.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs site:** [https://agentinspect.vercel.app/docs/getting-started/](https://agentinspect.vercel.app/docs/getting-started/)
+
 **Visual demos:** [SCREENSHOTS.md](./SCREENSHOTS.md)
 
 ## 1. Install

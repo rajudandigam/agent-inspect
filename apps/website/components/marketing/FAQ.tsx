@@ -37,7 +37,7 @@ const faqs = [
   },
   {
     q: "Where are the docs?",
-    a: "Starter docs live under /docs. Canonical GitHub docs remain the full reference during migration.",
+    a: "Starter docs live at https://agentinspect.vercel.app/docs/. Canonical GitHub docs remain the full reference during migration.",
   },
 ];
 

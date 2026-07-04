@@ -43,6 +43,11 @@ AgentInspect is local-first trace + check + redact for TypeScript AI agents.
 - Static export preferred
 - Cloudflare Pages/Netlify/GitHub Pages compatible later
 
+## Live URLs
+
+- Website: https://agentinspect.vercel.app/
+- Docs: https://agentinspect.vercel.app/docs/
+
 ## Deployment model
 
 The library stays published from the root/package workspace.

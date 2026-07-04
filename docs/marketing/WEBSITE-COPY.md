@@ -109,6 +109,13 @@ MIT license · Local JSONL files · Metadata-only default · Redaction profiles 
 
 See site FAQ component for full Q&A.
 
+Docs live at https://agentinspect.vercel.app/docs/ (canonical GitHub docs remain the full reference during migration).
+
 ## Footer
 
 Links to docs, GitHub, npm, MIT license, and safe-sharing guidance.
+
+## Live URLs
+
+- Website: https://agentinspect.vercel.app/
+- Docs: https://agentinspect.vercel.app/docs/

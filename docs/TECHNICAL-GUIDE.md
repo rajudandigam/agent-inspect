@@ -507,8 +507,10 @@ Vitest reporter → upload artifact → `verify-safe` → reviewer workflow → 
 
 | Topic | Doc |
 | ----- | --- |
+| Website | [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) |
+| Docs site | [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/) |
 | Docs index | [README.md](./README.md) |
-| Getting started | [GETTING-STARTED.md](./GETTING-STARTED.md) |
+| Getting started | [GETTING-STARTED.md](./GETTING-STARTED.md) · [Web](https://agentinspect.vercel.app/docs/getting-started/) |
 | 5-minute path | [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) |
 | API | [API.md](./API.md) |
 | CLI | [CLI.md](./CLI.md) |

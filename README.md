@@ -4,6 +4,8 @@
 
 No account · no upload · no hosted dashboard · metadata-only by default
 
+**Website:** [agentinspect.vercel.app](https://agentinspect.vercel.app/) · **Docs:** [agentinspect.vercel.app/docs](https://agentinspect.vercel.app/docs/)
+
 [![npm version](https://img.shields.io/npm/v/agent-inspect.svg)](https://www.npmjs.com/package/agent-inspect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -22,7 +24,7 @@ npx agent-inspect report <run-id> --dir .agent-inspect
 npx agent-inspect verify-safe --dir .agent-inspect
 ```
 
-**North star:** install → one trace → one failure check → one share-safe artifact in under five minutes. See [First trace in 5 minutes](docs/FIRST-TRACE-IN-5-MINUTES.md).
+**North star:** install → one trace → one failure check → one share-safe artifact in under five minutes. See [First trace in 5 minutes](https://agentinspect.vercel.app/docs/getting-started/) ([repo doc](docs/FIRST-TRACE-IN-5-MINUTES.md)).
 
 ## Choose your path
 
@@ -91,6 +93,14 @@ Blessed starters (no API keys): [examples/starters](https://github.com/rajudandi
 Details: [Safe trace sharing](docs/SAFE-TRACE-SHARING.md) · [Security](SECURITY.md)
 
 ## Documentation
+
+| Surface | Link |
+| ------- | ---- |
+| Website | [agentinspect.vercel.app](https://agentinspect.vercel.app/) |
+| Docs site | [agentinspect.vercel.app/docs](https://agentinspect.vercel.app/docs/) |
+| Getting started | [Web](https://agentinspect.vercel.app/docs/getting-started/) · [Repo](docs/GETTING-STARTED.md) |
+| Safe sharing | [Web](https://agentinspect.vercel.app/docs/safe-sharing/) · [Repo](docs/SAFE-TRACE-SHARING.md) |
+| Compare | [Web](https://agentinspect.vercel.app/docs/compare/) · [Repo](docs/COMPARE.md) |
 
 | Start | Reference | Adoption |
 | ----- | --------- | -------- |

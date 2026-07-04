@@ -1,7 +1,8 @@
 # Live demo script (~3 minutes)
 
 **Audience:** TypeScript developers debugging AI agents.  
-**Prereqs:** Node 20+. Consumers: `npm install agent-inspect`. Monorepo: `pnpm build` at repo root.
+**Prereqs:** Node 20+. Consumers: `npm install agent-inspect`. Monorepo: `pnpm build` at repo root.  
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/)
 
 **Blessed demo starter:** [broken-agent-debugging](../examples/starters/broken-agent-debugging/) — intentional tool failure, no API keys.
 

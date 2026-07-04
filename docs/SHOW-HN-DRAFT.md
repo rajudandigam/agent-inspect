@@ -33,8 +33,10 @@ node examples/agent-inspect-demo.mjs
 npx agent-inspect list --dir .agent-inspect
 ```
 
+Website: https://agentinspect.vercel.app/  
+Docs: https://agentinspect.vercel.app/docs/  
 Repo: https://github.com/rajudandigam/agent-inspect  
-5-min guide: https://github.com/rajudandigam/agent-inspect/blob/main/docs/FIRST-TRACE-IN-5-MINUTES.md
+5-min guide: https://agentinspect.vercel.app/docs/getting-started/  
 Starters: https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters
 
 I'd love feedback from anyone running TypeScript agents — especially what would make the first trace → first CI check path smoother.

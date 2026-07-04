@@ -2,6 +2,8 @@
 
 AgentInspect is **local-first**: traces stay on disk, checks run in CI, and sharing is opt-in via redaction. This guide is the blessed path from zero to a working team workflow.
 
+**Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/) · **Getting started:** [https://agentinspect.vercel.app/docs/getting-started/](https://agentinspect.vercel.app/docs/getting-started/)
+
 ## Who this is for
 
 - TypeScript/Node teams shipping AI agents (not toy demos)
@@ -10,7 +12,7 @@ AgentInspect is **local-first**: traces stay on disk, checks run in CI, and shar
 
 ## 5-minute path
 
-See [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md).
+See [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) or the [docs site getting started](https://agentinspect.vercel.app/docs/getting-started/).
 
 ```bash
 npm install agent-inspect

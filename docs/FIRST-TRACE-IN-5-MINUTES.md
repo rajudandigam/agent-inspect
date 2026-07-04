@@ -2,6 +2,8 @@
 
 Goal: install → one trace → one check → one share-safe artifact.
 
+**Docs site:** [https://agentinspect.vercel.app/docs/getting-started/](https://agentinspect.vercel.app/docs/getting-started/)
+
 ```bash
 npm install agent-inspect && npx agent-inspect init --yes && node examples/agent-inspect-demo.mjs
 npx agent-inspect list --dir .agent-inspect && npx agent-inspect report <run-id> --dir .agent-inspect
@@ -59,4 +61,4 @@ Attach redacted JSONL to a PR or issue — not raw traces.
 | CI tests | [CI artifacts](./CI-ARTIFACTS.md) |
 | Broken agent demo | [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/README.md) |
 
-Full index: [docs/README.md](./README.md)
+Full index: [docs/README.md](./README.md) · Website docs: [agentinspect.vercel.app/docs](https://agentinspect.vercel.app/docs/)
