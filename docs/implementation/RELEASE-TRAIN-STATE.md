@@ -4,20 +4,21 @@
 
 ```yaml
 baselineVersion: "3.5.3"
-publishedVersion: "3.5.3"
+publishedVersion: "3.5.4"
 currentTrain: "post-v3.5-adoption"
-trainStatus: "active"
+trainStatus: "complete"
 executionMode: "adoption-freeze"
 branch: "main"
 completedChunks:
+  - "v3.5.4-readme-polish"
   - "v3.5.3-docs-hygiene"
   - "v3.5.2-demo-kit"
   - "v3.5.1-adoption-polish"
-currentChunk: "v3.5.4-readme-polish"
-nextAction: "Merge Version Packages PR for 3.5.4 when CI green"
+currentChunk: "adoption-handoff"
+nextAction: "Design partner outreach; Show HN when ready"
 pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
 lastConfirmedCommit: "pending"
-lastValidationLevel: "v3.5.4-readme-polish"
+lastValidationLevel: "v3.5.4-publish-complete"
 updatedAt: "2026-07-03"
 ```
 
