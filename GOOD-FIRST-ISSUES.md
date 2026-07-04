@@ -12,9 +12,9 @@ Historical issue drafts: [docs/archive/github/](docs/archive/github/) · [.githu
 
 | Lane | Live issues |
 | ---- | ----------- |
-| **OSS Hygiene** | [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#18](https://github.com/rajudandigam/agent-inspect/issues/18), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), [#67](https://github.com/rajudandigam/agent-inspect/issues/67) |
+| **OSS Hygiene** | [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), [#67](https://github.com/rajudandigam/agent-inspect/issues/67) |
 | **Examples and Fixtures** | [#10](https://github.com/rajudandigam/agent-inspect/issues/10), [#13](https://github.com/rajudandigam/agent-inspect/issues/13), [#27](https://github.com/rajudandigam/agent-inspect/issues/27), [#29](https://github.com/rajudandigam/agent-inspect/issues/29), [#69](https://github.com/rajudandigam/agent-inspect/issues/69) |
-| **Adapter SDK Examples** | [#60](https://github.com/rajudandigam/agent-inspect/issues/60)–[#64](https://github.com/rajudandigam/agent-inspect/issues/64) |
+| **Adapter SDK Examples** | [#60](https://github.com/rajudandigam/agent-inspect/issues/60)–[#63](https://github.com/rajudandigam/agent-inspect/issues/63) |
 | **UI and Performance Polish** | [#65](https://github.com/rajudandigam/agent-inspect/issues/65)–[#66](https://github.com/rajudandigam/agent-inspect/issues/66), [#68](https://github.com/rajudandigam/agent-inspect/issues/68) |
 | **Standards and Graduation** | [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#25](https://github.com/rajudandigam/agent-inspect/issues/25) |
 
@@ -28,6 +28,7 @@ Historical issue drafts: [docs/archive/github/](docs/archive/github/) · [.githu
 | [#11](https://github.com/rajudandigam/agent-inspect/issues/11) | `agent-inspect timeline` (v1.4.0) |
 | [#12](https://github.com/rajudandigam/agent-inspect/issues/12) | `agent-inspect stats` (v1.4.0) |
 | [#14](https://github.com/rajudandigam/agent-inspect/issues/14) | LangChain streaming metadata (v1.3.0) |
+| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | First PR walkthrough via [#71](https://github.com/rajudandigam/agent-inspect/pull/71) |
 | [#20](https://github.com/rajudandigam/agent-inspect/issues/20) | [docs/INSTALL-SMOKE-TEST.md](docs/INSTALL-SMOKE-TEST.md) |
 | [#21](https://github.com/rajudandigam/agent-inspect/issues/21) | [examples/recipes/winston-json-logs/](examples/recipes/winston-json-logs/) |
 | [#22](https://github.com/rajudandigam/agent-inspect/issues/22) | [examples/recipes/mcp-client-tracing/](examples/recipes/mcp-client-tracing/) |
@@ -38,6 +39,7 @@ Historical issue drafts: [docs/archive/github/](docs/archive/github/) · [.githu
 | [#30](https://github.com/rajudandigam/agent-inspect/issues/30) | `@agent-inspect/ai-sdk` package |
 | [#58](https://github.com/rajudandigam/agent-inspect/issues/58) | ROADMAP/README aligned to v3.5.3 |
 | [#59](https://github.com/rajudandigam/agent-inspect/issues/59) | This index refresh |
+| [#64](https://github.com/rajudandigam/agent-inspect/issues/64) | Extension submission template via [#70](https://github.com/rajudandigam/agent-inspect/pull/70) |
 
 ---
 
@@ -48,10 +50,8 @@ Historical issue drafts: [docs/archive/github/](docs/archive/github/) · [.githu
 | [#7](https://github.com/rajudandigam/agent-inspect/issues/7) | OpenInference export fixture (v3 schema) | Standards |
 | [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | AgentInspect vs production observability comparison (v3) | OSS Hygiene |
 | [#10](https://github.com/rajudandigam/agent-inspect/issues/10) | Retry / circuit-breaker fixture pack | Examples |
-| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | First PR walkthrough (v3) | OSS Hygiene |
 | [#19](https://github.com/rajudandigam/agent-inspect/issues/19) | Keep contributor docs synced with live issues | OSS Hygiene |
 | [#27](https://github.com/rajudandigam/agent-inspect/issues/27) | Log ingest config cookbook (v3) | Examples |
-| [#64](https://github.com/rajudandigam/agent-inspect/issues/64) | Extension registry submission template | Adapter SDK |
 | [#65](https://github.com/rajudandigam/agent-inspect/issues/65) | VS Code onboarding screenshots/GIF | UI/Performance |
 | [#67](https://github.com/rajudandigam/agent-inspect/issues/67) | Improve doctor troubleshooting messages | OSS Hygiene |
 
