@@ -2,15 +2,15 @@
 
 ```yaml
 train: "post-v3.5-adoption"
-chunk: "adoption-handoff"
-status: "idle"
+chunk: "v3.5.4-readme-polish"
+status: "in_progress"
 executionMode: "adoption-freeze"
 dependsOn: "v3.5.3-publication-complete"
 ```
 
 ## Goal
 
-Adoption polish train complete (v3.5.1–v3.5.3). No new runtime features without RFC. Outreach per [POST-V3.5-ADOPTION-PLAN.md](./POST-V3.5-ADOPTION-PLAN.md).
+Polish root README for npm/GitHub adoption (brand header, product-loop visual, link hygiene). Docs-only. See [V3.5.4-README-POLISH-READINESS.md](./release-trains/V3.5.4-README-POLISH-READINESS.md).
 
 ## Manual gate
 

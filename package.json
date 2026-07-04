@@ -3,7 +3,7 @@
   "version": "3.5.3",
   "license": "MIT",
   "type": "module",
-  "description": "Local-first execution-tree debugger for TypeScript AI agents",
+  "description": "Trace, check, and safely share TypeScript AI-agent runs locally — no account, no upload, metadata-only by default",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rajudandigam/agent-inspect.git"
@@ -149,7 +149,18 @@
     "docs/CI-ARTIFACTS.md",
     "docs/PERFORMANCE.md",
     "docs/FIRST-TRACE-IN-5-MINUTES.md",
-    "docs/USE-CASES.md"
+    "docs/USE-CASES.md",
+    "docs/TEAM-WORKFLOWS.md",
+    "docs/DESIGN-PARTNER-GUIDE.md",
+    "docs/DEMO-SCRIPT.md",
+    "docs/TECHNICAL-GUIDE.md",
+    "docs/AI-SDK-ADOPTION.md",
+    "docs/OPENAI-AGENTS-LOCAL.md",
+    "docs/NESTJS.md",
+    "docs/VSCODE.md",
+    "docs/assets/agent-inspect-logo.svg",
+    "docs/assets/agent-inspect-logo-dark.svg",
+    "docs/assets/readme-product-loop.svg"
   ],
   "sideEffects": false,
   "keywords": [

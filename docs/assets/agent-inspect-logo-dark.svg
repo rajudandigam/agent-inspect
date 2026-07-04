@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" role="img" aria-label="AgentInspect">
+  <defs>
+    <linearGradient id="ai-grad-d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="12" width="48" height="48" rx="12" fill="url(#ai-grad-d)"/>
+  <path d="M24 28h16M24 36h12M24 44h16" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="44" cy="36" r="5" fill="none" stroke="#0f172a" stroke-width="2"/>
+  <path d="M47.5 39.5L52 44" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="68" y="44" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif" font-size="22" font-weight="600" fill="#f8fafc">agent-inspect</text>
+</svg>

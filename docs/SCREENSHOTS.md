@@ -4,11 +4,23 @@ Curated terminal recordings and static diagrams for AgentInspect **3.5.x**. They
 
 **Synthetic output only:** demos use committed [fixtures](../fixtures/README.md), [examples](../examples/README.md), and recipes. No external LLM calls or API keys.
 
-**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball.
+**npm note:** GIFs live in `docs/assets/demos/` for GitHub documentation. They are **not** shipped in the `agent-inspect` npm tarball. Brand SVGs used by the root README **are** included in the npm package.
 
 **Re-record guide:** [assets/demos/RECORDING.md](assets/demos/RECORDING.md)
 **Maintainer audit:** [implementation/VISUAL-DEMO-AUDIT.md](implementation/VISUAL-DEMO-AUDIT.md)
 **Live demo script:** [DEMO-SCRIPT.md](DEMO-SCRIPT.md) (uses [broken-agent-debugging](../examples/starters/broken-agent-debugging/) starter)
+
+---
+
+## README brand assets (v3.5.4)
+
+| Asset | Use |
+| ----- | --- |
+| [agent-inspect-logo.svg](assets/agent-inspect-logo.svg) | Light-mode wordmark |
+| [agent-inspect-logo-dark.svg](assets/agent-inspect-logo-dark.svg) | Dark-mode wordmark |
+| [readme-product-loop.svg](assets/readme-product-loop.svg) | Capture → inspect → check → redact |
+
+Root README embeds the logo and product-loop SVG only. Terminal GIFs stay below.
 
 ---
 

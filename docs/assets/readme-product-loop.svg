@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 140" role="img" aria-label="AgentInspect product loop: capture, inspect, check, redact">
+  <rect width="760" height="140" fill="transparent"/>
+  <g font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif">
+    <!-- Capture -->
+    <rect x="16" y="28" width="150" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="91" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#312e81">Capture</text>
+    <text x="91" y="78" text-anchor="middle" font-size="11" fill="#475569">run · tools · adapters</text>
+    <!-- arrow -->
+    <path d="M174 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <!-- Inspect -->
+    <rect x="210" y="28" width="150" height="72" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <text x="285" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#064e3b">Inspect</text>
+    <text x="285" y="78" text-anchor="middle" font-size="11" fill="#475569">tree · report · diff</text>
+    <path d="M368 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <!-- Check -->
+    <rect x="404" y="28" width="150" height="72" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="479" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#78350f">Check</text>
+    <text x="479" y="78" text-anchor="middle" font-size="11" fill="#475569">CI · eval · stalls</text>
+    <path d="M562 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <!-- Redact -->
+    <rect x="598" y="28" width="146" height="72" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+    <text x="671" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Redact</text>
+    <text x="671" y="78" text-anchor="middle" font-size="11" fill="#475569">share-safe artifact</text>
+    <text x="380" y="124" text-anchor="middle" font-size="12" fill="#64748b">local JSONL only · no account · no upload</text>
+  </g>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg>

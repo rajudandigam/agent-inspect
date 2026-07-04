@@ -50,9 +50,9 @@
 
 ## Unreleased
 
-Post-v3.5 adoption polish (docs, package READMEs, npm presentation). No runtime feature changes planned without a new RFC.
+README adoption polish (brand header, product-loop visual, npm link hygiene). Docs-only; no runtime feature changes.
 
-See [docs/implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md](docs/implementation/release-trains/V3.5.X-ADOPTION-POLISH-PLAN.md).
+See [docs/implementation/reviews/README-ADOPTION-POLISH-REVIEW.md](docs/implementation/reviews/README-ADOPTION-POLISH-REVIEW.md).
 
 ---
 

@@ -1,13 +1,37 @@
-# agent-inspect
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/agent-inspect-logo-dark.svg">
+    <img src="docs/assets/agent-inspect-logo.svg" width="240" alt="AgentInspect">
+  </picture>
+</p>
 
-**Local-first TypeScript toolkit: trace what happened, check what should have happened, redact what must not leave your machine.**
+<h1 align="center">agent-inspect</h1>
 
-No account · no upload · no hosted dashboard · metadata-only by default
+<p align="center">
+  <strong>Trace, check, and safely share TypeScript AI-agent runs locally.</strong>
+</p>
 
-**Website:** [agentinspect.vercel.app](https://agentinspect.vercel.app/) · **Docs:** [agentinspect.vercel.app/docs](https://agentinspect.vercel.app/docs/)
+<p align="center">
+  <sub>No account · no upload · no hosted dashboard · metadata-only by default</sub>
+</p>
 
-[![npm version](https://img.shields.io/npm/v/agent-inspect.svg)](https://www.npmjs.com/package/agent-inspect)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://agentinspect.vercel.app/">Website</a> ·
+  <a href="https://agentinspect.vercel.app/docs/">Docs</a> ·
+  <a href="https://www.npmjs.com/package/agent-inspect">npm</a> ·
+  <a href="https://github.com/rajudandigam/agent-inspect">GitHub</a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/agent-inspect"><img src="https://img.shields.io/npm/v/agent-inspect.svg" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node.js >= 20"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-strict-3178c6" alt="TypeScript"></a>
+</p>
+
+agent-inspect turns AI-agent runs into readable **local execution trees**: framework events, observed objects, tool calls, LLM steps, retries, failures, timings, sessions, and CI artifacts — without an account, collector, or hosted dashboard.
+
+**Default loop:** capture locally → inspect / report / diff → check in CI → redact before sharing.
 
 ```bash
 npm install agent-inspect
@@ -24,46 +48,56 @@ npx agent-inspect report <run-id> --dir .agent-inspect
 npx agent-inspect verify-safe --dir .agent-inspect
 ```
 
-**North star:** install → one trace → one failure check → one share-safe artifact in under five minutes. See [First trace in 5 minutes](https://agentinspect.vercel.app/docs/getting-started/) ([repo doc](docs/FIRST-TRACE-IN-5-MINUTES.md)).
+Install → one trace → one failure check → one share-safe artifact in under five minutes.
+Guide: [First trace in 5 minutes](https://agentinspect.vercel.app/docs/getting-started/) · [repo](docs/FIRST-TRACE-IN-5-MINUTES.md)
+
+<p align="center">
+  <img src="docs/assets/readme-product-loop.svg" alt="Capture, inspect, check, redact — local JSONL only" width="720">
+</p>
 
 ## Choose your path
 
-| Path | When | Start here |
-| ---- | ---- | ---------- |
+| Path | Use when | Start |
+| ---- | -------- | ----- |
 | **AI SDK** | Vercel AI SDK `generateText` / `streamText` | [`@agent-inspect/ai-sdk`](packages/ai-sdk/README.md) · [guide](docs/AI-SDK-ADOPTION.md) |
-| **OpenAI Agents** | OpenAI Agents JS local tracing | [`@agent-inspect/openai-agents`](packages/openai-agents/README.md) · [guide](docs/OPENAI-AGENTS-LOCAL.md) |
-| **LangChain** | Callback adapter, LangGraph-via-LangChain | [`@agent-inspect/langchain`](packages/langchain/README.md) |
-| **Observe** | Existing class with `run` / `execute` | [Getting started § observe](docs/GETTING-STARTED.md) |
-| **Manual** | Custom control flow | `inspectRun` + `step` in [API](docs/API.md) |
+| **OpenAI Agents** | OpenAI Agents JS | [`@agent-inspect/openai-agents`](packages/openai-agents/README.md) · [guide](docs/OPENAI-AGENTS-LOCAL.md) |
+| **LangChain** | Callbacks / LangGraph-via-LangChain | [`@agent-inspect/langchain`](packages/langchain/README.md) |
+| **Observe** | Object/class with `run` / `execute` / `invoke` | [Getting started](docs/GETTING-STARTED.md) |
+| **Manual** | Custom spans and nesting | `inspectRun` + `step` in [API](docs/API.md) |
 | **Logs** | Structured logs already emitted | [Log-to-tree](docs/LOG-TO-TREE-QUICKSTART.md) |
-| **CI / tests** | Failed test artifacts | [`@agent-inspect/vitest`](packages/vitest/README.md) · [`@agent-inspect/jest`](packages/jest/README.md) |
-| **Real projects** | Fixture harness | [`@agent-inspect/harness`](packages/harness/README.md) |
+| **CI / tests** | Failed-test artifacts | [`@agent-inspect/vitest`](packages/vitest/README.md) · [`@agent-inspect/jest`](packages/jest/README.md) |
+| **Real projects** | Fixture runner / bootstrap | [`@agent-inspect/harness`](packages/harness/README.md) · [NestJS](docs/NESTJS.md) |
 
 Blessed starters (no API keys): [examples/starters](https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters)
 
 ## What it helps with
 
-- **Wrong tool call** — see tool steps, args metadata, and parent run in the tree
-- **Baseline vs candidate** — `diff` two runs locally
-- **Eval / test failures** — `check`, `eval`, Vitest/Jest reporters
-- **PR artifacts** — [CI artifacts](docs/CI-ARTIFACTS.md) + `redact --profile share`
+- **Wrong tool call** — tool steps, args metadata, and parent run in one tree
+- **Failed eval / test** — `check`, `eval`, Vitest/Jest reporters on failure
+- **Baseline vs candidate** — local `diff` of two runs
+- **PR trace artifact** — [CI artifacts](docs/CI-ARTIFACTS.md) + `redact --profile share`
+- **Safe incident handoff** — [safe sharing](https://agentinspect.vercel.app/docs/safe-sharing/) before Slack or GitHub
 - **Multi-agent / sessions** — `sessions`, `search`, handoff metadata
-- **MCP tools** — [`@agent-inspect/mcp`](packages/mcp/README.md) client tracing
-- **VS Code** — in-repo extension (`packages/vscode`); [dev guide](docs/VSCODE.md) — Marketplace listing manual
+- **MCP tool calls** — [`@agent-inspect/mcp`](packages/mcp/README.md) client tracing
+- **VS Code review** — in-repo extension ([dev guide](docs/VSCODE.md); Marketplace not published yet)
+- **Existing logs** — parse structured logs when you cannot instrument
 
 ## Real-world scenarios
 
-| Scenario | Doc |
-| -------- | --- |
-| Local debugging | [USE-CASES.md](docs/USE-CASES.md) |
-| CI failure review | [USE-CASES.md](docs/USE-CASES.md) § CI trace artifact |
-| Team adoption | [TEAM-WORKFLOWS.md](docs/TEAM-WORKFLOWS.md) · [Design partners](docs/DESIGN-PARTNER-GUIDE.md) |
+| Scenario | Where to start |
+| -------- | -------------- |
+| Local debugging | [Use cases](docs/USE-CASES.md) · [broken-agent starter](https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters/broken-agent-debugging) |
+| CI failure review | [CI artifacts](docs/CI-ARTIFACTS.md) · [ci-eval-redact](https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters/ci-eval-redact) |
+| Team adoption | [Team workflows](docs/TEAM-WORKFLOWS.md) · [Design partners](docs/DESIGN-PARTNER-GUIDE.md) |
+| Safe sharing | [Safe sharing](https://agentinspect.vercel.app/docs/safe-sharing/) · [repo](docs/SAFE-TRACE-SHARING.md) |
+| Framework-native tracing | [Adapters](docs/ADAPTERS.md) · package READMEs above |
+| Design partner trial | [Design partner guide](docs/DESIGN-PARTNER-GUIDE.md) · [Demo script](docs/DEMO-SCRIPT.md) |
 
 ## Package map
 
 | Package | Purpose |
 | ------- | ------- |
-| [`agent-inspect`](https://www.npmjs.com/package/agent-inspect) | Core + CLI |
+| [`agent-inspect`](https://www.npmjs.com/package/agent-inspect) | Core APIs + CLI |
 | [`@agent-inspect/ai-sdk`](packages/ai-sdk/README.md) | AI SDK telemetry |
 | [`@agent-inspect/openai-agents`](packages/openai-agents/README.md) | OpenAI Agents processor |
 | [`@agent-inspect/langchain`](packages/langchain/README.md) | LangChain callbacks |
@@ -75,53 +109,51 @@ Blessed starters (no API keys): [examples/starters](https://github.com/rajudandi
 | [`@agent-inspect/mcp`](packages/mcp/README.md) | MCP client tracing |
 | [`@agent-inspect/mcp-server`](packages/mcp-server/README.md) | Read-only trace MCP server |
 | [`@agent-inspect/guardrails`](packages/guardrails/README.md) | Deterministic guardrail rules |
-| [`@agent-inspect/circuit`](packages/circuit/README.md) | Loop/retry/timeout analyzers |
+| [`@agent-inspect/circuit`](packages/circuit/README.md) | Loop / retry / timeout analyzers |
 | [`@agent-inspect/viewer`](packages/viewer/README.md) | Localhost viewer |
 | [`@agent-inspect/adapter-sdk`](packages/adapter-sdk/README.md) | Third-party adapters |
 | [`@agent-inspect/tui`](packages/tui/README.md) | Optional terminal UI |
-| `agent-inspect-vscode` | VS Code extension (in-repo, not on Marketplace yet) |
+| `agent-inspect-vscode` | VS Code extension (in-repo; not on Marketplace yet) |
 
 ## Safety model
 
-- Traces are **local JSONL files** under `.agent-inspect/` (or `AGENT_INSPECT_TRACE_DIR`)
+- Traces are **local JSONL** under `.agent-inspect/` (or `AGENT_INSPECT_TRACE_DIR`)
 - **Metadata-only by default** — no raw prompts/outputs unless you opt in
 - **No hidden upload** — AgentInspect does not send traces to the cloud
-- **Redaction profiles** — `local` / `share` / `strict` via [`@agent-inspect/redact`](packages/redact/README.md) or CLI
+- **Redaction profiles** — `local` / `share` / `strict` via CLI or [`@agent-inspect/redact`](packages/redact/README.md)
 - **`scan` / `verify-safe`** — check artifacts before sharing
-- **Not** a chain-of-thought recorder or compliance engine
+- **Not** a chain-of-thought recorder or compliance engine — review exports before posting
 
-Details: [Safe trace sharing](docs/SAFE-TRACE-SHARING.md) · [Security](SECURITY.md)
+Details: [Safe sharing](https://agentinspect.vercel.app/docs/safe-sharing/) · [repo](docs/SAFE-TRACE-SHARING.md) · [Security](SECURITY.md)
 
 ## Documentation
 
-| Surface | Link |
-| ------- | ---- |
-| Website | [agentinspect.vercel.app](https://agentinspect.vercel.app/) |
-| Docs site | [agentinspect.vercel.app/docs](https://agentinspect.vercel.app/docs/) |
-| Getting started | [Web](https://agentinspect.vercel.app/docs/getting-started/) · [Repo](docs/GETTING-STARTED.md) |
-| Safe sharing | [Web](https://agentinspect.vercel.app/docs/safe-sharing/) · [Repo](docs/SAFE-TRACE-SHARING.md) |
-| Compare | [Web](https://agentinspect.vercel.app/docs/compare/) · [Repo](docs/COMPARE.md) |
+| | Website | Repo |
+| - | ------- | ---- |
+| Getting started | [docs/getting-started](https://agentinspect.vercel.app/docs/getting-started/) | [GETTING-STARTED.md](docs/GETTING-STARTED.md) |
+| Safe sharing | [docs/safe-sharing](https://agentinspect.vercel.app/docs/safe-sharing/) | [SAFE-TRACE-SHARING.md](docs/SAFE-TRACE-SHARING.md) |
+| Compare | [docs/compare](https://agentinspect.vercel.app/docs/compare/) | [COMPARE.md](docs/COMPARE.md) |
+| API / CLI | — | [API.md](docs/API.md) · [CLI.md](docs/CLI.md) |
+| Adoption | — | [ADOPTION.md](docs/ADOPTION.md) · [USE-CASES.md](docs/USE-CASES.md) |
+| Technical guide | — | [TECHNICAL-GUIDE.md](docs/TECHNICAL-GUIDE.md) |
+| Examples | — | [starters](https://github.com/rajudandigam/agent-inspect/tree/main/examples/starters) |
+| Visual demos | — | [SCREENSHOTS.md](docs/SCREENSHOTS.md) |
 
-| Start | Reference | Adoption |
-| ----- | --------- | -------- |
-| [Getting started](docs/GETTING-STARTED.md) | [API](docs/API.md) | [Adoption](docs/ADOPTION.md) |
-| [First trace in 5 min](docs/FIRST-TRACE-IN-5-MINUTES.md) | [CLI](docs/CLI.md) | [Demo script](docs/DEMO-SCRIPT.md) |
-| [Use cases](docs/USE-CASES.md) | [Adapters](docs/ADAPTERS.md) | [Technical guide](docs/TECHNICAL-GUIDE.md) |
-| [Examples](https://github.com/rajudandigam/agent-inspect/tree/main/examples) | [Performance](docs/PERFORMANCE.md) | [Pitch](docs/PITCH.md) |
-
-Full index: [docs/README.md](docs/README.md) · Visual demos: [SCREENSHOTS.md](docs/SCREENSHOTS.md)
+Full index: [docs/README.md](docs/README.md)
 
 ## What AgentInspect is not
 
 - Hosted SaaS or dashboard product
 - Production APM replacement (use LangSmith, Langfuse, OTel, etc. alongside)
 - Eval dataset platform or LLM-as-judge service
-- Prompt registry or pricing engine
+- Prompt registry or provider pricing engine
 - Default telemetry uploader or replay engine
+
+See [Compare](https://agentinspect.vercel.app/docs/compare/).
 
 ## Install details
 
-Current release: **3.5.3** (sixteen linked npm packages). Persisted trace schema **1.0**.
+Current release: **3.5.3** (sixteen linked npm packages). Persisted trace schema **1.0**. Requires **Node.js >= 20**.
 
 ```bash
 pnpm add agent-inspect
