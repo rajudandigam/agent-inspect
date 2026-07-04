@@ -20,6 +20,7 @@ Maintainers add rows after merged PRs or notable community help. **Do not add fa
 | ----------- | ---- | ------------ | ---- |
 | @zycaskevin | Documentation / CLI examples | Added diff CLI output examples for local trace comparison | 2026-06 |
 | @MFA-G | Examples / logging recipes | Added Winston JSON logs recipe | 2026-06 |
+| @buyicoder | Documentation / community | Extension submission template, first PR walkthrough, contributor index sync | 2026-07 |
 
 ### Recognition policy
 
