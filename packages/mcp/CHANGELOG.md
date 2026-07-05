@@ -1,5 +1,13 @@
 # @agent-inspect/mcp
 
+## 3.5.5
+
+### Patch Changes
+
+- 822da6c: Fix npm README images: use absolute raw GitHub SVG URLs with sanitize=true so the product-loop diagram and logos render on npmjs.com. Harden readme-product-loop.svg for sanitizer compatibility. Docs-only; no runtime API changes.
+- Updated dependencies [822da6c]
+  - agent-inspect@3.5.5
+
 ## 3.5.4
 
 ### Patch Changes
