@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/agent-inspect-logo-dark.svg">
-    <img src="docs/assets/agent-inspect-logo.svg" width="240" alt="AgentInspect">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/agent-inspect-logo-dark.svg?sanitize=true">
+    <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/agent-inspect-logo.svg?sanitize=true" width="240" alt="AgentInspect">
   </picture>
 </p>
 
@@ -52,7 +52,7 @@ Install → one trace → one failure check → one share-safe artifact in under
 Guide: [First trace in 5 minutes](https://agentinspect.vercel.app/docs/getting-started/) · [repo](docs/FIRST-TRACE-IN-5-MINUTES.md)
 
 <p align="center">
-  <img src="docs/assets/readme-product-loop.svg" alt="Capture, inspect, check, redact — local JSONL only" width="720">
+  <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/readme-product-loop.svg?sanitize=true" alt="Capture, inspect, check, redact — local JSONL only" width="720">
 </p>
 
 ## Choose your path
