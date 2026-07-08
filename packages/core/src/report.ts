@@ -138,8 +138,16 @@ export function buildRunReport(
     '<section class="tree">',
     "</section>",
   );
+  // The exporter emits Errors before Attributes, so the errors fragment must
+  // stop at the attributes heading when both sections are present; ending at
+  // <footer> would swallow the attributes section and duplicate it below.
+  const errorsSectionEnd = treeHtml.content.includes(
+    "<h2>Attributes (bounded)</h2>",
+  )
+    ? "<h2>Attributes (bounded)</h2>"
+    : "<footer>";
   const errorsSection = treeHtml.content.includes("<h2>Errors</h2>")
-    ? extractHtmlFragment(treeHtml.content, "<h2>Errors</h2>", "<footer>")
+    ? extractHtmlFragment(treeHtml.content, "<h2>Errors</h2>", errorsSectionEnd)
     : "";
   const attrsSection = treeHtml.content.includes("<h2>Attributes (bounded)</h2>")
     ? extractHtmlFragment(

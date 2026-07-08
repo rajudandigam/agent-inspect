@@ -109,6 +109,23 @@ describe("buildRunReport", () => {
     expect(report.content).toContain("## Errors");
   });
 
+  it("html report renders errors and attributes sections exactly once", () => {
+    const report = buildRunReport(sensitiveTrace(), {
+      format: "html",
+      includeAttributes: true,
+    });
+
+    const errorHeadings =
+      report.content.match(/<h2>Errors<\/h2>/g) ?? [];
+    const attrHeadings =
+      report.content.match(/<h2>Attributes \(bounded\)<\/h2>/g) ?? [];
+    expect(errorHeadings).toHaveLength(1);
+    expect(attrHeadings).toHaveLength(1);
+    expect(report.content.indexOf("<h2>Errors</h2>")).toBeLessThan(
+      report.content.indexOf("<h2>Attributes (bounded)</h2>"),
+    );
+  });
+
   it("markdown report includes token line in what section when present", async () => {
     const events = await loadFixtureTrace("llm-with-tokens");
     const report = buildRunReport(events as any, { format: "markdown" });
