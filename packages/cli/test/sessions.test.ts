@@ -4,7 +4,15 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { sessionCommand, sessionsCommand } from "../src/sessions.js";
+import {
+  sessionCommand,
+  sessionsActivityCommand,
+  sessionsCommand,
+  sessionsErrorsCommand,
+  sessionsHandoffsCommand,
+  sessionsLatestCommand,
+  sessionsShowCommand,
+} from "../src/sessions.js";
 
 const fixturesRoot = path.resolve(
   path.dirname(new URL(import.meta.url).pathname),
@@ -94,9 +102,63 @@ describe("sessions CLI", () => {
     await copySessionFixtures(tmpDir);
     await sessionCommand("sess-retry-001", { dir: tmpDir, json: true });
     const parsed = JSON.parse(logSpy.mock.calls.flat().join("")) as {
-      session: { sessionId: string; retries: unknown[] };
+      session: { sessionId: string; retries: unknown[]; status: string };
     };
     expect(parsed.session.sessionId).toBe("sess-retry-001");
     expect(parsed.session.retries.length).toBeGreaterThan(0);
+    expect(parsed.session.status).toBeDefined();
+  });
+
+  it("latest returns the most recent session", async () => {
+    await copySessionFixtures(tmpDir);
+    await sessionsLatestCommand({ dir: tmpDir, json: true });
+    const parsed = JSON.parse(logSpy.mock.calls.flat().join("")) as {
+      ok: boolean;
+      session: { sessionId: string };
+    };
+    expect(parsed.ok).toBe(true);
+    expect(parsed.session.sessionId).toMatch(/^sess-/);
+  });
+
+  it("activity emits JSON summary", async () => {
+    await copySessionFixtures(tmpDir);
+    await sessionsActivityCommand({ dir: tmpDir, json: true, since: "1000d" });
+    const parsed = JSON.parse(logSpy.mock.calls.flat().join("")) as {
+      ok: boolean;
+      sessions: number;
+      entries: unknown[];
+    };
+    expect(parsed.ok).toBe(true);
+    expect(parsed.sessions).toBeGreaterThan(0);
+  });
+
+  it("handoffs lists edges for a session", async () => {
+    await copySessionFixtures(tmpDir);
+    await sessionsHandoffsCommand({
+      dir: tmpDir,
+      session: "sess-handoff-001",
+      json: true,
+    });
+    const parsed = JSON.parse(logSpy.mock.calls.flat().join("")) as {
+      count: number;
+      handoffs: Array<{ from: string; to: string }>;
+    };
+    expect(parsed.count).toBeGreaterThan(0);
+    expect(parsed.handoffs[0]?.from).toBeDefined();
+  });
+
+  it("show delegates to session view", async () => {
+    await copySessionFixtures(tmpDir);
+    await sessionsShowCommand("sess-handoff-001", { dir: tmpDir });
+    const out = logSpy.mock.calls.flat().join("\n");
+    expect(out).toContain("sess-handoff-001");
+    expect(out).toContain("Handoffs:");
+  });
+
+  it("errors reports empty when no failures", async () => {
+    await copySessionFixtures(tmpDir);
+    await sessionsErrorsCommand({ dir: tmpDir, since: "30d" });
+    const out = logSpy.mock.calls.flat().join("\n");
+    expect(out).toContain("No error sessions");
   });
 });

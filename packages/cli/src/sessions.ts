@@ -1,21 +1,26 @@
 import {
-  TraceDirectory,
+  buildActivitySummary,
   buildRunTimeline,
   buildSessionIndex,
-  loadSessionRunRecords,
-  loadTraceMetadataList,
+  parseDuration,
+  renderActivitySummaryHuman,
   renderTimeline,
   resolveTraceDir,
+  type HandoffEdge,
   type SessionIndex,
   type SessionSummary,
 } from "@agent-inspect/core/advanced";
 
 import { readRunTraceEvents } from "./read-run.js";
+import { loadSessionRuns } from "./sessions-load.js";
 
 export interface SessionsCommandOptions {
   dir?: string;
   json?: boolean;
   correlateGroup?: boolean;
+  since?: string;
+  staleAfter?: string;
+  session?: string;
 }
 
 export interface SessionCommandOptions {
@@ -28,15 +33,20 @@ export interface SessionCommandOptions {
 
 async function loadSessionIndex(
   traceDir: string,
-  correlateGroup?: boolean,
+  options: {
+    correlateGroup?: boolean;
+    staleAfter?: string;
+  } = {},
 ): Promise<SessionIndex> {
-  const td = new TraceDirectory({ dir: traceDir });
-  const files = await td.list();
-  const metas = await loadTraceMetadataList(traceDir, files, (fileName) =>
-    td.getPath(fileName),
-  );
-  const runs = await loadSessionRunRecords(metas);
-  return buildSessionIndex(runs, { correlateByGroupId: correlateGroup === true });
+  const { runs } = await loadSessionRuns(traceDir);
+  const staleThresholdMs =
+    options.staleAfter && options.staleAfter.trim() !== ""
+      ? parseDuration(options.staleAfter.trim())
+      : undefined;
+  return buildSessionIndex(runs, {
+    correlateByGroupId: options.correlateGroup === true,
+    staleThresholdMs,
+  });
 }
 
 function findSession(
@@ -44,6 +54,29 @@ function findSession(
   sessionId: string,
 ): SessionSummary | undefined {
   return index.sessions.find((session) => session.sessionId === sessionId);
+}
+
+function latestSession(index: SessionIndex): SessionSummary | undefined {
+  if (index.sessions.length === 0) return undefined;
+  return [...index.sessions].sort(
+    (a, b) => Date.parse(b.lastActivity) - Date.parse(a.lastActivity),
+  )[0];
+}
+
+function parseSinceCutoff(since: string | undefined): number | undefined {
+  if (!since || since.trim() === "") return undefined;
+  return Date.now() - parseDuration(since.trim());
+}
+
+function sessionsInSinceWindow(
+  index: SessionIndex,
+  since?: string,
+): SessionSummary[] {
+  const cutoff = parseSinceCutoff(since);
+  if (cutoff === undefined) return index.sessions;
+  return index.sessions.filter(
+    (session) => Date.parse(session.lastActivity) >= cutoff,
+  );
 }
 
 function renderSessionsHuman(index: SessionIndex, traceDir: string): void {
@@ -60,17 +93,9 @@ function renderSessionsHuman(index: SessionIndex, traceDir: string): void {
 
   console.log("Sessions:");
   for (const session of index.sessions) {
-    const firstRun = index.runs.find((run) =>
-      session.runIds.includes(run.runId),
-    );
-    const workflowName =
-      firstRun?.metadata &&
-      typeof firstRun.metadata.workflowName === "string"
-        ? firstRun.metadata.workflowName
-        : undefined;
-    const suffix = workflowName ? ` workflow=${workflowName}` : "";
+    const suffix = session.workflowId ? ` workflow=${session.workflowId}` : "";
     console.log(
-      `  ${session.sessionId} (${session.runIds.length} run${session.runIds.length === 1 ? "" : "s"})${suffix}`,
+      `  ${session.sessionId} [${session.status}] (${session.runIds.length} run${session.runIds.length === 1 ? "" : "s"})${suffix}`,
     );
   }
 
@@ -88,7 +113,14 @@ function renderSessionHuman(
   options: SessionCommandOptions,
 ): void {
   console.log(`Session: ${session.sessionId}`);
+  console.log(`Status: ${session.status}`);
   console.log(`Runs: ${session.runIds.join(", ")}`);
+  if (session.lastActivity) console.log(`Last activity: ${session.lastActivity}`);
+  if (session.lastError) {
+    console.log(
+      `Last error: ${session.lastError.message} (run ${session.lastError.runId})`,
+    );
+  }
 
   if (session.handoffs.length > 0) {
     console.log("");
@@ -141,12 +173,37 @@ function renderSessionHuman(
   }
 }
 
+function collectHandoffs(
+  index: SessionIndex,
+  sessionId?: string,
+): Array<HandoffEdge & { sessionId: string }> {
+  const sessions = sessionId
+    ? index.sessions.filter((s) => s.sessionId === sessionId)
+    : index.sessions;
+  const out: Array<HandoffEdge & { sessionId: string }> = [];
+  for (const session of sessions) {
+    for (const edge of session.handoffs) {
+      out.push({ ...edge, sessionId: session.sessionId });
+    }
+  }
+  return out.sort((a, b) => {
+    const session = a.sessionId.localeCompare(b.sessionId);
+    if (session !== 0) return session;
+    const from = a.from.localeCompare(b.from);
+    if (from !== 0) return from;
+    return a.to.localeCompare(b.to);
+  });
+}
+
 export async function sessionsCommand(
   options: SessionsCommandOptions = {},
 ): Promise<void> {
   try {
     const traceDir = resolveTraceDir({ dir: options.dir });
-    const index = await loadSessionIndex(traceDir, options.correlateGroup);
+    const index = await loadSessionIndex(traceDir, {
+      correlateGroup: options.correlateGroup,
+      staleAfter: options.staleAfter,
+    });
 
     if (options.json) {
       console.log(
@@ -170,6 +227,137 @@ export async function sessionsCommand(
     console.error(`[AgentInspect] sessions failed: ${msg}`);
     process.exitCode = 1;
   }
+}
+
+export async function sessionsLatestCommand(
+  options: SessionsCommandOptions = {},
+): Promise<void> {
+  try {
+    const traceDir = resolveTraceDir({ dir: options.dir });
+    const index = await loadSessionIndex(traceDir, {
+      correlateGroup: options.correlateGroup,
+      staleAfter: options.staleAfter,
+    });
+    const latest = latestSession(index);
+    if (!latest) {
+      if (options.json) {
+        console.log(JSON.stringify({ ok: false, traceDir, reason: "no-sessions" }, null, 2));
+      } else {
+        console.log("No sessions found");
+        console.log(`Trace directory: ${traceDir}`);
+      }
+      process.exitCode = 1;
+      return;
+    }
+    if (options.json) {
+      console.log(JSON.stringify({ ok: true, traceDir, session: latest }, null, 2));
+      return;
+    }
+    console.log(`Latest session: ${latest.sessionId}`);
+    console.log(`Status: ${latest.status}`);
+    console.log(`Last activity: ${latest.lastActivity}`);
+    console.log(`Runs: ${latest.runIds.join(", ")}`);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[AgentInspect] sessions latest failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
+export async function sessionsActivityCommand(
+  options: SessionsCommandOptions = {},
+): Promise<void> {
+  try {
+    const traceDir = resolveTraceDir({ dir: options.dir });
+    const index = await loadSessionIndex(traceDir, {
+      correlateGroup: options.correlateGroup,
+      staleAfter: options.staleAfter,
+    });
+    const summary = buildActivitySummary(index, { since: options.since });
+    if (options.json) {
+      console.log(JSON.stringify({ ok: true, traceDir, ...summary }, null, 2));
+      return;
+    }
+    console.log(renderActivitySummaryHuman(summary));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[AgentInspect] sessions activity failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
+export async function sessionsHandoffsCommand(
+  options: SessionsCommandOptions = {},
+): Promise<void> {
+  try {
+    const traceDir = resolveTraceDir({ dir: options.dir });
+    const index = await loadSessionIndex(traceDir, {
+      correlateGroup: options.correlateGroup,
+    });
+    const handoffs = collectHandoffs(index, options.session);
+    if (options.json) {
+      console.log(
+        JSON.stringify({ ok: true, traceDir, count: handoffs.length, handoffs }, null, 2),
+      );
+      return;
+    }
+    if (handoffs.length === 0) {
+      console.log("No handoffs found");
+      return;
+    }
+    for (const edge of handoffs) {
+      console.log(
+        `${edge.sessionId}: ${edge.from} -> ${edge.to} (${edge.confidence})`,
+      );
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[AgentInspect] sessions handoffs failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
+export async function sessionsErrorsCommand(
+  options: SessionsCommandOptions = {},
+): Promise<void> {
+  try {
+    const traceDir = resolveTraceDir({ dir: options.dir });
+    const index = await loadSessionIndex(traceDir, {
+      correlateGroup: options.correlateGroup,
+      staleAfter: options.staleAfter,
+    });
+    const scoped = sessionsInSinceWindow(index, options.since);
+    const errors = scoped.filter((session) => session.status === "error");
+    if (options.json) {
+      console.log(
+        JSON.stringify(
+          { ok: true, traceDir, count: errors.length, sessions: errors },
+          null,
+          2,
+        ),
+      );
+      return;
+    }
+    if (errors.length === 0) {
+      console.log("No error sessions found");
+      return;
+    }
+    for (const session of errors) {
+      const detail = session.lastError?.message ?? "error";
+      console.log(`${session.sessionId}  ${detail}  (${session.runIds.length} runs)`);
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[AgentInspect] sessions errors failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
+export async function sessionsShowCommand(
+  sessionId: string,
+  options: SessionCommandOptions = {},
+): Promise<void> {
+  await sessionCommand(sessionId, options);
 }
 
 export async function sessionCommand(

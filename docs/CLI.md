@@ -42,7 +42,7 @@ Core commands:
 - `timeline` — chronological view of one run (local JSONL)
 - `stats` — local aggregate stats over a trace directory
 - `search` — deterministic local search over traces
-- `sessions` — list workflow sessions from trace metadata
+- `sessions` — list workflow sessions; v4.2+ subcommands: `latest`, `activity`, `show`, `handoffs`, `errors`
 - `session` — inspect one session (handoffs, retries, optional timeline)
 - `what` — concise summary of a single run (local JSONL)
 - `report` — markdown or HTML inspection report for a single run
@@ -681,23 +681,34 @@ npx agent-inspect search --session sess-retry-001 --dir ./.agent-inspect
 
 ### 6.19 `sessions`
 
-List workflow sessions grouped from local trace metadata (`sessionId`, optional `groupId` correlation). Read-only; no network.
+Workflow sessions and activity from local trace metadata. v4.2 adds session status, activity summaries, and optional SQLite index acceleration (falls back to directory scan). Read-only; no network.
 
 ```bash
-agent-inspect sessions [options]
+agent-inspect sessions [options]                    # list sessions (default)
+agent-inspect sessions latest [--json]
+agent-inspect sessions activity [--since 7d] [--json]
+agent-inspect sessions show <session-id> [--timeline] [--json]
+agent-inspect sessions handoffs [--session <id>] [--json]
+agent-inspect sessions errors [--since 7d] [--json]
 ```
 
-Options:
+Shared options:
 
 - `--dir <path>`
 - `--correlate-group` — treat shared `groupId` as a synthetic session when `sessionId` is absent
-- `--json` — `SessionIndex` JSON (`sessions`, `unscopedRunIds`, `warnings`)
+- `--stale-after <duration>` — mark sessions stale after inactivity (e.g. `24h`, `7d`)
+- `--json` — deterministic JSON output
+
+`activity` and `errors` accept `--since <duration>` (e.g. `7d`, `24h`). Session summaries include derived `status`, `lastActivity`, `lastError`, and `retryCount` without changing trace files.
 
 Example:
 
 ```bash
 npx agent-inspect sessions --dir ./.agent-inspect
-npx agent-inspect sessions --json
+npx agent-inspect sessions latest --json
+npx agent-inspect sessions activity --since 7d
+npx agent-inspect sessions handoffs --session sess-handoff-001
+npx agent-inspect sessions errors --since 30d --json
 ```
 
 ### 6.20 `session`
