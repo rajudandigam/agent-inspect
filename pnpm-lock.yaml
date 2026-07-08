@@ -98,6 +98,18 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/adapter-sdk/minimal-source-adapter:
+    dependencies:
+      '@agent-inspect/adapter-sdk':
+        specifier: workspace:*
+        version: link:../../../packages/adapter-sdk
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/ai-sdk-local-telemetry:
     dependencies:
       '@agent-inspect/ai-sdk':
