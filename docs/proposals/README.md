@@ -26,6 +26,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [CI-REPORTERS.md](./CI-REPORTERS.md) | v2.2.0 | Optional Vitest/Jest reporter package boundary, shared artifact contract, and CI summary workflow |
 | [SESSIONS-AND-WORKFLOW-CAUSALITY.md](./SESSIONS-AND-WORKFLOW-CAUSALITY.md) | v2.4.0 | Additive session/workflow metadata, handoff/retry rules, MCP telemetry boundary |
 | [LOCAL-TRACE-WORKSPACE.md](./LOCAL-TRACE-WORKSPACE.md) | v4.0.0 | Project-local workspace layout + `workspace.json` manifest (schema 1.0), adoption/compat, non-goals |
+| [OPTIONAL-LOCAL-INDEX.md](./OPTIONAL-LOCAL-INDEX.md) | v4.1.0 | Opt-in, disposable SQLite index (`@agent-inspect/index-sqlite`) for faster local queries; driver decision, schema, staleness/recovery, publication gate |
 
 ## Rules
 
