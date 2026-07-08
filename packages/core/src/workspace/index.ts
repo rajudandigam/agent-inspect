@@ -28,3 +28,23 @@ export {
   serializeWorkspaceManifest,
   validateWorkspaceManifest,
 } from "./manifest.js";
+
+export {
+  type WorkspaceLocation,
+  type ReadWorkspaceManifestResult,
+  type CreateWorkspaceOptions,
+  type CreateWorkspaceResult,
+  type WorkspaceIndexStatus,
+  type WorkspaceStatus,
+  type WorkspaceDoctorCheck,
+  type WorkspaceDoctorResult,
+  type CleanWorkspaceOptions,
+  type CleanWorkspaceResult,
+  resolveWorkspaceLocation,
+  resolveInsideWorkspace,
+  readWorkspaceManifestFile,
+  createWorkspace,
+  getWorkspaceStatus,
+  doctorWorkspace,
+  cleanWorkspace,
+} from "./fs.js";
