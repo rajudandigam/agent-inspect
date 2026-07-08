@@ -8,6 +8,7 @@ import * as logs from "../src/entries/logs.js";
 import * as persisted from "../src/entries/persisted.js";
 import * as readers from "../src/entries/readers.js";
 import * as reporters from "../src/entries/reporters.js";
+import * as workspace from "../src/entries/workspace.js";
 import * as writers from "../src/entries/writers.js";
 import * as core from "../src/index.js";
 
@@ -108,5 +109,10 @@ describe("core API stability (v2.0 root contract)", () => {
     expect(typeof checks.runTraceChecks).toBe("function");
     expect(typeof reporters.createTraceArtifactManifest).toBe("function");
     expect(typeof reporters.createReporterArtifactPath).toBe("function");
+    expect(typeof workspace.createWorkspace).toBe("function");
+    expect(typeof workspace.createDefaultWorkspaceManifest).toBe("function");
+    expect(typeof workspace.validateWorkspaceManifest).toBe("function");
+    expect(typeof workspace.doctorWorkspace).toBe("function");
+    expect(workspace.WORKSPACE_SCHEMA_VERSION).toBe("1.0");
   });
 });

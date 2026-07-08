@@ -36,6 +36,9 @@ const coreReportersEntry = fileURLToPath(
 const coreWritersEntry = fileURLToPath(
   new URL("./packages/core/src/entries/writers.ts", import.meta.url),
 );
+const coreWorkspaceEntry = fileURLToPath(
+  new URL("./packages/core/src/entries/workspace.ts", import.meta.url),
+);
 
 const langchainEntry = fileURLToPath(
   new URL("./packages/langchain/src/index.ts", import.meta.url),
@@ -111,6 +114,7 @@ export default defineConfig({
       "@agent-inspect/core/readers": coreReadersEntry,
       "@agent-inspect/core/reporters": coreReportersEntry,
       "@agent-inspect/core/writers": coreWritersEntry,
+      "@agent-inspect/core/workspace": coreWorkspaceEntry,
       "@agent-inspect/core": coreEntry,
       "agent-inspect/advanced": coreAdvancedEntry,
       "agent-inspect/checks": coreChecksEntry,
@@ -121,6 +125,7 @@ export default defineConfig({
       "agent-inspect/readers": coreReadersEntry,
       "agent-inspect/reporters": coreReportersEntry,
       "agent-inspect/writers": coreWritersEntry,
+      "agent-inspect/workspace": coreWorkspaceEntry,
       /** Same entry as published `agent-inspect` — packages/langchain imports `agent-inspect`. */
       "agent-inspect": coreEntry,
       "@agent-inspect/ai-sdk": aiSdkEntry,
@@ -153,6 +158,7 @@ export default defineConfig({
       "@agent-inspect/core/readers",
       "@agent-inspect/core/reporters",
       "@agent-inspect/core/writers",
+      "@agent-inspect/core/workspace",
       "agent-inspect",
       "agent-inspect/advanced",
       "agent-inspect/checks",
@@ -163,6 +169,7 @@ export default defineConfig({
       "agent-inspect/readers",
       "agent-inspect/reporters",
       "agent-inspect/writers",
+      "agent-inspect/workspace",
       "@agent-inspect/ai-sdk",
       "@agent-inspect/vitest",
       "@agent-inspect/jest",

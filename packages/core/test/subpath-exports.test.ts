@@ -18,6 +18,7 @@ const SUBPATHS = [
   "readers",
   "checks",
   "reporters",
+  "workspace",
 ] as const;
 
 type DualExportEntry = {

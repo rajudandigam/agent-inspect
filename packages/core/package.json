@@ -107,6 +107,16 @@
         "types": "./dist/reporters.d.cts",
         "default": "./dist/reporters.cjs"
       }
+    },
+    "./workspace": {
+      "import": {
+        "types": "./dist/workspace.d.ts",
+        "default": "./dist/workspace.mjs"
+      },
+      "require": {
+        "types": "./dist/workspace.d.cts",
+        "default": "./dist/workspace.cjs"
+      }
     }
   },
   "files": ["dist"],

@@ -116,6 +116,16 @@
         "types": "./packages/core/dist/reporters.d.cts",
         "default": "./packages/core/dist/reporters.cjs"
       }
+    },
+    "./workspace": {
+      "import": {
+        "types": "./packages/core/dist/workspace.d.ts",
+        "default": "./packages/core/dist/workspace.mjs"
+      },
+      "require": {
+        "types": "./packages/core/dist/workspace.d.cts",
+        "default": "./packages/core/dist/workspace.cjs"
+      }
     }
   },
   "bin": {
@@ -154,6 +164,7 @@
     "docs/DESIGN-PARTNER-GUIDE.md",
     "docs/DEMO-SCRIPT.md",
     "docs/TECHNICAL-GUIDE.md",
+    "docs/WORKSPACE.md",
     "docs/AI-SDK-ADOPTION.md",
     "docs/OPENAI-AGENTS-LOCAL.md",
     "docs/NESTJS.md",

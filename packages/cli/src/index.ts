@@ -62,6 +62,18 @@ import {
   indexCleanCommand,
   indexStatusCommand,
 } from "./index-cmd.js";
+import type {
+  WorkspaceCommandOptions,
+  WorkspaceInitOptions,
+  WorkspaceCleanOptions,
+} from "./workspace.js";
+import {
+  workspaceInitCommand,
+  workspaceStatusCommand,
+  workspaceDoctorCommand,
+  workspaceCleanCommand,
+  workspacePathCommand,
+} from "./workspace.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -772,6 +784,60 @@ export function createCliProgram(): Command {
     .option("--json", "print JSON result")
     .action((opts: IndexCommandOptions) => {
       runCommand(() => indexCleanCommand(opts));
+    });
+
+  const workspaceCmd = program
+    .command("workspace")
+    .description("Manage a project-local AgentInspect workspace (.agent-inspect)");
+
+  workspaceCmd
+    .command("init")
+    .description("Create or adopt a local workspace (never deletes traces)")
+    .option("--project <name>", "project name (default: directory name)")
+    .addOption(
+      new Option("--redaction-profile <profile>", "default redaction posture").choices([
+        "local",
+        "share",
+        "strict",
+      ]),
+    )
+    .option("--dry-run", "print planned changes without writing")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: WorkspaceInitOptions) => {
+      runCommand(() => workspaceInitCommand(opts));
+    });
+
+  workspaceCmd
+    .command("status")
+    .description("Show workspace counts and index status (read-only)")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: WorkspaceCommandOptions) => {
+      runCommand(() => workspaceStatusCommand(opts));
+    });
+
+  workspaceCmd
+    .command("doctor")
+    .description("Validate workspace config, permissions, and index freshness")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: WorkspaceCommandOptions) => {
+      runCommand(() => workspaceDoctorCommand(opts));
+    });
+
+  workspaceCmd
+    .command("clean")
+    .description("Remove generated content (reports/artifacts/bundles/index); traces are never deleted")
+    .option("--yes", "actually delete (default is a dry-run)")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: WorkspaceCleanOptions) => {
+      runCommand(() => workspaceCleanCommand(opts));
+    });
+
+  workspaceCmd
+    .command("path")
+    .description("Print resolved workspace paths")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: WorkspaceCommandOptions) => {
+      runCommand(() => workspacePathCommand(opts));
     });
 
   return program;
