@@ -105,11 +105,12 @@ export async function list(options: ListOptions = {}): Promise<void> {
     }
 
     const limit = parseLimit(options.limit);
+    // Filter without a limit so the summary reports how many runs matched;
+    // the limit only bounds the rows shown.
     const filtered = filterTraces(metas, {
       status: options.status,
       name: options.name,
       since: options.since,
-      limit,
     });
     const shown = filtered.slice(0, limit);
 
