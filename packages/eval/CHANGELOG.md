@@ -1,5 +1,19 @@
 # @agent-inspect/eval
 
+## 4.2.0
+
+### Minor Changes
+
+- Align the linked package suite to 4.2.0. No behavior changes in these packages; keeps published versions consistent with the v4.2 sessions and activity release.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @agent-inspect/guardrails@4.2.0
+  - @agent-inspect/circuit@4.2.0
+  - agent-inspect@4.2.0
+
 ## 4.1.0
 
 ### Minor Changes

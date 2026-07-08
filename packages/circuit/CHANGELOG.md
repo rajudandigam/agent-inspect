@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 4.2.0
+
+### Minor Changes
+
+- Align the linked package suite to 4.2.0. No behavior changes in these packages; keeps published versions consistent with the v4.2 sessions and activity release.
+
 ## 4.1.0
 
 ### Minor Changes

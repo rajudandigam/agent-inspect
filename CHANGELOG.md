@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.2.0
+
+### Minor Changes
+
+- Add sessions and activity as first-class local concepts (v4.2).
+
+  - Derive session status, timing, last error, and retry counts on enriched `SessionSummary` (builds on v2.4 vocabulary; no timestamp-only causality).
+  - Add `buildActivitySummary` for windowed activity feeds.
+  - Expand CLI: `sessions latest`, `activity`, `show`, `handoffs`, `errors` (bare `sessions` list and `session <id>` unchanged).
+  - Optional SQLite index acceleration for session loading with automatic scan fallback when the index is absent, stale, or corrupt.
+  - Docs: CLI reference update.
+
 ## 4.1.0
 
 ### Minor Changes
