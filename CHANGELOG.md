@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.1.0
+
+### Minor Changes
+
+- Add the optional local trace index (v4.1).
+
+  - New optional package `@agent-inspect/index-sqlite`: a disposable, rebuildable SQLite index over AgentInspect JSONL traces for faster local queries. JSONL stays the source of truth, trace files are never mutated, deleting the index is always safe, and there is no network access. SQLite (`better-sqlite3`) lives only in this optional package — never in root/core.
+  - New `agent-inspect index sqlite` CLI subcommands (`build`, `rebuild`, `status`, `query`, `clean`) that load the optional package on demand and print an install hint when it is absent.
+  - Non-throwing read APIs (`queryRuns`, `indexStatus`, `isIndexStale`) with corruption/staleness recovery so callers can transparently fall back to a directory scan.
+  - Docs: `docs/INDEX.md` plus `docs/CLI.md` reference.
+
 ## 4.0.0
 
 ### Major Changes

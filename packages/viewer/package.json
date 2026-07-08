@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/viewer",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "license": "MIT",
   "type": "module",
   "description": "Optional localhost read-only trace viewer for AgentInspect",

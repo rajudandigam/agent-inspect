@@ -1,5 +1,16 @@
 # @agent-inspect/viewer
 
+## 4.1.0
+
+### Minor Changes
+
+- Align the linked package suite to 4.1.0. No behavior changes in these packages; this keeps the published versions consistent with the v4.1 optional local index release.
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@4.1.0
+
 ## 4.0.0
 
 ### Patch Changes
