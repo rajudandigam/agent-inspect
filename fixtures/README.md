@@ -19,6 +19,14 @@ Canonical **deterministic** samples for tests, CI validation, and documentation.
 - Emails use **`example.test`** only.
 - Trace failures use **`step_completed`** with `status: "error"` (never `step_failed`).
 
+## Highlights
+
+- **Retry / circuit-breaker pack** (`traces/tool-retry-success.jsonl`,
+  `traces/repeated-tool-args.jsonl`, `traces/tool-timeout-stall.jsonl`):
+  deterministic retry, repeated-args, and timeout/stall patterns for
+  `@agent-inspect/circuit` style analysis. See
+  [traces/README.md](./traces/README.md#retry--circuit-breaker-pack).
+
 ## Validation
 
 From the repo root:
