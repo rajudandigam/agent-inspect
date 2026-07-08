@@ -337,7 +337,14 @@ export function buildSessionIndex(
 
 export { extractSessionWorkflowMetadata, sessionKeyForRun } from "./metadata.js";
 export { deriveSessionStatus, enrichSessionSummary } from "./status.js";
+export {
+  buildActivitySummary,
+  renderActivitySummaryHuman,
+} from "./activity.js";
 export type {
+  ActivityEntry,
+  ActivitySummary,
+  BuildActivitySummaryOptions,
   BuildSessionIndexOptions,
   CriticalPathStep,
   EnrichSessionSummaryOptions,

@@ -138,6 +138,32 @@ export interface EnrichSessionSummaryOptions {
   staleThresholdMs?: number;
 }
 
+export interface ActivityEntry {
+  sessionId: string;
+  status: SessionStatus;
+  summary: string;
+  lastActivity: string;
+  runCount: number;
+}
+
+export interface ActivitySummary {
+  since: string;
+  sessions: number;
+  failed: number;
+  stale: number;
+  guardrailWarnings: number;
+  entries: ActivityEntry[];
+}
+
+export interface BuildActivitySummaryOptions {
+  /** Duration window (e.g. 7d, 24h). Default 7d. */
+  since?: string;
+  /** Reference clock (default Date.now()). */
+  nowMs?: number;
+  /** Max entries returned (default 20). */
+  limit?: number;
+}
+
 export interface SessionSummary {
   sessionId: string;
   runIds: string[];

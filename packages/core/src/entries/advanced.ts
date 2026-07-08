@@ -212,6 +212,7 @@ export type {
 export {
   SESSION_WORKFLOW_KEYS,
   aggregateSessionCheckResults,
+  buildActivitySummary,
   buildSessionIndex,
   deriveSessionStatus,
   enrichSessionRunRecord,
@@ -220,10 +221,14 @@ export {
   filterMetasBySessionScope,
   groupSessionCohorts,
   loadSessionRunRecords,
+  renderActivitySummaryHuman,
   sessionKeyForRun,
   traceMetasToSessionRunRecords,
 } from "../sessions/index.js";
 export type {
+  ActivityEntry,
+  ActivitySummary,
+  BuildActivitySummaryOptions,
   GroupSessionCohortsOptions,
   SessionCohort,
   SessionCohortKind,
