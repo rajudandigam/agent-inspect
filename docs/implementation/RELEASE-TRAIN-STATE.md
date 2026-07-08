@@ -5,8 +5,8 @@
 ```yaml
 baselineVersion: "3.5.5"
 publishedVersion: "3.5.5"
-currentTrain: "v3.5.6"
-trainStatus: "active"
+currentTrain: "v4.0.0"
+trainStatus: "release-pending-npm-auth"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -15,11 +15,16 @@ completedChunks:
   - "v3.5.6-source-truth"
   - "v4.0-0-workspace-rfc"
   - "v4.0-1-workspace-manifest-model"
-currentChunk: "v4.0-1-workspace-manifest-model (complete)"
-nextAction: "STOP at hard gate — v4.0-2 (workspace filesystem helpers) then v4.0-3 CLI add public surface; maintainer go-ahead required"
-pendingManualGate: "v4.0 public surface (agent-inspect/workspace export + workspace CLI); VS Code Marketplace first publish (packages/vscode); first publication of any new public package (e.g. @agent-inspect/index-sqlite at v4.1)"
-lastConfirmedCommit: "3f72794"
-lastValidationLevel: "build+typecheck+test (1252 passing) + diff-check"
+  - "v4.0-2-workspace-filesystem-helpers"
+  - "v4.0-3-workspace-cli"
+  - "v4.0-3-workspace-public-subpath-export"
+  - "v4.0-4-workspace-docs-recipe"
+  - "v4.0-5-release-readiness"
+currentChunk: "v4.0.0 implementation complete; version bump staged"
+nextAction: "changeset version -> 4.0.0, commit 'Version Packages'; publish requires authenticated npm (npm login) then changeset publish"
+pendingManualGate: "npm authentication for changeset publish; VS Code Marketplace first publish (packages/vscode); first publication of any new public package (e.g. @agent-inspect/index-sqlite at v4.1)"
+lastConfirmedCommit: "5f8cd61"
+lastValidationLevel: "full gate — build+typecheck+test (1274 passing)+size+fixtures+recipes+compat:smoke+pack:smoke+npm pack dry-run+diff-check"
 updatedAt: "2026-07-08"
 ```
 
