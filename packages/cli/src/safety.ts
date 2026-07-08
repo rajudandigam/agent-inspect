@@ -428,3 +428,46 @@ export function verifySafeCommand(
 ): Promise<void> {
   return safetyCommand("verify-safe", target, options, stdin);
 }
+
+/** Assess safety on an already-opened trace (shared by bundle and safety commands). */
+export function assessOpenedTrace(
+  read: Awaited<ReturnType<typeof openTrace>>,
+  options: SafetyCommandOptions & { runId?: string } = {},
+): SafetyResult {
+  try {
+    const rules = buildSafetyRules(options);
+    const checkResult = runTraceChecks(
+      { read },
+      {
+        rules,
+        ...(options.runId !== undefined ? { runId: options.runId } : {}),
+        ...(options.run !== undefined ? { runId: options.run } : {}),
+      },
+    );
+    const detectorFindings =
+      checkResult.diagnostics.length === 0
+        ? redactionDetectorFindings(read, checkResult.runId)
+        : [];
+    return resultFromParts({
+      command: "verify-safe",
+      format: checkResult.format,
+      runId: checkResult.runId,
+      findings: [...checkResult.findings, ...detectorFindings],
+      diagnostics: [
+        ...checkResult.diagnostics.map(diagnosticFromCheck),
+        ...warningDiagnostics(read.warnings, read.unsupportedFields),
+      ],
+      warnings: read.warnings,
+      unsupportedFields: read.unsupportedFields,
+    });
+  } catch (error) {
+    return messageStartsWithDash(error)
+      ? invalidArgumentResult("verify-safe", error)
+      : readErrorResult("verify-safe", error);
+  }
+}
+
+function messageStartsWithDash(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.startsWith("--");
+}

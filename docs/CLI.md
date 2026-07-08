@@ -37,6 +37,7 @@ Core commands:
 - `scan` — best-effort local safety scan for trace capture risks
 - `verify-safe` — best-effort local trace safety verification
 - `artifacts` — create safe local CI trace artifact bundles and optional step summaries
+- `bundle` — create share-safe offline trace bundles (redacted copies + verify-safe)
 - `ci-summary` — summarize local reporter artifact manifests for CI
 - `diff` — compare two manual traces (local, read-only)
 - `timeline` — chronological view of one run (local JSONL)
@@ -859,6 +860,38 @@ agent-inspect index sqlite clean [--dir <path>] [--json]
 - `clean` — delete the index database (and its WAL/SHM sidecars). Traces are never touched.
 
 If `@agent-inspect/index-sqlite` is not installed, these subcommands print a short install hint and exit non-zero.
+
+### 6.24 `bundle`
+
+Create a **share-safe offline trace bundle** as a local folder (v4.3+). Bundles are derived copies: original traces are read-only and never mutated. Automatic `verify-safe` runs before write; the command fails on `UNSAFE` unless `--allow-unsafe`. See [BUNDLES.md](BUNDLES.md).
+
+```bash
+agent-inspect bundle <run-id> [options]
+agent-inspect bundle --session <session-id> [options]
+agent-inspect bundle --since <duration> [options]
+```
+
+Options:
+
+- `--dir <path>` — trace directory
+- `--session <session-id>` — bundle all runs in a session
+- `--since <duration>` — bundle runs with activity since a window (e.g. `24h`, `7d`)
+- `--profile <profile>` — `local`, `share` (default), or `strict` redaction for exported copies
+- `--out <path>` — output directory; `.zip` suffix is stripped (folder-first)
+- `--allow-unsafe` — write bundle even when verify-safe reports UNSAFE
+- `--json` — print deterministic JSON manifest
+
+Output includes `trace.html`, `trace.jsonl`, `summary.md`, `metadata.json`, `check-results.json`, `redaction-report.json`, and `assets/runs/` mirrors for multi-run bundles.
+
+Examples:
+
+```bash
+npx agent-inspect bundle minimal-success --dir fixtures/traces --out ./bundle-out
+npx agent-inspect bundle --session sess-handoff-001 --dir ./.agent-inspect --profile strict
+npx agent-inspect bundle --since 24h --dir ./.agent-inspect --json
+```
+
+Recipe: [shareable-bundle-basic](../examples/recipes/shareable-bundle-basic/README.md).
 
 ## 7. Optional TUI behavior
 

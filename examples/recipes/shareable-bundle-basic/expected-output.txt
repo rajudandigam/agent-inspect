@@ -1,0 +1,9 @@
+Shareable bundle recipe trace written
+Trace directory: ./.agent-inspect
+Run id: bundle-recipe-run
+
+Create a share-safe offline bundle:
+  npx agent-inspect bundle bundle-recipe-run --dir ./.agent-inspect --out ./bundle-out --json
+
+Bundle by session:
+  npx agent-inspect bundle --session sess-bundle-demo --dir ./.agent-inspect

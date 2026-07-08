@@ -39,6 +39,7 @@ const RECIPES = [
   "circuit-breaker-basic",
   "read-only-mcp-server",
   "workspace-basic",
+  "shareable-bundle-basic",
 ];
 
 const LOG_RECIPE_FILES = {

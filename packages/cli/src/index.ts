@@ -58,6 +58,8 @@ import type { SafetyCommandOptions } from "./safety.js";
 import { scanCommand, verifySafeCommand } from "./safety.js";
 import type { ArtifactsCommandOptions } from "./artifacts.js";
 import { artifactsCommand } from "./artifacts.js";
+import type { BundleCommandOptions } from "./bundle.js";
+import { bundleCommand } from "./bundle.js";
 import type { CiSummaryCommandOptions } from "./ci-summary.js";
 import { ciSummaryCommand } from "./ci-summary.js";
 import type { InitCommandOptions } from "./init.js";
@@ -516,6 +518,25 @@ export function createCliProgram(): Command {
     .option("--json", "print deterministic JSON manifest")
     .action((target: string, opts: ArtifactsCommandOptions) => {
       runCommand(() => artifactsCommand(target, opts));
+    });
+
+  program
+    .command("bundle")
+    .description("Create a share-safe offline trace bundle (local folder)")
+    .argument("[run-id]", "run id to bundle (optional with --session or --since)")
+    .option("--dir <path>", "trace directory for run/session lookup")
+    .option("--session <session-id>", "bundle all runs in a session")
+    .option("--since <duration>", "bundle runs with activity since a duration (e.g. 24h)")
+    .addOption(
+      new Option("--profile <profile>", "redaction profile for exported copies")
+        .choices(["local", "share", "strict"])
+        .default("share"),
+    )
+    .option("--out <path>", "output directory (folder; .zip suffix is stripped)")
+    .option("--allow-unsafe", "write bundle even when verify-safe reports UNSAFE")
+    .option("--json", "print deterministic JSON manifest")
+    .action((runId: string | undefined, opts: BundleCommandOptions) => {
+      runCommand(() => bundleCommand(runId, opts));
     });
 
   program

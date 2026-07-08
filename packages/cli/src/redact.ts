@@ -127,6 +127,14 @@ function redactDocument(content: string, profile: RedactionProfile): RedactedDoc
   }
 }
 
+/** Redacts JSON or JSONL trace text with the given profile (used by bundle and redact commands). */
+export function redactTraceContent(
+  content: string,
+  profile: RedactionProfile,
+): RedactedDocument {
+  return redactDocument(content, profile);
+}
+
 export async function redactCommand(
   target: string,
   options: RedactCommandOptions = {},

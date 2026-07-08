@@ -241,4 +241,29 @@ export { isAgentInspectTrace } from "../trace-verification.js";
 
 export { parseDuration } from "../utils/duration.js";
 
+export type {
+  BundleCheckResults,
+  BundleCheckRunResult,
+  BundleMetadata,
+  BundlePlaceholderArtifact,
+  BundleRedactionProfile,
+  BundleRedactionReport,
+  BundleRedactionReportRun,
+  BundleResolveOptions,
+  BundleResolveResult,
+  BundleSafeStatus,
+  BundleSafeStatusMetadata,
+} from "../bundle/index.js";
+export {
+  aggregateBundleSafeStatus,
+  buildBundleMetadata,
+  buildBundleSummaryMarkdown,
+  buildPlaceholderArtifact,
+  bundleFailsOnSafety,
+  defaultBundleOutputPath,
+  normalizeBundleOutputPath,
+  resolveBundleRunIds,
+  toMetadataSafeStatus,
+} from "../bundle/index.js";
+
 export { maybeInspectRun, isAgentInspectEnabled } from "../maybe-inspect-run.js";
