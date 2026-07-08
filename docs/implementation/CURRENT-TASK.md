@@ -2,18 +2,13 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v4.3.0
-trainStatus: ready-to-publish
-currentChunk: version-bump
-scope: Shareable Trace Bundles — publish 4.3.0 then start v4.4.0
+currentTrain: v4.4.0
+trainStatus: planning
+currentChunk: v4.4-0-rfc
+scope: Observed Outcomes — start RFC per roadmap § v4.4.0
 authority:
-  - docs/implementation/release-trains/V4.3.0-EXECUTION-PLAN.md
-  - docs/proposals/SHAREABLE-BUNDLES-V4.3.md
-nextChunk: v4.4-0 Observed Outcomes RFC (after 4.3.0 publish)
+  - docs/implementation/ROADMAP_V3_5_TO_V7.md (§ v4.4.0)
+nextChunk: v4.4-1 after RFC acceptance
 ```
 
-Shipped in v4.3.0:
-
-- `agent-inspect bundle` CLI (run / `--session` / `--since`)
-- Core bundle helpers on `advanced`
-- Docs: `BUNDLES.md`, CLI §6.24, recipe `shareable-bundle-basic`
+v4.3.0 published: share-safe `agent-inspect bundle` (CI run 28982956122).
