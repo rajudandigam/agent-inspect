@@ -3,10 +3,10 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "3.5.5"
-publishedVersion: "3.5.5"
-currentTrain: "v4.0.0"
-trainStatus: "release-pending-npm-auth"
+baselineVersion: "4.0.0"
+publishedVersion: "4.0.0"
+currentTrain: "v4.1.0"
+trainStatus: "planning"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -20,11 +20,13 @@ completedChunks:
   - "v4.0-3-workspace-public-subpath-export"
   - "v4.0-4-workspace-docs-recipe"
   - "v4.0-5-release-readiness"
-currentChunk: "v4.0.0 implementation complete; version bump staged"
-nextAction: "changeset version -> 4.0.0, commit 'Version Packages'; publish requires authenticated npm (npm login) then changeset publish"
-pendingManualGate: "npm authentication for changeset publish; VS Code Marketplace first publish (packages/vscode); first publication of any new public package (e.g. @agent-inspect/index-sqlite at v4.1)"
-lastConfirmedCommit: "5f8cd61"
-lastValidationLevel: "full gate — build+typecheck+test (1274 passing)+size+fixtures+recipes+compat:smoke+pack:smoke+npm pack dry-run+diff-check"
+  - "v4.0.0-published (all 16 packages, tags created)"
+currentChunk: "v4.0.0 published; starting v4.1.0 (Optional Local Index)"
+nextAction: "v4.1.0: new @agent-inspect/index-sqlite package (SQLite index) — maintainer approved; confirm SQLite driver + Trusted Publisher for new package"
+pendingManualGate: "npmjs.com Trusted Publisher config for new @agent-inspect/index-sqlite package (OIDC) before CI can publish it; VS Code Marketplace first publish (packages/vscode)"
+lastConfirmedCommit: "4321760"
+lastPublishRun: "28970942944 (workflow_dispatch, success 10m38s)"
+lastValidationLevel: "full gate + CI Trusted Publishing (all 16 @ 4.0.0 live on npm)"
 updatedAt: "2026-07-08"
 ```
 
