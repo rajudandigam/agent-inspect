@@ -1,6 +1,6 @@
 ## Architecture
 
-> **Adoption-focused overview:** see [TECHNICAL-GUIDE.md](./TECHNICAL-GUIDE.md) for a comprehensive technical guide (v3.5.3) suitable for blogs and outreach.
+> **Adoption-focused overview:** see [TECHNICAL-GUIDE.md](./TECHNICAL-GUIDE.md) for a comprehensive technical guide (v3.5.5) suitable for blogs and outreach.
 
 AgentInspect is a **local-first execution-tree debugger**: manual traces and log ingest produce inspectable step trees stored as JSONL on disk (default `.agent-inspect-runs/`), with a CLI for list/view/clean/logs/tail/export/diff workflows.
 

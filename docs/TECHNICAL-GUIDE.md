@@ -1,8 +1,10 @@
 # AgentInspect Technical Guide
 
-**Version:** 3.5.3 · **Audience:** TypeScript agent developers, platform engineers, tech leads  
-**Purpose:** Source-of-truth technical overview for adoption content (blogs, articles, emails, demos).  
-**Status:** Grounded in shipped code and docs as of v3.5.3. Not a compliance or marketing guarantee.
+**Version:** 3.5.5 · **Audience:** TypeScript agent developers, platform engineers, tech leads
+
+**Purpose:** Source-of-truth technical overview for adoption content (blogs, articles, emails, demos).
+
+**Status:** Grounded in shipped code and docs as of v3.5.5. Not a compliance or marketing guarantee.
 
 ---
 
@@ -107,9 +109,9 @@ flowchart LR
 
 The root `agent-inspect` tarball ships core + CLI. Heavy optional deps stay in scoped packages.
 
-### 4.2 Public package ecosystem (v3.5.3)
+### 4.2 Public package ecosystem (v3.5.5)
 
-Sixteen linked npm packages at **3.5.3**:
+Sixteen linked npm packages at **3.5.5**:
 
 | Tier | Package | Purpose |
 | ---- | ------- | ------- |
@@ -433,7 +435,7 @@ Daily workflow: capture → inspect → verify → share safely → scale. See [
 
 ## 16. Content creation appendix
 
-Reuse these blocks in blogs, emails, and comments. All statements are accurate to v3.5.3; adjust version numbers when publishing.
+Reuse these blocks in blogs, emails, and comments. All statements are accurate to v3.5.5; adjust version numbers when publishing.
 
 ### 16.1 Elevator pitches
 
@@ -523,4 +525,4 @@ Vitest reporter → upload artifact → `verify-safe` → reviewer workflow → 
 
 ---
 
-*AgentInspect v3.5.3 — local-first trace workbench for TypeScript AI agents. MIT license.*
+*AgentInspect v3.5.5 — local-first trace workbench for TypeScript AI agents. MIT license.*

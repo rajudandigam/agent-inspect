@@ -8,9 +8,9 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** **3.5.3** — sixteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#353).
+**Current release on npm:** **3.5.5** — sixteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#355).
 
-**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench — docs, examples, fixtures, adapter SDK examples, VS Code/viewer docs, performance fixtures, and standards graduation guides. v3.0→v3.5 train complete — see [CHANGELOG.md](CHANGELOG.md#353).
+**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench plus **v4 workspace planning** — the next phase evolves AgentInspect from a broad local toolkit into a focused local and self-hosted trace workspace. v3.1→v3.5 train complete — see [CHANGELOG.md](CHANGELOG.md#355). Long-term direction: [docs/implementation/ROADMAP_V3_5_TO_V7.md](docs/implementation/ROADMAP_V3_5_TO_V7.md).
 
 **Core product gap (maintainer-owned):** one unified persisted run model across manual traces, structured logs, framework callbacks, CI artifacts, and standards exports — not a contributor starter issue.
 
@@ -106,9 +106,9 @@ LangChain and TUI programmatic APIs remain **experimental**. JSON logs remain fi
 
 ---
 
-## Now — OSS contribution lanes (post-v3.5)
+## Now — OSS contribution lanes + v4 workspace planning (post-v3.5)
 
-Focus contributor work on **activation** around the shipped v3 system — not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md)
+Focus contributor work on **activation** around the shipped v3 system, while maintainers begin **v4 workspace planning** (see the canonical [v3.5→v7 roadmap](docs/implementation/ROADMAP_V3_5_TO_V7.md)). This is not another v1/v2 feature roadmap. Curated entry: [GOOD-FIRST-ISSUES.md](GOOD-FIRST-ISSUES.md) · Contributor lanes: [docs/community/CONTRIBUTOR-LANES.md](docs/community/CONTRIBUTOR-LANES.md) · OSS roadmap: [docs/community/OSS-ROADMAP.md](docs/community/OSS-ROADMAP.md)
 
 | Lane | Intent | Example live issues |
 | ---- | ------ | ------------------- |
@@ -170,9 +170,9 @@ AgentInspect **complements** LangSmith, Langfuse, Braintrust, Phoenix/OpenInfere
 
 ## Maintainer notes
 
-**Current npm release:** 3.5.3. Operational state: [docs/implementation/RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md).
+**Current npm release:** 3.5.5. Operational state: [docs/implementation/RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md).
 
-The v3.5.x feature train is **complete**. Post-v3.5 work follows the adoption freeze in [POST-V3.5-ADOPTION-PLAN.md](docs/implementation/POST-V3.5-ADOPTION-PLAN.md) — no version bumps without explicit maintainer authorization.
+The v3.1→v3.5 feature train is **complete**. Post-v3.5 work follows the adoption plan in [POST-V3.5-ADOPTION-PLAN.md](docs/implementation/POST-V3.5-ADOPTION-PLAN.md) plus v4 workspace planning in the canonical [v3.5→v7 roadmap](docs/implementation/ROADMAP_V3_5_TO_V7.md) — no version bumps or publishes without explicit maintainer authorization.
 
 Historical release train readouts (v1.2–v3.4 publication evidence, execution plans, and agent prompts) live under [docs/archive/implementation/](docs/archive/implementation/). Active v3.5 publication records: [docs/implementation/release-trains/](docs/implementation/release-trains/).
 
