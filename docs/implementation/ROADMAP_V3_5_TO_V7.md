@@ -6,6 +6,8 @@
 **Roadmap horizon:** v3.5.4 → v4 → v5 → v6 → conditional v7  
 **Primary goal:** Move from a broad local toolkit to a focused, adoption-ready local and self-hosted trace workspace for TypeScript AI agents.
 
+> **Version reconciliation (2026-07-08):** This document's header baseline (`3.5.3`) and the "v3.5.4 cleanup" naming predate publication. The actual published/root baseline is `agent-inspect@3.5.5`. The source-of-truth cleanup + v4 planning train is therefore executed as **v3.5.6** (versions are never regressed). The themes, chunks, and non-goals in this roadmap remain authoritative; only the train numbering is reconciled. See [release-trains/V3.5.6-SOURCE-TRUTH-AND-V4-PLANNING.md](release-trains/V3.5.6-SOURCE-TRUTH-AND-V4-PLANNING.md) and [RELEASE-TRAIN-STATE.md](RELEASE-TRAIN-STATE.md).
+
 ---
 
 ## 1. Executive summary

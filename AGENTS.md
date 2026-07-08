@@ -19,7 +19,7 @@ Use this order:
 3. `docs/implementation/RELEASE-TRAIN-STATE.md`
 4. `docs/implementation/CURRENT-TASK.md`
 5. `docs/implementation/POST-V3.5-ADOPTION-PLAN.md`
-6. active release-train plan under `docs/implementation/release-trains/` (v3.5.x only)
+6. canonical roadmap `docs/implementation/ROADMAP_V3_5_TO_V7.md` and the active release-train plan under `docs/implementation/release-trains/` (v3.5.6 + v4-v7)
 7. relevant RFC/proposal docs
 8. public `ROADMAP.md`
 9. historical docs under `docs/archive/` (including completed v3.0→v3.5 roadmap)
