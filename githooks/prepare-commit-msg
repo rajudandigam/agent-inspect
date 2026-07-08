@@ -1,0 +1,10 @@
+#!/bin/bash
+# Strip Cursor attribution trailers so GitHub credits the human author only.
+MSG_FILE="${1:-}"
+[[ -n "$MSG_FILE" && -f "$MSG_FILE" ]] || exit 0
+
+if sed --version 2>/dev/null | grep -q GNU; then
+  sed -i '/cursoragent@cursor\.com/d;/Made-with: Cursor/d' "$MSG_FILE"
+else
+  sed -i '' '/cursoragent@cursor\.com/d;/Made-with: Cursor/d' "$MSG_FILE"
+fi
