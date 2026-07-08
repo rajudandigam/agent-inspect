@@ -1,5 +1,12 @@
 # @agent-inspect/mcp-server
 
+## 4.3.0
+
+### Patch Changes
+
+- Updated dependencies [8a21bce]
+  - agent-inspect@4.3.0
+
 ## 4.2.0
 
 ### Minor Changes

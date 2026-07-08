@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.3.0
+
+### Minor Changes
+
+- 8a21bce: Add share-safe offline trace bundles (`agent-inspect bundle`) with automatic verify-safe, default share redaction profile, session/since targeting, and folder output for PR-ready evidence.
+
 ## 4.2.0
 
 ### Minor Changes

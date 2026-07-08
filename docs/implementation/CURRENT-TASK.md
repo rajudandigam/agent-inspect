@@ -1,17 +1,19 @@
-# Current Codex Task
+# Current task
 
 ```yaml
-train: "v4.3.0"
-chunk: "planning"
-status: "ready"
-executionMode: "autonomous-release-train"
-dependsOn: "v4.2.0-published"
+executionMode: autonomous-release-train
+currentTrain: v4.3.0
+trainStatus: ready-to-publish
+currentChunk: version-bump
+scope: Shareable Trace Bundles — publish 4.3.0 then start v4.4.0
+authority:
+  - docs/implementation/release-trains/V4.3.0-EXECUTION-PLAN.md
+  - docs/proposals/SHAREABLE-BUNDLES-V4.3.md
+nextChunk: v4.4-0 Observed Outcomes RFC (after 4.3.0 publish)
 ```
 
-## Goal
+Shipped in v4.3.0:
 
-Continue v4 train with v4.3.0 (Shareable Trace Bundles) per [V4.3.0-EXECUTION-PLAN.md](./release-trains/V4.3.0-EXECUTION-PLAN.md).
-
-## Done
-
-- v4.2.0 published: all 17 packages @ 4.2.0 on npm (sessions status, activity CLI, index acceleration).
+- `agent-inspect bundle` CLI (run / `--session` / `--since`)
+- Core bundle helpers on `advanced`
+- Docs: `BUNDLES.md`, CLI §6.24, recipe `shareable-bundle-basic`
