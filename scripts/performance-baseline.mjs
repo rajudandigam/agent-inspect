@@ -21,9 +21,18 @@ function warnIfSlow(label, ms, thresholdMs) {
 
 let core;
 let checks;
+let logs;
+let diff;
+let exporters;
+let persisted;
 try {
-  core = await import(pathToFileURL(path.join(root, "packages/core/dist/index.mjs")).href);
-  checks = await import(pathToFileURL(path.join(root, "packages/core/dist/checks.mjs")).href);
+  const load = (rel) => import(pathToFileURL(path.join(root, rel)).href);
+  core = await load("packages/core/dist/index.mjs");
+  checks = await load("packages/core/dist/checks.mjs");
+  logs = await load("packages/core/dist/logs.mjs");
+  diff = await load("packages/core/dist/diff.mjs");
+  exporters = await load("packages/core/dist/exporters.mjs");
+  persisted = await load("packages/core/dist/persisted.mjs");
 } catch (e) {
   console.error("[perf:baseline] Import core dist failed. Run `pnpm build` first.\n", e);
   process.exit(1);
@@ -36,15 +45,16 @@ const {
   EventNormalizer,
   renderRunTree,
   mergeLogIngestConfig,
-  manualTraceEventsToComparableRun,
-  diffRuns,
+} = logs;
+const { manualTraceEventsToComparableRun, diffRuns } = diff;
+const {
   exportRunTree,
   mergeExportDefaults,
   validateExport,
   manualTraceEventsToRunTree,
-  traceEventsToPersistedInspectEvents,
-  traceEventsToPersistedRunTrees,
-} = core;
+} = exporters;
+const { traceEventsToPersistedInspectEvents, traceEventsToPersistedRunTrees } =
+  persisted;
 
 const {
   createRunEventCountRule,

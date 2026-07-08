@@ -1,0 +1,53 @@
+{
+  "name": "@agent-inspect/index-sqlite",
+  "version": "4.1.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Optional, disposable local SQLite index for faster queries over AgentInspect JSONL traces",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/index-sqlite"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect/tree/main/packages/index-sqlite",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.index-sqlite.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*",
+    "better-sqlite3": "^11.8.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

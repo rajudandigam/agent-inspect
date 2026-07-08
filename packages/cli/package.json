@@ -24,6 +24,7 @@
     "commander": "^12.1.0"
   },
   "devDependencies": {
+    "@agent-inspect/index-sqlite": "workspace:*",
     "@agent-inspect/tui": "workspace:*"
   }
 }

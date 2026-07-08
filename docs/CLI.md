@@ -30,6 +30,7 @@ Core commands:
 - `init` — scaffold local AgentInspect config and demo files (v3.1+)
 - `doctor` — diagnose local setup without network or installs (v3.1+)
 - `workspace` — manage a project-local trace workspace (`.agent-inspect/workspace.json`) (v4.0+)
+- `index sqlite` — optional SQLite-backed trace index for faster queries (requires `@agent-inspect/index-sqlite`) (v4.1+)
 - `check` — run deterministic local trace checks with stable JSON and exit codes
 - `eval` — run deterministic local evals over existing traces
 - `redact` — redact a local JSON/JSONL file or trace copy
@@ -828,6 +829,25 @@ agent-inspect workspace path [--json]
 - `path` — print resolved workspace paths.
 
 All subcommands accept `--json` for deterministic output.
+
+### 6.23 `index sqlite`
+
+Optional SQLite-backed index that accelerates local queries over large trace directories. Added in v4.1. Requires the optional `@agent-inspect/index-sqlite` package; the core CLI does not depend on SQLite. The index is derived from JSONL and always safe to delete — JSONL remains the source of truth and trace files are never mutated. Local-only; no network. See [INDEX.md](INDEX.md) for the full model.
+
+```bash
+agent-inspect index sqlite build [--dir <path>] [--max-runs <n>] [--json]
+agent-inspect index sqlite rebuild [--dir <path>] [--max-runs <n>] [--json]
+agent-inspect index sqlite status [--dir <path>] [--json]
+agent-inspect index sqlite query [--dir <path>] [--status <s>] [--session <id>] [--name <q>] [--kind <k>] [--tool <q>] [--limit <n>] [--json]
+agent-inspect index sqlite clean [--dir <path>] [--json]
+```
+
+- `build` / `rebuild` — build or fully rebuild `trace-index.sqlite` from the trace directory. Rebuilds are idempotent; a corrupt prior index is discarded and rebuilt cleanly.
+- `status` — report index health, run/step counts, build time, and staleness (stale when any trace is newer than the index).
+- `query` — filter indexed runs by status, session, name, step kind, or tool. Exits non-zero with an install/build hint when no usable index is present.
+- `clean` — delete the index database (and its WAL/SHM sidecars). Traces are never touched.
+
+If `@agent-inspect/index-sqlite` is not installed, these subcommands print a short install hint and exit non-zero.
 
 ## 7. Optional TUI behavior
 

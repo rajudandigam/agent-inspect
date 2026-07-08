@@ -100,6 +100,10 @@ const tuiEntry = fileURLToPath(
   new URL("./packages/tui/src/index.ts", import.meta.url),
 );
 
+const indexSqliteEntry = fileURLToPath(
+  new URL("./packages/index-sqlite/src/index.ts", import.meta.url),
+);
+
 export default defineConfig({
   root: repoRoot,
   resolve: {
@@ -143,6 +147,7 @@ export default defineConfig({
       "@agent-inspect/adapter-sdk": adapterSdkEntry,
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
+      "@agent-inspect/index-sqlite": indexSqliteEntry,
     },
   },
   ssr: {
@@ -185,6 +190,7 @@ export default defineConfig({
       "@agent-inspect/adapter-sdk",
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
+      "@agent-inspect/index-sqlite",
     ],
   },
   test: {

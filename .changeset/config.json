@@ -20,7 +20,8 @@
       "@agent-inspect/viewer",
       "@agent-inspect/mcp-server",
       "@agent-inspect/adapter-sdk",
-      "@agent-inspect/harness"
+      "@agent-inspect/harness",
+      "@agent-inspect/index-sqlite"
     ]
   ],
   "access": "public",

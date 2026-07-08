@@ -62,6 +62,13 @@ import {
   indexCleanCommand,
   indexStatusCommand,
 } from "./index-cmd.js";
+import type { IndexSqliteCommandOptions } from "./index-sqlite-cmd.js";
+import {
+  indexSqliteBuildCommand,
+  indexSqliteCleanCommand,
+  indexSqliteQueryCommand,
+  indexSqliteStatusCommand,
+} from "./index-sqlite-cmd.js";
 import type {
   WorkspaceCommandOptions,
   WorkspaceInitOptions,
@@ -784,6 +791,72 @@ export function createCliProgram(): Command {
     .option("--json", "print JSON result")
     .action((opts: IndexCommandOptions) => {
       runCommand(() => indexCleanCommand(opts));
+    });
+
+  const sqliteCmd = indexCmd
+    .command("sqlite")
+    .description(
+      "Optional SQLite-backed trace index (requires @agent-inspect/index-sqlite)",
+    );
+
+  sqliteCmd
+    .command("build")
+    .description("Build or rebuild the local SQLite index")
+    .option("--dir <path>", "trace directory")
+    .option("--max-runs <n>", "cap indexed trace files (default 10000)")
+    .option("--json", "print JSON result")
+    .action((opts: IndexSqliteCommandOptions) => {
+      runCommand(() => indexSqliteBuildCommand(opts));
+    });
+
+  sqliteCmd
+    .command("rebuild")
+    .description("Alias for build (full, idempotent rebuild)")
+    .option("--dir <path>", "trace directory")
+    .option("--max-runs <n>", "cap indexed trace files (default 10000)")
+    .option("--json", "print JSON result")
+    .action((opts: IndexSqliteCommandOptions) => {
+      runCommand(() => indexSqliteBuildCommand(opts));
+    });
+
+  sqliteCmd
+    .command("status")
+    .description("Show SQLite index health, counts, and staleness")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print JSON result")
+    .action((opts: IndexSqliteCommandOptions) => {
+      runCommand(() => indexSqliteStatusCommand(opts));
+    });
+
+  sqliteCmd
+    .command("query")
+    .description("Query indexed runs (fast; falls back with a hint if absent)")
+    .option("--dir <path>", "trace directory")
+    .addOption(
+      new Option("--status <status>", "filter by run status").choices([
+        "success",
+        "error",
+        "running",
+        "unknown",
+      ]),
+    )
+    .option("--session <id>", "filter by session id")
+    .option("--name <query>", "substring match on run name")
+    .option("--kind <kind>", "match runs containing a step of this kind")
+    .option("--tool <query>", "match runs containing a tool step (substring)")
+    .option("--limit <n>", "max results (default 100)")
+    .option("--json", "print JSON result")
+    .action((opts: IndexSqliteCommandOptions) => {
+      runCommand(() => indexSqliteQueryCommand(opts));
+    });
+
+  sqliteCmd
+    .command("clean")
+    .description("Remove the SQLite index (traces are never touched)")
+    .option("--dir <path>", "trace directory")
+    .option("--json", "print JSON result")
+    .action((opts: IndexSqliteCommandOptions) => {
+      runCommand(() => indexSqliteCleanCommand(opts));
     });
 
   const workspaceCmd = program

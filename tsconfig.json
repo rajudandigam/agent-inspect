@@ -70,7 +70,9 @@
       "@agent-inspect/adapter-sdk": ["packages/adapter-sdk/src/index.ts"],
       "@agent-inspect/adapter-sdk/*": ["packages/adapter-sdk/src/*"],
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
-      "@agent-inspect/tui/*": ["packages/tui/src/*"]
+      "@agent-inspect/tui/*": ["packages/tui/src/*"],
+      "@agent-inspect/index-sqlite": ["packages/index-sqlite/src/index.ts"],
+      "@agent-inspect/index-sqlite/*": ["packages/index-sqlite/src/*"]
     },
     "types": ["node"]
   },
@@ -95,6 +97,7 @@
     "tsup.adapter-sdk.config.ts",
     "tsup.tui.config.ts",
     "tsup.vscode.config.ts",
+    "tsup.index-sqlite.config.ts",
     "vitest.config.ts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**"]
