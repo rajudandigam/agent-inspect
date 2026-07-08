@@ -1,0 +1,6 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000600000,"runId":"tool-timeout-stall","name":"tool-timeout-stall","startTime":1700000600000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000600010,"runId":"tool-timeout-stall","stepId":"quick_lookup","name":"tool:quick-lookup","type":"tool","startTime":1700000600010,"metadata":{"toolName":"quick-lookup"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000600060,"runId":"tool-timeout-stall","stepId":"quick_lookup","status":"success","endTime":1700000600060,"durationMs":50}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000600100,"runId":"tool-timeout-stall","stepId":"slow_fetch","name":"tool:slow-fetch","type":"tool","startTime":1700000600100,"metadata":{"toolName":"slow-fetch","timeoutMs":60000}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000675100,"runId":"tool-timeout-stall","stepId":"slow_fetch","status":"error","endTime":1700000675100,"durationMs":75000,"error":{"message":"synthetic timeout after 75000ms"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000800000,"runId":"tool-timeout-stall","status":"error","endTime":1700000800000,"durationMs":200000,"error":{"message":"synthetic stall: run aborted 125s after tool timeout"}}

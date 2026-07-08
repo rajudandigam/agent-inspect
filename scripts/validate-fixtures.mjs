@@ -25,6 +25,9 @@ const REQUIRED = {
     "fixtures/traces/tool-with-io.jsonl",
     "fixtures/traces/long-running.jsonl",
     "fixtures/traces/error-recovery.jsonl",
+    "fixtures/traces/tool-retry-success.jsonl",
+    "fixtures/traces/repeated-tool-args.jsonl",
+    "fixtures/traces/tool-timeout-stall.jsonl",
     "fixtures/traces/dual-format-parity.jsonl",
   ],
   tracesV02: [
