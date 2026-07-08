@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 4.3.0
+
+### Minor Changes
+
+- Align the linked package suite to 4.3.0. No behavior changes in this package; keeps published versions consistent with the v4.3 shareable trace bundles release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @agent-inspect/redact@4.3.0
+
 ## 4.2.0
 
 ### Minor Changes
