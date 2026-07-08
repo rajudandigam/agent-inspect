@@ -31,6 +31,9 @@ export const registration = createAdapterRegistration({
 ## Privacy
 
 - SDK helpers enforce local-first patterns; adapters must not upload by default
+- Use the Adapter SDK privacy checklist to document capture, persistence,
+  redaction, and export-review behavior before publishing or proposing registry
+  inclusion.
 
 ## API
 
@@ -42,6 +45,7 @@ export const registration = createAdapterRegistration({
 ## Docs
 
 - [Adapter conformance](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTER-CONFORMANCE.md)
+- [Adapter SDK privacy checklist](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTER-SDK-PRIVACY.md)
 - [Adapters](https://github.com/rajudandigam/agent-inspect/blob/main/docs/ADAPTERS.md)
 - [Extension submission template](https://github.com/rajudandigam/agent-inspect/blob/main/docs/community/EXTENSION-SUBMISSION-TEMPLATE.md)
 
@@ -51,7 +55,8 @@ export const registration = createAdapterRegistration({
 2. Document peer dependencies
 3. No network in adapter code path
 4. Add conformance tests
-5. Use the extension submission template before proposing registry inclusion
+5. Run the privacy checklist and review exported artifacts before sharing
+6. Use the extension submission template before proposing registry inclusion
 
 ## Version
 

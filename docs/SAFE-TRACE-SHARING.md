@@ -57,6 +57,7 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 - OpenInference / OTLP JSON exports: check attributes, span names, events, and resource metadata.
 - Structured log ingest configs: confirm mapped keys do not pull in full request bodies, headers, raw prompts, or unbounded output fields.
 - LangChain adapter traces: keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments.
+- Third-party adapter packages: follow the [Adapter SDK privacy checklist](./ADAPTER-SDK-PRIVACY.md) before sharing adapter traces, examples, or registry submissions.
 
 ## When to use each profile
 
