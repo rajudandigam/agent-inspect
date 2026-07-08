@@ -1,22 +1,17 @@
 # Current Codex Task
 
 ```yaml
-train: "v4.2.0"
-chunk: "v4.2.0-release"
-status: "release-pending-publish"
+train: "v4.3.0"
+chunk: "planning"
+status: "ready"
 executionMode: "autonomous-release-train"
-dependsOn: "v4.1.0-published"
+dependsOn: "v4.2.0-published"
 ```
 
 ## Goal
 
-Ship v4.2.0 (Sessions and Activity): session status, activity summaries, expanded CLI, optional index acceleration.
+Continue v4 train with v4.3.0 (Shareable Trace Bundles) per [V4.3.0-EXECUTION-PLAN.md](./release-trains/V4.3.0-EXECUTION-PLAN.md).
 
-## Done this pass
+## Done
 
-- v4.2-0 through v4.2-5 implemented and validated.
-- Version bump to 4.2.0 via Changesets; awaiting CI publish.
-
-## Active plan
-
-- [V4.2.0-RELEASE-READINESS.md](./release-trains/V4.2.0-RELEASE-READINESS.md)
+- v4.2.0 published: all 17 packages @ 4.2.0 on npm (sessions status, activity CLI, index acceleration).
