@@ -2,30 +2,21 @@
 
 ```yaml
 train: "v4.2.0"
-chunk: "v4.2-3-cli-subcommands"
-status: "in_progress"
+chunk: "v4.2.0-release"
+status: "release-pending-publish"
 executionMode: "autonomous-release-train"
-dependsOn: "v4.1.0-published (all 17 packages @ 4.1.0)"
+dependsOn: "v4.1.0-published"
 ```
 
 ## Goal
 
-Continue the v4-v7 release train after v4.1.0 publication. Begin v4.2.0 (Sessions and Activity) with the RFC refresh, then implement session status, activity summaries, expanded CLI, and optional index acceleration per [V4.2.0-EXECUTION-PLAN.md](./release-trains/V4.2.0-EXECUTION-PLAN.md).
+Ship v4.2.0 (Sessions and Activity): session status, activity summaries, expanded CLI, optional index acceleration.
 
 ## Done this pass
 
-- v4.1.0 fully published (all 17 packages @ 4.1.0 on npm).
-- v4.2-0 sessions/activity RFC (`d12763e`).
-- v4.2-1 session status + enriched `SessionSummary` (`e012103`).
-- v4.2-2 activity summaries (`825d656`).
+- v4.2-0 through v4.2-5 implemented and validated.
+- Version bump to 4.2.0 via Changesets; awaiting CI publish.
 
 ## Active plan
 
-- Canonical roadmap: [ROADMAP_V3_5_TO_V7.md](./ROADMAP_V3_5_TO_V7.md)
-- v4.2 plan: [release-trains/V4.2.0-EXECUTION-PLAN.md](./release-trains/V4.2.0-EXECUTION-PLAN.md)
-- Sessions RFC: [../proposals/SESSIONS-AND-ACTIVITY-V4.2.md](../proposals/SESSIONS-AND-ACTIVITY-V4.2.md)
-
-## Manual gates
-
-- New core export surface for session APIs (if added) — root export review (v4.2 plan).
-- VS Code Marketplace (`packages/vscode`) — deferred.
+- [V4.2.0-RELEASE-READINESS.md](./release-trains/V4.2.0-RELEASE-READINESS.md)
