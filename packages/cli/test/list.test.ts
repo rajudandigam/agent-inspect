@@ -340,6 +340,28 @@ describe("list", () => {
     logSpy.mockRestore();
   });
 
+  it("summary reports total matching runs when limit truncates", async () => {
+    const ids = ["run_t3", "run_t2", "run_t1"];
+    const times = [3000, 2000, 1000];
+    for (let i = 0; i < 3; i++) {
+      const id = ids[i]!;
+      const t = times[i]!;
+      await writeFile(
+        path.join(traceDir, `${id}.jsonl`),
+        jsonl(
+          runStarted(id, `name-${id}`, t, t),
+          runCompleted(id, "success", t + 1, 1),
+        ),
+        "utf-8",
+      );
+    }
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await list({ dir: traceDir, limit: "2" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Showing 2 of 3 runs");
+    logSpy.mockRestore();
+  });
+
   it("sets exit code when listTraceFiles fails unexpectedly", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(core.TraceDirectory.prototype, "list").mockRejectedValueOnce(
