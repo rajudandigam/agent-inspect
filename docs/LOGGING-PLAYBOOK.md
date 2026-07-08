@@ -160,6 +160,7 @@ Runnable framework recipes live under `examples/recipes/` (pino JSON logs, Winst
 
 ## See also
 
+- `docs/LOG-INGEST-COOKBOOK.md` (copy-pasteable config patterns per framework)
 - `docs/LOGS.md`
 - `docs/LOG-TO-TREE-QUICKSTART.md`
 - `docs/CLI.md` (`logs`, `tail`)
