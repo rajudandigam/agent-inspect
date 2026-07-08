@@ -25,7 +25,7 @@ This folder is the full canonical reference. The marketing site and root README 
 | [SCHEMA.md](./SCHEMA.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) | Data model and boundaries |
 | [ADAPTERS.md](./ADAPTERS.md) · [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md) | Framework integrations |
 | [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) · [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md) · [NESTJS.md](./NESTJS.md) | Framework guides |
-| [LOGS.md](./LOGS.md) · [LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md) · [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md) | Log ingest |
+| [LOGS.md](./LOGS.md) · [LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md) · [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md) · [LOG-INGEST-COOKBOOK.md](./LOG-INGEST-COOKBOOK.md) | Log ingest |
 | [DIFF.md](./DIFF.md) · [EXPORTS.md](./EXPORTS.md) | Compare and export |
 | [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) | CI / test artifacts |
 | [PERFORMANCE.md](./PERFORMANCE.md) · [SCALE-LIMITS.md](./SCALE-LIMITS.md) · [STREAMING-LIMITATIONS.md](./STREAMING-LIMITATIONS.md) | Scale and streaming |
