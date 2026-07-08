@@ -1,5 +1,16 @@
 # @agent-inspect/eval
 
+## 4.0.0
+
+### Patch Changes
+
+- Linked release: version aligned to `agent-inspect` 4.0.0 (local trace workspace). No behavior changes in this package.
+- Updated dependencies
+- Updated dependencies [dc4297b]
+  - @agent-inspect/guardrails@4.0.0
+  - @agent-inspect/circuit@4.0.0
+  - agent-inspect@4.0.0
+
 ## 3.5.5
 
 ### Patch Changes

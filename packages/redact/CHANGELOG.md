@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 4.0.0
+
+### Patch Changes
+
+- Linked release: version aligned to `agent-inspect` 4.0.0 (local trace workspace). No behavior changes in this package.
+
 ## 3.5.5
 
 ### Patch Changes

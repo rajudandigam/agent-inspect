@@ -1,5 +1,13 @@
 # @agent-inspect/harness
 
+## 4.0.0
+
+### Patch Changes
+
+- Linked release: version aligned to `agent-inspect` 4.0.0 (local trace workspace). No behavior changes in this package.
+- Updated dependencies [dc4297b]
+  - agent-inspect@4.0.0
+
 ## 3.5.5
 
 ### Patch Changes
