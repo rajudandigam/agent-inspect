@@ -38,6 +38,7 @@ const RECIPES = [
   "guardrails-basic",
   "circuit-breaker-basic",
   "read-only-mcp-server",
+  "workspace-basic",
 ];
 
 const LOG_RECIPE_FILES = {

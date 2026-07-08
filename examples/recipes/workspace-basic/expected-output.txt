@@ -1,0 +1,5 @@
+created workspace at .agent-inspect
+folders: runs, reports, artifacts, bundles, notes, index
+project: workspace-basic
+traces: 1
+index enabled: false

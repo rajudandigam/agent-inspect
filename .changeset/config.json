@@ -43,6 +43,7 @@
     "agent-inspect-recipe-eval-local-checks",
     "agent-inspect-recipe-redact-share-safe-file",
     "agent-inspect-recipe-eval-ci-artifacts",
+    "agent-inspect-recipe-workspace-basic",
     "agent-inspect-vscode"
   ]
 }

@@ -29,6 +29,7 @@ Core commands:
 - `migrate` — convert one local AgentInspect JSONL file to schema 1.0 with dry-run or explicit output
 - `init` — scaffold local AgentInspect config and demo files (v3.1+)
 - `doctor` — diagnose local setup without network or installs (v3.1+)
+- `workspace` — manage a project-local trace workspace (`.agent-inspect/workspace.json`) (v4.0+)
 - `check` — run deterministic local trace checks with stable JSON and exit codes
 - `eval` — run deterministic local evals over existing traces
 - `redact` — redact a local JSON/JSONL file or trace copy
@@ -807,6 +808,26 @@ Provider design gate:
 - Provider chunks must require explicit provider selection, document required environment variables, and keep credentials out of trace data and dry-run output.
 - Provider prompts must ask for concise explanations from redacted facts only. They must not request, expose, or preserve raw chain-of-thought.
 - Cloud provider behavior is never selected by default and must be reviewed before implementation. Local provider support must still be explicit and opt-in.
+
+### 6.22 `workspace`
+
+Manage a project-local trace workspace (`.agent-inspect/workspace.json`). Added in v4.0. Local-only; trace files are never deleted. See [WORKSPACE.md](WORKSPACE.md) for the full model.
+
+```bash
+agent-inspect workspace init [--project <name>] [--redaction-profile <local|share|strict>] [--dry-run] [--json]
+agent-inspect workspace status [--json]
+agent-inspect workspace doctor [--json]
+agent-inspect workspace clean [--yes] [--json]
+agent-inspect workspace path [--json]
+```
+
+- `init` — create or adopt a workspace and its standard folders (`runs/`, `reports/`, `artifacts/`, `bundles/`, `notes/`, `index/`). An existing `workspace.json` is adopted without rewrite; existing traces are preserved.
+- `status` — read-only counts of traces, reports, artifacts, bundles, notes, plus index status.
+- `doctor` — validate the manifest, folder permissions, trace readability, and index freshness. Exits non-zero when a check fails.
+- `clean` — remove generated content (reports/artifacts/bundles/index). Dry-run by default; `--yes` deletes. Trace directories are never targeted.
+- `path` — print resolved workspace paths.
+
+All subcommands accept `--json` for deterministic output.
 
 ## 7. Optional TUI behavior
 
