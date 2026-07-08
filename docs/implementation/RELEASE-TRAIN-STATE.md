@@ -4,9 +4,9 @@
 
 ```yaml
 baselineVersion: "4.1.0"
-publishedVersion: "4.1.0 (16 of 17 packages live; @agent-inspect/index-sqlite pending first publication)"
-currentTrain: "v4.1.0"
-trainStatus: "published-except-new-package-first-publication-gate"
+publishedVersion: "4.1.0 (all 17 packages live on npm)"
+currentTrain: "v4.2.0"
+trainStatus: "in_progress"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -26,12 +26,13 @@ completedChunks:
   - "v4.1-2-index-schema-builder-query"
   - "v4.1-3-index-sqlite-cli"
   - "v4.1-5-docs-and-release-readiness"
-currentChunk: "v4.1.0 published for 16/17 packages; @agent-inspect/index-sqlite blocked at first-publication gate (E404, no Trusted Publisher)"
-nextAction: "First-publication of @agent-inspect/index-sqlite: (a) configure npm Trusted Publisher for it (owner rajudandigam, repo agent-inspect, workflow publish.yml) OR do a one-time manual `npm publish --access public` from packages/index-sqlite, then (b) re-dispatch publish.yml — changeset publish will publish only index-sqlite@4.1.0 since the other 16 are already live."
-pendingManualGate: "HARD STOP: first publication of new @agent-inspect/index-sqlite requires npm Trusted Publisher config (OIDC) or a one-time manual publish; publish.yml run 28974816310 published the other 16 and E404'd on this one package. VS Code Marketplace first publish (packages/vscode) also outstanding."
-lastConfirmedCommit: "fa4a45b"
-lastPublishRun: "28974816310 (v4.1.0 push; 16/17 published, index-sqlite E404 first-publication gate)"
-lastValidationLevel: "full gate green at 4.1.0 (build, typecheck, test 1285, coverage, fixtures, recipes, perf:baseline, size, pack:smoke, compat:smoke, npm pack --dry-run, diff-check) + CI Trusted Publishing for 16 packages"
+  - "v4.1.0-published (all 17 packages @ 4.1.0; index-sqlite manual first publish + Trusted Publishing)"
+currentChunk: "v4.2-0 sessions and activity RFC refresh"
+nextAction: "v4.2-1: session status model + extended SessionSummary aggregation in packages/core/src/sessions/"
+pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
+lastConfirmedCommit: "abfefa0"
+lastPublishRun: "28974816310 + manual index-sqlite publish (all 17 @ 4.1.0 verified on npm)"
+lastValidationLevel: "v4.1.0 full gate green; npm verify @agent-inspect/index-sqlite@4.1.0"
 updatedAt: "2026-07-08"
 ```
 

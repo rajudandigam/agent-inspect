@@ -27,6 +27,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [SESSIONS-AND-WORKFLOW-CAUSALITY.md](./SESSIONS-AND-WORKFLOW-CAUSALITY.md) | v2.4.0 | Additive session/workflow metadata, handoff/retry rules, MCP telemetry boundary |
 | [LOCAL-TRACE-WORKSPACE.md](./LOCAL-TRACE-WORKSPACE.md) | v4.0.0 | Project-local workspace layout + `workspace.json` manifest (schema 1.0), adoption/compat, non-goals |
 | [OPTIONAL-LOCAL-INDEX.md](./OPTIONAL-LOCAL-INDEX.md) | v4.1.0 | Opt-in, disposable SQLite index (`@agent-inspect/index-sqlite`) for faster local queries; driver decision, schema, staleness/recovery, publication gate |
+| [SESSIONS-AND-ACTIVITY-V4.2.md](./SESSIONS-AND-ACTIVITY-V4.2.md) | v4.2.0 | Session status, activity summaries, expanded CLI, optional index acceleration (builds on v2.4 sessions RFC) |
 
 ## Rules
 
