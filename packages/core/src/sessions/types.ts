@@ -109,6 +109,35 @@ export interface CriticalPathStep {
   confidence: SessionConfidence;
 }
 
+/** Session lifecycle status (v4.2 RFC). */
+export type SessionStatus =
+  | "running"
+  | "waiting_input"
+  | "idle"
+  | "completed"
+  | "error"
+  | "stale"
+  | "unknown";
+
+export interface SessionLastError {
+  runId: string;
+  message: string;
+  code?: string;
+}
+
+export interface SessionCheckSummary {
+  pass: number;
+  fail: number;
+  warn: number;
+}
+
+export interface EnrichSessionSummaryOptions {
+  /** Reference clock for staleness (default Date.now()). */
+  nowMs?: number;
+  /** Inactivity threshold before marking a session stale (default 24h). */
+  staleThresholdMs?: number;
+}
+
 export interface SessionSummary {
   sessionId: string;
   runIds: string[];
@@ -116,6 +145,23 @@ export interface SessionSummary {
   handoffs: HandoffEdge[];
   retries: RetryLink[];
   criticalPath: CriticalPathStep[];
+  /** Derived session status (v4.2+). */
+  status: SessionStatus;
+  /** Earliest run start time in the session. */
+  startedAt?: number;
+  /** Latest run end time when all runs have ended. */
+  endedAt?: number;
+  /** endedAt - startedAt when both are present. */
+  durationMs?: number;
+  correlationId?: string;
+  jobId?: string;
+  workflowId?: string;
+  lastError?: SessionLastError;
+  /** ISO-8601 timestamp of the most recent run activity. */
+  lastActivity: string;
+  retryCount: number;
+  observationSummary?: string;
+  checkSummary?: SessionCheckSummary;
 }
 
 export interface SessionIndex {
@@ -128,4 +174,8 @@ export interface SessionIndex {
 export interface BuildSessionIndexOptions {
   /** When true, group runs that share only `groupId` under a synthetic session key. */
   correlateByGroupId?: boolean;
+  /** Reference clock for session staleness (v4.2+). */
+  nowMs?: number;
+  /** Inactivity threshold before marking a session stale (v4.2+, default 24h). */
+  staleThresholdMs?: number;
 }

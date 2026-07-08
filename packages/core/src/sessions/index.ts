@@ -2,6 +2,7 @@ import {
   extractSessionWorkflowMetadata,
   sessionKeyForRun,
 } from "./metadata.js";
+import { enrichSessionSummary } from "./status.js";
 import type {
   BuildSessionIndexOptions,
   CriticalPathStep,
@@ -296,14 +297,21 @@ export function buildSessionIndex(
         });
       }
 
-      return {
-        sessionId,
-        runIds,
-        groups,
-        handoffs,
-        retries,
-        criticalPath,
-      };
+      return enrichSessionSummary(
+        {
+          sessionId,
+          runIds,
+          groups,
+          handoffs,
+          retries,
+          criticalPath,
+        },
+        runs,
+        {
+          nowMs: options.nowMs,
+          staleThresholdMs: options.staleThresholdMs,
+        },
+      );
     });
 
   if (sessions.length === 0 && runs.length > 0) {
@@ -328,16 +336,21 @@ export function buildSessionIndex(
 }
 
 export { extractSessionWorkflowMetadata, sessionKeyForRun } from "./metadata.js";
+export { deriveSessionStatus, enrichSessionSummary } from "./status.js";
 export type {
   BuildSessionIndexOptions,
   CriticalPathStep,
+  EnrichSessionSummaryOptions,
   HandoffEdge,
   RetryLink,
+  SessionCheckSummary,
   SessionConfidence,
   SessionEdgeSource,
   SessionGroup,
   SessionIndex,
+  SessionLastError,
   SessionRunRecord,
+  SessionStatus,
   SessionSummary,
   SessionWarning,
   SessionWorkflowMetadata,
