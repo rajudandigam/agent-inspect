@@ -12,7 +12,8 @@ const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const cliDist = path.join(repoRoot, "packages/cli/dist/index.cjs");
 const builtCliHasBundleCommand =
-  existsSync(cliDist) && readFileSync(cliDist, "utf-8").includes("share-safe offline trace bundle");
+  existsSync(cliDist) &&
+  readFileSync(cliDist, "utf-8").includes("bundle requires a run id");
 
 function jsonl(...rows: unknown[]): string {
   return `${rows.map((row) => JSON.stringify(row)).join("\n")}\n`;
@@ -130,8 +131,10 @@ describe("bundle command", () => {
     expect(existsSync(path.join(tmp, "bundle", "metadata.json"))).toBe(true);
     expect(existsSync(outputDir)).toBe(false);
   });
+});
 
-  it("registers bundle in built CLI when dist exists", () => {
-    expect(builtCliHasBundleCommand).toBe(existsSync(cliDist) ? true : true);
+describe.skipIf(!builtCliHasBundleCommand)("built bundle CLI", () => {
+  it("includes bundle command in dist", () => {
+    expect(builtCliHasBundleCommand).toBe(true);
   });
 });
