@@ -18,9 +18,11 @@ Maintainers add rows after merged PRs or notable community help. **Do not add fa
 
 | Contributor | Area | Contribution | Date |
 | ----------- | ---- | ------------ | ---- |
-| @zycaskevin | Documentation / CLI examples | Added diff CLI output examples for local trace comparison | 2026-06 |
-| @MFA-G | Examples / logging recipes | Added Winston JSON logs recipe | 2026-06 |
-| @buyicoder | Documentation / community | Extension submission template, first PR walkthrough, contributor index sync | 2026-07 |
+| @zycaskevin | Documentation / CLI examples | Diff CLI output examples for local trace comparison ([#17](https://github.com/rajudandigam/agent-inspect/pull/17)) | 2026-06 |
+| @MFA-G | Documentation / examples | Winston JSON logs recipe ([#32](https://github.com/rajudandigam/agent-inspect/pull/32)); safe trace sharing checklist ([#34](https://github.com/rajudandigam/agent-inspect/pull/34)) | 2026-06 |
+| @beanscg | Documentation | Clean install smoke test guide ([#33](https://github.com/rajudandigam/agent-inspect/pull/33)) | 2026-06 |
+| @buyicoder | Documentation / community | Extension submission template ([#70](https://github.com/rajudandigam/agent-inspect/pull/70)), first PR walkthrough ([#71](https://github.com/rajudandigam/agent-inspect/pull/71)), contributor index sync ([#72](https://github.com/rajudandigam/agent-inspect/pull/72)), adapter SDK privacy checklist ([#73](https://github.com/rajudandigam/agent-inspect/pull/73)) | 2026-07 |
+| @fengjikui | Documentation | Streaming limitations recipe map ([#76](https://github.com/rajudandigam/agent-inspect/pull/76)) | 2026-07 |
 
 ### Recognition policy
 
