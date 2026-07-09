@@ -995,6 +995,29 @@ npx agent-inspect gate --dir fixtures/cohorts/before-after --max-error-rate 5 --
 
 Recipe: [github-actions-gate](../examples/recipes/github-actions-gate/README.md).
 
+### 6.28 `viewer`
+
+Start the **localhost read-only viewer** for traces, suite evidence, or workspace status (v5.3+).
+
+```bash
+agent-inspect viewer [--suite | --workspace] [options]
+```
+
+Options:
+
+- `--suite` — suite evidence mode (runs suite config and shows case status, failures, observations)
+- `--workspace` — workspace mode (project status, runs, artifacts)
+- `--config <path>` — suite config for `--suite` mode
+- `--dir <path>` — trace directory (trace mode default)
+- `--host`, `--port`, `--open` — same as `serve`
+
+Example:
+
+```bash
+npx agent-inspect viewer --suite --config fixtures/configs/outcome-suite.suite.json
+npx agent-inspect viewer --workspace
+```
+
 ## 7. Optional TUI behavior
 
 `view --tui` delegates to `@agent-inspect/tui` and requires an interactive terminal. If the package is not installed, the CLI prints a short install hint.

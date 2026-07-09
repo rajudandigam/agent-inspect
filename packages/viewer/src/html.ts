@@ -6,20 +6,71 @@ export const viewerIndexHtml = `<!DOCTYPE html>
   <style>
     body { font-family: system-ui, sans-serif; margin: 1.5rem; line-height: 1.4; }
     h1 { font-size: 1.25rem; }
-    pre { background: #f4f4f5; padding: 1rem; overflow: auto; max-height: 70vh; }
+    pre { background: #f4f4f5; padding: 1rem; overflow: auto; max-height: 50vh; }
     a { color: #0b57d0; }
     .muted { color: #666; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; vertical-align: top; }
+    th { background: #f6f6f6; }
+    .fail { color: #b42318; font-weight: 600; }
+    .pass { color: #027a48; font-weight: 600; }
+    section { margin: 1.5rem 0; }
   </style>
 </head>
 <body>
   <h1>AgentInspect local viewer</h1>
   <p class="muted">Read-only. JSONL on disk remains canonical.</p>
-  <p><a href="/api/health">/api/health</a> · <a href="/api/traces">/api/traces</a> · <a href="/api/sessions">/api/sessions</a></p>
-  <pre id="out">Loading traces…</pre>
+  <p id="nav"></p>
+  <div id="content"><pre id="out">Loading…</pre></div>
   <script>
-    fetch("/api/traces").then((r) => r.json()).then((data) => {
-      document.getElementById("out").textContent = JSON.stringify(data, null, 2);
-    }).catch((err) => {
+    const params = new URLSearchParams(location.search);
+    const mode = params.get("mode") || "traces";
+
+    function renderSuite(data) {
+      const rows = data.cases.map((c) =>
+        '<tr><td>' + c.id + '</td><td class="' + c.status + '">' + c.status +
+        '</td><td>' + (c.message || '') + '</td><td>' + c.toolPath.join(' → ') +
+        '</td><td>' + c.observations.map((o) => o.name + ':' + o.status).join(', ') + '</td></tr>'
+      ).join('');
+      const failed = data.cases.filter((c) => c.status !== 'pass');
+      const detail = failed.map((c) => {
+        let html = '<h3>Case ' + c.id + '</h3><ul>';
+        if (c.failureDiff) html += '<li>Diff errors: ' + c.failureDiff.summary.errors + '</li>';
+        if (c.timeline) html += '<li>Timeline steps: ' + c.timeline.entries.length + '</li>';
+        html += '<li>Diagnostics: ' + c.diagnostics.map((d) => d.message).join('; ') + '</li></ul>';
+        return html;
+      }).join('');
+      return '<section><h2>Suite: ' + data.suiteName + ' (' + data.status + ')</h2>' +
+        '<p>Passed ' + data.summary.passed + ', failed ' + data.summary.failed + '</p>' +
+        '<table><thead><tr><th>Case</th><th>Status</th><th>Message</th><th>Tool path</th><th>Observations</th></tr></thead><tbody>' +
+        rows + '</tbody></table>' +
+        '<section><h2>Failure detail</h2>' + (detail || '<p class="pass">No failures</p>') + '</section>' +
+        '<section><h2>CI artifacts</h2><p>' + (data.ciArtifactsDir || 'n/a') + '</p></section>' +
+        '<section><h2>Bundle export</h2><p>' + data.bundleExportHint + '</p></section>';
+    }
+
+    async function load() {
+      const nav = document.getElementById("nav");
+      const out = document.getElementById("out");
+      const content = document.getElementById("content");
+      if (mode === "suite") {
+        nav.innerHTML = '<a href="/api/suite">/api/suite</a>';
+        const data = await fetch("/api/suite").then((r) => r.json());
+        content.innerHTML = renderSuite(data);
+        return;
+      }
+      if (mode === "workspace") {
+        nav.innerHTML = '<a href="/api/workspace">/api/workspace</a>';
+        const data = await fetch("/api/workspace").then((r) => r.json());
+        content.innerHTML = '<section><h2>Workspace: ' + (data.project || 'workspace') + '</h2>' +
+          '<p>Runs: ' + data.runs.length + '</p><pre>' + JSON.stringify(data, null, 2) + '</pre></section>';
+        return;
+      }
+      nav.innerHTML = '<a href="/api/traces">/api/traces</a> · <a href="/api/sessions">/api/sessions</a>';
+      const data = await fetch("/api/traces").then((r) => r.json());
+      out.textContent = JSON.stringify(data, null, 2);
+    }
+    load().catch((err) => {
       document.getElementById("out").textContent = String(err);
     });
   </script>

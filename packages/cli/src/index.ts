@@ -412,6 +412,20 @@ export function createCliProgram(): Command {
     });
 
   program
+    .command("viewer")
+    .description("Start localhost read-only viewer (traces, suite, or workspace) (v5.3+)")
+    .option("--dir <path>", "trace directory (trace mode)")
+    .option("--suite", "suite evidence mode")
+    .option("--workspace", "workspace mode")
+    .option("--config <path>", "suite config path (suite mode)")
+    .option("--host <host>", "bind host (default 127.0.0.1)", "127.0.0.1")
+    .option("--port <number>", "bind port (default 7337)", "7337")
+    .option("--open", "open browser locally when host is localhost")
+    .action((opts: ServeCommandOptions) => {
+      runCommand(() => serveCommand(opts));
+    });
+
+  program
     .command("eval")
     .description("Run deterministic local evals against a trace")
     .argument("<trace-path-or-run-id>", "trace file, directory, stdin -, or run id")

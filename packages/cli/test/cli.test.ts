@@ -33,6 +33,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("suite");
     expect(names).toContain("cohort");
     expect(names).toContain("gate");
+    expect(names).toContain("viewer");
     expect(names).toContain("scan");
     expect(names).toContain("verify-safe");
     expect(names).toContain("artifacts");

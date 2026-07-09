@@ -14,7 +14,9 @@ import { persistedInspectEventsToTraceEvents } from "agent-inspect/persisted";
 import { openTrace } from "agent-inspect/readers";
 
 import { viewerIndexHtml } from "./html.js";
+import { loadSuiteViewerData } from "./suite-data.js";
 import type { ViewerServerInfo, ViewerServerOptions } from "./types.js";
+import { loadWorkspaceViewerData } from "./workspace-data.js";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 7337;
@@ -56,6 +58,7 @@ export function createViewerServer(options: ViewerServerOptions = {}): Server {
   const host = options.host ?? DEFAULT_HOST;
   const port = options.port ?? DEFAULT_PORT;
   const maxEvents = options.maxEvents ?? DEFAULT_MAX_EVENTS;
+  const mode = options.mode ?? "traces";
 
   if (host === "0.0.0.0") {
     console.warn(
@@ -82,8 +85,22 @@ export function createViewerServer(options: ViewerServerOptions = {}): Server {
         return sendJson(res, 200, {
           ok: true,
           readOnly: true,
+          mode,
           traceDir: path.resolve(traceDir),
         });
+      }
+
+      if (pathname === "/api/suite" && mode === "suite") {
+        const data = await loadSuiteViewerData({
+          suiteConfigPath: options.suiteConfigPath,
+          cwd: options.cwd,
+        });
+        return sendJson(res, 200, data);
+      }
+
+      if (pathname === "/api/workspace" && mode === "workspace") {
+        const data = await loadWorkspaceViewerData({ cwd: options.cwd });
+        return sendJson(res, 200, data);
       }
 
       const td = new TraceDirectory({ dir: traceDir });
@@ -206,6 +223,7 @@ export function startViewerServer(
   const host = options.host ?? DEFAULT_HOST;
   const port = options.port ?? DEFAULT_PORT;
   const traceDir = resolveTraceDir({ dir: options.traceDir });
+  const mode = options.mode ?? "traces";
   const server = createViewerServer(options);
 
   return new Promise((resolve, reject) => {
@@ -214,11 +232,14 @@ export function startViewerServer(
       const address = server.address();
       const resolvedPort =
         typeof address === "object" && address ? address.port : port;
+      const modeQuery =
+        mode === "traces" ? "" : `?mode=${encodeURIComponent(mode)}`;
       resolve({
         host,
         port: resolvedPort,
         traceDir: path.resolve(traceDir),
-        url: `http://${host}:${resolvedPort}`,
+        url: `http://${host}:${resolvedPort}/${modeQuery}`,
+        mode,
       });
     });
   });

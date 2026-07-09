@@ -298,6 +298,12 @@ export {
   validateSuiteConfig,
 } from "../suite/index.js";
 
+export type { ObservedOutcome, ObservedOutcomeStatus } from "../outcomes/types.js";
+export {
+  extractOutcomesFromPersistedEvents,
+  extractOutcomesFromTraceEvents,
+} from "../outcomes/extract.js";
+
 export type {
   AnalyzeCohortOptions,
   CohortAggregateMetrics,
