@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.2.0
+
+### Minor Changes
+
+- 2de83f6: Plugin convention: manifest schema, adapter SDK validators, and `plugins list|doctor|validate` CLI.
+
 ## 6.1.0
 
 ### Minor Changes

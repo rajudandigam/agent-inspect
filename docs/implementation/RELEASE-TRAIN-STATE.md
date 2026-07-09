@@ -20,6 +20,8 @@ completedChunks:
   - "v6.2-2-conformance (pre-existing adapter-sdk)"
   - "v6.2-3-privacy-checklist (pre-existing adapter-sdk)"
   - "v6.2-4-plugins-cli"
+  - "v6.2-5-release-readiness"
+  - "v6.2.0-version-packages"
 remainingTrains:
   - "v6.3.0 MCP Coding-agent Workflows"
   - "v6.4.0 Standards Graduation"

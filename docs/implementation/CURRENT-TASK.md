@@ -2,20 +2,20 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v6.2.0
-trainStatus: release-prep
-currentChunk: v6.2-5-release-readiness
-nextChunk: Version Packages @ 6.2.0 + publish
+currentTrain: v6.3.0
+trainStatus: ready
+currentChunk: v6.3-0-mcp-rfc
+nextChunk: MCP coding-agent workflow RFC
 ```
 
 ## Published baseline
 
-**6.1.0** — client-hosted ingestion in `@agent-inspect/studio`.
+**6.2.0** — plugin convention (pending npm verify after publish).
 
 ## Completed: v6.2.0 plugin convention
 
-Chunks v6.2-0 through v6.2-4. Release readiness + changeset pending commit.
+All chunks v6.2-0 through v6.2.0 Version Packages.
 
-## Next: v6.2.0 release
+## Next: v6.3.0 MCP workflows
 
-Version Packages, full release gate, publish **6.2.0**, then start v6.3.0.
+Per [V6.3.0-EXECUTION-PLAN.md](./release-trains/V6.3.0-EXECUTION-PLAN.md).

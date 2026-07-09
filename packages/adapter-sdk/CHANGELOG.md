@@ -1,5 +1,16 @@
 # @agent-inspect/adapter-sdk
 
+## 6.2.0
+
+### Minor Changes
+
+- 2de83f6: Plugin convention: manifest schema, adapter SDK validators, and `plugins list|doctor|validate` CLI.
+
+### Patch Changes
+
+- Updated dependencies [2de83f6]
+  - agent-inspect@6.2.0
+
 ## 6.1.0
 
 ### Minor Changes
