@@ -3,10 +3,10 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "5.0.0"
-publishedVersion: "5.0.0 (all 17 packages live on npm)"
-currentTrain: "v5.1.0"
-trainStatus: "validating"
+baselineVersion: "5.1.0"
+publishedVersion: "5.1.0 (all 17 packages live on npm)"
+currentTrain: "v5.2.0"
+trainStatus: "planning"
 executionMode: "autonomous-release-train"
 branch: "main"
 completedChunks:
@@ -23,12 +23,13 @@ completedChunks:
   - "v5.1-3-baseline-candidate-comparison"
   - "v5.1-4-cohort-cli-reports"
   - "v5.1-5-fixtures-recipe-docs"
-currentChunk: "v5.1.0 version + publish"
-nextAction: "changeset version to 5.1.0, push, workflow_dispatch publish"
+  - "v5.1.0-published (all 17 packages @ 5.1.0, CI run 28988054272)"
+currentChunk: "v5.1.0 complete; next: v5.2.0 CI Quality Gates"
+nextAction: "v5.2-0 per roadmap § v5.2.0"
 pendingManualGate: "VS Code Marketplace first publish (packages/vscode)"
-lastConfirmedCommit: "ea1bb27"
-lastPublishRun: "28986079661 (workflow_dispatch, success)"
-lastValidationLevel: "full gate green at v5.1.0 implementation"
+lastConfirmedCommit: "126fc25"
+lastPublishRun: "28988054272 (workflow_dispatch, success)"
+lastValidationLevel: "full gate green at 5.1.0 + CI publish all 17 packages"
 updatedAt: "2026-07-08"
 ```
 

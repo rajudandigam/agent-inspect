@@ -2,14 +2,13 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v5.1.0
-trainStatus: validating
-currentChunk: v5.1-5-docs-readiness
-scope: Cohort Analysis v2 — gate green; version + publish pending
+currentTrain: v5.2.0
+trainStatus: planning
+currentChunk: v5.1.0 complete
+scope: Next — CI Quality Gates per roadmap § v5.2.0
 authority:
-  - docs/implementation/release-trains/V5.1.0-EXECUTION-PLAN.md
-nextChunk: v5.1.0 publish, then v5.2.0 CI Quality Gates
+  - docs/implementation/ROADMAP_V3_5_TO_V7.md (§ v5.2.0)
+nextChunk: v5.2-0 after maintainer review
 ```
 
-v5.0.0 published: trace suite config (CI run 28986079661).
-v5.1.0 implementation complete: `agent-inspect cohort`, core cohort engine, fixtures, recipe.
+v5.1.0 published: cohort analysis v2 with `agent-inspect cohort` (CI run 28988054272).
