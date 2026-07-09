@@ -40,6 +40,15 @@ Create `studio-registry.json` beside your team workspace root:
 
 Each `projects[].path` must contain `.agent-inspect/workspace.json` (v4 layout).
 
+Optional **file-drop ingest** (v6.1+, disabled by default):
+
+```bash
+npx agent-inspect studio import drop --workspace ./studio-registry.json
+npx agent-inspect studio --ingest file-drop --workspace ./studio-registry.json
+```
+
+Registry `import.fileDropDir` points at the watched folder; allowlisted files (`.jsonl`, `.suite.json`, `.tgz`, `.zip`) copy into `import.ciArtifactsDir` / `import.bundlesDir` with idempotent SQLite bookkeeping. Ingest stays off until you pass `--ingest file-drop` or run `studio import drop`.
+
 ## Network exposure
 
 - **Default:** localhost only.

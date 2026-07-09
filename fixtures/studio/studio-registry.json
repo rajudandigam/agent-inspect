@@ -10,6 +10,8 @@
   ],
   "import": {
     "ciArtifactsDir": "imports/ci",
-    "bundlesDir": "imports/bundles"
+    "bundlesDir": "imports/bundles",
+    "fileDropDir": "imports/drop",
+    "enabled": false
   }
 }

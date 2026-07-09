@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { isSafeRelativePath } from "./path-guards.js";
+
 export const STUDIO_REGISTRY_SCHEMA_VERSION = "1.0" as const;
 export const STUDIO_REGISTRY_FILENAMES = [
   "studio-registry.json",
@@ -17,6 +19,8 @@ export interface StudioRegistryProject {
 export interface StudioRegistryImport {
   ciArtifactsDir?: string;
   bundlesDir?: string;
+  fileDropDir?: string;
+  enabled?: boolean;
 }
 
 export interface StudioRegistry {
@@ -38,12 +42,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isSafeRelativePath(p: string): boolean {
-  const trimmed = p.trim();
-  if (trimmed === "" || trimmed.startsWith("/") || trimmed.startsWith("\\")) return false;
-  if (/^[a-zA-Z]:/.test(trimmed)) return false;
-  return !trimmed.split(/[/\\]+/).some((seg) => seg === "..");
-}
+export { isSafeRelativePath };
 
 export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
   const errors: string[] = [];
@@ -104,6 +103,21 @@ export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
           errors.push("import.bundlesDir must be a safe relative path");
         } else {
           importConfig.bundlesDir = dir;
+        }
+      }
+      if (input.import.fileDropDir !== undefined) {
+        const dir = String(input.import.fileDropDir).trim();
+        if (!isSafeRelativePath(dir)) {
+          errors.push("import.fileDropDir must be a safe relative path");
+        } else {
+          importConfig.fileDropDir = dir;
+        }
+      }
+      if (input.import.enabled !== undefined) {
+        if (typeof input.import.enabled !== "boolean") {
+          errors.push("import.enabled must be a boolean");
+        } else {
+          importConfig.enabled = input.import.enabled;
         }
       }
     }

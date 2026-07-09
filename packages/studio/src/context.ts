@@ -1,6 +1,7 @@
 import type Database from "better-sqlite3";
 
 import { importStudioRegistry, type ImportedStudioProject, type StudioImportResult } from "./import.js";
+import { importFileDropFromRegistry, type FileDropImportResult } from "./ingest/file-drop.js";
 import {
   openStudioDb,
   resolveStudioDbPath,
@@ -19,6 +20,7 @@ export interface StudioContext {
   registryPath: string;
   registry: StudioRegistry;
   importResult: StudioImportResult;
+  fileDropResult?: FileDropImportResult;
   projects: ImportedStudioProject[];
 }
 
@@ -46,12 +48,24 @@ export async function createStudioContext(
     registryPath,
   });
 
+  let fileDropResult: FileDropImportResult | undefined;
+  if (options.ingestFileDrop === true) {
+    fileDropResult = await importFileDropFromRegistry({
+      db,
+      registryPath,
+      registry: registryRead.registry,
+      enabled: true,
+      ...(options.archiveFileDrop === true ? { archiveAfterImport: true } : {}),
+    });
+  }
+
   return {
     db,
     dbPath,
     registryPath,
     registry: registryRead.registry,
     importResult,
+    ...(fileDropResult !== undefined ? { fileDropResult } : {}),
     projects: importResult.projects,
   };
 }

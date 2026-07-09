@@ -52,8 +52,8 @@ import type { CheckCommandOptions } from "./check.js";
 import type { ServeCommandOptions } from "./serve.js";
 import { checkCommand } from "./check.js";
 import { serveCommand } from "./serve.js";
-import type { StudioCommandOptions } from "./studio-cmd.js";
-import { studioCommand } from "./studio-cmd.js";
+import type { StudioCommandOptions, StudioImportDropOptions } from "./studio-cmd.js";
+import { studioCommand, studioImportDropCommand } from "./studio-cmd.js";
 import type { EvalCommandOptions } from "./eval.js";
 import { evalCommand } from "./eval.js";
 import type { SafetyCommandOptions } from "./safety.js";
@@ -427,7 +427,7 @@ export function createCliProgram(): Command {
       runCommand(() => serveCommand(opts));
     });
 
-  program
+  const studioCmd = program
     .command("studio")
     .description(
       "Start self-hosted read-only Studio analyzer (requires @agent-inspect/studio) (v6.0+)",
@@ -439,9 +439,26 @@ export function createCliProgram(): Command {
     .option("--server", "bind for network access (0.0.0.0; requires explicit opt-in)")
     .option("--auth <mode>", "auth mode: none or basic", "none")
     .option("--password-env <name>", "env var for basic-auth password")
+    .option("--ingest <channel>", "enable ingest channel on startup (file-drop)")
+    .option("--archive-file-drop", "archive file-drop sources after successful import")
     .option("--open", "open browser locally when host is localhost")
     .action((opts: StudioCommandOptions) => {
       runCommand(() => studioCommand(opts));
+    });
+
+  const studioImportCmd = studioCmd
+    .command("import")
+    .description("Import external evidence into Studio (v6.1+)");
+
+  studioImportCmd
+    .command("drop")
+    .description("Import allowlisted files from a file-drop directory")
+    .option("--workspace <path>", "studio registry manifest path")
+    .option("--db <path>", "studio database path (sqlite file or postgres URL)")
+    .option("--dir <path>", "file-drop directory (defaults to registry import.fileDropDir)")
+    .option("--archive", "move imported files into .imported/ under the drop dir")
+    .action((opts: StudioImportDropOptions) => {
+      runCommand(() => studioImportDropCommand(opts));
     });
 
   program

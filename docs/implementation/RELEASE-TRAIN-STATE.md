@@ -11,8 +11,8 @@ currentTrain: "v6.1.0"
 trainStatus: "ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "v6.1-1-file-drop"
-nextAction: "File-drop importer in @agent-inspect/studio"
+currentChunk: "v6.1-2-github-artifact"
+nextAction: "GitHub artifact importer in @agent-inspect/studio"
 completedChunks:
   - "v5.1.0-published (cohort v2, CI 28988054272)"
   - "v5.2.0-published (CI gates, CI 28990000097)"
@@ -26,6 +26,7 @@ completedChunks:
   - "v6.0-5-release-readiness"
   - "v6.0.0-published (CI 29039791803 + studio manual publish)"
   - "v6.1-0-rfc (CLIENT-HOSTED-INGESTION-V6.1.md)"
+  - "v6.1-1-file-drop"
 remainingTrains:
   - "v6.1.0 Client-hosted Ingestion (in progress)"
   - "v6.2.0 Plugin Convention"

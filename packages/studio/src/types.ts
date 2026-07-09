@@ -12,6 +12,10 @@ export interface StudioServerOptions {
   passwordEnv?: string;
   /** Test hook: inject a preloaded context instead of importing on startup. */
   context?: StudioContext;
+  /** Run file-drop ingest once on startup (requires explicit opt-in). */
+  ingestFileDrop?: boolean;
+  /** Move imported drop files into `.imported/` after successful copy. */
+  archiveFileDrop?: boolean;
 }
 
 export interface StudioServerInfo {

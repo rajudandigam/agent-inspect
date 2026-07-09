@@ -12,6 +12,16 @@ export interface StudioCommandOptions {
   auth?: string;
   passwordEnv?: string;
   cwd?: string;
+  ingest?: string;
+  archiveFileDrop?: boolean;
+}
+
+export interface StudioImportDropOptions {
+  workspace?: string;
+  db?: string;
+  dir?: string;
+  archive?: boolean;
+  cwd?: string;
 }
 
 function isModuleNotFound(e: unknown): boolean {
@@ -51,9 +61,49 @@ function parsePort(value: string | undefined): number | undefined {
   return parsed;
 }
 
+function summarizeFileDropResult(result: Studio.FileDropImportResult): void {
+  if (result.skipped) {
+    console.log(`[AgentInspect studio] file-drop skipped: ${result.reason ?? "disabled"}`);
+    return;
+  }
+  console.log(
+    `[AgentInspect studio] file-drop scanned=${result.scanned} imported=${result.imported} skipped=${result.skippedFiles}`,
+  );
+  for (const warning of result.warnings) {
+    console.warn(`[AgentInspect studio] ${warning}`);
+  }
+  for (const error of result.errors) {
+    console.error(`[AgentInspect studio] ${error}`);
+  }
+}
+
+export async function studioImportDropCommand(
+  options: StudioImportDropOptions = {},
+): Promise<void> {
+  const mod = await loadStudio();
+  if (!mod) return;
+
+  const result = await mod.runStudioFileDropImport({
+    ...(options.workspace !== undefined ? { workspacePath: options.workspace } : {}),
+    ...(options.db !== undefined ? { dbPath: options.db } : {}),
+    ...(options.dir !== undefined ? { dropDir: options.dir } : {}),
+    ...(options.archive === true ? { archiveAfterImport: true } : {}),
+    ...(options.cwd !== undefined ? { cwd: options.cwd } : {}),
+  });
+  summarizeFileDropResult(result);
+  if (result.errors.length > 0) {
+    process.exitCode = 1;
+  }
+}
+
 export async function studioCommand(options: StudioCommandOptions = {}): Promise<void> {
   const mod = await loadStudio();
   if (!mod) return;
+
+  const ingest = options.ingest?.trim();
+  if (ingest && ingest !== "file-drop") {
+    throw new Error(`Unsupported --ingest channel: ${ingest}. Supported: file-drop`);
+  }
 
   const port = parsePort(options.port);
   const host = options.host?.trim();
@@ -66,7 +116,14 @@ export async function studioCommand(options: StudioCommandOptions = {}): Promise
     ...(options.cwd !== undefined ? { cwd: options.cwd } : {}),
     ...(options.auth === "basic" ? { auth: "basic" as const } : {}),
     ...(options.passwordEnv !== undefined ? { passwordEnv: options.passwordEnv } : {}),
+    ...(ingest === "file-drop" ? { ingestFileDrop: true } : {}),
+    ...(options.archiveFileDrop === true ? { archiveFileDrop: true } : {}),
   });
+
+  if (ingest === "file-drop") {
+    // createStudioContext already ran file-drop when ingestFileDrop is set.
+    console.log(`[AgentInspect studio] file-drop ingest enabled for startup scan`);
+  }
 
   console.log(`AgentInspect studio (read-only): ${info.url}`);
 

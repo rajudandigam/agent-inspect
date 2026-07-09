@@ -35,6 +35,15 @@ CREATE TABLE IF NOT EXISTS runs (
 );
 CREATE INDEX IF NOT EXISTS idx_runs_project ON runs(project_id);
 CREATE INDEX IF NOT EXISTS idx_runs_status ON runs(status);
+CREATE TABLE IF NOT EXISTS ingest_files (
+  source_key TEXT PRIMARY KEY,
+  source_name TEXT NOT NULL,
+  dest_path TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK(kind IN ('ci', 'bundle')),
+  content_hash TEXT NOT NULL,
+  imported_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_ingest_files_kind ON ingest_files(kind);
 `;
 
 export interface StudioProjectRow {
@@ -57,6 +66,17 @@ export interface StudioRunRow {
   startedAt?: number;
   durationMs?: number;
   sessionId?: string;
+}
+
+export type IngestFileKind = "ci" | "bundle";
+
+export interface IngestFileRow {
+  sourceKey: string;
+  sourceName: string;
+  destPath: string;
+  kind: IngestFileKind;
+  contentHash: string;
+  importedAt: string;
 }
 
 export function resolveStudioDbPath(options: {
@@ -211,4 +231,52 @@ export function searchProjectRuns(
        LIMIT ?`,
     )
     .all(projectId, pattern, pattern, pattern, limit) as StudioRunRow[];
+}
+
+export function findIngestFileBySourceKey(
+  db: Database.Database,
+  sourceKey: string,
+): IngestFileRow | undefined {
+  return db
+    .prepare(
+      `SELECT source_key AS sourceKey, source_name AS sourceName, dest_path AS destPath,
+              kind, content_hash AS contentHash, imported_at AS importedAt
+       FROM ingest_files WHERE source_key = ?`,
+    )
+    .get(sourceKey) as IngestFileRow | undefined;
+}
+
+export function insertIngestFile(db: Database.Database, row: IngestFileRow): void {
+  db.prepare(
+    `INSERT INTO ingest_files(source_key, source_name, dest_path, kind, content_hash, imported_at)
+     VALUES (@sourceKey, @sourceName, @destPath, @kind, @contentHash, @importedAt)
+     ON CONFLICT(source_key) DO UPDATE SET
+       source_name = excluded.source_name,
+       dest_path = excluded.dest_path,
+       kind = excluded.kind,
+       content_hash = excluded.content_hash,
+       imported_at = excluded.imported_at`,
+  ).run(row);
+}
+
+export function listIngestFiles(
+  db: Database.Database,
+  kind?: IngestFileKind,
+): IngestFileRow[] {
+  if (kind) {
+    return db
+      .prepare(
+        `SELECT source_key AS sourceKey, source_name AS sourceName, dest_path AS destPath,
+                kind, content_hash AS contentHash, imported_at AS importedAt
+         FROM ingest_files WHERE kind = ? ORDER BY imported_at DESC`,
+      )
+      .all(kind) as IngestFileRow[];
+  }
+  return db
+    .prepare(
+      `SELECT source_key AS sourceKey, source_name AS sourceName, dest_path AS destPath,
+              kind, content_hash AS contentHash, imported_at AS importedAt
+       FROM ingest_files ORDER BY imported_at DESC`,
+    )
+    .all() as IngestFileRow[];
 }
