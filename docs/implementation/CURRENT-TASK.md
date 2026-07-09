@@ -2,20 +2,20 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v6.1.0
-trainStatus: in-progress
-currentChunk: v6.1-3-http-ingest
-nextChunk: v6.1-3 HTTP ingest endpoint + token validation
+currentTrain: v6.2.0
+trainStatus: ready
+currentChunk: v6.2-0-plugin-rfc
+nextChunk: v6.2-0 plugin convention RFC
 ```
 
 ## Published baseline
 
-**6.0.0** — all **18** linked packages on npm (incl. `@agent-inspect/studio`).
+**6.1.0** — client-hosted ingestion in `@agent-inspect/studio` (pending npm publish verification).
 
-## Completed: v6.1-2 GitHub artifact importer
+## Completed: v6.1.0 client-hosted ingestion
 
-`packages/studio/src/ingest/github-artifact.ts` — operator-initiated GitHub Actions artifact pull via `GITHUB_TOKEN`, idempotent ingest bookkeeping, registry re-import, CLI `studio import github`. CI uses mocked fetch + `fixtures/studio/github-artifact/`.
+All chunks v6.1-0 through v6.1-5 + Version Packages @ 6.1.0.
 
-## Next: v6.1-3 HTTP ingest + token validation
+## Next: v6.2.0 plugin convention
 
-Per [V6.1.0-EXECUTION-PLAN.md](./release-trains/V6.1.0-EXECUTION-PLAN.md). Release remains at **v6.1-5**.
+Per [V6.2.0-EXECUTION-PLAN.md](./release-trains/V6.2.0-EXECUTION-PLAN.md).

@@ -6,47 +6,37 @@
 
 ```yaml
 baselineVersion: "6.0.0"
-publishedVersion: "6.0.0 (all 18 packages on npm)"
-currentTrain: "v6.1.0"
-trainStatus: "in-progress"
+publishedVersion: "6.1.0 (pending npm verify)"
+currentTrain: "v6.2.0"
+trainStatus: "ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "v6.1-3-http-ingest"
-nextAction: "HTTP ingest endpoint + token validation in @agent-inspect/studio"
+currentChunk: "v6.2-0-plugin-rfc"
+nextAction: "Plugin convention RFC"
 completedChunks:
-  - "v5.1.0-published (cohort v2, CI 28988054272)"
-  - "v5.2.0-published (CI gates, CI 28990000097)"
-  - "v5.3.0-published (suite viewer, CI 28991868139)"
-  - "v5.4.0-published (suite templates, CI 28993299414)"
-  - "v6.0-0-rfc (SELF-HOSTED-STUDIO-V6.0.md)"
-  - "v6.0-1-scaffold (@agent-inspect/studio package + CLI studio command)"
-  - "v6.0-2-workspace-views"
-  - "v6.0-3-search-diff-reports"
-  - "v6.0-4-auth-binding"
-  - "v6.0-5-release-readiness"
-  - "v6.0.0-published (CI 29039791803 + studio manual publish)"
   - "v6.1-0-rfc (CLIENT-HOSTED-INGESTION-V6.1.md)"
   - "v6.1-1-file-drop"
   - "v6.1-2-github-artifact"
+  - "v6.1-3-http-ingest"
+  - "v6.1-4-bundle-upload"
+  - "v6.1-5-release-readiness"
+  - "v6.1.0-version-packages"
 remainingTrains:
-  - "v6.1.0 Client-hosted Ingestion (in progress)"
   - "v6.2.0 Plugin Convention"
   - "v6.3.0 MCP Coding-agent Workflows"
   - "v6.4.0 Standards Graduation"
 blockedTrains:
   - "v7.0.0 (conditional — not scheduled)"
 pendingManualGate:
-  - "HTTP ingest enabled-by-default (security review — must stay off)"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio non-localhost binding security review"
-lastConfirmedCommit: "eb6220d"
-lastPublishRun: "29039791803 (workflow_dispatch; 18/18 after studio manual publish)"
-lastValidationLevel: "v6.1-2-chunk-gate-green"
+lastConfirmedCommit: "3690470"
+lastValidationLevel: "v6.1.0-release-gate-green"
 updatedAt: "2026-07-09"
 ```
 
 ## Quick links
 
-- **Active plan:** [V6.1.0-EXECUTION-PLAN.md](./release-trains/V6.1.0-EXECUTION-PLAN.md)
-- **Canonical roadmap:** [ROADMAP_V3_5_TO_V7.md](./ROADMAP_V3_5_TO_V7.md) (read § v6 only when needed)
+- **Active plan:** [V6.2.0-EXECUTION-PLAN.md](./release-trains/V6.2.0-EXECUTION-PLAN.md)
+- **v6.1 readiness:** [V6.1.0-RELEASE-READINESS.md](./release-trains/V6.1.0-RELEASE-READINESS.md)
 - **Maintainer rules:** [AGENTS.md](../../AGENTS.md) at repo root
