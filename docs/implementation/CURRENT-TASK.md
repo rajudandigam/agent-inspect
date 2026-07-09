@@ -2,13 +2,13 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v5.3.0
+currentTrain: v6.0.0
 trainStatus: planning
-currentChunk: v5.2.0 complete
-scope: Next — Suite Viewer per roadmap § v5.3.0
+currentChunk: v5.4.0 complete
+scope: Autonomous train through v6.4 (v7.0 gated — not scheduled)
 authority:
-  - docs/implementation/ROADMAP_V3_5_TO_V7.md (§ v5.3.0)
-nextChunk: v5.3-0 after maintainer review
+  - docs/implementation/release-trains/V6.0.0-EXECUTION-PLAN.md
+nextChunk: v6.0-0 studio RFC
 ```
 
-v5.2.0 published: CI quality gates with `agent-inspect gate` (CI run 28990000097).
+v5.4.0 published: PM/QA suite templates (CI run 28993299414).
