@@ -1,0 +1,5 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700002001000,"runId":"after-1","name":"refund-after-1","startTime":1700002001000,"metadata":{"cohort":"after","model":"gpt-4-mini","promptVersion":"v2"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700002001010,"runId":"after-1","stepId":"step_delete","name":"deleteAccount","type":"tool","startTime":1700002001010,"metadata":{"toolName":"deleteAccount"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700002001040,"runId":"after-1","stepId":"step_delete","status":"success","endTime":1700002001040,"durationMs":30}
+{"schemaVersion":"0.1","event":"outcome_observed","timestamp":1700002001045,"runId":"after-1","outcomeId":"outcome-1","name":"policyShown","expectation":"Policy visible","status":"failed","observedAt":1700002001045}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700002001050,"runId":"after-1","status":"error","endTime":1700002001050,"durationMs":200,"error":{"message":"wrong tool used"}}

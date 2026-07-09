@@ -930,6 +930,39 @@ npx agent-inspect suite run --config fixtures/configs/outcome-suite.suite.json -
 
 Recipe: [trace-suite-basic](../examples/recipes/trace-suite-basic/README.md).
 
+### 6.26 `cohort`
+
+Compare **baseline vs candidate** trace cohorts for regressions (v5.1+). Reads local traces only — no agent replay, no model calls, no upload.
+
+```bash
+agent-inspect cohort --dir <path> --baseline <label> --candidate <label> [options]
+```
+
+Options:
+
+- `--dir <path>` — trace directory (default: `.agent-inspect/traces`)
+- `--baseline <label>` / `--candidate <label>` — cohort labels from `run_started.metadata`
+- `--cohort-key <key>` — metadata key for labels (default: `cohort`)
+- `--group-by <spec>` — `model`, `session`, `group`, or `metadata.<key>` (default: `model`)
+- `--metric <list>` — comma-separated metrics (`errorRate`, `duration`, `toolChoice`, `observationFailure`, …)
+- `--format <format>` — `markdown`, `json`, or `html` (default: `markdown`)
+- `-o, --output <dir>` — write `cohort-results.json`, `cohort-summary.md`, `cohort-report.html`
+- `--json` — print deterministic JSON result
+
+Exit code **1** when any comparison flags a regression.
+
+Example:
+
+```bash
+npx agent-inspect cohort \
+  --dir fixtures/cohorts/before-after \
+  --baseline before \
+  --candidate after \
+  --group-by model
+```
+
+Recipe: [cohort-baseline-candidate](../examples/recipes/cohort-baseline-candidate/README.md).
+
 ## 7. Optional TUI behavior
 
 `view --tui` delegates to `@agent-inspect/tui` and requires an interactive terminal. If the package is not installed, the CLI prints a short install hint.

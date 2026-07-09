@@ -15,6 +15,7 @@ const REQUIRED = {
     "fixtures/traces-v0.2/README.md",
     "fixtures/logs/README.md",
     "fixtures/configs/README.md",
+    "fixtures/cohorts/README.md",
   ],
   traces: [
     "fixtures/traces/minimal-success.jsonl",

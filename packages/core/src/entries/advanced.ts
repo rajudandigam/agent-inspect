@@ -298,4 +298,23 @@ export {
   validateSuiteConfig,
 } from "../suite/index.js";
 
+export type {
+  AnalyzeCohortOptions,
+  CohortAggregateMetrics,
+  CohortAnalysisResult,
+  CohortMetricComparison,
+  CohortMetricId,
+  CohortRunMetrics,
+  RenderCohortReportOptions,
+} from "../cohort/index.js";
+export {
+  COHORT_METRIC_IDS,
+  analyzeCohort,
+  compareCohortAggregates,
+  parseCohortMetricList,
+  parseGroupBySpec,
+  renderCohortReport,
+  renderCohortSummaryMarkdown,
+} from "../cohort/index.js";
+
 export { maybeInspectRun, isAgentInspectEnabled } from "../maybe-inspect-run.js";

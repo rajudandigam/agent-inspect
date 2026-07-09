@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700002002000,"runId":"after-2","name":"refund-after-2","startTime":1700002002000,"metadata":{"cohort":"after","model":"gpt-4-mini","promptVersion":"v2"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700002002010,"runId":"after-2","stepId":"step_search","name":"searchDocs","type":"tool","startTime":1700002002010,"metadata":{"toolName":"searchDocs"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700002002060,"runId":"after-2","stepId":"step_search","status":"success","endTime":1700002002060,"durationMs":50}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700002002070,"runId":"after-2","status":"success","endTime":1700002002070,"durationMs":70}

@@ -42,6 +42,7 @@ const RECIPES = [
   "shareable-bundle-basic",
   "observed-outcome-basic",
   "trace-suite-basic",
+  "cohort-baseline-candidate",
 ];
 
 const LOG_RECIPE_FILES = {

@@ -102,6 +102,8 @@ import {
   suiteRunCommand,
   suiteValidateCommand,
 } from "./suite.js";
+import type { CohortCommandOptions } from "./cohort.js";
+import { cohortCommand } from "./cohort.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -1085,6 +1087,25 @@ export function createCliProgram(): Command {
     .option("--json", "print JSON wrapper")
     .action((opts: SuiteReportCommandOptions) => {
       runCommand(() => suiteReportCommand(opts));
+    });
+
+  program
+    .command("cohort")
+    .description("Compare baseline/candidate trace cohorts for regressions (v5.1+)")
+    .option("--dir <path>", "trace directory")
+    .option("--baseline <label>", "baseline cohort label (metadata key)")
+    .option("--candidate <label>", "candidate cohort label (metadata key)")
+    .option("--cohort-key <key>", "metadata key for cohort labels", "cohort")
+    .option("--group-by <spec>", "model | session | group | metadata.<key>", "model")
+    .option(
+      "--metric <list>",
+      "comma-separated metrics (errorRate,duration,toolChoice,...)",
+    )
+    .option("--format <format>", "markdown, json, or html", "markdown")
+    .option("-o, --output <dir>", "write cohort-results.json, cohort-summary.md, cohort-report.html")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: CohortCommandOptions) => {
+      runCommand(() => cohortCommand(opts));
     });
 
   return program;

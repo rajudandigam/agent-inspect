@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700001002000,"runId":"before-2","name":"refund-before-2","startTime":1700001002000,"metadata":{"cohort":"before","model":"gpt-4-mini","promptVersion":"v1"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700001002010,"runId":"before-2","stepId":"step_search","name":"searchDocs","type":"tool","startTime":1700001002010,"metadata":{"toolName":"searchDocs"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700001002040,"runId":"before-2","stepId":"step_search","status":"success","endTime":1700001002040,"durationMs":30}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700001002050,"runId":"before-2","status":"success","endTime":1700001002050,"durationMs":50}

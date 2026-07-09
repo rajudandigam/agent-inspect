@@ -1,0 +1,25 @@
+# Cohort analysis
+
+Trace directory: `fixtures/cohorts/before-after`
+Group by: `model`
+Baseline/Candidate key: `cohort` (before vs after)
+Status: **REGRESSION**
+
+## Groups
+### after / gpt-4-mini (2 runs)
+- Error rate: 50.0%
+- Avg duration: 135 ms
+- Dominant tools: deleteAccount
+- Observation failure rate: 50.0%
+
+### before / gpt-4-mini (2 runs)
+- Error rate: 0.0%
+- Avg duration: 80 ms
+- Dominant tools: searchDocs
+- Observation failure rate: 0.0%
+
+## Comparisons
+- Error rate: baseline=0 candidate=0.5 (delta 0.5) **REGRESSION**
+- Average duration (ms): baseline=80 candidate=135 (delta 55) **REGRESSION**
+- Tool choice: baseline=searchDocs candidate=deleteAccount **REGRESSION**
+- Observation failure rate: baseline=0 candidate=0.5 (delta 0.5) **REGRESSION**
