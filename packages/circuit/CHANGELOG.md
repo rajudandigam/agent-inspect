@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 6.4.0
+
+### Patch Changes
+
+- Align linked package version with agent-inspect@6.4.0 release train.
+
 ## 6.1.0
 
 ### Minor Changes

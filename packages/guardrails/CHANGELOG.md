@@ -1,5 +1,13 @@
 # @agent-inspect/guardrails
 
+## 6.4.0
+
+### Patch Changes
+
+- Align linked package version with agent-inspect@6.4.0 release train.
+- Updated dependencies
+  - @agent-inspect/redact@6.4.0
+
 ## 6.1.0
 
 ### Minor Changes
