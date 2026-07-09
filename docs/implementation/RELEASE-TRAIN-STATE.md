@@ -6,14 +6,11 @@
 
 ```yaml
 baselineVersion: "5.4.0"
-publishedVersion: "6.0.0 (pending CI publish; studio first-publish needs Trusted Publishing)"
-currentTrain: "v6.0.0"
-trainStatus: "release-ready"
-executionMode: "autonomous-release-train"
-branch: "main"
-currentChunk: "v6.0-5-release"
-nextAction: "changeset version 6.0.0, push, workflow_dispatch publish; maintainer configures @agent-inspect/studio Trusted Publishing"
-handoffCommit: "18ffb81"
+publishedVersion: "6.0.0 (17/18 packages on npm; @agent-inspect/studio pending Trusted Publishing)"
+currentTrain: "v6.1.0"
+trainStatus: "ready"
+currentChunk: "v6.1-0-rfc"
+nextAction: "Client-hosted ingestion RFC; then v6.1 implementation chunks"
 completedChunks:
   - "v5.1.0-published (cohort v2, CI 28988054272)"
   - "v5.2.0-published (CI gates, CI 28990000097)"
@@ -25,20 +22,9 @@ completedChunks:
   - "v6.0-3-search-diff-reports"
   - "v6.0-4-auth-binding"
   - "v6.0-5-release-readiness"
-remainingTrains:
-  - "v6.1.0 Client-hosted Ingestion"
-  - "v6.2.0 Plugin Convention"
-  - "v6.3.0 MCP Coding-agent Workflows"
-  - "v6.4.0 Standards Graduation"
-blockedTrains:
-  - "v7.0.0 (conditional — not scheduled)"
-pendingManualGate:
-  - "@agent-inspect/studio first npm publication + Trusted Publishing (maintainer)"
-  - "VS Code Marketplace first publish (packages/vscode)"
-  - "Studio auth / non-localhost binding security review"
-lastConfirmedCommit: "7afe306"
-lastPublishRun: "28993299414 (workflow_dispatch, success)"
-lastValidationLevel: "full gate green pre-6.0.0 release"
+  - "v6.0.0-published (17 packages CI 29039791803; studio manual gate)"
+lastConfirmedCommit: "f35a704"
+lastPublishRun: "29039791803 (workflow_dispatch; 17/18 published; studio E404 expected)"
 updatedAt: "2026-07-09"
 ```
 
