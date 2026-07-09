@@ -6,6 +6,7 @@ import {
   defaultSuiteConfigTemplate,
   loadSuiteConfig,
   renderSuiteReport,
+  resolveSuiteTemplate,
   runSuite,
   validateSuiteConfig,
   type SuiteRunResult,
@@ -13,6 +14,7 @@ import {
 
 export interface SuiteCommandOptions {
   config?: string;
+  template?: string;
   json?: boolean;
   markdown?: boolean;
   output?: string;
@@ -41,7 +43,11 @@ function resolveCwd(options: { cwd?: string }): string {
 export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promise<void> {
   const cwd = resolveCwd(options);
   const configPath = path.join(cwd, DEFAULT_CONFIG_FILENAME);
-  const template = defaultSuiteConfigTemplate();
+  const template = options.template?.trim();
+  const suiteConfig =
+    template !== undefined && template !== ""
+      ? resolveSuiteTemplate(template)
+      : defaultSuiteConfigTemplate();
 
   if (options.dryRun) {
     if (options.json) {
@@ -49,23 +55,31 @@ export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promi
         ok: true,
         dryRun: true,
         wouldWrite: [DEFAULT_CONFIG_FILENAME],
-        config: template,
+        config: suiteConfig,
+        ...(template ? { template } : {}),
       });
       return;
     }
     console.log("Dry run — would create:");
     console.log(`- ${DEFAULT_CONFIG_FILENAME}`);
+    if (template) console.log(`  template: ${template}`);
     return;
   }
 
   try {
-    await writeFile(configPath, `${JSON.stringify(template, null, 2)}\n`, "utf-8");
+    await writeFile(configPath, `${JSON.stringify(suiteConfig, null, 2)}\n`, "utf-8");
     if (options.json) {
-      printJson({ ok: true, created: [DEFAULT_CONFIG_FILENAME], configPath });
+      printJson({
+        ok: true,
+        created: [DEFAULT_CONFIG_FILENAME],
+        configPath,
+        ...(template ? { template } : {}),
+      });
       return;
     }
     console.log("Created suite config:");
     console.log(`- ${DEFAULT_CONFIG_FILENAME}`);
+    if (template) console.log(`  template: ${template}`);
     console.log("\nNext:");
     console.log("  npx agent-inspect suite validate");
     console.log("  npx agent-inspect suite run --json");

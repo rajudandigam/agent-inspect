@@ -1060,6 +1060,7 @@ export function createCliProgram(): Command {
   suiteCmd
     .command("init")
     .description("Create a starter agent-inspect.suite.json")
+    .option("--template <name>", "PM/QA template id (v5.4+)")
     .option("--dry-run", "show planned files without writing")
     .option("--json", "print deterministic JSON result")
     .action((opts: SuiteCommandOptions) => {

@@ -297,6 +297,13 @@ export {
   runSuite,
   validateSuiteConfig,
 } from "../suite/index.js";
+export {
+  getSuiteTemplate,
+  listSuiteTemplates,
+  resolveSuiteTemplate,
+  SUITE_TEMPLATE_IDS,
+  type SuiteTemplateId,
+} from "../suite/templates.js";
 
 export type { ObservedOutcome, ObservedOutcomeStatus } from "../outcomes/types.js";
 export {

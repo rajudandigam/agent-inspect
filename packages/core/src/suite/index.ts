@@ -31,3 +31,10 @@ export {
   renderSuiteReport,
   renderSuiteReportMarkdown,
 } from "./report.js";
+export {
+  getSuiteTemplate,
+  listSuiteTemplates,
+  resolveSuiteTemplate,
+  SUITE_TEMPLATE_IDS,
+  type SuiteTemplateId,
+} from "./templates.js";

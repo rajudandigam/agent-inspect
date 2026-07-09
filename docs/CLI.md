@@ -901,7 +901,7 @@ Recipe: [shareable-bundle-basic](../examples/recipes/shareable-bundle-basic/READ
 Define and run **local trace suites** for CI trajectory checks (v5.0+). Suites read existing traces only — no agent replay, no model calls, no upload.
 
 ```bash
-agent-inspect suite init
+agent-inspect suite init [--template <name>]
 agent-inspect suite validate [--config path]
 agent-inspect suite list [--config path]
 agent-inspect suite run [--config path] [--json] [--markdown] [-o dir]
@@ -913,6 +913,10 @@ Default config file: `agent-inspect.suite.json` in the current directory.
 Options (shared):
 
 - `--config <path>` — suite config (`.json`, `.js`, `.mjs`, `.cjs`)
+
+`init` also supports:
+
+- `--template <name>` — PM/QA template (v5.4+): `customer-support-agent`, `refund-agent`, `sales-assistant`, `browser-task-agent`, `mcp-tool-agent`, `workflow-agent`, `rag-answer-agent`, `human-approval-agent`
 
 `run` also supports:
 
