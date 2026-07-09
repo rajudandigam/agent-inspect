@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.0
+
+### Minor Changes
+
+- c5e3b16: Add trace suite config (`agent-inspect.suite.json`) with `suite init`, `validate`, `list`, `run`, and `report` commands for local CI trajectory checks.
+
 ## 4.4.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/openai-agents",
-  "version": "4.4.0",
+  "version": "5.0.0",
   "license": "MIT",
   "type": "module",
   "description": "Optional OpenAI Agents JS tracing processor integration for AgentInspect local traces",

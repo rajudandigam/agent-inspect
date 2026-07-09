@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/index-sqlite",
-  "version": "4.4.0",
+  "version": "5.0.0",
   "license": "MIT",
   "type": "module",
   "description": "Optional, disposable local SQLite index for faster queries over AgentInspect JSONL traces",

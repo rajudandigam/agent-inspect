@@ -1,5 +1,12 @@
 # @agent-inspect/mcp
 
+## 5.0.0
+
+### Patch Changes
+
+- Updated dependencies [c5e3b16]
+  - agent-inspect@4.5.0
+
 ## 4.4.0
 
 ### Patch Changes

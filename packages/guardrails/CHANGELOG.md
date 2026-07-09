@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 5.0.0
+
+### Minor Changes
+
+- Align the linked package suite to 5.0.0. No behavior changes in this package; keeps published versions consistent with the v5.0 trace suite config release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @agent-inspect/redact@5.0.0
+
 ## 4.4.0
 
 ### Minor Changes
