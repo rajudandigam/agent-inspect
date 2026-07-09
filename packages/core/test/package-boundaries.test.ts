@@ -155,7 +155,7 @@ describe("package boundaries", () => {
     const studio = await readPkg("packages/studio/package.json");
     expect(studio.name).toBe("@agent-inspect/studio");
     expect(studio.private).toBeUndefined();
-    expect(keys(studio.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(studio.dependencies)).toEqual(["agent-inspect", "better-sqlite3"]);
     expect(keys(studio.peerDependencies)).toEqual([]);
   });
 

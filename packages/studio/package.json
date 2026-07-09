@@ -41,7 +41,11 @@
     "node": ">=20"
   },
   "dependencies": {
-    "agent-inspect": "workspace:*"
+    "agent-inspect": "workspace:*",
+    "better-sqlite3": "^11.8.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11"
   },
   "publishConfig": {
     "access": "public"

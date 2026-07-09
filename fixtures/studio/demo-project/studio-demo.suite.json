@@ -1,0 +1,15 @@
+{
+  "name": "studio-demo-suite",
+  "traces": ".agent-inspect/runs",
+  "cases": [
+    {
+      "id": "minimal-success",
+      "runId": "minimal-success",
+      "maxDurationMs": 30000
+    }
+  ],
+  "redactionProfile": "share",
+  "artifacts": {
+    "outputDir": ".agent-inspect/suite-runs"
+  }
+}

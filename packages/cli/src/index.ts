@@ -437,6 +437,8 @@ export function createCliProgram(): Command {
     .option("--host <host>", "bind host (default 127.0.0.1)", "127.0.0.1")
     .option("--port <number>", "bind port (default 7340)", "7340")
     .option("--server", "bind for network access (0.0.0.0; requires explicit opt-in)")
+    .option("--auth <mode>", "auth mode: none or basic", "none")
+    .option("--password-env <name>", "env var for basic-auth password")
     .option("--open", "open browser locally when host is localhost")
     .action((opts: StudioCommandOptions) => {
       runCommand(() => studioCommand(opts));

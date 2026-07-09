@@ -1,22 +1,19 @@
 import { createServer, type Server, type ServerResponse } from "node:http";
 
+import { createStudioContext, type StudioContext } from "./context.js";
 import { studioIndexHtml } from "./html.js";
+import { handleStudioRoute } from "./routes.js";
 import type { StudioServerInfo, StudioServerOptions } from "./types.js";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 7340;
 
-function sendJson(res: ServerResponse, status: number, body: unknown): void {
-  const payload = JSON.stringify(body);
-  res.writeHead(status, {
+function badRequest(res: ServerResponse, message: string): void {
+  res.writeHead(400, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
   });
-  res.end(payload);
-}
-
-function badRequest(res: ServerResponse, message: string): void {
-  sendJson(res, 400, { error: message });
+  res.end(JSON.stringify({ error: message }));
 }
 
 function resolveHost(options: StudioServerOptions): string {
@@ -29,11 +26,19 @@ function resolveHost(options: StudioServerOptions): string {
 export function createStudioServer(options: StudioServerOptions = {}): Server {
   const host = resolveHost(options);
   const port = options.port ?? DEFAULT_PORT;
+  let contextPromise: Promise<StudioContext> | undefined = options.context
+    ? Promise.resolve(options.context)
+    : undefined;
 
   if (host === "0.0.0.0") {
     console.warn(
       "[AgentInspect studio] Binding to 0.0.0.0 exposes workspace evidence on the network. Use 127.0.0.1 unless you accept that risk.",
     );
+    if (options.auth !== "basic") {
+      console.warn(
+        "[AgentInspect studio] Non-localhost binding without --auth basic is discouraged for production use.",
+      );
+    }
   }
 
   const server = createServer(async (req, res) => {
@@ -41,6 +46,11 @@ export function createStudioServer(options: StudioServerOptions = {}): Server {
       if (req.method !== "GET" && req.method !== "HEAD") {
         return badRequest(res, "Only GET is supported.");
       }
+
+      if (!contextPromise) {
+        contextPromise = createStudioContext(options);
+      }
+      const ctx = await contextPromise;
 
       const url = new URL(req.url ?? "/", `http://${host}:${port}`);
       const pathname = url.pathname;
@@ -56,40 +66,34 @@ export function createStudioServer(options: StudioServerOptions = {}): Server {
         return;
       }
 
-      if (pathname === "/api/health") {
-        if (req.method === "HEAD") {
-          res.writeHead(200);
-          res.end();
-          return;
-        }
-        return sendJson(res, 200, {
-          ok: true,
-          readOnly: true,
-          mode: "studio",
-          ...(options.workspacePath !== undefined
-            ? { workspacePath: options.workspacePath }
-            : {}),
-          ...(options.dbPath !== undefined ? { dbPath: options.dbPath } : {}),
-          projects: [],
+      const handled = await handleStudioRoute(req, res, ctx, options, pathname, url);
+      if (!handled) {
+        res.writeHead(404, {
+          "content-type": "application/json; charset=utf-8",
+          "cache-control": "no-store",
         });
+        res.end(JSON.stringify({ error: `Unknown route: ${pathname}` }));
       }
-
-      sendJson(res, 404, { error: `Unknown route: ${pathname}` });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      sendJson(res, 500, { error: message });
+      res.writeHead(500, {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+      });
+      res.end(JSON.stringify({ error: message }));
     }
   });
 
   return server;
 }
 
-export function startStudioServer(
+export async function startStudioServer(
   options: StudioServerOptions = {},
 ): Promise<StudioServerInfo> {
   const host = resolveHost(options);
   const port = options.port ?? DEFAULT_PORT;
-  const server = createStudioServer(options);
+  const ctx = options.context ?? (await createStudioContext(options));
+  const server = createStudioServer({ ...options, context: ctx });
 
   return new Promise((resolve, reject) => {
     server.once("error", reject);
@@ -105,7 +109,9 @@ export function startStudioServer(
         ...(options.workspacePath !== undefined
           ? { workspacePath: options.workspacePath }
           : {}),
-        ...(options.dbPath !== undefined ? { dbPath: options.dbPath } : {}),
+        dbPath: ctx.dbPath,
+        registryName: ctx.registry.name,
+        projectCount: ctx.projects.length,
       });
     });
   });

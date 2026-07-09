@@ -9,6 +9,9 @@ export interface StudioCommandOptions {
   db?: string;
   server?: boolean;
   open?: boolean;
+  auth?: string;
+  passwordEnv?: string;
+  cwd?: string;
 }
 
 function isModuleNotFound(e: unknown): boolean {
@@ -60,6 +63,9 @@ export async function studioCommand(options: StudioCommandOptions = {}): Promise
     ...(options.workspace !== undefined ? { workspacePath: options.workspace } : {}),
     ...(options.db !== undefined ? { dbPath: options.db } : {}),
     ...(options.server === true ? { server: true } : {}),
+    ...(options.cwd !== undefined ? { cwd: options.cwd } : {}),
+    ...(options.auth === "basic" ? { auth: "basic" as const } : {}),
+    ...(options.passwordEnv !== undefined ? { passwordEnv: options.passwordEnv } : {}),
   });
 
   console.log(`AgentInspect studio (read-only): ${info.url}`);

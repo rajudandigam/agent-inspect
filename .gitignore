@@ -26,3 +26,6 @@ examples/recipes/**/.agent-inspect-candidate/
 examples/recipes/**/.agent-inspect-reporter-artifacts/
 examples/adapter-sdk/**/.agent-inspect-minimal-adapter/
 docs-local
+fixtures/studio/.agent-inspect/*.db*
+fixtures/studio/.agent-inspect/*.db-shm
+fixtures/studio/.agent-inspect/*.db-wal

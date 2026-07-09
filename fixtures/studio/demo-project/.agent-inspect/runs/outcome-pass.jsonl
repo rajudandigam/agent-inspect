@@ -1,0 +1,5 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000001000,"runId":"outcome-pass","name":"outcome-pass-run","startTime":1700000001000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000001010,"runId":"outcome-pass","stepId":"step_root","name":"plan","type":"logic","startTime":1700000001010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000001110,"runId":"outcome-pass","stepId":"step_root","status":"success","endTime":1700000001110,"durationMs":100}
+{"schemaVersion":"0.1","event":"outcome_observed","timestamp":1700000001115,"runId":"outcome-pass","outcomeId":"outcome-pass-1","name":"policyShown","expectation":"Refund policy visible","status":"passed","method":"custom","evidence":{"selector":"#refund-policy"},"observedAt":1700000001115}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000001120,"runId":"outcome-pass","status":"success","endTime":1700000001120,"durationMs":120}

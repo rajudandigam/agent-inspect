@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "name": "studio-fixture",
+  "projects": [
+    {
+      "id": "demo",
+      "path": "demo-project",
+      "label": "Demo Project"
+    }
+  ],
+  "import": {
+    "ciArtifactsDir": "imports/ci",
+    "bundlesDir": "imports/bundles"
+  }
+}

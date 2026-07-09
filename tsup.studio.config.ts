@@ -13,4 +13,14 @@ export default defineConfig({
   treeshake: true,
   platform: "node",
   target: "es2022",
+  external: [
+    "better-sqlite3",
+    "agent-inspect",
+    "agent-inspect/advanced",
+    "agent-inspect/checks",
+    "agent-inspect/diff",
+    "agent-inspect/persisted",
+    "agent-inspect/readers",
+    "agent-inspect/workspace",
+  ],
 });

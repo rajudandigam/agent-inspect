@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "project": "demo",
+  "createdAt": "2026-07-09T00:00:00.000Z",
+  "traceDirs": ["runs"],
+  "reportsDir": "reports",
+  "artifactsDir": "artifacts",
+  "bundlesDir": "bundles",
+  "notesDir": "notes",
+  "redactionProfile": "share",
+  "index": {
+    "enabled": false,
+    "type": "none"
+  }
+}
