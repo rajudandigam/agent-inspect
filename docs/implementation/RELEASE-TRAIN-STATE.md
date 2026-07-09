@@ -5,24 +5,22 @@
 > **Handoff for new agent chat:** [AGENT-HANDOFF-PROMPT.md](./AGENT-HANDOFF-PROMPT.md)
 
 ```yaml
-baselineVersion: "6.0.0"
-publishedVersion: "6.1.0 (pending npm verify)"
+baselineVersion: "6.1.0"
+publishedVersion: "6.1.0"
 currentTrain: "v6.2.0"
-trainStatus: "ready"
+trainStatus: "release-prep"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "v6.2-0-plugin-rfc"
-nextAction: "Plugin convention RFC"
+currentChunk: "v6.2-5-release-readiness"
+nextAction: "Version Packages + publish 6.2.0"
 completedChunks:
-  - "v6.1-0-rfc (CLIENT-HOSTED-INGESTION-V6.1.md)"
-  - "v6.1-1-file-drop"
-  - "v6.1-2-github-artifact"
-  - "v6.1-3-http-ingest"
-  - "v6.1-4-bundle-upload"
-  - "v6.1-5-release-readiness"
-  - "v6.1.0-version-packages"
+  - "v6.1-0-rfc through v6.1.0-version-packages"
+  - "v6.2-0-plugin-rfc"
+  - "v6.2-1-manifest-validator"
+  - "v6.2-2-conformance (pre-existing adapter-sdk)"
+  - "v6.2-3-privacy-checklist (pre-existing adapter-sdk)"
+  - "v6.2-4-plugins-cli"
 remainingTrains:
-  - "v6.2.0 Plugin Convention"
   - "v6.3.0 MCP Coding-agent Workflows"
   - "v6.4.0 Standards Graduation"
 blockedTrains:
@@ -30,13 +28,13 @@ blockedTrains:
 pendingManualGate:
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio non-localhost binding security review"
-lastConfirmedCommit: "3690470"
-lastValidationLevel: "v6.1.0-release-gate-green"
+lastConfirmedCommit: "4c61b00"
+lastValidationLevel: "v6.2-chunk-gate-green"
 updatedAt: "2026-07-09"
 ```
 
 ## Quick links
 
 - **Active plan:** [V6.2.0-EXECUTION-PLAN.md](./release-trains/V6.2.0-EXECUTION-PLAN.md)
-- **v6.1 readiness:** [V6.1.0-RELEASE-READINESS.md](./release-trains/V6.1.0-RELEASE-READINESS.md)
+- **v6.2 readiness:** [V6.2.0-RELEASE-READINESS.md](./release-trains/V6.2.0-RELEASE-READINESS.md)
 - **Maintainer rules:** [AGENTS.md](../../AGENTS.md) at repo root

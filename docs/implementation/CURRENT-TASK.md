@@ -3,19 +3,19 @@
 ```yaml
 executionMode: autonomous-release-train
 currentTrain: v6.2.0
-trainStatus: ready
-currentChunk: v6.2-0-plugin-rfc
-nextChunk: v6.2-0 plugin convention RFC
+trainStatus: release-prep
+currentChunk: v6.2-5-release-readiness
+nextChunk: Version Packages @ 6.2.0 + publish
 ```
 
 ## Published baseline
 
-**6.1.0** — client-hosted ingestion in `@agent-inspect/studio` (pending npm publish verification).
+**6.1.0** — client-hosted ingestion in `@agent-inspect/studio`.
 
-## Completed: v6.1.0 client-hosted ingestion
+## Completed: v6.2.0 plugin convention
 
-All chunks v6.1-0 through v6.1-5 + Version Packages @ 6.1.0.
+Chunks v6.2-0 through v6.2-4. Release readiness + changeset pending commit.
 
-## Next: v6.2.0 plugin convention
+## Next: v6.2.0 release
 
-Per [V6.2.0-EXECUTION-PLAN.md](./release-trains/V6.2.0-EXECUTION-PLAN.md).
+Version Packages, full release gate, publish **6.2.0**, then start v6.3.0.
