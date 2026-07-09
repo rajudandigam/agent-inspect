@@ -4,15 +4,18 @@
 executionMode: autonomous-release-train
 currentTrain: v6.1.0
 trainStatus: ready
-currentChunk: v6.1-0-rfc
-nextChunk: Client-hosted ingestion RFC
+currentChunk: v6.1-1-file-drop
+nextChunk: v6.1-1 file-drop importer
 ```
 
-## v6.0.0 shipped (17/18 on npm)
+## Published baseline
 
-- `agent-inspect@6.0.0` + 16 linked packages published (CI 29039791803)
-- `@agent-inspect/studio@6.0.0` — **maintainer manual gate:** Trusted Publishing + first publish
+**6.0.0** — all **18** linked packages on npm (incl. `@agent-inspect/studio`).
 
-## Next: v6.1.0 Client-hosted Ingestion
+## Completed: v6.1-0 ingestion RFC
 
-See [V6.1.0-EXECUTION-PLAN.md](./release-trains/V6.1.0-EXECUTION-PLAN.md).
+`docs/proposals/CLIENT-HOSTED-INGESTION-V6.1.md`
+
+## Next: v6.1-1 file-drop importer
+
+Per [V6.1.0-EXECUTION-PLAN.md](./release-trains/V6.1.0-EXECUTION-PLAN.md).

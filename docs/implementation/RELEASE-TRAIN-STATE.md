@@ -6,13 +6,13 @@
 
 ```yaml
 baselineVersion: "6.0.0"
-publishedVersion: "6.0.0 (17/18 packages on npm; @agent-inspect/studio pending Trusted Publishing)"
+publishedVersion: "6.0.0 (all 18 packages on npm)"
 currentTrain: "v6.1.0"
 trainStatus: "ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "v6.1-0-rfc"
-nextAction: "Client-hosted ingestion RFC; then v6.1 implementation chunks"
+currentChunk: "v6.1-1-file-drop"
+nextAction: "File-drop importer in @agent-inspect/studio"
 completedChunks:
   - "v5.1.0-published (cohort v2, CI 28988054272)"
   - "v5.2.0-published (CI gates, CI 28990000097)"
@@ -24,20 +24,21 @@ completedChunks:
   - "v6.0-3-search-diff-reports"
   - "v6.0-4-auth-binding"
   - "v6.0-5-release-readiness"
-  - "v6.0.0-published (17 packages CI 29039791803; studio manual gate)"
+  - "v6.0.0-published (CI 29039791803 + studio manual publish)"
+  - "v6.1-0-rfc (CLIENT-HOSTED-INGESTION-V6.1.md)"
 remainingTrains:
-  - "v6.1.0 Client-hosted Ingestion"
+  - "v6.1.0 Client-hosted Ingestion (in progress)"
   - "v6.2.0 Plugin Convention"
   - "v6.3.0 MCP Coding-agent Workflows"
   - "v6.4.0 Standards Graduation"
 blockedTrains:
   - "v7.0.0 (conditional — not scheduled)"
 pendingManualGate:
-  - "@agent-inspect/studio first npm publication + Trusted Publishing (maintainer)"
+  - "HTTP ingest enabled-by-default (security review — must stay off)"
   - "VS Code Marketplace first publish (packages/vscode)"
-  - "Studio auth / non-localhost binding security review"
-lastConfirmedCommit: "6d7a0ea"
-lastPublishRun: "29039791803 (workflow_dispatch; 17/18 published; studio E404 expected)"
+  - "Studio non-localhost binding security review"
+lastConfirmedCommit: "4f6278b"
+lastPublishRun: "29039791803 (workflow_dispatch; 18/18 after studio manual publish)"
 lastValidationLevel: "full gate green at 6.0.0"
 updatedAt: "2026-07-09"
 ```

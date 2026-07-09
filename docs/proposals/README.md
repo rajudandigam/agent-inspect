@@ -29,6 +29,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [OPTIONAL-LOCAL-INDEX.md](./OPTIONAL-LOCAL-INDEX.md) | v4.1.0 | Opt-in, disposable SQLite index (`@agent-inspect/index-sqlite`) for faster local queries; driver decision, schema, staleness/recovery, publication gate |
 | [SESSIONS-AND-ACTIVITY-V4.2.md](./SESSIONS-AND-ACTIVITY-V4.2.md) | v4.2.0 | Session status, activity summaries, expanded CLI, optional index acceleration (builds on v2.4 sessions RFC) |
 | [SELF-HOSTED-STUDIO-V6.0.md](./SELF-HOSTED-STUDIO-V6.0.md) | v6.0.0 | Customer-owned self-hosted Studio (`@agent-inspect/studio`); read-only multi-project analyzer; SQLite default; optional Postgres; localhost + optional auth; no maintainer cloud |
+| [CLIENT-HOSTED-INGESTION-V6.1.md](./CLIENT-HOSTED-INGESTION-V6.1.md) | v6.1.0 | Self-hosted Studio ingestion (file-drop, GitHub artifacts, optional HTTP + token, bundle upload); disabled by default; studio package only; no maintainer cloud |
 
 ## Rules
 
