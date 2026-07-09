@@ -233,6 +233,15 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/langfuse-local-import:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/langgraph-callback-local:
     dependencies:
       '@agent-inspect/langchain':
@@ -309,6 +318,15 @@ importers:
         version: 4.21.0
 
   examples/recipes/parallel-tools:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/phoenix-openinference-import:
     dependencies:
       agent-inspect:
         specifier: workspace:*
