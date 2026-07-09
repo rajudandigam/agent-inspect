@@ -16,6 +16,10 @@ export interface StudioServerOptions {
   ingestFileDrop?: boolean;
   /** Move imported drop files into `.imported/` after successful copy. */
   archiveFileDrop?: boolean;
+  /** Enable HTTP ingest routes (requires explicit opt-in + ingest token env). */
+  ingestHttp?: boolean;
+  /** Env var name for HTTP ingest token (default STUDIO_INGEST_TOKEN). */
+  ingestTokenEnv?: string;
 }
 
 export interface StudioServerInfo {

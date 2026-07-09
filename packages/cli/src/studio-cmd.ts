@@ -14,6 +14,7 @@ export interface StudioCommandOptions {
   cwd?: string;
   ingest?: string;
   archiveFileDrop?: boolean;
+  ingestTokenEnv?: string;
 }
 
 export interface StudioImportDropOptions {
@@ -152,8 +153,8 @@ export async function studioCommand(options: StudioCommandOptions = {}): Promise
   if (!mod) return;
 
   const ingest = options.ingest?.trim();
-  if (ingest && ingest !== "file-drop") {
-    throw new Error(`Unsupported --ingest channel: ${ingest}. Supported: file-drop`);
+  if (ingest && ingest !== "file-drop" && ingest !== "http") {
+    throw new Error(`Unsupported --ingest channel: ${ingest}. Supported: file-drop, http`);
   }
 
   const port = parsePort(options.port);
@@ -168,12 +169,16 @@ export async function studioCommand(options: StudioCommandOptions = {}): Promise
     ...(options.auth === "basic" ? { auth: "basic" as const } : {}),
     ...(options.passwordEnv !== undefined ? { passwordEnv: options.passwordEnv } : {}),
     ...(ingest === "file-drop" ? { ingestFileDrop: true } : {}),
+    ...(ingest === "http" ? { ingestHttp: true } : {}),
+    ...(options.ingestTokenEnv !== undefined ? { ingestTokenEnv: options.ingestTokenEnv } : {}),
     ...(options.archiveFileDrop === true ? { archiveFileDrop: true } : {}),
   });
 
   if (ingest === "file-drop") {
-    // createStudioContext already ran file-drop when ingestFileDrop is set.
     console.log(`[AgentInspect studio] file-drop ingest enabled for startup scan`);
+  }
+  if (ingest === "http") {
+    console.log(`[AgentInspect studio] HTTP ingest enabled (token required on POST routes)`);
   }
 
   console.log(`AgentInspect studio (read-only): ${info.url}`);

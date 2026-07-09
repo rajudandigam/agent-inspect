@@ -439,7 +439,8 @@ export function createCliProgram(): Command {
     .option("--server", "bind for network access (0.0.0.0; requires explicit opt-in)")
     .option("--auth <mode>", "auth mode: none or basic", "none")
     .option("--password-env <name>", "env var for basic-auth password")
-    .option("--ingest <channel>", "enable ingest channel on startup (file-drop)")
+    .option("--ingest <channel>", "enable ingest channel on startup (file-drop, http)")
+    .option("--ingest-token-env <name>", "env var for HTTP ingest token (default STUDIO_INGEST_TOKEN)")
     .option("--archive-file-drop", "archive file-drop sources after successful import")
     .option("--open", "open browser locally when host is localhost")
     .action((opts: StudioCommandOptions) => {

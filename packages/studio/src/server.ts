@@ -1,6 +1,7 @@
 import { createServer, type Server, type ServerResponse } from "node:http";
 
 import { createStudioContext, type StudioContext } from "./context.js";
+import { handleHttpIngestRequest, isHttpIngestRoute, resolveHttpIngestConfig } from "./ingest/http.js";
 import { studioIndexHtml } from "./html.js";
 import { handleStudioRoute } from "./routes.js";
 import type { StudioServerInfo, StudioServerOptions } from "./types.js";
@@ -43,17 +44,24 @@ export function createStudioServer(options: StudioServerOptions = {}): Server {
 
   const server = createServer(async (req, res) => {
     try {
-      if (req.method !== "GET" && req.method !== "HEAD") {
-        return badRequest(res, "Only GET is supported.");
-      }
+      const method = req.method ?? "GET";
+      const url = new URL(req.url ?? "/", `http://${host}:${port}`);
+      const pathname = url.pathname;
 
       if (!contextPromise) {
         contextPromise = createStudioContext(options);
       }
       const ctx = await contextPromise;
+      const httpConfig = resolveHttpIngestConfig(options, ctx.registry.ingest?.http?.enabled);
 
-      const url = new URL(req.url ?? "/", `http://${host}:${port}`);
-      const pathname = url.pathname;
+      if (isHttpIngestRoute(pathname, httpConfig)) {
+        const handled = await handleHttpIngestRequest(req, res, ctx, options, pathname);
+        if (handled) return;
+      }
+
+      if (method !== "GET" && method !== "HEAD") {
+        return badRequest(res, "Only GET is supported.");
+      }
 
       if (pathname === "/" || pathname === "/index.html") {
         if (req.method === "HEAD") {

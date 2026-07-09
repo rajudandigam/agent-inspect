@@ -208,11 +208,11 @@ describe("studio github artifact importer", () => {
       projects: [{ id: "a", path: "./demo" }],
       ingest: {
         github: { enabled: false, tokenEnv: "GITHUB_TOKEN" },
-        http: { enabled: false },
+        customFuture: { enabled: false },
       },
     });
     expect(result.ok).toBe(true);
     expect(result.registry?.ingest?.github?.tokenEnv).toBe("GITHUB_TOKEN");
-    expect(result.warnings.some((warning) => warning.includes("http"))).toBe(true);
+    expect(result.warnings.some((warning) => warning.includes("customFuture"))).toBe(true);
   });
 });

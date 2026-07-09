@@ -28,8 +28,22 @@ export interface StudioRegistryGitHubIngest {
   tokenEnv?: string;
 }
 
+export interface StudioRegistryHttpIngest {
+  enabled?: boolean;
+  path?: string;
+  tokenEnv?: string;
+  maxBytes?: number;
+}
+
+export interface StudioRegistryBundleUploadIngest {
+  enabled?: boolean;
+  maxBytes?: number;
+}
+
 export interface StudioRegistryIngest {
   github?: StudioRegistryGitHubIngest;
+  http?: StudioRegistryHttpIngest;
+  bundleUpload?: StudioRegistryBundleUploadIngest;
 }
 
 export interface StudioRegistry {
@@ -164,8 +178,71 @@ export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
           ingestConfig.github = github;
         }
       }
+      if (input.ingest.http !== undefined) {
+        if (!isPlainObject(input.ingest.http)) {
+          errors.push("ingest.http must be an object");
+        } else {
+          const http: StudioRegistryHttpIngest = {};
+          if (input.ingest.http.enabled !== undefined) {
+            if (typeof input.ingest.http.enabled !== "boolean") {
+              errors.push("ingest.http.enabled must be a boolean");
+            } else {
+              http.enabled = input.ingest.http.enabled;
+            }
+          }
+          if (input.ingest.http.path !== undefined) {
+            const ingestPath = String(input.ingest.http.path).trim();
+            if (!ingestPath.startsWith("/") || ingestPath.includes("..")) {
+              errors.push("ingest.http.path must be an absolute safe path");
+            } else {
+              http.path = ingestPath;
+            }
+          }
+          if (input.ingest.http.tokenEnv !== undefined) {
+            const tokenEnv = String(input.ingest.http.tokenEnv).trim();
+            if (!/^[A-Z][A-Z0-9_]*$/.test(tokenEnv)) {
+              errors.push("ingest.http.tokenEnv must be an uppercase env var name");
+            } else {
+              http.tokenEnv = tokenEnv;
+            }
+          }
+          if (input.ingest.http.maxBytes !== undefined) {
+            const maxBytes = Number(input.ingest.http.maxBytes);
+            if (!Number.isInteger(maxBytes) || maxBytes <= 0) {
+              errors.push("ingest.http.maxBytes must be a positive integer");
+            } else {
+              http.maxBytes = maxBytes;
+            }
+          }
+          ingestConfig.http = http;
+        }
+      }
+      if (input.ingest.bundleUpload !== undefined) {
+        if (!isPlainObject(input.ingest.bundleUpload)) {
+          errors.push("ingest.bundleUpload must be an object");
+        } else {
+          const bundleUpload: StudioRegistryBundleUploadIngest = {};
+          if (input.ingest.bundleUpload.enabled !== undefined) {
+            if (typeof input.ingest.bundleUpload.enabled !== "boolean") {
+              errors.push("ingest.bundleUpload.enabled must be a boolean");
+            } else {
+              bundleUpload.enabled = input.ingest.bundleUpload.enabled;
+            }
+          }
+          if (input.ingest.bundleUpload.maxBytes !== undefined) {
+            const maxBytes = Number(input.ingest.bundleUpload.maxBytes);
+            if (!Number.isInteger(maxBytes) || maxBytes <= 0) {
+              errors.push("ingest.bundleUpload.maxBytes must be a positive integer");
+            } else {
+              bundleUpload.maxBytes = maxBytes;
+            }
+          }
+          ingestConfig.bundleUpload = bundleUpload;
+        }
+      }
+      const knownIngestKeys = new Set(["github", "http", "bundleUpload"]);
       for (const key of Object.keys(input.ingest)) {
-        if (key !== "github") {
+        if (!knownIngestKeys.has(key)) {
           ingestWarnings.push(`ignored unknown ingest key: ${key}`);
         }
       }

@@ -19,5 +19,18 @@ export {
   type GitHubArtifactImportResult,
   type StudioFetch,
 } from "./ingest/github-artifact.js";
+export {
+  handleHttpIngestRequest,
+  isHttpIngestRoute,
+  resolveHttpIngestConfig,
+  HTTP_INGEST_ARTIFACT_PATH,
+  HTTP_INGEST_BUNDLE_PATH,
+} from "./ingest/http.js";
+export {
+  extractIngestTokenFromRequest,
+  isIngestTokenValid,
+  resolveIngestToken,
+  resolveIngestTokenEnv,
+} from "./ingest/token.js";
 export { openStudioDb, resolveStudioDbPath } from "./db.js";
 export { resolveStudioRegistryPath } from "./registry-path.js";
