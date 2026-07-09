@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 5.1.0
+
+### Minor Changes
+
+- Align the linked package suite to 5.1.0. No behavior changes in this package; keeps published versions consistent with the v5.1 cohort analysis release.
+
 ## 5.0.0
 
 ### Minor Changes

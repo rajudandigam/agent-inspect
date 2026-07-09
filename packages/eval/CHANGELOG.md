@@ -1,5 +1,12 @@
 # @agent-inspect/eval
 
+## 5.1.0
+
+### Patch Changes
+
+- Updated dependencies [44e9684]
+  - agent-inspect@5.1.0
+
 ## 5.0.0
 
 ### Patch Changes

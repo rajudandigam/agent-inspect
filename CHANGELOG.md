@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.0
+
+### Minor Changes
+
+- 44e9684: Add cohort analysis v2: baseline/candidate comparison, grouping, metrics, and `agent-inspect cohort` CLI with JSON/Markdown/HTML reports.
+
 ## 5.0.0
 
 ### Minor Changes
