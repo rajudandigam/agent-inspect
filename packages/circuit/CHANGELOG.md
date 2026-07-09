@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 5.4.0
+
+### Minor Changes
+
+- Align the linked package suite to 5.4.0. No behavior changes in this package; keeps published versions consistent with the v5.4 PM/QA eval templates release.
+
 ## 5.3.0
 
 ### Minor Changes

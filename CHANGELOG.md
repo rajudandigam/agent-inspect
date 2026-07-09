@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.4.0
+
+### Minor Changes
+
+- 31d5324: Add PM/QA suite templates and `suite init --template` for eight common agent scenarios.
+
 ## 5.3.0
 
 ### Minor Changes
