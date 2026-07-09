@@ -4,22 +4,19 @@
 
 ```yaml
 baselineVersion: "6.4.0"
-publishedVersion: "6.4.0 (pending npm verify)"
+publishedVersion: "6.4.0"
 currentTrain: "none"
 trainStatus: "complete"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "publish-unblock"
-nextAction: "Confirm Publish CI green and npm @ 6.4.0"
+currentChunk: "none"
+nextAction: "Monitor adoption gates before scheduling v7"
 completedChunks:
-  - "v6.1.0 through v6.4.0 implementation"
+  - "v6.1.0 through v6.4.0 implementation and npm publish"
   - "v7.0.0 readiness assessment (not scheduled)"
-  - "lockfile fix for v6.4 recipes"
-  - "linked-package version alignment (redact/circuit/guardrails)"
-blockedTrains:
-  - "v7.0.0 (conditional — adoption gates not met)"
-lastConfirmedCommit: "pending"
-lastValidationLevel: "pack-smoke-green"
+lastConfirmedCommit: "bacb3ba"
+lastPublishRun: "29048645051"
+lastValidationLevel: "publish-gate-green"
 updatedAt: "2026-07-09"
 ```
 
