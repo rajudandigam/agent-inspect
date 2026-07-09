@@ -1,5 +1,16 @@
 # @agent-inspect/langchain
 
+## 6.1.0
+
+### Minor Changes
+
+- v6.1.0 client-hosted ingestion for @agent-inspect/studio: file-drop, GitHub artifact import, optional HTTP ingest with token validation, and manual bundle upload. All ingest channels disabled by default; self-hosted only.
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@6.1.0
+
 ## 6.0.0
 
 ### Patch Changes
