@@ -31,6 +31,21 @@ export { PRIVACY_CHECKLIST_ITEMS, runPrivacyChecklist } from "./privacy.js";
 export { findPairedLifecycle, runAdapterConformance } from "./conformance.js";
 
 export type {
+  PluginManifest,
+  PluginManifestParseResult,
+  PluginManifestType,
+} from "./manifest.js";
+export {
+  PLUGIN_MANIFEST_FILENAME,
+  PLUGIN_NAME_PREFIXES,
+  inferPluginTypeFromName,
+  isPluginPackageName,
+  parsePluginManifest,
+  readPluginManifestFile,
+  validatePluginPrivacy,
+} from "./manifest.js";
+
+export type {
   TraceTransform,
   TraceTransformResult,
 } from "./transform.js";
