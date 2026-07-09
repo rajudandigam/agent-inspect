@@ -8,7 +8,7 @@
 baselineVersion: "6.0.0"
 publishedVersion: "6.0.0 (all 18 packages on npm)"
 currentTrain: "v6.1.0"
-trainStatus: "ready"
+trainStatus: "in-progress"
 executionMode: "autonomous-release-train"
 branch: "main"
 currentChunk: "v6.1-2-github-artifact"
@@ -38,9 +38,9 @@ pendingManualGate:
   - "HTTP ingest enabled-by-default (security review — must stay off)"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio non-localhost binding security review"
-lastConfirmedCommit: "4f6278b"
+lastConfirmedCommit: "bd2e95e"
 lastPublishRun: "29039791803 (workflow_dispatch; 18/18 after studio manual publish)"
-lastValidationLevel: "full gate green at 6.0.0"
+lastValidationLevel: "v6.1-1-chunk-gate-green"
 updatedAt: "2026-07-09"
 ```
 
