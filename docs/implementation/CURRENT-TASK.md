@@ -2,20 +2,20 @@
 
 ```yaml
 executionMode: autonomous-release-train
-currentTrain: v6.4.0
-trainStatus: release-prep
-currentChunk: v6.4-5-release-readiness
-nextChunk: Version Packages @ 6.4.0 + v7 assessment
+currentTrain: none
+trainStatus: complete
+currentChunk: v7-readiness-assessment
+nextAction: Maintainer review; monitor adoption gates for v7
 ```
 
 ## Published baseline
 
-**6.3.0** — MCP coding-agent workflow tools.
+**6.4.0** — standards graduation (pending npm verify after publish).
 
-## Completed: v6.4.0 standards graduation (in progress)
+## Completed trains (v6.1–v6.4)
 
-Chunks through release readiness committed; version bump pending.
+All release trains through v6.4.0 implemented and version-bumped in-repo.
 
-## Next: v6.4.0 release + v7 readiness record
+## v7.0.0
 
-Per [V7.0.0-READINESS-ASSESSMENT.md](./release-trains/V7.0.0-READINESS-ASSESSMENT.md) — assessment only, no v7 implementation.
+**Not scheduled.** Readiness assessment recorded in [V7.0.0-READINESS-ASSESSMENT.md](./release-trains/V7.0.0-READINESS-ASSESSMENT.md). No v7 implementation.

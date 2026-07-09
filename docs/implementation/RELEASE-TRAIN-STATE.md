@@ -3,27 +3,28 @@
 > Operational pointer only. Git state, package manifests, tests, npm, tags, GitHub releases, and CI are authoritative.
 
 ```yaml
-baselineVersion: "6.3.0"
-publishedVersion: "6.3.0 (pending npm verify)"
-currentTrain: "v6.4.0"
-trainStatus: "ready"
+baselineVersion: "6.4.0"
+publishedVersion: "6.4.0 (pending npm verify)"
+currentTrain: "none"
+trainStatus: "complete"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: "v6.4-0-standards-rfc"
-nextAction: "Standards graduation RFC"
+currentChunk: "v7-readiness-assessment"
+nextAction: "Monitor adoption gates before scheduling v7"
 completedChunks:
-  - "v6.1.0 through v6.2.0"
-  - "v6.3-0 through v6.3.0-version-packages"
-remainingTrains:
-  - "v6.4.0 Standards Graduation"
+  - "v6.1.0 client-hosted ingestion"
+  - "v6.2.0 plugin convention"
+  - "v6.3.0 MCP workflows"
+  - "v6.4.0 standards graduation"
+  - "v7.0.0 readiness assessment (not scheduled)"
 blockedTrains:
-  - "v7.0.0 (conditional — not scheduled)"
+  - "v7.0.0 (conditional — adoption gates not met)"
 lastConfirmedCommit: "pending"
-lastValidationLevel: "v6.3.0-release-gate-green"
+lastValidationLevel: "v6.4.0-release-gate-green"
 updatedAt: "2026-07-09"
 ```
 
 ## Quick links
 
-- **Active plan:** [V6.4.0-EXECUTION-PLAN.md](./release-trains/V6.4.0-EXECUTION-PLAN.md)
-- **v6.3 readiness:** [V6.3.0-RELEASE-READINESS.md](./release-trains/V6.3.0-RELEASE-READINESS.md)
+- **v6.4 readiness:** [V6.4.0-RELEASE-READINESS.md](./release-trains/V6.4.0-RELEASE-READINESS.md)
+- **v7 assessment:** [V7.0.0-READINESS-ASSESSMENT.md](./release-trains/V7.0.0-READINESS-ASSESSMENT.md)

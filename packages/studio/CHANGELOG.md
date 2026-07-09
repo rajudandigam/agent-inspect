@@ -1,5 +1,12 @@
 # @agent-inspect/studio
 
+## 6.4.0
+
+### Patch Changes
+
+- Updated dependencies [f2039d6]
+  - agent-inspect@6.4.0
+
 ## 6.3.0
 
 ### Patch Changes

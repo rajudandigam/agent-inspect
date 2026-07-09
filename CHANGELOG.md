@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.4.0
+
+### Minor Changes
+
+- f2039d6: Standards graduation: OpenInference/OTLP fixture validators, semconv pin, import recipes, and vendor graduation docs.
+
 ## 6.3.0
 
 ### Minor Changes
