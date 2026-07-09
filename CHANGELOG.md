@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.4.0
+
+### Minor Changes
+
+- 42635d8: Add observed outcomes (`observeOutcome`) with OUTCOME events, report/check/search integration, and redaction-bounded evidence fields.
+
 ## 4.3.0
 
 ### Minor Changes

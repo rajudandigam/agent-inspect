@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 4.4.0
+
+### Minor Changes
+
+- Align the linked package suite to 4.4.0. No behavior changes in this package; keeps published versions consistent with the v4.4 observed outcomes release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @agent-inspect/redact@4.4.0
+
 ## 4.3.0
 
 ### Minor Changes
