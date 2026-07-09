@@ -963,6 +963,38 @@ npx agent-inspect cohort \
 
 Recipe: [cohort-baseline-candidate](../examples/recipes/cohort-baseline-candidate/README.md).
 
+### 6.27 `gate`
+
+Run **deterministic CI quality gates** over local traces or suite configs (v5.2+). No agent replay, no model calls, no upload.
+
+```bash
+agent-inspect gate --suite <path> [options]
+agent-inspect gate --dir <path> --max-error-rate <percent> [options]
+```
+
+Options:
+
+- `--dir <path>` — trace directory for threshold checks
+- `--suite <path>` — suite config (`.json`, `.js`, `.mjs`, `.cjs`)
+- `--max-error-rate <percent>` — maximum allowed error rate
+- `--max-p95-duration <ms>` — maximum allowed p95 run duration
+- `--forbid-tool <name>` — forbidden tool (repeatable or comma-separated)
+- `--require-observation <name>` — required passed observation (repeatable or comma-separated)
+- `--format <format>` — `markdown`, `json`, `html`, `junit`, or `github` (default: `markdown`)
+- `-o, --output <dir>` — write `gate-results.json`, `gate-summary.md`, `gate-report.html`, `junit.xml`, `github-step-summary.md`
+- `--json` — print deterministic JSON result
+
+Exit codes: **0** pass, **1** gate failed, **2** invalid config, **3** trace read failure, **4** unsupported format.
+
+Example:
+
+```bash
+npx agent-inspect gate --suite fixtures/configs/outcome-suite.suite.json --output ./gate-artifacts
+npx agent-inspect gate --dir fixtures/cohorts/before-after --max-error-rate 5 --forbid-tool deleteAccount
+```
+
+Recipe: [github-actions-gate](../examples/recipes/github-actions-gate/README.md).
+
 ## 7. Optional TUI behavior
 
 `view --tui` delegates to `@agent-inspect/tui` and requires an interactive terminal. If the package is not installed, the CLI prints a short install hint.

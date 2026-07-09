@@ -1,0 +1,8 @@
+# AgentInspect gate
+
+Status: **PASS** (exit 0)
+Suite config: `fixtures/configs/outcome-suite.suite.json`
+Runs evaluated: 0
+
+## Checks
+- [PASS] Suite: outcome-suite: Suite passed (1 cases)

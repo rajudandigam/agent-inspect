@@ -1,0 +1,30 @@
+name: AgentInspect gate (example)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Run AgentInspect gate
+        run: |
+          npx agent-inspect gate \
+            --suite fixtures/configs/outcome-suite.suite.json \
+            --output ./gate-artifacts
+      - name: Publish gate summary
+        if: always()
+        run: cat ./gate-artifacts/github-step-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-inspect-gate
+          path: gate-artifacts/

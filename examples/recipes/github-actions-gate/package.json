@@ -1,0 +1,11 @@
+{
+  "name": "agent-inspect-recipe-github-actions-gate",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/index.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

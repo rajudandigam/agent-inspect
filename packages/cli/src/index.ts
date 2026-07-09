@@ -104,6 +104,8 @@ import {
 } from "./suite.js";
 import type { CohortCommandOptions } from "./cohort.js";
 import { cohortCommand } from "./cohort.js";
+import type { GateCommandOptions } from "./gate.js";
+import { gateCommand } from "./gate.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -1106,6 +1108,28 @@ export function createCliProgram(): Command {
     .option("--json", "print deterministic JSON result")
     .action((opts: CohortCommandOptions) => {
       runCommand(() => cohortCommand(opts));
+    });
+
+  program
+    .command("gate")
+    .description("Run deterministic CI quality gates over traces or suites (v5.2+)")
+    .option("--dir <path>", "trace directory for threshold checks")
+    .option("--suite <path>", "suite config path")
+    .option("--max-error-rate <percent>", "maximum allowed error rate percentage")
+    .option("--max-p95-duration <ms>", "maximum allowed p95 run duration in ms")
+    .option("--forbid-tool <name>", "forbidden tool name (repeatable or comma-separated)")
+    .option(
+      "--require-observation <name>",
+      "required passed observation (repeatable or comma-separated)",
+    )
+    .option("--format <format>", "markdown, json, html, junit, or github", "markdown")
+    .option(
+      "-o, --output <dir>",
+      "write gate-results.json, gate-summary.md, gate-report.html, junit.xml, github-step-summary.md",
+    )
+    .option("--json", "print deterministic JSON result")
+    .action((opts: GateCommandOptions) => {
+      runCommand(() => gateCommand(opts));
     });
 
   return program;

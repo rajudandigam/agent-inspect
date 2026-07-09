@@ -43,6 +43,7 @@ const RECIPES = [
   "observed-outcome-basic",
   "trace-suite-basic",
   "cohort-baseline-candidate",
+  "github-actions-gate",
 ];
 
 const LOG_RECIPE_FILES = {

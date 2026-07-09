@@ -317,4 +317,23 @@ export {
   renderCohortSummaryMarkdown,
 } from "../cohort/index.js";
 
+export type {
+  GateCheckId,
+  GateCheckResult,
+  GateExitCode,
+  GateResult,
+  RenderGateReportOptions,
+  RunGateOptions,
+} from "../gate/index.js";
+export {
+  gateHasThresholds,
+  parseGateList,
+  parseGateNumber,
+  renderGateGithubStepSummary,
+  renderGateJUnit,
+  renderGateReport,
+  renderGateSummaryMarkdown,
+  runGate,
+} from "../gate/index.js";
+
 export { maybeInspectRun, isAgentInspectEnabled } from "../maybe-inspect-run.js";
