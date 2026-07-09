@@ -1,5 +1,12 @@
 # @agent-inspect/studio
 
+## 5.5.0
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@5.5.0
+
 ## Unreleased
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @agent-inspect/tui
 
+## 5.5.0
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@5.5.0
+
 ## 5.4.0
 
 ### Patch Changes

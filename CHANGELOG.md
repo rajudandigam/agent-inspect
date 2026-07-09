@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.5.0
+
+### Minor Changes
+
+- Add self-hosted Studio (`@agent-inspect/studio`): optional read-only multi-project analyzer with `agent-inspect studio`, SQLite metadata cache, registry import, search/diff/reports views, optional basic auth, and self-hosting docs. Localhost by default; no maintainer cloud; no default upload.
+
 ## 5.4.0
 
 ### Minor Changes
