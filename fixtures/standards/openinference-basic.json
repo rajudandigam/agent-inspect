@@ -1,0 +1,55 @@
+{
+  "exporter": "agent-inspect",
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "1.6-fixture",
+  "trace_id": "trace-oi-basic",
+  "spans": [
+    {
+      "trace_id": "trace-oi-basic",
+      "span_id": "span-root",
+      "name": "agent run",
+      "start_time_unix_nano": "1700000000000000000",
+      "end_time_unix_nano": "1700000005000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.event_id": "run-event",
+        "agent_inspect.run_id": "run-oi-basic",
+        "agent_inspect.kind": "RUN",
+        "agent_inspect.confidence": "explicit",
+        "llm.model_name": "fixture-model",
+        "input.value": "secret prompt text"
+      },
+      "events": [
+        {
+          "name": "unsupported"
+        }
+      ],
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-oi-basic",
+      "span_id": "span-llm",
+      "parent_span_id": "span-root",
+      "name": "chat completion",
+      "start_time_unix_nano": "1700000001000000000",
+      "end_time_unix_nano": "1700000003000000000",
+      "attributes": {
+        "openinference.span.kind": "LLM",
+        "llm.model_name": "fixture-model",
+        "llm.token_count.prompt": 12,
+        "llm.token_count.completion": 7,
+        "custom.flag": true,
+        "output.value": "secret answer text"
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ],
+  "warnings": [
+    "fixture-level warning retained by exporter"
+  ]
+}

@@ -73,4 +73,9 @@ export type { OpenInferenceExport, OpenInferenceSpan } from "./openinference-exp
 export { exportOpenInference } from "./openinference-exporter.js";
 export { exportOtlpJson } from "./otlp-json-exporter.js";
 export { validateExportContent } from "./validation.js";
+export {
+  validateOpenInferenceFixture,
+  validateOtlpJsonFixture,
+} from "./fixtures.js";
+export { OTEL_GEN_AI_SEMCONV_PIN } from "./semconv.js";
 export { redactRunTreeForExport } from "./redact-export.js";
