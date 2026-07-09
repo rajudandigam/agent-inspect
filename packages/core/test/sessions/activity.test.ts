@@ -73,7 +73,7 @@ describe("buildActivitySummary", () => {
       }),
     ]);
     const summary = buildActivitySummary(index, { since: "1d", nowMs: now });
-    const text = renderActivitySummaryHuman(summary);
+    const text = renderActivitySummaryHuman(summary, { nowMs: now });
     expect(text).toContain("Today");
     expect(text).toContain("failed");
     expect(text).toContain("1 sessions");

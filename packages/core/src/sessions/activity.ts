@@ -98,9 +98,13 @@ export function buildActivitySummary(
 }
 
 /** Renders a human activity summary for terminal output. */
-export function renderActivitySummaryHuman(summary: ActivitySummary): string {
+export function renderActivitySummaryHuman(
+  summary: ActivitySummary,
+  options?: { nowMs?: number },
+): string {
   const lines: string[] = [];
-  const todayStart = new Date();
+  const nowMs = options?.nowMs ?? Date.now();
+  const todayStart = new Date(nowMs);
   todayStart.setHours(0, 0, 0, 0);
   const todayMs = todayStart.getTime();
 
