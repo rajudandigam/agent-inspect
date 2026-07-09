@@ -27,6 +27,7 @@ completedChunks:
   - "v6.0.0-published (CI 29039791803 + studio manual publish)"
   - "v6.1-0-rfc (CLIENT-HOSTED-INGESTION-V6.1.md)"
   - "v6.1-1-file-drop"
+  - "v6.1-2-github-artifact"
 remainingTrains:
   - "v6.1.0 Client-hosted Ingestion (in progress)"
   - "v6.2.0 Plugin Convention"
@@ -38,9 +39,9 @@ pendingManualGate:
   - "HTTP ingest enabled-by-default (security review — must stay off)"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio non-localhost binding security review"
-lastConfirmedCommit: "bd2e95e"
+lastConfirmedCommit: "eb6220d"
 lastPublishRun: "29039791803 (workflow_dispatch; 18/18 after studio manual publish)"
-lastValidationLevel: "v6.1-1-chunk-gate-green"
+lastValidationLevel: "v6.1-2-chunk-gate-green"
 updatedAt: "2026-07-09"
 ```
 
