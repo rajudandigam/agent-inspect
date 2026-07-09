@@ -3,6 +3,7 @@ packages:
   - "packages/*"
   - "apps/*"
   - "examples/08-langchain-adapter"
+  - "examples/adapter-sdk/*"
   - "examples/recipes/*"
 allowBuilds:
   esbuild: true

@@ -28,6 +28,12 @@ export const registration = createAdapterRegistration({
 });
 ```
 
+## Minimal third-party adapter example
+
+See [`examples/adapter-sdk/minimal-source-adapter`](../../examples/adapter-sdk/minimal-source-adapter)
+for a dependency-free fake framework source that registers adapter metadata,
+captures a local metadata-only trace, and runs `runAdapterConformance`.
+
 ## Privacy
 
 - SDK helpers enforce local-first patterns; adapters must not upload by default
