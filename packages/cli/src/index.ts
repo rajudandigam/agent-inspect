@@ -52,8 +52,8 @@ import type { CheckCommandOptions } from "./check.js";
 import type { ServeCommandOptions } from "./serve.js";
 import { checkCommand } from "./check.js";
 import { serveCommand } from "./serve.js";
-import type { StudioCommandOptions, StudioImportDropOptions, StudioImportGitHubOptions } from "./studio-cmd.js";
-import { studioCommand, studioImportDropCommand, studioImportGitHubCommand } from "./studio-cmd.js";
+import type { StudioCommandOptions, StudioImportBundleOptions, StudioImportDropOptions, StudioImportGitHubOptions } from "./studio-cmd.js";
+import { studioCommand, studioImportBundleCommand, studioImportDropCommand, studioImportGitHubCommand } from "./studio-cmd.js";
 import type { EvalCommandOptions } from "./eval.js";
 import { evalCommand } from "./eval.js";
 import type { SafetyCommandOptions } from "./safety.js";
@@ -473,6 +473,16 @@ export function createCliProgram(): Command {
     .option("--token-env <name>", "env var for GitHub token (default GITHUB_TOKEN)")
     .action((opts: StudioImportGitHubOptions) => {
       runCommand(() => studioImportGitHubCommand(opts));
+    });
+
+  studioImportCmd
+    .command("bundle")
+    .description("Import a local share-safe bundle directory into Studio")
+    .requiredOption("--path <dir>", "bundle directory path")
+    .option("--workspace <path>", "studio registry manifest path")
+    .option("--db <path>", "studio database path (sqlite file or postgres URL)")
+    .action((opts: StudioImportBundleOptions) => {
+      runCommand(() => studioImportBundleCommand(opts));
     });
 
   program

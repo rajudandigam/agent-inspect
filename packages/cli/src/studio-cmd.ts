@@ -35,6 +35,13 @@ export interface StudioImportGitHubOptions {
   cwd?: string;
 }
 
+export interface StudioImportBundleOptions {
+  workspace?: string;
+  db?: string;
+  path: string;
+  cwd?: string;
+}
+
 function isModuleNotFound(e: unknown): boolean {
   return (
     e !== null &&
@@ -106,6 +113,35 @@ function summarizeGitHubResult(result: Studio.GitHubArtifactImportResult): void 
   for (const error of result.errors) {
     console.error(`[AgentInspect studio] ${error}`);
   }
+}
+
+export async function studioImportBundleCommand(
+  options: StudioImportBundleOptions,
+): Promise<void> {
+  const mod = await loadStudio();
+  if (!mod) return;
+
+  const result = await mod.runStudioBundleUploadImport({
+    ...(options.workspace !== undefined ? { workspacePath: options.workspace } : {}),
+    ...(options.db !== undefined ? { dbPath: options.db } : {}),
+    bundlePath: options.path,
+    ...(options.cwd !== undefined ? { cwd: options.cwd } : {}),
+  });
+
+  if (result.skipped) {
+    console.log(`[AgentInspect studio] bundle import skipped: ${result.reason ?? "disabled"}`);
+  } else if (result.imported) {
+    console.log(`[AgentInspect studio] bundle imported to ${result.destPath ?? "(unknown)"}`);
+  } else if (result.destPath) {
+    console.log(`[AgentInspect studio] bundle unchanged: ${result.destPath}`);
+  }
+  for (const warning of result.registryImportWarnings) {
+    console.warn(`[AgentInspect studio] ${warning}`);
+  }
+  for (const error of result.errors) {
+    console.error(`[AgentInspect studio] ${error}`);
+  }
+  if (result.errors.length > 0) process.exitCode = 1;
 }
 
 export async function studioImportGitHubCommand(

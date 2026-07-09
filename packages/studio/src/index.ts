@@ -20,6 +20,12 @@ export {
   type StudioFetch,
 } from "./ingest/github-artifact.js";
 export {
+  importBundleUpload,
+  runStudioBundleUploadImport,
+  validateBundleDirectory,
+  type BundleUploadImportResult,
+} from "./ingest/bundle-upload.js";
+export {
   handleHttpIngestRequest,
   isHttpIngestRoute,
   resolveHttpIngestConfig,
