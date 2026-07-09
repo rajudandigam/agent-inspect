@@ -1,0 +1,16 @@
+{
+  "name": "outcome-suite",
+  "traces": "../../fixtures/traces",
+  "cases": [
+    {
+      "id": "outcome-pass",
+      "runId": "outcome-pass",
+      "expectedObservations": ["policyShown"],
+      "maxDurationMs": 10000
+    }
+  ],
+  "redactionProfile": "local",
+  "artifacts": {
+    "outputDir": ".agent-inspect/suite-runs"
+  }
+}

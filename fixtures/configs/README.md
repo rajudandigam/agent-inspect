@@ -10,5 +10,6 @@ JSON files for `agent-inspect logs` / `tail` **`--config`** and integration test
 | `mcp-tool-call-agent-inspect.logs.json` | MCP-inspired JSON log mapping for local tool-call start/completion/error events |
 | `log4js-agent-inspect.logs.json` | Embedded JSON log4js lines |
 | `nestjs-agent-inspect.logs.json` | NestJS field names (`message`, `timestamp`) |
+| `outcome-suite.suite.json` | Trace suite config for `agent-inspect suite` (v5.0+) |
 
 Use **`pnpm fixtures:check`** to validate shape.

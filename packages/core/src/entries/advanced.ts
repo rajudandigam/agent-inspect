@@ -266,4 +266,36 @@ export {
   toMetadataSafeStatus,
 } from "../bundle/index.js";
 
+export type {
+  LoadSuiteConfigOptions,
+  RenderSuiteReportOptions,
+  RunSuiteOptions,
+  SuiteArtifactsConfig,
+  SuiteCaseConfig,
+  SuiteCaseResult,
+  SuiteCaseStatus,
+  SuiteChecksConfig,
+  SuiteConfig,
+  SuiteDiagnostic,
+  SuiteDiagnosticCode,
+  SuiteEvalConfig,
+  SuiteRunResult,
+  SuiteRunSummary,
+  ValidateSuiteConfigResult,
+  ResolvedSuiteCase,
+} from "../suite/index.js";
+export {
+  DEFAULT_SUITE_ARTIFACTS_DIR,
+  DEFAULT_SUITE_CONFIG_NAMES,
+  defaultSuiteConfigTemplate,
+  loadSuiteConfig,
+  normalizeSuiteConfig,
+  renderSuiteReport,
+  renderSuiteReportMarkdown,
+  resolveSuiteCaseTrace,
+  resolveSuiteConfigPath,
+  runSuite,
+  validateSuiteConfig,
+} from "../suite/index.js";
+
 export { maybeInspectRun, isAgentInspectEnabled } from "../maybe-inspect-run.js";

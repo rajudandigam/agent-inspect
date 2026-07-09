@@ -91,6 +91,17 @@ import {
   workspaceCleanCommand,
   workspacePathCommand,
 } from "./workspace.js";
+import type {
+  SuiteCommandOptions,
+  SuiteReportCommandOptions,
+} from "./suite.js";
+import {
+  suiteInitCommand,
+  suiteListCommand,
+  suiteReportCommand,
+  suiteRunCommand,
+  suiteValidateCommand,
+} from "./suite.js";
 
 export function runCommand(action: () => Promise<void>): void {
   void action().catch((error: unknown) => {
@@ -1022,6 +1033,58 @@ export function createCliProgram(): Command {
     .option("--json", "print deterministic JSON result")
     .action((opts: WorkspaceCommandOptions) => {
       runCommand(() => workspacePathCommand(opts));
+    });
+
+  const suiteCmd = program
+    .command("suite")
+    .description("Define and run local trace suites for CI (v5.0+)");
+
+  suiteCmd
+    .command("init")
+    .description("Create a starter agent-inspect.suite.json")
+    .option("--dry-run", "show planned files without writing")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: SuiteCommandOptions) => {
+      runCommand(() => suiteInitCommand(opts));
+    });
+
+  suiteCmd
+    .command("validate")
+    .description("Validate suite config shape and trace paths")
+    .option("--config <path>", "suite config path")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: SuiteCommandOptions) => {
+      runCommand(() => suiteValidateCommand(opts));
+    });
+
+  suiteCmd
+    .command("list")
+    .description("List suite cases from config")
+    .option("--config <path>", "suite config path")
+    .option("--json", "print deterministic JSON result")
+    .action((opts: SuiteCommandOptions) => {
+      runCommand(() => suiteListCommand(opts));
+    });
+
+  suiteCmd
+    .command("run")
+    .description("Run suite checks against configured traces")
+    .option("--config <path>", "suite config path")
+    .option("-o, --output <dir>", "artifact output directory")
+    .option("--json", "print deterministic JSON result")
+    .option("--markdown", "print Markdown summary")
+    .action((opts: SuiteCommandOptions) => {
+      runCommand(() => suiteRunCommand(opts));
+    });
+
+  suiteCmd
+    .command("report")
+    .description("Render a report from a prior suite run artifact")
+    .option("--input <path>", "suite run JSON artifact")
+    .option("--format <format>", "markdown or json", "markdown")
+    .option("--json", "print JSON wrapper")
+    .action((opts: SuiteReportCommandOptions) => {
+      runCommand(() => suiteReportCommand(opts));
     });
 
   return program;

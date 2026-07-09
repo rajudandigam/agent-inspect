@@ -30,6 +30,7 @@ describe("@agent-inspect/cli", () => {
     expect(names).toContain("doctor");
     expect(names).toContain("check");
     expect(names).toContain("eval");
+    expect(names).toContain("suite");
     expect(names).toContain("scan");
     expect(names).toContain("verify-safe");
     expect(names).toContain("artifacts");

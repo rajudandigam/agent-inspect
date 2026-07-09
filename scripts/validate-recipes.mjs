@@ -41,6 +41,7 @@ const RECIPES = [
   "workspace-basic",
   "shareable-bundle-basic",
   "observed-outcome-basic",
+  "trace-suite-basic",
 ];
 
 const LOG_RECIPE_FILES = {

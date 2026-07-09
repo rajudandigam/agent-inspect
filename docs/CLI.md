@@ -896,6 +896,40 @@ npx agent-inspect bundle --since 24h --dir ./.agent-inspect --json
 
 Recipe: [shareable-bundle-basic](../examples/recipes/shareable-bundle-basic/README.md).
 
+### 6.25 `suite`
+
+Define and run **local trace suites** for CI trajectory checks (v5.0+). Suites read existing traces only — no agent replay, no model calls, no upload.
+
+```bash
+agent-inspect suite init
+agent-inspect suite validate [--config path]
+agent-inspect suite list [--config path]
+agent-inspect suite run [--config path] [--json] [--markdown] [-o dir]
+agent-inspect suite report --input <suite-run.json> [--format markdown|json]
+```
+
+Default config file: `agent-inspect.suite.json` in the current directory.
+
+Options (shared):
+
+- `--config <path>` — suite config (`.json`, `.js`, `.mjs`, `.cjs`)
+
+`run` also supports:
+
+- `-o, --output <dir>` — write JSON run artifact (default: `.agent-inspect/suite-runs`)
+- `--json` / `--markdown` — structured or readable output
+
+Case fields include `requireTools`, `forbidTools`, `maxDurationMs`, and `expectedObservations` (outcome names that must be `passed`).
+
+Example:
+
+```bash
+npx agent-inspect suite init
+npx agent-inspect suite run --config fixtures/configs/outcome-suite.suite.json --json
+```
+
+Recipe: [trace-suite-basic](../examples/recipes/trace-suite-basic/README.md).
+
 ## 7. Optional TUI behavior
 
 `view --tui` delegates to `@agent-inspect/tui` and requires an interactive terminal. If the package is not installed, the CLI prints a short install hint.

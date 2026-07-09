@@ -1,0 +1,11 @@
+{
+  "name": "agent-inspect-recipe-trace-suite-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/index.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}

@@ -1,0 +1,4 @@
+Suite: outcome-suite
+Status: pass
+Cases: 1 passed, 0 failed, 0 errors, 0 skipped
+  outcome-pass: pass

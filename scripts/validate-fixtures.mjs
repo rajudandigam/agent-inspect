@@ -29,6 +29,7 @@ const REQUIRED = {
     "fixtures/traces/repeated-tool-args.jsonl",
     "fixtures/traces/tool-timeout-stall.jsonl",
     "fixtures/traces/dual-format-parity.jsonl",
+    "fixtures/traces/outcome-pass.jsonl",
   ],
   tracesV02: [
     "fixtures/traces-v0.2/manual-basic.jsonl",
@@ -64,6 +65,7 @@ const REQUIRED = {
     "fixtures/configs/log4js-agent-inspect.logs.json",
     "fixtures/configs/nestjs-agent-inspect.logs.json",
   ],
+  suiteConfigs: ["fixtures/configs/outcome-suite.suite.json"],
 };
 
 /** Log files that are intentionally not line-valid JSON. */
@@ -226,6 +228,25 @@ function validateJsonLog(rel) {
   }
 }
 
+function validateSuiteConfig(rel) {
+  const text = readText(rel);
+  const cfg = JSON.parse(text);
+  if (typeof cfg.name !== "string" || cfg.name.trim() === "") {
+    throw new Error(`${rel}: name required`);
+  }
+  if (typeof cfg.traces !== "string" || cfg.traces.trim() === "") {
+    throw new Error(`${rel}: traces required`);
+  }
+  if (!Array.isArray(cfg.cases) || cfg.cases.length === 0) {
+    throw new Error(`${rel}: cases must be a non-empty array`);
+  }
+  for (const [index, suiteCase] of cfg.cases.entries()) {
+    if (typeof suiteCase?.id !== "string" || suiteCase.id.trim() === "") {
+      throw new Error(`${rel}: cases[${index}].id required`);
+    }
+  }
+}
+
 function validateConfig(rel) {
   const text = readText(rel);
   const cfg = JSON.parse(text);
@@ -292,6 +313,11 @@ try {
     scanForbidden(rel);
   }
 
+  for (const rel of REQUIRED.suiteConfigs) {
+    validateSuiteConfig(rel);
+    scanForbidden(rel);
+  }
+
   for (const rel of walkFixturesFiles()) {
     scanForbidden(rel);
   }
@@ -302,6 +328,7 @@ try {
   console.log(`  traces-v1.0: ${REQUIRED.tracesV10.length} v1.0 JSONL files validated`);
   console.log(`  logs: ${REQUIRED.logs.length} files`);
   console.log(`  configs: ${REQUIRED.configs.length} JSON files`);
+  console.log(`  suite-configs: ${REQUIRED.suiteConfigs.length} JSON files`);
   process.exit(0);
 } catch (e) {
   console.error("[fixtures:check] FAILED:", e instanceof Error ? e.message : e);
