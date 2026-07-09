@@ -62,13 +62,48 @@ npx agent-inspect studio import github \
 
 Downloads the artifact zip into `import.bundlesDir`, records idempotent ingest bookkeeping, and refreshes the studio project index. No maintainer GitHub App or AgentInspect proxy — CI tests use checked-in fixture archives only.
 
+**Manual bundle upload** (v6.1+):
+
+```bash
+npx agent-inspect bundle <run-id> --profile share --out ./bundle-out
+npx agent-inspect studio import bundle --path ./bundle-out --workspace ./studio-registry.json
+```
+
+Validates `metadata.json` from a local share-safe bundle directory before copying into `import.bundlesDir`.
+
+**HTTP ingest** (v6.1+, disabled by default):
+
+```bash
+export STUDIO_INGEST_TOKEN=$(openssl rand -hex 32)
+npx agent-inspect studio --ingest http --ingest-token-env STUDIO_INGEST_TOKEN
+# POST /api/ingest/bundle or /api/ingest/artifact with Authorization: Bearer $STUDIO_INGEST_TOKEN
+```
+
+HTTP ingest stays off until `--ingest http` or `ingest.http.enabled: true` in the registry. Token required on every POST.
+
+## Ingestion security model (v6.1)
+
+| Control | Behavior |
+| ------- | -------- |
+| Default | All ingest channels off |
+| File-drop | Explicit CLI or `--ingest file-drop` only |
+| GitHub | Operator-initiated pull with their token only |
+| HTTP POST | Explicit enable + `STUDIO_INGEST_TOKEN` (constant-time validation) |
+| Body size | Bounded (default 50MB) |
+| Paths | Traversal guards; server chooses dest under registry `import.*` |
+| Secrets | Tokens never logged; safe error messages only |
+| Network | Studio never phones home; no maintainer upload target |
+| Data | Imported files are read-only evidence; JSONL canonical |
+
+Combine `--auth basic` when binding beyond localhost. Review imported artifacts with `scan` / `verify-safe` before sharing outside your network.
+
 ## Network exposure
 
 - **Default:** localhost only.
 - **`--server`:** binds `0.0.0.0` with an explicit startup warning.
 - **`--auth basic --password-env STUDIO_PASSWORD`:** optional HTTP Basic auth (recommended for non-localhost).
 
-Studio performs **no default upload** and exposes **GET-only** routes.
+Studio performs **no default upload**. Read routes are GET-only; optional **ingest POST routes** exist only when HTTP ingest is explicitly enabled (v6.1+).
 
 ## API surface (read-only)
 
@@ -91,4 +126,5 @@ Postgres URLs are reserved for team deployments and are **not required** for loc
 ## Related docs
 
 - [SELF-HOSTED-STUDIO-V6.0.md](./proposals/SELF-HOSTED-STUDIO-V6.0.md)
+- [CLIENT-HOSTED-INGESTION-V6.1.md](./proposals/CLIENT-HOSTED-INGESTION-V6.1.md)
 - [LOCAL-TRACE-WORKSPACE.md](./proposals/LOCAL-TRACE-WORKSPACE.md)
