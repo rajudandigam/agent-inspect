@@ -360,6 +360,27 @@ const optionalPackageChecks = [
     `,
   },
   {
+    dir: "packages/studio",
+    name: "@agent-inspect/studio",
+    peerDependencies: {},
+    installPeers: [],
+    esm: `
+      import { createStudioServer } from "@agent-inspect/studio";
+      const server = createStudioServer({ port: 0 });
+      if (typeof server.listen !== "function") throw new Error("server missing");
+    `,
+    cjs: `
+      const { createStudioServer } = require("@agent-inspect/studio");
+      const server = createStudioServer({ port: 0 });
+      if (typeof server.listen !== "function") throw new Error("server missing");
+    `,
+    ts: `
+      import { createStudioServer, type StudioServerOptions } from "@agent-inspect/studio";
+      const options: StudioServerOptions = { port: 7340 };
+      void createStudioServer(options);
+    `,
+  },
+  {
     dir: "packages/mcp-server",
     name: "@agent-inspect/mcp-server",
     peerDependencies: {},

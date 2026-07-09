@@ -21,7 +21,8 @@
       "@agent-inspect/mcp-server",
       "@agent-inspect/adapter-sdk",
       "@agent-inspect/harness",
-      "@agent-inspect/index-sqlite"
+      "@agent-inspect/index-sqlite",
+      "@agent-inspect/studio"
     ]
   ],
   "access": "public",

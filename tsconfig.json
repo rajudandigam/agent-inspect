@@ -72,7 +72,9 @@
       "@agent-inspect/tui": ["packages/tui/src/index.ts"],
       "@agent-inspect/tui/*": ["packages/tui/src/*"],
       "@agent-inspect/index-sqlite": ["packages/index-sqlite/src/index.ts"],
-      "@agent-inspect/index-sqlite/*": ["packages/index-sqlite/src/*"]
+      "@agent-inspect/index-sqlite/*": ["packages/index-sqlite/src/*"],
+      "@agent-inspect/studio": ["packages/studio/src/index.ts"],
+      "@agent-inspect/studio/*": ["packages/studio/src/*"]
     },
     "types": ["node"]
   },
@@ -98,6 +100,7 @@
     "tsup.tui.config.ts",
     "tsup.vscode.config.ts",
     "tsup.index-sqlite.config.ts",
+    "tsup.studio.config.ts",
     "vitest.config.ts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**"]

@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@agent-inspect/index-sqlite": "workspace:*",
+    "@agent-inspect/studio": "workspace:*",
     "@agent-inspect/tui": "workspace:*"
   }
 }

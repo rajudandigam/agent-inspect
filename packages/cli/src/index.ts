@@ -52,6 +52,8 @@ import type { CheckCommandOptions } from "./check.js";
 import type { ServeCommandOptions } from "./serve.js";
 import { checkCommand } from "./check.js";
 import { serveCommand } from "./serve.js";
+import type { StudioCommandOptions } from "./studio-cmd.js";
+import { studioCommand } from "./studio-cmd.js";
 import type { EvalCommandOptions } from "./eval.js";
 import { evalCommand } from "./eval.js";
 import type { SafetyCommandOptions } from "./safety.js";
@@ -423,6 +425,21 @@ export function createCliProgram(): Command {
     .option("--open", "open browser locally when host is localhost")
     .action((opts: ServeCommandOptions) => {
       runCommand(() => serveCommand(opts));
+    });
+
+  program
+    .command("studio")
+    .description(
+      "Start self-hosted read-only Studio analyzer (requires @agent-inspect/studio) (v6.0+)",
+    )
+    .option("--workspace <path>", "studio registry manifest path")
+    .option("--db <path>", "studio database path (sqlite file or postgres URL)")
+    .option("--host <host>", "bind host (default 127.0.0.1)", "127.0.0.1")
+    .option("--port <number>", "bind port (default 7340)", "7340")
+    .option("--server", "bind for network access (0.0.0.0; requires explicit opt-in)")
+    .option("--open", "open browser locally when host is localhost")
+    .action((opts: StudioCommandOptions) => {
+      runCommand(() => studioCommand(opts));
     });
 
   program

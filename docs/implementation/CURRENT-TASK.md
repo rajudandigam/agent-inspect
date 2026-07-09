@@ -27,11 +27,13 @@ stopAfter: v6.4.0 published unless blocked by manual gate
 
 All **17 linked packages** live on npm @ **5.4.0**. Git @ `d16a344` on `main`.
 
-## Completed: v6.0-0 Studio RFC
+## Completed: v6.0-1 Studio package scaffold
 
-`docs/proposals/SELF-HOSTED-STUDIO-V6.0.md` — architecture, security, self-host boundary.
+`@agent-inspect/studio` — localhost server shell, `/api/health`, `agent-inspect studio` CLI (optional install).
 
-## Next work: v6.0-1 Studio package scaffold
+## Next work: v6.0-2 workspace import + views
+
+Run/session/suite/checks views per [V6.0.0-EXECUTION-PLAN.md](./release-trains/V6.0.0-EXECUTION-PLAN.md).
 
 **Manual gates (stop and report, do not bypass):**
 

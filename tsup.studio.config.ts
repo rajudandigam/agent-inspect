@@ -1,8 +1,8 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["packages/cli/src/index.ts"],
-  outDir: "packages/cli/dist",
+  entry: ["packages/studio/src/index.ts"],
+  outDir: "packages/studio/dist",
   format: ["esm", "cjs"],
   outExtension({ format }) {
     return { js: format === "esm" ? ".mjs" : ".cjs" };
@@ -13,6 +13,4 @@ export default defineConfig({
   treeshake: true,
   platform: "node",
   target: "es2022",
-  external: ["@agent-inspect/tui", "@agent-inspect/studio"],
-  noExternal: ["@agent-inspect/eval", "@agent-inspect/redact", "chalk", "nanoid"],
 });

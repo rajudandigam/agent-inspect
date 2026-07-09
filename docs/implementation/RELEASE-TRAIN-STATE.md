@@ -11,15 +11,16 @@ currentTrain: "v6.0.0"
 trainStatus: "ready"
 executionMode: "autonomous-release-train"
 branch: "main"
-currentChunk: v6.0-1-scaffold
-nextAction: "Scaffold @agent-inspect/studio package; then v6.0-2 workspace views"
-handoffCommit: "d16a344"
+currentChunk: v6.0-2-workspace-views
+nextAction: "Workspace import + run/session/suite/checks views"
+handoffCommit: "6020e50"
 completedChunks:
   - "v5.1.0-published (cohort v2, CI 28988054272)"
   - "v5.2.0-published (CI gates, CI 28990000097)"
   - "v5.3.0-published (suite viewer, CI 28991868139)"
   - "v5.4.0-published (suite templates, CI 28993299414)"
   - "v6.0-0-rfc (SELF-HOSTED-STUDIO-V6.0.md)"
+  - "v6.0-1-scaffold (@agent-inspect/studio package + CLI studio command)"
 remainingTrains:
   - "v6.0.0 Self-hosted Studio"
   - "v6.1.0 Client-hosted Ingestion"
@@ -32,7 +33,7 @@ pendingManualGate:
   - "@agent-inspect/studio first npm publication + Trusted Publishing"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio auth / non-localhost binding security review"
-lastConfirmedCommit: "d16a344"
+lastConfirmedCommit: "6020e50"
 lastPublishRun: "28993299414 (workflow_dispatch, success)"
 lastValidationLevel: "full gate green at 5.4.0 + CI publish all 17 packages"
 updatedAt: "2026-07-09"

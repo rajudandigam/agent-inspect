@@ -488,6 +488,9 @@ importers:
       '@agent-inspect/index-sqlite':
         specifier: workspace:*
         version: link:../index-sqlite
+      '@agent-inspect/studio':
+        specifier: workspace:*
+        version: link:../studio
       '@agent-inspect/tui':
         specifier: workspace:*
         version: link:../tui
@@ -580,6 +583,12 @@ importers:
         version: link:../..
 
   packages/redact: {}
+
+  packages/studio:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../..
 
   packages/tui:
     dependencies:

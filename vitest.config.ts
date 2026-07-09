@@ -104,6 +104,10 @@ const indexSqliteEntry = fileURLToPath(
   new URL("./packages/index-sqlite/src/index.ts", import.meta.url),
 );
 
+const studioEntry = fileURLToPath(
+  new URL("./packages/studio/src/index.ts", import.meta.url),
+);
+
 export default defineConfig({
   root: repoRoot,
   resolve: {
@@ -148,6 +152,7 @@ export default defineConfig({
       "@agent-inspect/langchain": langchainEntry,
       "@agent-inspect/tui": tuiEntry,
       "@agent-inspect/index-sqlite": indexSqliteEntry,
+      "@agent-inspect/studio": studioEntry,
     },
   },
   ssr: {
@@ -191,6 +196,7 @@ export default defineConfig({
       "@agent-inspect/langchain",
       "@agent-inspect/tui",
       "@agent-inspect/index-sqlite",
+      "@agent-inspect/studio",
     ],
   },
   test: {

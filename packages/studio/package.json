@@ -1,0 +1,49 @@
+{
+  "name": "@agent-inspect/studio",
+  "version": "5.4.0",
+  "license": "MIT",
+  "type": "module",
+  "description": "Optional self-hosted read-only Studio analyzer for multi-project AgentInspect workspaces",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajudandigam/agent-inspect.git",
+    "directory": "packages/studio"
+  },
+  "bugs": {
+    "url": "https://github.com/rajudandigam/agent-inspect/issues"
+  },
+  "homepage": "https://github.com/rajudandigam/agent-inspect/tree/main/packages/studio",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm --workspace-root exec tsup --config tsup.studio.config.ts",
+    "test": "vitest run -c ../../vitest.config.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
