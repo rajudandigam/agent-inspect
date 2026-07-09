@@ -68,6 +68,11 @@ import type { InitCommandOptions } from "./init.js";
 import { initCommand } from "./init.js";
 import type { DoctorCommandOptions } from "./doctor.js";
 import { doctorCommand } from "./doctor.js";
+import {
+  pluginsDoctorCommand,
+  pluginsListCommand,
+  pluginsValidateCommand,
+} from "./plugins.js";
 import type { IndexCommandOptions } from "./index-cmd.js";
 import {
   indexBuildCommand,
@@ -959,6 +964,32 @@ export function createCliProgram(): Command {
     )
     .action((opts: DoctorCommandOptions) => {
       runCommand(() => doctorCommand(opts));
+    });
+
+  const pluginsCmd = program
+    .command("plugins")
+    .description("List and validate explicit-install agent-inspect plugins (v6.2+)");
+
+  pluginsCmd
+    .command("list")
+    .description("List installed plugin packages in node_modules")
+    .action(() => {
+      runCommand(() => pluginsListCommand());
+    });
+
+  pluginsCmd
+    .command("doctor")
+    .description("Validate plugin manifests and privacy checklists")
+    .action(() => {
+      runCommand(() => pluginsDoctorCommand());
+    });
+
+  pluginsCmd
+    .command("validate")
+    .description("Validate one plugin package by name or path")
+    .argument("<package>", "plugin package name or directory path")
+    .action((packageRef: string) => {
+      runCommand(() => pluginsValidateCommand(packageRef));
     });
 
   const indexCmd = program
