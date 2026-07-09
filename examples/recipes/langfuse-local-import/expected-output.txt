@@ -1,0 +1,8 @@
+Langfuse local import recipe trace written
+Trace directory: ./.agent-inspect
+Run id: langfuse-recipe-run
+
+Export OTLP JSON (experimental, local only):
+  npx agent-inspect export langfuse-recipe-run --dir ./.agent-inspect --format otlp-json --profile share -o ./langfuse-export.json
+
+Configure your self-hosted Langfuse OTel intake separately — no default upload.

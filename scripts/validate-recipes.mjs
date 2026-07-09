@@ -40,6 +40,8 @@ const RECIPES = [
   "read-only-mcp-server",
   "workspace-basic",
   "shareable-bundle-basic",
+  "phoenix-openinference-import",
+  "langfuse-local-import",
   "observed-outcome-basic",
   "trace-suite-basic",
   "cohort-baseline-candidate",

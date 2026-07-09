@@ -1,0 +1,8 @@
+Phoenix/OpenInference recipe trace written
+Trace directory: ./.agent-inspect
+Run id: phoenix-recipe-run
+
+Export OpenInference-compatible JSON (experimental, local only):
+  npx agent-inspect export phoenix-recipe-run --dir ./.agent-inspect --format openinference --profile share -o ./phoenix-export.json
+
+Review before any Phoenix import — AgentInspect does not upload.
