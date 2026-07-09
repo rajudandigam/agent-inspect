@@ -5,10 +5,12 @@
 > **Handoff for new agent chat:** [AGENT-HANDOFF-PROMPT.md](./AGENT-HANDOFF-PROMPT.md)
 
 ```yaml
-baselineVersion: "5.4.0"
+baselineVersion: "6.0.0"
 publishedVersion: "6.0.0 (17/18 packages on npm; @agent-inspect/studio pending Trusted Publishing)"
 currentTrain: "v6.1.0"
 trainStatus: "ready"
+executionMode: "autonomous-release-train"
+branch: "main"
 currentChunk: "v6.1-0-rfc"
 nextAction: "Client-hosted ingestion RFC; then v6.1 implementation chunks"
 completedChunks:
@@ -23,13 +25,25 @@ completedChunks:
   - "v6.0-4-auth-binding"
   - "v6.0-5-release-readiness"
   - "v6.0.0-published (17 packages CI 29039791803; studio manual gate)"
-lastConfirmedCommit: "f35a704"
+remainingTrains:
+  - "v6.1.0 Client-hosted Ingestion"
+  - "v6.2.0 Plugin Convention"
+  - "v6.3.0 MCP Coding-agent Workflows"
+  - "v6.4.0 Standards Graduation"
+blockedTrains:
+  - "v7.0.0 (conditional — not scheduled)"
+pendingManualGate:
+  - "@agent-inspect/studio first npm publication + Trusted Publishing (maintainer)"
+  - "VS Code Marketplace first publish (packages/vscode)"
+  - "Studio auth / non-localhost binding security review"
+lastConfirmedCommit: "6d7a0ea"
 lastPublishRun: "29039791803 (workflow_dispatch; 17/18 published; studio E404 expected)"
+lastValidationLevel: "full gate green at 6.0.0"
 updatedAt: "2026-07-09"
 ```
 
 ## Quick links
 
-- **Active plan:** [V6.0.0-EXECUTION-PLAN.md](./release-trains/V6.0.0-EXECUTION-PLAN.md)
+- **Active plan:** [V6.1.0-EXECUTION-PLAN.md](./release-trains/V6.1.0-EXECUTION-PLAN.md)
 - **Canonical roadmap:** [ROADMAP_V3_5_TO_V7.md](./ROADMAP_V3_5_TO_V7.md) (read § v6 only when needed)
 - **Maintainer rules:** [AGENTS.md](../../AGENTS.md) at repo root
