@@ -33,7 +33,7 @@ pendingManualGate:
   - "@agent-inspect/studio first npm publication + Trusted Publishing"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio auth / non-localhost binding security review"
-lastConfirmedCommit: "6020e50"
+lastConfirmedCommit: "f996b42"
 lastPublishRun: "28993299414 (workflow_dispatch, success)"
 lastValidationLevel: "full gate green at 5.4.0 + CI publish all 17 packages"
 updatedAt: "2026-07-09"

@@ -6,13 +6,13 @@
 executionMode: autonomous-release-train
 currentTrain: v6.0.0
 trainStatus: ready
-currentChunk: v6.0-1-scaffold
+currentChunk: v6.0-2-workspace-views
 scope: Self-hosted Studio — then v6.1 → v6.4 (v7.0 NOT scheduled)
 authority:
   - AGENTS.md
   - docs/implementation/release-trains/V6.0.0-EXECUTION-PLAN.md
   - docs/implementation/ROADMAP_V3_5_TO_V7.md (§ v6.0.0 only; do not reread full roadmap)
-nextChunk: v6.0-1 Studio package scaffold
+nextChunk: v6.0-2 workspace import + run/session/suite/checks views
 stopAfter: v6.4.0 published unless blocked by manual gate
 ```
 
