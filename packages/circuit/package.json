@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/circuit",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "license": "MIT",
   "type": "module",
   "description": "Local circuit-breaker analyzers for AgentInspect trace patterns",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.2.0
+
+### Minor Changes
+
+- 52c2539: Add CI quality gates: `agent-inspect gate` with suite/threshold checks, stable exit codes, and JUnit/GitHub step-summary artifacts.
+
 ## 5.1.0
 
 ### Minor Changes

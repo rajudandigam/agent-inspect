@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 5.2.0
+
+### Minor Changes
+
+- Align the linked package suite to 5.2.0. No behavior changes in this package; keeps published versions consistent with the v5.2 CI quality gates release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @agent-inspect/redact@5.2.0
+
 ## 5.1.0
 
 ### Minor Changes
