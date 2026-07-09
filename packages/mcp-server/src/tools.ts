@@ -2,14 +2,18 @@ import path from "node:path";
 
 import {
   TraceDirectory,
+  buildBundleMetadata,
   buildRunTimeline,
+  buildRunWhatSummary,
+  extractOutcomesFromTraceEvents,
   loadTraceMetadataList,
+  renderRunWhat,
   resolveTraceDir,
   searchTraces,
 } from "agent-inspect/advanced";
 import { createRunStatusRule, runTraceChecks } from "agent-inspect/checks";
 import { diffRuns, manualTraceEventsToComparableRun } from "agent-inspect/diff";
-import { exportMarkdown } from "agent-inspect/exporters";
+import { exportMarkdown, exportRunTree } from "agent-inspect/exporters";
 import { persistedInspectEventsToTraceEvents } from "agent-inspect/persisted";
 import { openTrace } from "agent-inspect/readers";
 
@@ -97,6 +101,42 @@ export const READ_ONLY_TOOLS: McpToolDefinition[] = [
       required: ["runId"],
     },
   },
+  {
+    name: "summarize_failed_run",
+    description: "Summarize a failed run with step errors and correlation metadata.",
+    inputSchema: {
+      type: "object",
+      properties: { runId: { type: "string" } },
+      required: ["runId"],
+    },
+  },
+  {
+    name: "retrieve_decision_notes",
+    description: "List decision steps and decision metadata for one run.",
+    inputSchema: {
+      type: "object",
+      properties: { runId: { type: "string" } },
+      required: ["runId"],
+    },
+  },
+  {
+    name: "find_failed_observation",
+    description: "Find failed observed outcomes in one run.",
+    inputSchema: {
+      type: "object",
+      properties: { runId: { type: "string" } },
+      required: ["runId"],
+    },
+  },
+  {
+    name: "create_share_safe_bundle",
+    description: "Create an in-memory share-safe bundle manifest and redacted exports.",
+    inputSchema: {
+      type: "object",
+      properties: { runId: { type: "string" } },
+      required: ["runId"],
+    },
+  },
 ];
 
 function textResult(payload: unknown) {
@@ -134,6 +174,27 @@ function legacyTraceEvents(
   events: Parameters<typeof persistedInspectEventsToTraceEvents>[0],
 ) {
   return persistedInspectEventsToTraceEvents(events);
+}
+
+function redactionProfileForExport(context: McpServerContext): "share" | "strict" {
+  return context.redactionProfile === "local" ? "share" : context.redactionProfile;
+}
+
+function decisionNotes(events: Parameters<typeof persistedInspectEventsToTraceEvents>[0]) {
+  return events
+    .filter(
+      (event) =>
+        event.kind === "DECISION" ||
+        (typeof event.attributes?.decisionId === "string" && event.attributes.decisionId !== ""),
+    )
+    .slice(0, 50)
+    .map((event) => ({
+      name: event.name,
+      kind: event.kind,
+      status: event.status,
+      decisionId:
+        typeof event.attributes?.decisionId === "string" ? event.attributes.decisionId : undefined,
+    }));
 }
 
 export async function callReadOnlyTool(
@@ -242,12 +303,79 @@ export async function callReadOnlyTool(
       const { read } = await openRunTrace(context, runId);
       const run = read.runs.find((item) => item.runId === runId) ?? read.runs[0];
       if (!run) return errorResult(`Run tree not found: ${runId}`);
+      const profile = redactionProfileForExport(context);
       const markdown = exportMarkdown(run, {
         format: "markdown",
         redacted: true,
-        redactionProfile: context.redactionProfile === "local" ? "share" : context.redactionProfile,
+        redactionProfile: profile,
       });
-      return textResult({ runId, profile: context.redactionProfile, markdown: markdown.content });
+      return textResult({ runId, profile, markdown: markdown.content });
+    }
+    case "summarize_failed_run": {
+      const runId = String(args.runId ?? "");
+      const { read } = await openRunTrace(context, runId);
+      const traceEvents = legacyTraceEvents(read.events);
+      const summary = buildRunWhatSummary(traceEvents);
+      return textResult({
+        runId,
+        status: summary.status,
+        summary: renderRunWhat(summary),
+        failedStepNames: summary.failedStepNames,
+        correlation: summary.correlation ?? null,
+      });
+    }
+    case "retrieve_decision_notes": {
+      const runId = String(args.runId ?? "");
+      const { read } = await openRunTrace(context, runId);
+      const notes = decisionNotes(read.events);
+      return textResult({ runId, decisions: notes, count: notes.length });
+    }
+    case "find_failed_observation": {
+      const runId = String(args.runId ?? "");
+      const { read } = await openRunTrace(context, runId);
+      const outcomes = extractOutcomesFromTraceEvents(legacyTraceEvents(read.events));
+      const failed = outcomes.filter((outcome) => outcome.status === "failed");
+      return textResult({
+        runId,
+        failed,
+        count: failed.length,
+      });
+    }
+    case "create_share_safe_bundle": {
+      const runId = String(args.runId ?? "");
+      const { read } = await openRunTrace(context, runId);
+      const run = read.runs.find((item) => item.runId === runId) ?? read.runs[0];
+      if (!run) return errorResult(`Run tree not found: ${runId}`);
+      const profile = redactionProfileForExport(context);
+      const markdown = exportMarkdown(run, {
+        format: "markdown",
+        redacted: true,
+        redactionProfile: profile,
+      });
+      const tree = exportRunTree(run, {
+        format: "openinference",
+        redacted: true,
+        redactionProfile: profile,
+      });
+      const metadata = buildBundleMetadata({
+        agentInspectVersion: "mcp-server",
+        profile,
+        resolve: { runIds: [runId] },
+        checks: {
+          aggregateStatus: "SAFE",
+          runs: [{ runId, status: "SAFE", errors: 0, warnings: 0, findings: 0 }],
+        },
+        files: ["report.md", "tree.json"],
+      });
+      return textResult({
+        runId,
+        profile,
+        metadata,
+        files: {
+          "report.md": markdown.content,
+          "tree.json": tree.content,
+        },
+      });
     }
     default:
       return errorResult(`Unknown tool: ${name}`);

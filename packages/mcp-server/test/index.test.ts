@@ -11,11 +11,16 @@ import { runReadOnlyMcpServer } from "../src/index.js";
 
 describe("@agent-inspect/mcp-server", () => {
   let traceDir: string;
+  let runId: string;
 
   beforeEach(async () => {
     traceDir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-mcp-server-"));
     process.env.AGENT_INSPECT_TRACE_DIR = traceDir;
     await inspectRun("mcp-server-run", async () => {}, { traceDir });
+    const context = createMcpServerContext({ traceDir });
+    const listed = await callReadOnlyTool(context, "list_traces", {});
+    const payload = JSON.parse(listed.content[0]!.text as string) as Array<{ runId: string }>;
+    runId = payload[0]!.runId;
   });
 
   afterEach(async () => {
@@ -24,7 +29,7 @@ describe("@agent-inspect/mcp-server", () => {
   });
 
   it("exposes read-only tool catalog", () => {
-    expect(READ_ONLY_TOOLS).toHaveLength(8);
+    expect(READ_ONLY_TOOLS).toHaveLength(12);
     expect(READ_ONLY_TOOLS.map((tool) => tool.name)).toEqual([
       "list_traces",
       "read_trace",
@@ -34,6 +39,10 @@ describe("@agent-inspect/mcp-server", () => {
       "compare_runs",
       "run_checks",
       "create_share_safe_report",
+      "summarize_failed_run",
+      "retrieve_decision_notes",
+      "find_failed_observation",
+      "create_share_safe_bundle",
     ]);
   });
 
@@ -48,6 +57,24 @@ describe("@agent-inspect/mcp-server", () => {
     expect(result.isError).toBe(false);
     const payload = JSON.parse(result.content[0]!.text as string) as Array<{ runId: string }>;
     expect(payload.length).toBeGreaterThan(0);
+  });
+
+  it("summarizes failed run via tool handler", async () => {
+    const context = createMcpServerContext({ traceDir });
+    const result = await callReadOnlyTool(context, "summarize_failed_run", { runId });
+    expect(result.isError).toBe(false);
+    const payload = JSON.parse(result.content[0]!.text as string) as { runId: string };
+    expect(payload.runId).toBe(runId);
+  });
+
+  it("creates share-safe bundle via tool handler", async () => {
+    const context = createMcpServerContext({ traceDir });
+    const result = await callReadOnlyTool(context, "create_share_safe_bundle", { runId });
+    expect(result.isError).toBe(false);
+    const payload = JSON.parse(result.content[0]!.text as string) as {
+      metadata: { runIds: string[] };
+    };
+    expect(payload.metadata.runIds).toContain(runId);
   });
 
   it("handles tools/list over stdio", async () => {
