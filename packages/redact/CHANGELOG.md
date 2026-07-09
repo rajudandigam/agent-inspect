@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 6.0.0
+
+### Minor Changes
+
+- Align the linked package suite to 6.0.0 for the self-hosted Studio release train.
+
 ## 5.4.0
 
 ### Minor Changes

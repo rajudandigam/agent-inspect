@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 6.0.0
+
+### Minor Changes
+
+- Align the linked package suite to 6.0.0 for the self-hosted Studio release train.
+
+### Patch Changes
+
+- Updated dependencies
+  - @agent-inspect/redact@6.0.0
+
 ## 5.4.0
 
 ### Minor Changes
