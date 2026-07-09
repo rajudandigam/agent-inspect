@@ -137,6 +137,12 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/cohort-baseline-candidate:
+    devDependencies:
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
+
   examples/recipes/deterministic-ci-checks:
     dependencies:
       agent-inspect:
