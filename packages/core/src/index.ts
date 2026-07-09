@@ -28,4 +28,6 @@ export { inspectRun } from "./inspect-run.js";
 export { maybeInspectRun } from "./maybe-inspect-run.js";
 export { step } from "./step.js";
 export { observe } from "./observe.js";
+export { observeOutcome } from "./observe-outcome.js";
+export type { ObserveOutcomeOptions } from "./observe-outcome.js";
 export { getCurrentCorrelationMetadata } from "./context.js";

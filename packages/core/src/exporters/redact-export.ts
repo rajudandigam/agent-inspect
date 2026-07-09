@@ -243,6 +243,49 @@ export function redactTraceEventsForReport(
               }
             : {}),
         };
+      case "outcome_observed": {
+        const actualAttrs =
+          event.actual !== undefined
+            ? redactEventAttributes(
+                { value: event.actual },
+                redactor,
+                maxMetadataValueLength,
+                maxPreviewLength,
+              )
+            : undefined;
+        const redactedActual =
+          actualAttrs !== undefined && "value" in actualAttrs
+            ? actualAttrs.value
+            : undefined;
+        const redactedEvidence =
+          event.evidence !== undefined
+            ? redactEventAttributes(
+                isRecord(event.evidence) ? event.evidence : { value: event.evidence },
+                redactor,
+                maxMetadataValueLength,
+                maxPreviewLength,
+              )
+            : undefined;
+        return {
+          ...event,
+          name: truncateStringForProfile(
+            event.name,
+            "name",
+            maxMetadataValueLength,
+            maxPreviewLength,
+          ),
+          expectation: truncateStringForProfile(
+            event.expectation,
+            "expectation",
+            maxMetadataValueLength,
+            maxPreviewLength,
+          ),
+          ...(redactedActual !== undefined ? { actual: redactedActual } : {}),
+          ...(redactedEvidence !== undefined ? { evidence: redactedEvidence } : {}),
+        };
+      }
+      default:
+        return event;
     }
   });
 }

@@ -361,6 +361,10 @@ export function createCliProgram(): Command {
     )
     .option("--require-completed", "add run.requireCompleted")
     .option("--detect-stalls", "add run.stall for running or incomplete events")
+    .option(
+      "--fail-on-observation <status>",
+      "fail when observed outcomes match status (passed, failed, unknown, skipped; comma-separated)",
+    )
     .option("--session <id>", "check all runs in a workflow session (requires --dir)")
     .option("--group <id>", "check all runs sharing a groupId (requires --dir)")
     .option(
@@ -629,6 +633,10 @@ export function createCliProgram(): Command {
     .option("--name <query>", "substring match on run or step name")
     .option("--tool <query>", "substring match on tool step name or metadata.toolName")
     .option(
+      "--observation <status>",
+      "filter by observed outcome status (passed, failed, unknown, skipped)",
+    )
+    .option(
       "--duration <expr>",
       "duration filter on run or step (e.g. >5s, >=500ms)",
     )
@@ -761,6 +769,15 @@ export function createCliProgram(): Command {
     .option("--include-attributes", "include bounded step attributes in tree section")
     .option("--no-errors", "omit error details from tree section")
     .option("--no-correlation", "omit correlation metadata from what section")
+    .addOption(
+      new Option("--section <section>", "report section (default: all)").choices([
+        "all",
+        "observations",
+        "what",
+        "timeline",
+        "tree",
+      ]),
+    )
     .addOption(
       new Option(
         "--redaction-profile <profile>",

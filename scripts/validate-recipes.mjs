@@ -40,6 +40,7 @@ const RECIPES = [
   "read-only-mcp-server",
   "workspace-basic",
   "shareable-bundle-basic",
+  "observed-outcome-basic",
 ];
 
 const LOG_RECIPE_FILES = {

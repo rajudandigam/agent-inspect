@@ -11,8 +11,15 @@ import {
 } from "./exporters/redact-export.js";
 import { buildRunTimeline, renderTimeline } from "./timeline.js";
 import { buildRunWhatSummary, renderRunWhat } from "./what.js";
+import {
+  extractOutcomesFromTraceEvents,
+  renderObservedOutcomesHtml,
+  renderObservedOutcomesMarkdown,
+  summarizeObservedOutcomes,
+} from "./outcomes/index.js";
 
 export type ReportFormat = "markdown" | "html";
+export type ReportSection = "all" | "observations" | "what" | "timeline" | "tree";
 
 export interface ReportOptions {
   format: ReportFormat;
@@ -21,6 +28,8 @@ export interface ReportOptions {
   redactionProfile?: RedactionProfile;
   /** Include correlation ids in the what section (default true). */
   correlation?: boolean;
+  /** Limit output to one section (`observations` shows observed outcomes only). */
+  section?: ReportSection;
 }
 
 export interface ReportResult {
@@ -76,9 +85,33 @@ export function buildRunReport(
   options: ReportOptions,
 ): ReportResult {
   const profile = options.redactionProfile ?? "local";
+  const section = options.section ?? "all";
   const safeEvents = redactTraceEventsForReport(events, {
     redactionProfile: profile,
   });
+  const outcomes = summarizeObservedOutcomes(
+    extractOutcomesFromTraceEvents(safeEvents),
+  );
+  const observationsMarkdown = renderObservedOutcomesMarkdown(outcomes);
+  const observationsHtml = renderObservedOutcomesHtml(outcomes);
+
+  if (section === "observations") {
+    if (options.format === "markdown") {
+      return {
+        format: "markdown",
+        content: `## Observed outcomes\n\n${observationsMarkdown}\n`,
+        contentType: "text/markdown",
+        fileExtension: ".md",
+      };
+    }
+    return {
+      format: "html",
+      content: `<!doctype html><html lang="en"><head><meta charset="utf-8"/><title>Observed outcomes</title><style>${REPORT_HTML_CSS}</style></head><body><h1>Observed outcomes</h1>${observationsHtml}</body></html>`,
+      contentType: "text/html",
+      fileExtension: ".html",
+    };
+  }
+
   const whatSummary = buildRunWhatSummary(safeEvents);
   const whatText = renderRunWhat(whatSummary, {
     correlation: options.correlation !== false,
@@ -115,6 +148,10 @@ export function buildRunReport(
       "```text",
       timelineText,
       "```",
+      "",
+      "## Observed outcomes",
+      "",
+      observationsMarkdown,
       "",
     ];
     if (tail) {
@@ -170,6 +207,7 @@ export function buildRunReport(
 <p class="note">Generated locally by AgentInspect. Review for sensitive data before sharing.</p>
 <section class="what"><h2>What happened</h2><pre>${escapeHtml(whatText)}</pre></section>
 <section class="timeline"><h2>Timeline</h2><pre>${escapeHtml(timelineText)}</pre></section>
+<section class="observations"><h2>Observed outcomes</h2>${observationsHtml}</section>
 ${treeSection || "<section class=\"tree\"><h2>Execution tree</h2><p>No steps recorded.</p></section>"}
 ${errorsSection}
 ${attrsSection}

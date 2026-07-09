@@ -769,7 +769,8 @@ function mapOpenInferenceKind(
     agentInspectKind === "RESULT" ||
     agentInspectKind === "ERROR" ||
     agentInspectKind === "LOGIC" ||
-    agentInspectKind === "LOG"
+    agentInspectKind === "LOG" ||
+    agentInspectKind === "OUTCOME"
   ) {
     return { kind: agentInspectKind, warnings };
   }
@@ -1402,7 +1403,8 @@ function readOtlpKind(
     agentInspectKind === "RESULT" ||
     agentInspectKind === "ERROR" ||
     agentInspectKind === "LOGIC" ||
-    agentInspectKind === "LOG"
+    agentInspectKind === "LOG" ||
+    agentInspectKind === "OUTCOME"
   ) {
     return { kind: agentInspectKind, warnings };
   }

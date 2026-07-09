@@ -178,12 +178,37 @@ export interface StepCompletedEvent extends TraceEventBase {
   error?: ErrorInfo;
 }
 
+/** Emitted when an external-world outcome is observed (v4.4+). */
+export interface OutcomeObservedEvent extends TraceEventBase {
+  event: "outcome_observed";
+  runId: string;
+  outcomeId: string;
+  parentId?: string;
+  name: string;
+  expectation: string;
+  status: "passed" | "failed" | "unknown" | "skipped";
+  method?:
+    | "dom"
+    | "accessibility"
+    | "snapshot"
+    | "network"
+    | "storage"
+    | "filesystem"
+    | "database"
+    | "queue"
+    | "custom";
+  actual?: unknown;
+  evidence?: unknown;
+  observedAt: number;
+}
+
 /** Discriminated union of all MVP trace events written as JSONL lines. */
 export type TraceEvent =
   | RunStartedEvent
   | RunCompletedEvent
   | StepStartedEvent
-  | StepCompletedEvent;
+  | StepCompletedEvent
+  | OutcomeObservedEvent;
 
 /** Named redaction presets for trace writing and share-safe exports (v1.3.0+). */
 export type RedactionProfile = "local" | "share" | "strict";
@@ -331,6 +356,19 @@ export function isTraceEvent(value: unknown): value is TraceEvent {
         (value.status === "success" || value.status === "error") &&
         typeof value.endTime === "number" &&
         typeof value.durationMs === "number"
+      );
+    }
+    case "outcome_observed": {
+      return (
+        typeof value.runId === "string" &&
+        typeof value.outcomeId === "string" &&
+        typeof value.name === "string" &&
+        typeof value.expectation === "string" &&
+        (value.status === "passed" ||
+          value.status === "failed" ||
+          value.status === "unknown" ||
+          value.status === "skipped") &&
+        typeof value.observedAt === "number"
       );
     }
     default:

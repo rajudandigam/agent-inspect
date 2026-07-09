@@ -197,7 +197,7 @@ const optionalPackageChecks = [
           metadata: {
             totalEvents: 0,
             confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
-            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0, OUTCOME: 0 }
           }
         }],
         events: [],
@@ -220,7 +220,7 @@ const optionalPackageChecks = [
           metadata: {
             totalEvents: 0,
             confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
-            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0, OUTCOME: 0 }
           }
         }],
         events: [],
@@ -245,7 +245,7 @@ const optionalPackageChecks = [
           metadata: {
             totalEvents: 0,
             confidenceBreakdown: { explicit: 0, correlated: 0, heuristic: 0, unknown: 0 },
-            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0 }
+            kinds: { RUN: 0, AGENT: 0, LLM: 0, TOOL: 0, CHAIN: 0, RETRIEVER: 0, DECISION: 0, RESULT: 0, ERROR: 0, LOGIC: 0, LOG: 0, OUTCOME: 0 }
           }
         }],
         events: [],

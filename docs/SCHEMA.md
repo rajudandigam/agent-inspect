@@ -36,6 +36,7 @@ The stable event names are:
 - `run_completed`
 - `step_started`
 - `step_completed`
+- `outcome_observed` (v4.4.0+)
 
 There is **no** `step_failed` event. Failures are represented by `step_completed` with `status: "error"`.
 
@@ -111,6 +112,31 @@ Every trace line contains:
 }
 ```
 
+### 3.5 `outcome_observed` (v4.4.0+)
+
+Records whether an external side effect matched expectations. Distinct from step/tool success.
+
+```ts
+{
+  schemaVersion: "0.1",
+  event: "outcome_observed",
+  timestamp: number,
+  runId: string,
+  outcomeId: string,
+  parentId?: string,
+  name: string,
+  expectation: string,
+  status: "passed" | "failed" | "unknown" | "skipped",
+  method?: "dom" | "accessibility" | "snapshot" | "network" | "storage"
+    | "filesystem" | "database" | "queue" | "custom",
+  actual?: unknown,
+  evidence?: Record<string, unknown>,
+  observedAt: number
+}
+```
+
+`actual` and `evidence` are bounded and redacted before disk like step metadata. See [OBSERVED-OUTCOMES-V4.4.md](./proposals/OBSERVED-OUTCOMES-V4.4.md).
+
 ## 4. Error representation
 
 - Errors are structured as `{ message, stack? }`.
@@ -173,7 +199,7 @@ interface InspectEvent {
   runId: string;
   parentId?: string;
   name: string;
-  kind: "RUN" | "AGENT" | "LLM" | "TOOL" | "CHAIN" | "RETRIEVER" | "DECISION" | "RESULT" | "ERROR" | "LOGIC" | "LOG";
+  kind: "RUN" | "AGENT" | "LLM" | "TOOL" | "CHAIN" | "RETRIEVER" | "DECISION" | "RESULT" | "ERROR" | "LOGIC" | "LOG" | "OUTCOME";
   timestamp: number;
   status?: "running" | "ok" | "error";
   durationMs?: number;

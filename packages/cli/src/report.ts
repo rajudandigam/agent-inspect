@@ -18,6 +18,7 @@ export interface ReportCommandOptions {
   noErrors?: boolean;
   noCorrelation?: boolean;
   redactionProfile?: string;
+  section?: string;
 }
 
 function parseReportFormat(s: string | undefined): ReportFormat {
@@ -89,6 +90,7 @@ export async function reportCommand(
     includeErrors: options.noErrors !== true,
     redactionProfile,
     correlation: !options.noCorrelation,
+    ...(options.section ? { section: options.section as never } : {}),
   });
 
   const outPath =

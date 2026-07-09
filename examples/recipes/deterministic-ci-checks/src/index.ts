@@ -147,6 +147,7 @@ function buildCheckReadResult(): TraceReadResult {
           ERROR: 0,
           LOGIC: 0,
           LOG: 0,
+          OUTCOME: 0,
         },
       },
     },

@@ -23,6 +23,7 @@ export interface SearchCommandOptions {
   limit?: string;
   session?: string;
   correlateGroup?: boolean;
+  observation?: string;
   json?: boolean;
 }
 
@@ -93,6 +94,7 @@ export async function searchCommand(
       limit: parseLimit(options.limit),
       ...(sessionId ? { session: sessionId } : {}),
       ...(options.correlateGroup ? { correlateGroup: true } : {}),
+      ...(options.observation ? { observation: options.observation } : {}),
     });
 
     if (options.json) {

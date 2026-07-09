@@ -83,6 +83,7 @@ const INSPECT_KINDS: readonly InspectKind[] = [
   "ERROR",
   "LOGIC",
   "LOG",
+  "OUTCOME",
 ];
 
 const ATTRIBUTION_CONFIDENCES: readonly AttributionConfidence[] = [

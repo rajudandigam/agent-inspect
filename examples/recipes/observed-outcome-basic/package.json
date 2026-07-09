@@ -1,0 +1,12 @@
+{
+  "name": "agent-inspect-recipe-observed-outcome-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

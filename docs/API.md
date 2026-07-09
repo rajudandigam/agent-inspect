@@ -84,6 +84,7 @@ import {
   - **`step.llm(model, fn)`**: convenience wrapper (`type: "llm"`, `metadata.model`).
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
 - **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.
+- **`observeOutcome(name, options)`** (v4.4.0+): records an observed outcome (`outcome_observed`) inside an active `inspectRun` context. Requires `expectation` and `status` (`passed` | `failed` | `unknown` | `skipped`); optional `method`, `actual`, and `evidence`. Outside a run → warn and no-op (never throws). `actual` / `evidence` are bounded and redacted before disk.
 - **`getCurrentCorrelationMetadata()`**: returns active run correlation fields (`correlationId`, `requestId`, `decisionId`, `groupId`) inside `inspectRun` / `maybeInspectRun`; `undefined` outside a traced run or when none were set.
 - **`RedactionProfile`**: `"local" | "share" | "strict"` — see `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
 - **`resolveRedactionProfile(profile?)`**: advanced helper available from `agent-inspect/advanced`; resolves profile extra keys and metadata caps for integrations.
@@ -109,6 +110,7 @@ These APIs support local workflows like listing traces, extracting metadata/summ
   - `RunCompletedEvent` (`event: "run_completed"`)
   - `StepStartedEvent` (`event: "step_started"`)
   - `StepCompletedEvent` (`event: "step_completed"`)
+  - `OutcomeObservedEvent` (`event: "outcome_observed"`, v4.4.0+)
 - Related types: `StepType`, `StepStatus`, `RunStatus`, `ErrorInfo`, `StepMetadata`, `TokenMetadata`
 
 ### Log-derived normalized model (stable as a model, not necessarily the parsing APIs)
@@ -460,6 +462,7 @@ Public methods:
 - **`step(name, fn, options?)`**: writes nested step lifecycle events when called inside the same inspector's run context; outside a context it passes through.
 - **`tool(name, fn, options?)`** / **`llm(name, fn, options?)`**: convenience wrappers that set `type` and metadata.
 - **`observe(name, fn, options?)`**: returns an async wrapper that records the function call as an inspector step.
+- **`observeOutcome(name, options)`** (v4.4.0+): writes `outcome_observed` / `OUTCOME` events through the configured writer when inside an inspector run context.
 - **`getDiagnostics()`**: returns instrumentation error counts and writer stats without requiring direct runtime access.
 - **`flush()`** / **`close()`**: delegate to the configured writer through the runtime.
 

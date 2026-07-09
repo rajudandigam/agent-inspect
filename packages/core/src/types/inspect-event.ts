@@ -15,7 +15,8 @@ export type InspectKind =
   | "RESULT"
   | "ERROR"
   | "LOGIC"
-  | "LOG";
+  | "LOG"
+  | "OUTCOME";
 
 export interface EventSource {
   type: "manual" | "json-log" | "log4js" | "pino" | "winston" | "adapter";

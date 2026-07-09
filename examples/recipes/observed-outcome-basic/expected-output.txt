@@ -1,0 +1,4 @@
+Observed outcome recipe complete
+Trace directory: ./.agent-inspect
+Try:
+  npx agent-inspect search --dir ./.agent-inspect --observation failed

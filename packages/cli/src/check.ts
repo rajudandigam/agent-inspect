@@ -21,6 +21,7 @@ import {
   createRequireCompletedRule,
   createRunDepthRule,
   createRunDurationRule,
+  createObservedOutcomeRule,
   createRunStatusRule,
   createStallDetectionRule,
   createSafetyOversizedAttributeRule,
@@ -67,6 +68,7 @@ export interface CheckCommandOptions {
   maxStepDuration?: string;
   requireCompleted?: boolean;
   detectStalls?: boolean;
+  failOnObservation?: string;
 }
 
 type CheckConfig = {
@@ -231,6 +233,31 @@ function buildRules(
   }
   if (options.detectStalls) {
     rules.push(createStallDetectionRule({ requireEndedAt: true }));
+  }
+  if (options.failOnObservation !== undefined && options.failOnObservation.trim() !== "") {
+    try {
+      const statuses = options.failOnObservation
+        .split(",")
+        .map((value) => value.trim())
+        .filter((value) => value !== "")
+        .map((value) => {
+          if (
+            value === "passed" ||
+            value === "failed" ||
+            value === "unknown" ||
+            value === "skipped"
+          ) {
+            return value as "passed" | "failed" | "unknown" | "skipped";
+          }
+          throw new Error(`unsupported status "${value}"`);
+        });
+      rules.push(createObservedOutcomeRule({ failOn: statuses }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      diagnostics.push(
+        diagnostic("AI_CHECK_INVALID_ARGUMENTS", `--fail-on-observation: ${message}`),
+      );
+    }
   }
   if (run.maxDepth !== undefined) {
     rules.push(createRunDepthRule({ maxDepth: run.maxDepth }));

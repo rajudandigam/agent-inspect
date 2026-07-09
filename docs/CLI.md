@@ -317,6 +317,7 @@ Options:
 - `--correlate-group`: when using `--session`, also match synthetic `group:` session keys
 - `--guardrails <rule>`: optional deterministic guardrail rules (`banned-phrase`, `pii-leak`, `prompt-injection`, …); repeatable
 - `--circuit <rule>`: optional circuit analyzers (`same-tool-repetition`, `max-retries`, …); repeatable
+- `--fail-on-observation <status>`: add `outcome.status` rule; repeatable (`failed`, `passed`, `unknown`, `skipped`; default when flag present without value: `failed`)
 
 By default, `check` runs `run.status`. Additional built-in rules can be selected with `--rule` or config when their options are available.
 
@@ -667,6 +668,7 @@ Options:
 - `--limit <number>` — default 50
 - `--session <id>` — limit to runs in one workflow session
 - `--correlate-group` — when using `--session`, also match synthetic `group:` keys
+- `--observation <status>` — filter runs with observed outcomes matching status (`passed`, `failed`, `unknown`, `skipped`)
 - `--json`
 
 Examples:
@@ -779,6 +781,7 @@ Options:
 - `-o, --output <path>` — write to file
 - `--json` — JSON wrapper (includes `content` when writing to stdout)
 - `--include-attributes` — bounded attributes in the execution tree section
+- `--section <name>` — include report sections; repeatable (`what`, `timeline`, `tree`, `observations`; default: all except when narrowed)
 - `--no-errors` — omit error details from the execution tree section
 - `--no-correlation` — omit correlation ids from what section
 - `--redaction-profile <local|share|strict>` — key-based redaction profile applied to the complete report (default `local`); review output before sharing

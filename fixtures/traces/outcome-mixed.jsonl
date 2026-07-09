@@ -1,0 +1,4 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1710000000000,"runId":"outcome-mixed","name":"outcome-mixed-run","startTime":1710000000000}
+{"schemaVersion":"0.1","event":"outcome_observed","timestamp":1710000001000,"runId":"outcome-mixed","outcomeId":"outcome-pass","name":"policyShown","expectation":"Refund policy visible","status":"passed","method":"custom","evidence":{"selector":"#refund-policy"},"observedAt":1710000001000}
+{"schemaVersion":"0.1","event":"outcome_observed","timestamp":1710000002000,"runId":"outcome-mixed","outcomeId":"outcome-fail","name":"rowWritten","expectation":"Database row exists","status":"failed","method":"database","evidence":{"table":"orders","id":"42"},"observedAt":1710000002000}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1710000003000,"runId":"outcome-mixed","status":"success","endTime":1710000003000,"durationMs":3000}

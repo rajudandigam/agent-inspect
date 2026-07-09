@@ -4,6 +4,10 @@ import { filterTraces as filterTraceMetas } from "./trace-filter.js";
 import { readTraceEventsFromFile } from "./storage.js";
 import type { TraceMetadata, StepType } from "./types.js";
 import { parseDuration } from "./utils/duration.js";
+import {
+  extractOutcomesFromTraceEvents,
+  parseObservationFilter,
+} from "./outcomes/index.js";
 
 export interface TraceSearchOptions {
   traceDir: string;
@@ -17,6 +21,7 @@ export interface TraceSearchOptions {
   limit?: number;
   session?: string;
   correlateGroup?: boolean;
+  observation?: string;
 }
 
 export interface TraceSearchResult {
@@ -94,13 +99,15 @@ export async function searchTraces(
   }
   const limit = options.limit ?? 50;
   const sessionId = options.session?.trim();
+  const observationStatus = parseObservationFilter(options.observation);
 
   const hasContentFilter = Boolean(
     options.status ||
       stepTypeFilter ||
       nameQuery ||
       toolQuery ||
-      durationFilter,
+      durationFilter ||
+      observationStatus,
   );
 
   const results: TraceSearchResult[] = [];
@@ -153,6 +160,23 @@ export async function searchTraces(
       statusFilter: options.status,
     });
     results.push(...stepMatches);
+
+    if (observationStatus) {
+      const outcomes = extractOutcomesFromTraceEvents(events);
+      const matched = outcomes.filter((outcome) => outcome.status === observationStatus);
+      for (const outcome of matched) {
+        results.push({
+          runId: m.runId,
+          runName: m.name,
+          runStatus: m.status,
+          stepName: outcome.name,
+          timestamp: outcome.observedAt,
+          matchReason: `observation status=${outcome.status}`,
+          matchedFields: ["outcome.status", "outcome.name"],
+          filePath: m.filePath,
+        });
+      }
+    }
   }
 
   results.sort((a, b) => {

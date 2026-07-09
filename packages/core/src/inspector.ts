@@ -7,6 +7,10 @@ import type {
 } from "./types/persisted-inspect-event.js";
 import type { RedactionProfile, StepMetadata, StepType } from "./types.js";
 import {
+  normalizeObserveOutcomeInput,
+  type ObserveOutcomeOptions,
+} from "./outcomes/index.js";
+import {
   preparePersistedInspectEventForWrite,
   resolveTraceSafetyOptions,
   type TraceSafetyOptions,
@@ -103,6 +107,7 @@ export interface Inspector {
     fn: TFunction,
     options?: InspectorObserveOptions,
   ): (...args: Parameters<TFunction>) => Promise<Awaited<ReturnType<TFunction>>>;
+  observeOutcome(name: string, options: ObserveOutcomeOptions): Promise<void>;
   getDiagnostics(): ReturnType<InspectorRuntime["getDiagnostics"]>;
   flush(): Promise<void>;
   close(): Promise<void>;
@@ -437,6 +442,41 @@ export function createInspector(
     observe(name, fn, observeOptions) {
       return async (...args) =>
         step(name, () => Promise.resolve(fn(...args)), observeOptions);
+    },
+    async observeOutcome(name, outcomeOptions) {
+      const ctx = runtime.getCurrentContext();
+      if (!ctx) return;
+      let normalized;
+      try {
+        normalized = normalizeObserveOutcomeInput(name, outcomeOptions);
+      } catch {
+        return;
+      }
+      const outcomeId = createStepId();
+      const parentId = runtime.getCurrentStepId();
+      await write({
+        schemaVersion: INSPECTOR_PERSISTED_SCHEMA_VERSION,
+        eventId: outcomeId,
+        runId: ctx.runId,
+        ...(parentId !== undefined ? { parentId } : {}),
+        kind: "OUTCOME",
+        name: normalized.name,
+        status: normalized.status === "failed" ? "error" : "ok",
+        timestamp: new Date(normalized.observedAt).toISOString(),
+        confidence: "explicit",
+        source: { type: "manual", name: "createInspector" },
+        attributes: {
+          legacyEvent: "outcome_observed",
+          outcomeId,
+          outcomeStatus: normalized.status,
+          expectation: normalized.expectation,
+          ...(normalized.method !== undefined ? { method: normalized.method } : {}),
+          ...(normalized.actual !== undefined ? { actual: normalized.actual } : {}),
+          ...(normalized.evidence !== undefined ? { evidence: normalized.evidence } : {}),
+          observedAt: new Date(normalized.observedAt).toISOString(),
+        },
+        ...(normalized.actual !== undefined ? { outputSummary: normalized.actual } : {}),
+      });
     },
     getDiagnostics() {
       return runtime.getDiagnostics();

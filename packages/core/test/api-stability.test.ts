@@ -18,6 +18,7 @@ const ROOT_VALUE_EXPORTS_ALLOWLIST = [
   "inspectRun",
   "maybeInspectRun",
   "observe",
+  "observeOutcome",
   "step",
 ] as const;
 
@@ -33,6 +34,7 @@ describe("core API stability (v2.0 root contract)", () => {
     expect(typeof core.getCurrentCorrelationMetadata).toBe("function");
     expect(typeof core.step).toBe("function");
     expect(typeof core.observe).toBe("function");
+    expect(typeof core.observeOutcome).toBe("function");
     expect(typeof core.step.llm).toBe("function");
     expect(typeof core.step.tool).toBe("function");
   });

@@ -97,6 +97,7 @@ function readResult(events: PersistedInspectEvent[]): TraceReadResult {
         ERROR: 0,
         LOGIC: children.length,
         LOG: 0,
+        OUTCOME: 0,
       },
     },
   };

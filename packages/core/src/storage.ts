@@ -98,6 +98,19 @@ export function validateEvent(event: unknown): event is TraceEvent {
         optionalErrorInfo(event.error)
       );
     }
+    case "outcome_observed": {
+      return (
+        nonEmptyString(event.runId) &&
+        nonEmptyString(event.outcomeId) &&
+        nonEmptyString(event.name) &&
+        nonEmptyString(event.expectation) &&
+        (event.status === "passed" ||
+          event.status === "failed" ||
+          event.status === "unknown" ||
+          event.status === "skipped") &&
+        finiteNumber(event.observedAt)
+      );
+    }
     default:
       return false;
   }

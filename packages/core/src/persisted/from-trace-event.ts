@@ -47,6 +47,8 @@ function nodeIdForEvent(event: TraceEvent): string {
     case "step_started":
     case "step_completed":
       return event.stepId;
+    case "outcome_observed":
+      return event.outcomeId;
     default:
       return "unknown";
   }
@@ -275,6 +277,42 @@ export function traceEventToPersistedInspectEvent(
         attributes,
         error,
       };
+    }
+
+    case "outcome_observed": {
+      const tsObserved = toIsoTimestamp(event.observedAt);
+      const attributes = compactAttributes({
+        legacyEvent: "outcome_observed",
+        outcomeId: event.outcomeId,
+        outcomeStatus: event.status,
+        expectation: event.expectation,
+        method: event.method,
+        actual: event.actual,
+        evidence: event.evidence,
+        observedAt: tsObserved.iso,
+        invalidTimestamp:
+          tsMain.invalidTimestamp || tsObserved.invalidTimestamp ? true : undefined,
+      });
+
+      const out: PersistedInspectEvent = {
+        schemaVersion: "0.2",
+        eventId,
+        runId: event.runId,
+        kind: "OUTCOME",
+        name: event.name,
+        status: event.status === "failed" ? "error" : "ok",
+        timestamp: tsMain.iso,
+        confidence: "explicit",
+        source,
+        attributes,
+      };
+      if (event.parentId !== undefined) {
+        out.parentId = event.parentId;
+      }
+      if (event.actual !== undefined) {
+        out.outputSummary = event.actual;
+      }
+      return out;
     }
 
     default: {

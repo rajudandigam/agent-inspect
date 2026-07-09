@@ -5,6 +5,11 @@ import type {
   InspectRunTree,
 } from "../types/inspect-event.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
+import {
+  extractOutcomesFromPersistedEvents,
+  outcomesMatchingStatus,
+  type ObservedOutcomeStatus,
+} from "../outcomes/index.js";
 
 /**
  * Experimental trace-check finding severity.
@@ -2483,6 +2488,50 @@ export function createBaselineRegressionRule(
       }
 
       return findings;
+    },
+  };
+}
+
+/**
+ * Experimental rule for observed real-world outcomes (v4.4+).
+ */
+export interface ObservedOutcomeRuleOptions {
+  failOn?: readonly ObservedOutcomeStatus[];
+}
+
+export function createObservedOutcomeRule(
+  options: ObservedOutcomeRuleOptions = {},
+): TraceCheckRule {
+  const failOn = options.failOn ?? (["failed"] as const);
+  return {
+    id: "outcome.status",
+    category: "run",
+    defaultSeverity: "error",
+    evaluate(context) {
+      const outcomes = extractOutcomesFromPersistedEvents(context.events);
+      const matching = outcomesMatchingStatus(outcomes, failOn);
+      if (matching.length === 0) return [];
+      return [
+        failFinding(
+          "outcome.status",
+          `Observed outcome count ${matching.length} matched [${failOn.join(", ")}].`,
+          matching.map((outcome) => ({
+            runId: outcome.runId,
+            eventId: outcome.outcomeId,
+            ...(outcome.parentId !== undefined ? { parentId: outcome.parentId } : {}),
+            kind: "OUTCOME",
+            name: outcome.name,
+            status: outcome.status,
+            path: `outcome.${outcome.name}`,
+          })),
+          { failOn },
+          matching.map((outcome) => ({
+            name: outcome.name,
+            status: outcome.status,
+            expectation: outcome.expectation,
+          })),
+        ),
+      ];
     },
   };
 }

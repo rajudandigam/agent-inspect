@@ -145,5 +145,6 @@ export function zeroKinds(): Record<InspectKind, number> {
     ERROR: 0,
     LOGIC: 0,
     LOG: 0,
+    OUTCOME: 0,
   };
 }

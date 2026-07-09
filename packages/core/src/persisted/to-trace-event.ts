@@ -245,6 +245,47 @@ function fromLegacyStepCompleted(event: PersistedInspectEvent): TraceEvent {
   return out;
 }
 
+function fromLegacyOutcomeObserved(event: PersistedInspectEvent): TraceEvent {
+  const attrs = event.attributes ?? {};
+  const observedAtRaw = attrs.observedAt;
+  const observedAt =
+    typeof observedAtRaw === "string"
+      ? Date.parse(observedAtRaw)
+      : typeof observedAtRaw === "number" && Number.isFinite(observedAtRaw)
+        ? observedAtRaw
+        : resolveTimes(event).timestamp;
+  const status = attrs.outcomeStatus;
+  const out: Extract<TraceEvent, { event: "outcome_observed" }> = {
+    schemaVersion: "0.1",
+    event: "outcome_observed",
+    timestamp: observedAt,
+    runId: event.runId,
+    outcomeId:
+      typeof attrs.outcomeId === "string" ? attrs.outcomeId : event.eventId,
+    name: event.name,
+    expectation:
+      typeof attrs.expectation === "string" ? attrs.expectation : event.name,
+    status:
+      status === "passed" ||
+      status === "failed" ||
+      status === "unknown" ||
+      status === "skipped"
+        ? status
+        : "unknown",
+    observedAt,
+  };
+  if (event.parentId !== undefined) out.parentId = event.parentId;
+  if (typeof attrs.method === "string") out.method = attrs.method as never;
+  if (attrs.actual !== undefined) out.actual = attrs.actual;
+  if (event.outputSummary !== undefined) out.actual = event.outputSummary;
+  if (attrs.evidence !== undefined) out.evidence = attrs.evidence;
+  return out;
+}
+
+function fromNativeOutcome(event: PersistedInspectEvent): TraceEvent[] {
+  return [fromLegacyOutcomeObserved(event)];
+}
+
 function fromNativeRun(event: PersistedInspectEvent): TraceEvent[] {
   const { timestamp, startTime, endTime } = resolveTimes(event);
   const runStatus = mapPersistedStatusToRunStatus(event.status);
@@ -359,9 +400,14 @@ export function persistedInspectEventToTraceEvents(
   if (legacyEvent === "run_completed") return [fromLegacyRunCompleted(event)];
   if (legacyEvent === "step_started") return [fromLegacyStepStarted(event)];
   if (legacyEvent === "step_completed") return [fromLegacyStepCompleted(event)];
+  if (legacyEvent === "outcome_observed") return [fromLegacyOutcomeObserved(event)];
 
   if (event.kind === "RUN") {
     return fromNativeRun(event);
+  }
+
+  if (event.kind === "OUTCOME") {
+    return fromNativeOutcome(event);
   }
 
   return fromNativeStep(event);

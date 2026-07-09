@@ -38,6 +38,7 @@ export type {
   ToolFailureRuleOptions,
   ToolOrderingRuleOptions,
   ToolUsageRuleOptions,
+  ObservedOutcomeRuleOptions,
 } from "../checks/index.js";
 
 export {
@@ -46,6 +47,7 @@ export {
   createGuardrailRule,
   createLlmUsageRule,
   createMaxStepDurationRule,
+  createObservedOutcomeRule,
   createRequireCompletedRule,
   createRetrievalRule,
   createRunDepthRule,
