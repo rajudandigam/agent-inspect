@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.3.0
+
+### Minor Changes
+
+- 165b1dc: Add suite and workspace viewer modes with `agent-inspect viewer --suite` and `--workspace` for local read-only evidence inspection.
+
 ## 5.2.0
 
 ### Minor Changes

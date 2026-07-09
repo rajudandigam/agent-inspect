@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 5.3.0
+
+### Minor Changes
+
+- Align the linked package suite to 5.3.0. No behavior changes in this package; keeps published versions consistent with the v5.3 suite viewer release.
+
 ## 5.2.0
 
 ### Minor Changes
