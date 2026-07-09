@@ -21,6 +21,7 @@ import {
 import { assertPathUnderRoot, resolveUnderRoot } from "../path-guards.js";
 import { readStudioRegistryFile, type StudioRegistry } from "../registry.js";
 import { resolveStudioRegistryPath } from "../registry-path.js";
+import { resolveImportDirs, uniqueDestPath } from "./common.js";
 
 export const FILE_DROP_ARCHIVE_DIR = ".imported";
 
@@ -69,36 +70,6 @@ function classifyFile(fileName: string): IngestFileKind | undefined {
 async function hashFile(filePath: string): Promise<string> {
   const data = await readFile(filePath);
   return createHash("sha256").update(data).digest("hex");
-}
-
-function resolveImportDirs(
-  registryPath: string,
-  registry: StudioRegistry,
-): {
-  registryDir: string;
-  fileDropDir: string;
-  ciArtifactsDir: string;
-  bundlesDir: string;
-} {
-  const registryDir = path.dirname(registryPath);
-  const importConfig = registry.import ?? {};
-  const fileDropDir = importConfig.fileDropDir ?? "imports/drop";
-  const ciArtifactsDir = importConfig.ciArtifactsDir ?? "imports/ci";
-  const bundlesDir = importConfig.bundlesDir ?? "imports/bundles";
-
-  return {
-    registryDir,
-    fileDropDir: resolveUnderRoot(registryDir, fileDropDir),
-    ciArtifactsDir: resolveUnderRoot(registryDir, ciArtifactsDir),
-    bundlesDir: resolveUnderRoot(registryDir, bundlesDir),
-  };
-}
-
-function uniqueDestPath(destDir: string, fileName: string, contentHash: string): string {
-  const ext = path.extname(fileName);
-  const base = path.basename(fileName, ext);
-  const shortHash = contentHash.slice(0, 8);
-  return path.join(destDir, `${base}-${shortHash}${ext}`);
 }
 
 async function importOneFile(options: {

@@ -49,6 +49,19 @@ npx agent-inspect studio --ingest file-drop --workspace ./studio-registry.json
 
 Registry `import.fileDropDir` points at the watched folder; allowlisted files (`.jsonl`, `.suite.json`, `.tgz`, `.zip`) copy into `import.ciArtifactsDir` / `import.bundlesDir` with idempotent SQLite bookkeeping. Ingest stays off until you pass `--ingest file-drop` or run `studio import drop`.
 
+**GitHub Actions artifacts** (v6.1+, operator-initiated pull only):
+
+```bash
+export GITHUB_TOKEN=...   # actions:read on your repo
+npx agent-inspect studio import github \
+  --repo owner/name \
+  --run-id 123456789 \
+  --artifact ci-artifacts \
+  --workspace ./studio-registry.json
+```
+
+Downloads the artifact zip into `import.bundlesDir`, records idempotent ingest bookkeeping, and refreshes the studio project index. No maintainer GitHub App or AgentInspect proxy — CI tests use checked-in fixture archives only.
+
 ## Network exposure
 
 - **Default:** localhost only.

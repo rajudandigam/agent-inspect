@@ -11,5 +11,13 @@ export {
   type FileDropImportOptions,
   type FileDropImportResult,
 } from "./ingest/file-drop.js";
+export {
+  downloadGitHubArtifactArchive,
+  importGitHubArtifact,
+  runStudioGitHubArtifactImport,
+  type GitHubArtifactImportOptions,
+  type GitHubArtifactImportResult,
+  type StudioFetch,
+} from "./ingest/github-artifact.js";
 export { openStudioDb, resolveStudioDbPath } from "./db.js";
 export { resolveStudioRegistryPath } from "./registry-path.js";

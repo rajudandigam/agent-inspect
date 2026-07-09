@@ -24,6 +24,16 @@ export interface StudioImportDropOptions {
   cwd?: string;
 }
 
+export interface StudioImportGitHubOptions {
+  workspace?: string;
+  db?: string;
+  repo: string;
+  runId: string;
+  artifact: string;
+  tokenEnv?: string;
+  cwd?: string;
+}
+
 function isModuleNotFound(e: unknown): boolean {
   return (
     e !== null &&
@@ -74,6 +84,47 @@ function summarizeFileDropResult(result: Studio.FileDropImportResult): void {
   }
   for (const error of result.errors) {
     console.error(`[AgentInspect studio] ${error}`);
+  }
+}
+
+function summarizeGitHubResult(result: Studio.GitHubArtifactImportResult): void {
+  if (result.skipped) {
+    console.log(`[AgentInspect studio] github import skipped: ${result.reason ?? "disabled"}`);
+    return;
+  }
+  if (result.imported) {
+    console.log(
+      `[AgentInspect studio] github artifact imported to ${result.destPath ?? "(unknown)"}`,
+    );
+  } else if (result.destPath) {
+    console.log(`[AgentInspect studio] github artifact unchanged: ${result.destPath}`);
+  }
+  for (const warning of result.registryImportWarnings) {
+    console.warn(`[AgentInspect studio] ${warning}`);
+  }
+  for (const error of result.errors) {
+    console.error(`[AgentInspect studio] ${error}`);
+  }
+}
+
+export async function studioImportGitHubCommand(
+  options: StudioImportGitHubOptions,
+): Promise<void> {
+  const mod = await loadStudio();
+  if (!mod) return;
+
+  const result = await mod.runStudioGitHubArtifactImport({
+    ...(options.workspace !== undefined ? { workspacePath: options.workspace } : {}),
+    ...(options.db !== undefined ? { dbPath: options.db } : {}),
+    repo: options.repo,
+    runId: options.runId,
+    artifact: options.artifact,
+    ...(options.tokenEnv !== undefined ? { tokenEnv: options.tokenEnv } : {}),
+    ...(options.cwd !== undefined ? { cwd: options.cwd } : {}),
+  });
+  summarizeGitHubResult(result);
+  if (result.errors.length > 0) {
+    process.exitCode = 1;
   }
 }
 

@@ -23,17 +23,28 @@ export interface StudioRegistryImport {
   enabled?: boolean;
 }
 
+export interface StudioRegistryGitHubIngest {
+  enabled?: boolean;
+  tokenEnv?: string;
+}
+
+export interface StudioRegistryIngest {
+  github?: StudioRegistryGitHubIngest;
+}
+
 export interface StudioRegistry {
   schemaVersion: typeof STUDIO_REGISTRY_SCHEMA_VERSION;
   name: string;
   projects: StudioRegistryProject[];
   import?: StudioRegistryImport;
+  ingest?: StudioRegistryIngest;
 }
 
 export interface StudioRegistryParseResult {
   ok: boolean;
   registry?: StudioRegistry;
   errors: string[];
+  warnings: string[];
 }
 
 const MAX_REGISTRY_BYTES = 256 * 1024;
@@ -47,7 +58,7 @@ export { isSafeRelativePath };
 export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
   const errors: string[] = [];
   if (!isPlainObject(input)) {
-    return { ok: false, errors: ["registry must be a JSON object"] };
+    return { ok: false, errors: ["registry must be a JSON object"], warnings: [] };
   }
   if (input.schemaVersion !== STUDIO_REGISTRY_SCHEMA_VERSION) {
     errors.push(`schemaVersion must be "${STUDIO_REGISTRY_SCHEMA_VERSION}"`);
@@ -123,7 +134,45 @@ export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
     }
   }
 
-  if (errors.length > 0) return { ok: false, errors };
+  let ingestConfig: StudioRegistryIngest | undefined;
+  const ingestWarnings: string[] = [];
+  if (input.ingest !== undefined) {
+    if (!isPlainObject(input.ingest)) {
+      errors.push("ingest must be an object");
+    } else {
+      ingestConfig = {};
+      if (input.ingest.github !== undefined) {
+        if (!isPlainObject(input.ingest.github)) {
+          errors.push("ingest.github must be an object");
+        } else {
+          const github: StudioRegistryGitHubIngest = {};
+          if (input.ingest.github.enabled !== undefined) {
+            if (typeof input.ingest.github.enabled !== "boolean") {
+              errors.push("ingest.github.enabled must be a boolean");
+            } else {
+              github.enabled = input.ingest.github.enabled;
+            }
+          }
+          if (input.ingest.github.tokenEnv !== undefined) {
+            const tokenEnv = String(input.ingest.github.tokenEnv).trim();
+            if (!/^[A-Z][A-Z0-9_]*$/.test(tokenEnv)) {
+              errors.push("ingest.github.tokenEnv must be an uppercase env var name");
+            } else {
+              github.tokenEnv = tokenEnv;
+            }
+          }
+          ingestConfig.github = github;
+        }
+      }
+      for (const key of Object.keys(input.ingest)) {
+        if (key !== "github") {
+          ingestWarnings.push(`ignored unknown ingest key: ${key}`);
+        }
+      }
+    }
+  }
+
+  if (errors.length > 0) return { ok: false, errors, warnings: ingestWarnings };
 
   return {
     ok: true,
@@ -132,8 +181,10 @@ export function parseStudioRegistry(input: unknown): StudioRegistryParseResult {
       name: String(input.name).trim(),
       projects,
       ...(importConfig ? { import: importConfig } : {}),
+      ...(ingestConfig ? { ingest: ingestConfig } : {}),
     },
     errors: [],
+    warnings: ingestWarnings,
   };
 }
 
@@ -143,13 +194,18 @@ export async function readStudioRegistryFile(
   try {
     const raw = await readFile(filePath, "utf8");
     if (raw.length > MAX_REGISTRY_BYTES) {
-      return { ok: false, path: filePath, errors: ["registry file exceeds size limit"] };
+      return {
+        ok: false,
+        path: filePath,
+        errors: ["registry file exceeds size limit"],
+        warnings: [],
+      };
     }
     const parsed = parseStudioRegistry(JSON.parse(raw) as unknown);
     return { ...parsed, path: filePath };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, path: filePath, errors: [message] };
+    return { ok: false, path: filePath, errors: [message], warnings: [] };
   }
 }
 

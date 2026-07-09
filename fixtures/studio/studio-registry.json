@@ -13,5 +13,11 @@
     "bundlesDir": "imports/bundles",
     "fileDropDir": "imports/drop",
     "enabled": false
+  },
+  "ingest": {
+    "github": {
+      "enabled": false,
+      "tokenEnv": "GITHUB_TOKEN"
+    }
   }
 }
