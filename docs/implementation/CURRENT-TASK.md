@@ -6,13 +6,13 @@
 executionMode: autonomous-release-train
 currentTrain: v6.0.0
 trainStatus: ready
-currentChunk: v6.0-0-rfc
+currentChunk: v6.0-1-scaffold
 scope: Self-hosted Studio — then v6.1 → v6.4 (v7.0 NOT scheduled)
 authority:
   - AGENTS.md
   - docs/implementation/release-trains/V6.0.0-EXECUTION-PLAN.md
   - docs/implementation/ROADMAP_V3_5_TO_V7.md (§ v6.0.0 only; do not reread full roadmap)
-nextChunk: v6.0-0 Studio RFC
+nextChunk: v6.0-1 Studio package scaffold
 stopAfter: v6.4.0 published unless blocked by manual gate
 ```
 
@@ -25,13 +25,13 @@ stopAfter: v6.4.0 published unless blocked by manual gate
 | 5.3.0 | Suite Viewer (`agent-inspect viewer --suite/--workspace`) | 28991868139 |
 | 5.4.0 | PM/QA suite templates (`suite init --template`) | 28993299414 |
 
-All **17 linked packages** live on npm @ **5.4.0**. Git @ `51838a2` on `main`.
+All **17 linked packages** live on npm @ **5.4.0**. Git @ `d16a344` on `main`.
 
-## Next work: v6.0.0 Self-hosted Studio
+## Completed: v6.0-0 Studio RFC
 
-**Goal:** `agent-inspect studio` — local/self-hosted read-only analyzer; new package `@agent-inspect/studio` (explicit install).
+`docs/proposals/SELF-HOSTED-STUDIO-V6.0.md` — architecture, security, self-host boundary.
 
-**First chunk (`v6.0-0`):** Studio RFC in `docs/proposals/` per [V6.0.0-EXECUTION-PLAN.md](./release-trains/V6.0.0-EXECUTION-PLAN.md).
+## Next work: v6.0-1 Studio package scaffold
 
 **Manual gates (stop and report, do not bypass):**
 
