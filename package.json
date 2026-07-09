@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "5.5.0",
+  "version": "6.0.0",
   "license": "MIT",
   "type": "module",
   "description": "Trace, check, and safely share TypeScript AI-agent runs locally — no account, no upload, metadata-only by default",

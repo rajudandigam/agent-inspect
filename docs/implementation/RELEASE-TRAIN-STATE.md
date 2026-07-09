@@ -6,7 +6,7 @@
 
 ```yaml
 baselineVersion: "5.4.0"
-publishedVersion: "5.4.0 (17 packages; studio pending first publish)"
+publishedVersion: "6.0.0 (pending CI publish; studio first-publish needs Trusted Publishing)"
 currentTrain: "v6.0.0"
 trainStatus: "release-ready"
 executionMode: "autonomous-release-train"
@@ -36,7 +36,7 @@ pendingManualGate:
   - "@agent-inspect/studio first npm publication + Trusted Publishing (maintainer)"
   - "VS Code Marketplace first publish (packages/vscode)"
   - "Studio auth / non-localhost binding security review"
-lastConfirmedCommit: "18ffb81"
+lastConfirmedCommit: "7afe306"
 lastPublishRun: "28993299414 (workflow_dispatch, success)"
 lastValidationLevel: "full gate green pre-6.0.0 release"
 updatedAt: "2026-07-09"

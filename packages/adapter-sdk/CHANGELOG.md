@@ -1,11 +1,11 @@
 # @agent-inspect/adapter-sdk
 
-## 5.5.0
+## 6.0.0
 
 ### Patch Changes
 
 - Updated dependencies
-  - agent-inspect@5.5.0
+  - agent-inspect@6.0.0
 
 ## 5.4.0
 
