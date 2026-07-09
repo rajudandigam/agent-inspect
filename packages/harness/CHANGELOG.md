@@ -1,5 +1,12 @@
 # @agent-inspect/harness
 
+## 6.3.0
+
+### Patch Changes
+
+- Updated dependencies [4850e38]
+  - agent-inspect@6.3.0
+
 ## 6.2.0
 
 ### Patch Changes

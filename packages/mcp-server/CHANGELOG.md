@@ -1,5 +1,16 @@
 # @agent-inspect/mcp-server
 
+## 6.3.0
+
+### Minor Changes
+
+- 4850e38: MCP coding-agent workflow tools: summarize failures, decision notes, failed observations, and share-safe in-memory bundles.
+
+### Patch Changes
+
+- Updated dependencies [4850e38]
+  - agent-inspect@6.3.0
+
 ## 6.2.0
 
 ### Patch Changes
