@@ -42,19 +42,20 @@ Optional: `npx agent-inspect serve --dir .agent-inspect` for browser viewer.
 ## Beat 4 — Verify (30s)
 
 ```bash
-npx agent-inspect check .agent-inspect/*.jsonl --require-completed
+npx agent-inspect check <run-id> --dir .agent-inspect
 ```
 
-Mention `--detect-stalls` and `--max-step-duration 30s` for long-running agents.
+Optional flags: `--require-completed`, `--detect-stalls`, `--max-step-duration 30s`.
 
 ## Beat 5 — Share safely (30s)
 
 ```bash
-npx agent-inspect redact .agent-inspect/*.jsonl --profile share -o safe.jsonl
-npx agent-inspect verify-safe safe.jsonl
+npx agent-inspect redact <run-id> --dir .agent-inspect --profile share -o safe.jsonl
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect
+# or: npx agent-inspect verify-safe safe.jsonl
 ```
 
-"Redacted copy is safe to attach to a GitHub issue or Slack."
+"Redacted / verified-safe artifacts are safe to attach to a GitHub issue or Slack."
 
 ## Beat 6 — Fix and diff (optional, 30s)
 

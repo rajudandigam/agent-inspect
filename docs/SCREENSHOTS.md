@@ -1,6 +1,6 @@
 # Visual demos
 
-Curated terminal recordings and static diagrams for AgentInspect **3.5.x**. They show what the local trace workbench captures and how to inspect it — without a hosted dashboard or vendor upload.
+Curated terminal recordings and static diagrams for AgentInspect **6.7.x**. They show local capture → inspect → enforce → verify/bundle — without a maintainer-hosted dashboard or vendor upload.
 
 **Synthetic output only:** demos use committed [fixtures](../fixtures/README.md), [examples](../examples/README.md), and recipes. No external LLM calls or API keys.
 
@@ -12,21 +12,21 @@ Curated terminal recordings and static diagrams for AgentInspect **3.5.x**. They
 
 ---
 
-## README brand assets (v3.5.4)
+## README brand assets (6.7.x)
 
 | Asset | Use |
 | ----- | --- |
 | [agent-inspect-logo.svg](assets/agent-inspect-logo.svg) | Light-mode wordmark |
 | [agent-inspect-logo-dark.svg](assets/agent-inspect-logo-dark.svg) | Dark-mode wordmark |
-| [readme-product-loop.svg](assets/readme-product-loop.svg) | Capture → inspect → check → redact |
+| [readme-product-loop.svg](assets/readme-product-loop.svg) | Capture → understand → enforce → verify/bundle → local/Studio |
 
 Root README embeds the logo and product-loop SVG only. Terminal GIFs stay below.
 
 ---
 
-## Adoption demo (v3.5.2)
+## Adoption demo (6.7.x)
 
-Deterministic broken-agent flow — recommended for live demos and Show HN rehearsal.
+Deterministic broken-agent flow — recommended for live demos.
 
 **Run:**
 
@@ -34,7 +34,8 @@ Deterministic broken-agent flow — recommended for live demos and Show HN rehea
 cd examples/starters/broken-agent-debugging
 pnpm install && pnpm start
 npx agent-inspect report <run-id> --dir .agent-inspect
-npx agent-inspect redact .agent-inspect/*.jsonl --profile share -o safe.jsonl
+npx agent-inspect redact <run-id> --dir .agent-inspect --profile share -o safe.jsonl
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect
 ```
 
 **GIF status:** re-record optional; use [error-handling.gif](assets/demos/error-handling.gif) as b-roll until a dedicated broken-agent GIF exists.
