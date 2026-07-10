@@ -1,6 +1,7 @@
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -15,7 +16,7 @@ import {
 } from "../src/sessions.js";
 
 const fixturesRoot = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
+  path.dirname(fileURLToPath(import.meta.url)),
   "../../../fixtures/sessions",
 );
 

@@ -167,10 +167,13 @@ jobs:
 export async function planInit(options: InitCommandOptions = {}): Promise<InitPlan> {
   const framework = normalizeFramework(options.framework);
   const cwd = path.resolve(options.cwd ?? process.cwd());
+  // Planned-file paths are a display/JSON contract; keep them POSIX-style on
+  // every platform like the other candidates (filesystem access still goes
+  // through path.join(cwd, rel), which accepts forward slashes on Windows).
   const demoPath =
     framework === "custom"
-      ? path.join("examples", "agent-inspect-demo.mjs")
-      : path.join("examples", `agent-inspect-${framework}-demo.mjs`);
+      ? "examples/agent-inspect-demo.mjs"
+      : `examples/agent-inspect-${framework}-demo.mjs`;
 
   const candidates: Array<{ rel: string; content: string }> = [
     { rel: CONFIG_FILE, content: configTemplate(framework) },

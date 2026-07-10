@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
@@ -9,7 +10,7 @@ import { validateEvent } from "../src/storage.js";
 describe("parseTraceJsonl", () => {
   it("reads v0.1 fixtures unchanged", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -23,7 +24,7 @@ describe("parseTraceJsonl", () => {
 
   it("normalizes v0.2 fixtures to trace events", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v0.2/llm-tokens-and-streaming.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -46,7 +47,7 @@ describe("parseTraceJsonl", () => {
 
   it("normalizes v1.0 fixtures to trace events and preserves persisted rows", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v1.0/manual-basic.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -95,7 +96,7 @@ describe("parseTraceJsonl", () => {
 
   it("preserves source-row order across v0.1, v0.2, and v1.0 rows", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "fixtures/mixed-v0.1-v0.2-v1.0-order.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -132,7 +133,7 @@ describe("parseTraceJsonl", () => {
 
   it("preserves source-row order and adjacent one-to-many expansion", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "fixtures/mixed-v0.1-v0.2-order.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");

@@ -1,3 +1,8 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -297,5 +302,31 @@ describe("@agent-inspect/eval", () => {
     expect(result.ok).toBe(false);
     expect(result.status).toBe("error");
     expect(result.diagnostics[0]?.code).toBe("AI_EVAL_UNSUPPORTED_FORMAT");
+  });
+
+  it("accepts a file: URL input on every platform", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-eval-url-"));
+    try {
+      const file = path.join(dir, "run.jsonl");
+      const lines = [
+        '{"schemaVersion":"0.1","event":"run_started","timestamp":1,"runId":"url-run","name":"url-run","startTime":1}',
+        '{"schemaVersion":"0.1","event":"run_completed","timestamp":2,"runId":"url-run","status":"success","endTime":2,"durationMs":1}',
+      ];
+      await writeFile(file, lines.join("\n") + "\n", "utf8");
+
+      const result = await evalRun(
+        { trace: pathToFileURL(file) },
+        { checks: [checks.maxDurationMs(2000)] },
+      );
+
+      // A file: URL must resolve to the same trace a plain path would; a
+      // POSIX-only conversion produces an unreadable path and a diagnostic.
+      expect(result.diagnostics).toEqual([]);
+      expect(result.format).toBe("agent-inspect-v0.1-jsonl");
+      expect(result.runId).toBe("url-run");
+      expect(result.ok).toBe(true);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });

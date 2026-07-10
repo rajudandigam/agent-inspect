@@ -1,6 +1,7 @@
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -20,7 +21,7 @@ function jsonl(...lines: string[]): string {
   return lines.join("\n") + "\n";
 }
 
-const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 describe("CLI stability (v1.0 Pass 1)", () => {
   let traceDir: string;

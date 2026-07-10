@@ -1,4 +1,5 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
@@ -6,11 +7,11 @@ import { extractMetadata } from "../src/trace-metadata.js";
 import { buildTraceStats } from "../src/stats.js";
 
 const fixturesDir = path.join(
-  path.dirname(new URL(import.meta.url).pathname),
+  path.dirname(fileURLToPath(import.meta.url)),
   "../../../fixtures/traces",
 );
 const fixturesV02Dir = path.join(
-  path.dirname(new URL(import.meta.url).pathname),
+  path.dirname(fileURLToPath(import.meta.url)),
   "../../../fixtures/traces-v0.2",
 );
 

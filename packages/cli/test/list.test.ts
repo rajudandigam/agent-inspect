@@ -1,6 +1,7 @@
 import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -290,7 +291,7 @@ describe("list", () => {
 
   it("lists v0.2 metadata from the embedded run", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
     );
     await cp(fixture, path.join(traceDir, "dual-format-parity.jsonl"));
