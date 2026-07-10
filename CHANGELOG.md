@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-Presentation and documentation alignment for the 6.7.x launch candidate (public README, task guides, package guides, website, demos, validation tooling). No runtime product expansion. See the upcoming **6.7.2** release notes after Version Packages.
+## 6.7.2
+
+### Patch Changes
+
+- 9c1f54c: Product presentation patch: rebuild README/docs/package guides/website for the 6.7.x launch candidate, fix public CLI command targets, add docs/link/public-truth validation, and slim the public roadmap. Docs and presentation only — no runtime product expansion.
 
 ## 6.7.1
 

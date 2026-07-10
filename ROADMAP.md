@@ -12,12 +12,12 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 ## Current — 6.7.x adoption freeze
 
-**Current release on npm:** **6.7.1** (eighteen fixed-group public packages). Persisted schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#671).
+**Current release on npm:** **6.7.2** (eighteen fixed-group public packages). Persisted schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#672).
 
 | Area | Status |
 | ---- | ------ |
 | Technical launch candidate | Shipped as **6.7.0** (planned v6.8 scope combined into that release) |
-| Presentation / docs patch | **6.7.2** train — align public surfaces with the shipped product |
+| Presentation / docs patch | Shipped as **6.7.2** |
 | External pilot evidence | Pending — [docs/implementation/PRE-V7-ADOPTION-EVIDENCE.md](docs/implementation/PRE-V7-ADOPTION-EVIDENCE.md) |
 | Distinct `6.8.0` | Not published; not scheduled without pilot evidence |
 | **v7** | Conditional — **not scheduled** |

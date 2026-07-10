@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "6.7.1",
+  "version": "6.7.2",
   "license": "MIT",
   "type": "module",
   "description": "Debug, regression-test, and safely share TypeScript AI-agent behavior locally — no account, no default upload, metadata-only by default",

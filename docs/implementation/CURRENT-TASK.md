@@ -4,9 +4,8 @@
 executionMode: autonomous-release-train
 currentTrain: v6.7.2-product-presentation
 trainStatus: active
-currentChunk: 6.7.2-9
-nextAction: Release readiness gate → Version Packages → publish verify → return to adoption freeze
+currentChunk: 6.7.2-9-publish
+nextAction: Push Version Packages 6.7.2; verify npm publish; return to adoption freeze
 ```
 
-Active plan: [release-trains/V6.7.2-DOCS-PRESENTATION-EXECUTION-PLAN.md](release-trains/V6.7.2-DOCS-PRESENTATION-EXECUTION-PLAN.md)  
-Readiness: [release-trains/V6.7.2-RELEASE-READINESS.md](release-trains/V6.7.2-RELEASE-READINESS.md)
+6.7.2 Version Packages prepared locally (fixed group aligned). External pilot evidence still pending. **v7 not scheduled.**
