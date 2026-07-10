@@ -1,26 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="140" viewBox="0 0 760 140" role="img" aria-label="AgentInspect product loop: capture, inspect, check, redact">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="150" viewBox="0 0 900 150" role="img" aria-label="AgentInspect evidence loop: capture or import, understand causality, enforce expectations, verify and bundle, review locally or in customer-owned Studio">
   <defs>
     <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
     </marker>
   </defs>
-  <rect width="760" height="140" fill="#ffffff"/>
+  <rect width="900" height="150" fill="#ffffff"/>
   <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif">
-    <rect x="16" y="28" width="150" height="72" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
-    <text x="91" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#312e81">Capture</text>
-    <text x="91" y="78" text-anchor="middle" font-size="11" fill="#475569">run, tools, adapters</text>
-    <path d="M174 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
-    <rect x="210" y="28" width="150" height="72" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
-    <text x="285" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#064e3b">Inspect</text>
-    <text x="285" y="78" text-anchor="middle" font-size="11" fill="#475569">tree, report, diff</text>
-    <path d="M368 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
-    <rect x="404" y="28" width="150" height="72" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
-    <text x="479" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#78350f">Check</text>
-    <text x="479" y="78" text-anchor="middle" font-size="11" fill="#475569">CI, eval, stalls</text>
-    <path d="M562 64h28" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
-    <rect x="598" y="28" width="146" height="72" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
-    <text x="671" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Redact</text>
-    <text x="671" y="78" text-anchor="middle" font-size="11" fill="#475569">share-safe artifact</text>
-    <text x="380" y="124" text-anchor="middle" font-size="12" fill="#64748b">local JSONL only - no account - no upload</text>
+    <rect x="10" y="24" width="150" height="78" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="85" y="52" text-anchor="middle" font-size="13" font-weight="600" fill="#312e81">Capture / import</text>
+    <text x="85" y="72" text-anchor="middle" font-size="10" fill="#475569">JSONL, adapters,</text>
+    <text x="85" y="86" text-anchor="middle" font-size="10" fill="#475569">logs, standards</text>
+    <path d="M168 63h22" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="198" y="24" width="150" height="78" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <text x="273" y="52" text-anchor="middle" font-size="13" font-weight="600" fill="#064e3b">Understand</text>
+    <text x="273" y="72" text-anchor="middle" font-size="10" fill="#475569">tree, timeline,</text>
+    <text x="273" y="86" text-anchor="middle" font-size="10" fill="#475569">report, diff</text>
+    <path d="M356 63h22" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="386" y="24" width="150" height="78" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="461" y="52" text-anchor="middle" font-size="13" font-weight="600" fill="#78350f">Enforce</text>
+    <text x="461" y="72" text-anchor="middle" font-size="10" fill="#475569">checks, contracts,</text>
+    <text x="461" y="86" text-anchor="middle" font-size="10" fill="#475569">suites, CI gates</text>
+    <path d="M544 63h22" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="574" y="24" width="150" height="78" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+    <text x="649" y="52" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Verify / bundle</text>
+    <text x="649" y="72" text-anchor="middle" font-size="10" fill="#475569">redact, verify-safe,</text>
+    <text x="649" y="86" text-anchor="middle" font-size="10" fill="#475569">offline bundle</text>
+    <path d="M732 63h22" stroke="#64748b" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="762" y="24" width="128" height="78" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="826" y="52" text-anchor="middle" font-size="13" font-weight="600" fill="#4c1d95">Review</text>
+    <text x="826" y="72" text-anchor="middle" font-size="10" fill="#475569">local or Studio</text>
+    <text x="826" y="86" text-anchor="middle" font-size="10" fill="#475569">Beta (yours)</text>
+    <text x="450" y="132" text-anchor="middle" font-size="12" fill="#64748b">No account · no default upload · metadata-only by default · optional customer-owned Studio</text>
   </g>
 </svg>
