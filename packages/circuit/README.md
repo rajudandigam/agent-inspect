@@ -2,6 +2,9 @@
 
 Deterministic analyzers for loops, retries, stalls, and timeouts in traces.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Detect agent loops or excessive retries locally
@@ -42,9 +45,10 @@ Circuit/loop analysis helpers (see package exports).
 
 - [Performance](https://github.com/rajudandigam/agent-inspect/blob/main/docs/PERFORMANCE.md)
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

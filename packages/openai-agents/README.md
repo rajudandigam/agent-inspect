@@ -2,6 +2,9 @@
 
 OpenAI Agents JS tracing processor → local AgentInspect traces.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - You run agents with [`@openai/agents`](https://github.com/openai/openai-agents-js)
@@ -63,9 +66,10 @@ Use **`setTraceProcessors` replacement** for local-only mode. Avoid `addTracePro
 - **Duplicate export:** Using `addTraceProcessor` keeps SDK default exporter — use replacement mode for local-only
 - **Handoffs/sessions:** Mapped to run metadata; see docs for session IDs
 
+
 ## Version
 
-`agent-inspect@3.5.x` · OpenAI Agents `^0.12.0`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

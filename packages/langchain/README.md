@@ -2,6 +2,9 @@
 
 LangChain callback handler → local AgentInspect traces.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - LangChain or LangGraph apps using `@langchain/core` callbacks
@@ -60,9 +63,10 @@ const handler = new AgentInspectCallback({
 - **Empty trace:** Set `persist: true` and ensure callbacks are attached to the runnable
 - **LangGraph:** Route through LangChain callback surfaces where possible
 
+
 ## Version
 
-`agent-inspect@3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

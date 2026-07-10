@@ -2,10 +2,13 @@
 
 Optional, disposable **local SQLite index** for faster queries over [AgentInspect](https://github.com/rajudandigam/agent-inspect) JSONL traces.
 
-- **Experimental** (added in v4.1).
-- **Local-only:** no network, no upload.
+
+**Support level:** Beta — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
+- **Local-only:** no network, no default upload.
 - **JSONL stays the source of truth.** The index is a derived cache and is always safe to delete.
 - **Never mutates trace files.**
+- Cross-platform native install is only claimed where tested — see adoption evidence / pack smoke.
 
 ## Install
 
@@ -51,6 +54,7 @@ await cleanIndex(resolveIndexDbPath(".agent-inspect/runs"));
 - No SQLite dependency in `agent-inspect` core or root — it lives only here.
 - No vector/semantic search, no daemon, no remote service.
 
-## Version ownership
 
-Linked to the `agent-inspect` release line; published at the same version.
+## Version
+
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.

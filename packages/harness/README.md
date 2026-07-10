@@ -2,6 +2,9 @@
 
 Fixture runner for tracing real projects locally (bootstrap → invoke → shutdown).
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - You have a real app (NestJS, Express, etc.) and want deterministic fixture runs
@@ -43,7 +46,7 @@ await runner.runTarget("chat", { fixturePath: "fixtures/hello.json" });
 ## Privacy
 
 - Traces written locally via `agent-inspect`
-- No upload
+- No default upload to AgentInspect
 
 ## API
 
@@ -67,9 +70,10 @@ await runner.runTarget("chat", { fixturePath: "fixtures/hello.json" });
 - **bootstrap_failed:** Check app module imports and env vars (use fixtures, not prod secrets)
 - **fixture_read_failed:** Validate JSON fixture path
 
+
 ## Version
 
-`agent-inspect@3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

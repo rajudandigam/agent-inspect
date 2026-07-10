@@ -2,6 +2,9 @@
 
 Vercel AI SDK telemetry → local AgentInspect traces (metadata-only by default).
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - You use `generateText`, `streamText`, or tool calls via the [AI SDK](https://sdk.vercel.ai/)
@@ -74,9 +77,10 @@ const result = await generateText({
 - **No trace events:** Ensure `experimental_telemetry.isEnabled: true` and handlers are spread
 - **Preview mode warning:** `capture: "preview"` is not fully implemented; use `metadata-only`
 
+
 ## Version
 
-Aligned with `agent-inspect@3.5.x`. Requires AI SDK v6.
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

@@ -2,6 +2,9 @@
 
 Optional terminal UI for `agent-inspect view --tui`.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Interactive local trace browsing in the terminal
@@ -39,9 +42,10 @@ npx agent-inspect view <run-id> --tui
 - Experimental UX; prefer `view` / VS Code for large traces
 - Terminal compatibility varies (iTerm, VS Code terminal, etc.)
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

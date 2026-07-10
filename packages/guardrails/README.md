@@ -2,6 +2,9 @@
 
 Deterministic local guardrail rules over traces and metadata.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Pre-share checks (tool allowlists, metadata bounds)
@@ -46,9 +49,10 @@ Combine with `npx agent-inspect check`
 
 - Rules are deterministic — they do not call LLMs
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

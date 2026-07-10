@@ -2,6 +2,9 @@
 
 MCP **client** tool-call tracing for AgentInspect (list/call lifecycle).
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Your agent uses an MCP client and you need local tool-call steps
@@ -48,9 +51,10 @@ await traced.callTool({ name: "search", arguments: {} });
 
 - **Missing list_tools steps:** Ensure client goes through wrapped instance
 
+
 ## Version
 
-`agent-inspect@3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

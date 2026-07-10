@@ -2,6 +2,9 @@
 
 Deterministic local eval rules over AgentInspect traces (no LLM judge by default).
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - CI checks on trace shape, tool usage, completion status
@@ -54,9 +57,10 @@ console.log(result.summary);
 - **AI_EVAL_TRACE_UNREADABLE:** Path or format wrong — use `.jsonl` persisted traces
 - **Rule failures:** See `result.findings` for evidence paths
 
+
 ## Version
 
-`agent-inspect@3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

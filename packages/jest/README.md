@@ -2,6 +2,9 @@
 
 Jest reporter — local trace artifacts on failed tests.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Jest test suites with AgentInspect-instrumented agents
@@ -43,17 +46,24 @@ Jest reporter class / factory (see package types).
 
 `npx agent-inspect report` on uploaded CI artifacts
 
+## Limitations
+
+- This package is a **reporter** (failure artifacts). It does **not** ship Jest TraceContract matchers.
+- Use `agent-inspect check` / TraceContract APIs for trajectory assertions.
+
 ## Docs
 
 - [CI artifacts](https://github.com/rajudandigam/agent-inspect/blob/main/docs/CI-ARTIFACTS.md)
+- [TRACE-CONTRACTS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/TRACE-CONTRACTS.md)
 
 ## Troubleshooting
 
 - **Reporter not loaded:** Check Jest `reporters` array syntax for your Jest version
 
+
 ## Version
 
-`agent-inspect@3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

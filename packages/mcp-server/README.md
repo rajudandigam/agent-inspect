@@ -2,6 +2,9 @@
 
 Read-only MCP server exposing local trace listings (no tool invocation, no mutation).
 
+
+**Support level:** Preview — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Let MCP-compatible clients **read** trace metadata from disk
@@ -27,8 +30,14 @@ npx agent-inspect-mcp-server --dir .agent-inspect
 ## Privacy
 
 - Reads local trace directory only
-- No unredacted payload export by default
-- No trace mutation
+- Tool results go through a share-profile redaction / size boundary
+- Exposes configured local evidence to the **connected MCP client** — treat that client as a trust boundary
+- No trace mutation; no agent tool invocation
+
+## Limitations
+
+- Preview surface — tool catalog and bounds may evolve
+- Not a gateway or remote upload service
 
 ## API
 
@@ -47,9 +56,10 @@ Prefer `agent-inspect list` / `view` for humans; MCP server for tool integration
 - **Empty resources:** Confirm `--dir` points at JSONL traces
 - **Security:** Do not expose server beyond localhost without redaction review
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

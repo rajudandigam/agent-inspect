@@ -2,6 +2,9 @@
 
 Vitest reporter — failed tests emit local trace artifacts; passing tests stay quiet.
 
+
+**Support level:** Supported — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Vitest suites that run instrumented agents
@@ -37,7 +40,7 @@ export default defineConfig({
 ## Privacy
 
 - Writes traces locally on failure only (by default)
-- No upload
+- No default upload to AgentInspect
 
 ## API
 
@@ -47,18 +50,25 @@ Default export: Vitest reporter factory.
 
 After failure: `npx agent-inspect report <run-id>`
 
+## Limitations
+
+- This package is a **reporter** (failure artifacts). It does **not** ship Vitest TraceContract matchers such as `expectTrace(...).toSatisfyTraceContract`.
+- Use `agent-inspect check` / TraceContract APIs for trajectory assertions.
+
 ## Docs
 
 - [CI artifacts](https://github.com/rajudandigam/agent-inspect/blob/main/docs/CI-ARTIFACTS.md)
+- [TRACE-CONTRACTS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/TRACE-CONTRACTS.md)
 
 ## Troubleshooting
 
 - **No artifact:** Ensure trace was written during test and reporter `traceDir` matches
 - **Original errors preserved:** Reporter does not swallow Vitest failures
 
+
 ## Version
 
-`agent-inspect@3.5.x` · Vitest `^2.1.0`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

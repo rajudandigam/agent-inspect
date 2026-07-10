@@ -2,6 +2,9 @@
 
 Author third-party AgentInspect framework adapters with conformance helpers.
 
+
+**Support level:** Beta — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Building a community or internal adapter package
@@ -64,9 +67,10 @@ captures a local metadata-only trace, and runs `runAdapterConformance`.
 5. Run the privacy checklist and review exported artifacts before sharing
 6. Use the extension submission template before proposing registry inclusion
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

@@ -2,6 +2,9 @@
 
 Deterministic JSON/trace redaction with local, share, and strict profiles.
 
+
+**Support level:** Stable — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Before attaching traces to issues, Slack, or PRs
@@ -56,9 +59,10 @@ console.log(result.value, result.findings);
 - **Still sensitive keys:** Use `strict` profile or custom detectors
 - **Large files:** Redact copies; keep originals local
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 

@@ -2,6 +2,9 @@
 
 Localhost-only read-only trace viewer (not a hosted dashboard).
 
+
+**Support level:** Beta — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+
 ## When to use
 
 - Quick browser UI for a trace directory on your machine
@@ -27,7 +30,7 @@ npx agent-inspect view <run-id> --serve
 ## Privacy
 
 - Binds to localhost; reads local files only
-- No upload
+- No default upload to AgentInspect
 
 ## API
 
@@ -45,9 +48,10 @@ Viewer server factory (see package exports).
 
 - **Port in use:** Pass alternate port if supported by CLI flags
 
+
 ## Version
 
-`3.5.x`
+Part of the fixed AgentInspect release line. See the npm badge / package manifest for the current version.
 
 ## License
 
