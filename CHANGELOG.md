@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.7.1
+
+### Patch Changes
+
+- dea3d91: Release tooling and public-truth patch: Changesets fixed group for all 18 public packages, linked-versions CI check, README/ROADMAP aligned to 6.7.x launch candidate, MCP server initialize version from package metadata.
+
 ## 6.7.0
 
 ### Minor Changes

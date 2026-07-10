@@ -1,5 +1,12 @@
 # @agent-inspect/adapter-sdk
 
+## 6.7.1
+
+### Patch Changes
+
+- Updated dependencies [dea3d91]
+  - agent-inspect@6.7.1
+
 ## 6.7.0
 
 ### Patch Changes

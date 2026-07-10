@@ -4,10 +4,8 @@
 executionMode: autonomous-release-train
 currentTrain: pre-v7-completion-from-current-6.7
 trainStatus: blocked-on-external-pilot
-currentChunk: 6.7.1-R
-nextAction: 6.7.1 release readiness and patch changeset
+currentChunk: 6.7.1-publish
+nextAction: Push Version Packages 6.7.1; verify npm publish; prepare pilot kit; stop before v7
 ```
 
-Pre-v7 technical work published through **6.7.0**. Reconciliation audit complete. External pilot/design-partner evidence pending. v7 not scheduled.
-
-Active plan: [release-trains/V6.7.1-EXECUTION-PLAN.md](release-trains/V6.7.1-EXECUTION-PLAN.md)
+6.7.1 Version Packages prepared locally (fixed group aligned). External pilot/design-partner evidence still pending. **v7 not scheduled.**

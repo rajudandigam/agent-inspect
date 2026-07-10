@@ -1,5 +1,14 @@
 # @agent-inspect/eval
 
+## 6.7.1
+
+### Patch Changes
+
+- Updated dependencies [dea3d91]
+  - agent-inspect@6.7.1
+  - @agent-inspect/guardrails@6.7.1
+  - @agent-inspect/circuit@6.7.1
+
 ## 6.7.0
 
 ### Patch Changes

@@ -8,9 +8,9 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** **6.7.0** — eighteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, index-sqlite, studio, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#670).
+**Current release on npm:** **6.7.1** — eighteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, index-sqlite, studio, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#671).
 
-**Current (pre-v7):** Technical launch candidate shipped at **6.7.0**. Train is in **6.7.x adoption freeze** — security, correctness, compatibility, packaging, and documentation fixes only. External pilot/design-partner evidence is pending before any distinct `6.8.0` publication. Canonical maintainer roadmap: [docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md](docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md).
+**Current (pre-v7):** Technical launch candidate line is **6.7.x** (LC scope shipped in 6.7.0; 6.7.1 is release-tooling/public-truth). Train is in **6.7.x adoption freeze** — security, correctness, compatibility, packaging, and documentation fixes only. External pilot/design-partner evidence is pending before any distinct `6.8.0` publication. Canonical maintainer roadmap: [docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md](docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md).
 
 **Later:** v7 remains **conditional** on adoption gates — not scheduled. See [docs/implementation/release-trains/V7.0.0-READINESS-ASSESSMENT.md](docs/implementation/release-trains/V7.0.0-READINESS-ASSESSMENT.md).
 

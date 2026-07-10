@@ -1,5 +1,13 @@
 # @agent-inspect/mcp-server
 
+## 6.7.1
+
+### Patch Changes
+
+- Updated dependencies [dea3d91]
+  - agent-inspect@6.7.1
+  - @agent-inspect/redact@6.7.1
+
 ## 6.7.0
 
 ### Patch Changes

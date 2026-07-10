@@ -163,7 +163,7 @@ See [Compare](https://agentinspect.vercel.app/docs/compare/).
 
 ## Install details
 
-Current release: **6.7.0** (eighteen linked npm packages). Technical launch candidate; external pilot evidence pending. Persisted trace schema **1.0**. Requires **Node.js >= 20**.
+Current release: **6.7.1** (eighteen linked npm packages). Technical launch candidate; external pilot evidence pending. Persisted trace schema **1.0**. Requires **Node.js >= 20**.
 
 ```bash
 pnpm add agent-inspect

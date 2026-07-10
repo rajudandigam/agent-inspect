@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/mcp",
-  "version": "6.7.0",
+  "version": "6.7.1",
   "license": "MIT",
   "type": "module",
   "description": "Local MCP client tool-call tracing for AgentInspect",
