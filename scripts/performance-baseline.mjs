@@ -1,6 +1,10 @@
 /**
  * Lightweight local performance baseline (no benchmark frameworks).
  * Run after `pnpm build`. Uses packages/core/dist only.
+ *
+ * Committed traces of the same shape live in fixtures/performance/
+ * (perf-small.jsonl / perf-medium.jsonl / perf-large.jsonl) for
+ * exercising CLI paths against stable on-disk inputs.
  */
 import fs from "node:fs";
 import path from "node:path";

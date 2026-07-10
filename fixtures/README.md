@@ -11,6 +11,7 @@ Canonical **deterministic** samples for tests, CI validation, and documentation.
 | `traces-v1.0/` | v1.0 stable persisted InspectEvent samples (`schemaVersion` **1.0**, v2 contract target) |
 | `logs/` | Structured log lines (JSON, log4js-style, intentional breakage) |
 | `configs/` | Log ingest JSON configs |
+| `performance/` | Small/medium/large deterministic traces for perf checks |
 
 ## Safety
 

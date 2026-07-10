@@ -12,6 +12,24 @@ pnpm perf:baseline
 
 The script prints deterministic timings for parse, normalize, tree build, diff, export, and checks on synthetic data. Warnings appear when a step exceeds internal soft thresholds.
 
+## Performance fixtures
+
+[`fixtures/performance/`](../fixtures/performance/README.md) ships three deterministic size tiers with the same event shape as the baseline's synthetic traces, for exercising CLI paths against stable on-disk inputs:
+
+| File | Steps | Events |
+| ---- | ----- | ------ |
+| `perf-small.jsonl` | 10 | 22 |
+| `perf-medium.jsonl` | 100 | 202 |
+| `perf-large.jsonl` | 500 | 1,002 |
+
+```bash
+npx agent-inspect view perf-large --dir fixtures/performance
+npx agent-inspect report perf-large --dir fixtures/performance
+npx agent-inspect stats --dir fixtures/performance
+```
+
+All three are validated by `pnpm fixtures:check` and small enough for git (the largest is well under 1 MB).
+
 ## Comfortable ranges (v3.4)
 
 | Workload | Comfortable | Warning | Not designed for |

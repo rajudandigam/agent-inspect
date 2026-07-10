@@ -19,6 +19,7 @@ const REQUIRED = {
     "fixtures/gates/README.md",
     "fixtures/viewers/README.md",
     "fixtures/suite-templates/README.md",
+    "fixtures/performance/README.md",
   ],
   traces: [
     "fixtures/traces/minimal-success.jsonl",
@@ -70,6 +71,11 @@ const REQUIRED = {
     "fixtures/configs/nestjs-agent-inspect.logs.json",
   ],
   suiteConfigs: ["fixtures/configs/outcome-suite.suite.json"],
+  performanceTraces: [
+    "fixtures/performance/perf-small.jsonl",
+    "fixtures/performance/perf-medium.jsonl",
+    "fixtures/performance/perf-large.jsonl",
+  ],
 };
 
 /** Log files that are intentionally not line-valid JSON. */
@@ -322,6 +328,12 @@ try {
     scanForbidden(rel);
   }
 
+  for (const rel of REQUIRED.performanceTraces) {
+    assertFile(rel);
+    validateTraceJsonl(rel);
+    scanForbidden(rel);
+  }
+
   for (const rel of walkFixturesFiles()) {
     scanForbidden(rel);
   }
@@ -333,6 +345,9 @@ try {
   console.log(`  logs: ${REQUIRED.logs.length} files`);
   console.log(`  configs: ${REQUIRED.configs.length} JSON files`);
   console.log(`  suite-configs: ${REQUIRED.suiteConfigs.length} JSON files`);
+  console.log(
+    `  performance: ${REQUIRED.performanceTraces.length} v0.1 JSONL files validated`,
+  );
   process.exit(0);
 } catch (e) {
   console.error("[fixtures:check] FAILED:", e instanceof Error ? e.message : e);
