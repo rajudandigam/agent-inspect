@@ -36,6 +36,8 @@ describe("init CLI", () => {
     await access(path.join(tmpDir, "examples/agent-inspect-demo.mjs"));
     const config = await readFile(path.join(tmpDir, "agent-inspect.config.ts"), "utf8");
     expect(config).toContain("traceDir");
+    const demo = await readFile(path.join(tmpDir, "examples/agent-inspect-demo.mjs"), "utf8");
+    expect(demo).not.toMatch(/input:\s*\{/);
   });
 
   it("supports --json dry-run output", async () => {

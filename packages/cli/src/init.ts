@@ -120,7 +120,7 @@ main().catch((error) => {
       return `import { observe } from "agent-inspect";
 
 class DemoAgent {
-  async run(input: { question: string }) {
+  async run(input) {
     return { answer: \`Echo: \${input.question}\` };
   }
 }
