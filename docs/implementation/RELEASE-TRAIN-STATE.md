@@ -1,24 +1,24 @@
 # Release train state
 
 ```yaml
-currentTrain: "pre-v7-completion-from-current-6.7"
+currentTrain: "v6.7.x-adoption-freeze"
 trainStatus: "blocked-on-external-pilot"
-currentChunk: "6.7.1-publish"
-publishedVersion: "6.7.0"
-nextAction: "Push Version Packages 6.7.1; verify npm; then freeze + pilot kit; v7 not scheduled"
+currentChunk: "freeze-monitoring"
+publishedVersion: "6.7.1"
+nextAction: "Collect real design-partner and three-team pilot evidence; do not schedule v7"
 completedChunks:
   - "v6.4.1 through v6.7.0 npm publication"
   - "v6.7.0 reconciliation audit"
   - "6.7.1-C7a linked-package fixed group + version check"
-  - "6.7.1-C7b public truth (README, ROADMAP, MCP server version)"
-  - "6.7.1-R release readiness + changeset version"
+  - "6.7.1-C7b public truth"
+  - "6.7.1 publish verified on npm (fixed group aligned)"
 executionMode: "autonomous-release-train"
 updatedAt: "2026-07-10"
 ```
 
 ## Notes
 
-- Technical launch candidate shipped as **6.7.0**; **6.7.1** is corrective patch (fixed Changesets group + public truth).
-- Distinct **6.8.0** publication blocked until external pilot evidence is real.
-- **v7 not scheduled** — adoption gates unmet.
-- Audit: [reviews/V6.7.0-PRE-V7-RECONCILIATION-AUDIT.md](reviews/V6.7.0-PRE-V7-RECONCILIATION-AUDIT.md)
+- Technical LC: **6.7.0**; corrective patch: **6.7.1** (all 18 fixed packages).
+- Distinct **6.8.0** blocked on external pilot evidence.
+- **v7 not scheduled** — see [release-trains/V7.0.0-READINESS-ASSESSMENT.md](release-trains/V7.0.0-READINESS-ASSESSMENT.md).
+- Pilot kit: [../PRE-V7-PILOT-KIT.md](../PRE-V7-PILOT-KIT.md)

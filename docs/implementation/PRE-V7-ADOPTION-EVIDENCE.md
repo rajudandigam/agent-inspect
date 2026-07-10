@@ -3,8 +3,9 @@
 Template for manual gates. **Do not fabricate entries.**
 
 **Audit date:** 2026-07-10  
-**Technical LC on npm:** `6.7.0` (planned v6.8 scope combined into 6.7.0 changeset)  
-**Publication status:** Blocked on external evidence below — not on missing npm version `6.8.0`
+**Technical LC on npm:** `6.7.1` (LC scope shipped in 6.7.0; 6.7.1 is release-tooling/public-truth)  
+**Publication status:** Blocked on external evidence below — not on missing npm version `6.8.0`  
+**Pilot kit:** [../PRE-V7-PILOT-KIT.md](../PRE-V7-PILOT-KIT.md)
 
 ## Design-partner acceptance (v6.6.0 gate — historical)
 
