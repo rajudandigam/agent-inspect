@@ -43,6 +43,12 @@ See [`examples/adapter-sdk/custom-renderer`](../../examples/adapter-sdk/custom-r
 for a standalone `TraceRenderer` that renders a metadata-only markdown summary
 from a persisted run tree and composes with `renderWithSafety`.
 
+## Custom transform example
+
+See [`examples/adapter-sdk/custom-transform`](../../examples/adapter-sdk/custom-transform)
+for a standalone `TraceTransform` that normalizes a vendor-specific event shape
+into standard persisted-event conventions with warnings for unmapped input.
+
 ## Privacy
 
 - SDK helpers enforce local-first patterns; adapters must not upload by default

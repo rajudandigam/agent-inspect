@@ -1,0 +1,14 @@
+{
+  "name": "agent-inspect-example-custom-transform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestart": "pnpm --workspace-root run build && pnpm --filter @agent-inspect/adapter-sdk run build",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@agent-inspect/adapter-sdk": "workspace:*",
+    "agent-inspect": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}
