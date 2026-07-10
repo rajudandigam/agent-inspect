@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/mcp-server",
-  "version": "6.6.1",
+  "version": "6.7.0",
   "license": "MIT",
   "type": "module",
   "description": "Read-only MCP server tools for local AgentInspect traces",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.7.0
+
+### Minor Changes
+
+- 5766d50: Semantic standards fixture validation and golden-path E2E script for launch candidate.
+
 ## 6.6.1
 
 ### Patch Changes
