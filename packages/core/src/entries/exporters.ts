@@ -19,6 +19,8 @@ export {
   validateExportContent,
   validateOpenInferenceFixture,
   validateOtlpJsonFixture,
+  validateOpenInferenceSemanticFixture,
+  validateOtlpJsonSemanticFixture,
 } from "../exporters/index.js";
 export { OTEL_GEN_AI_SEMCONV_PIN } from "../exporters/semconv.js";
 export type { OpenInferenceExport, OpenInferenceSpan } from "../exporters/openinference-exporter.js";

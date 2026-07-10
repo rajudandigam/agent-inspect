@@ -1,0 +1,17 @@
+services:
+  studio:
+    image: node:22-bookworm
+    working_dir: /app
+    volumes:
+      - ../../:/app
+      - studio-data:/data
+    command: >
+      bash -c "npm install -g agent-inspect &&
+      agent-inspect studio --dir /data/.agent-inspect --host 0.0.0.0 --port 4310"
+    ports:
+      - "4310:4310"
+    environment:
+      AGENT_INSPECT_TRACE_DIR: /data/.agent-inspect/runs
+
+volumes:
+  studio-data:

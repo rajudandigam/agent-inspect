@@ -11,8 +11,13 @@ npx agent-inspect export <run-id> --format openinference --profile share
 Validate fixtures:
 
 ```ts
-import { validateOpenInferenceFixture } from "agent-inspect/exporters";
+import {
+  validateOpenInferenceFixture,
+  validateOpenInferenceSemanticFixture,
+} from "agent-inspect/exporters";
 ```
+
+Shape validation is **compatible**; semantic checks add field-level warnings for tested fixtures only.
 
 Fixture: [fixtures/standards/openinference-basic.json](../fixtures/standards/openinference-basic.json)
 

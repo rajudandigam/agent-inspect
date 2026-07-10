@@ -64,15 +64,19 @@ export function indexStatus(dbPath: string): IndexStatus {
   try {
     const runs = (db.prepare(`SELECT COUNT(*) AS c FROM runs`).get() as { c: number }).c;
     const steps = (db.prepare(`SELECT COUNT(*) AS c FROM steps`).get() as { c: number }).c;
+    const builtAt = meta(db, META_KEYS.builtAt);
+    const refreshStatus: IndexStatus["refreshStatus"] =
+      runs === 0 ? "fallback-scan" : builtAt ? "complete" : "partial";
     return {
       dbPath,
       exists: true,
       healthy: true,
-      builtAt: meta(db, META_KEYS.builtAt),
+      builtAt,
       sourceDir: meta(db, META_KEYS.sourceDir),
       schemaVersion: meta(db, META_KEYS.schemaVersion),
       runs,
       steps,
+      refreshStatus,
     };
   } finally {
     db.close();

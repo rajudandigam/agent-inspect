@@ -77,5 +77,9 @@ export {
   validateOpenInferenceFixture,
   validateOtlpJsonFixture,
 } from "./fixtures.js";
+export {
+  validateOpenInferenceSemanticFixture,
+  validateOtlpJsonSemanticFixture,
+} from "./semantic-validation.js";
 export { OTEL_GEN_AI_SEMCONV_PIN } from "./semconv.js";
 export { redactRunTreeForExport } from "./redact-export.js";

@@ -71,6 +71,8 @@ export interface IndexStatus {
   schemaVersion: string | null;
   runs: number;
   steps: number;
+  /** Derived lifecycle: complete, partial, stale, or fallback-scan */
+  refreshStatus?: "complete" | "partial" | "stale" | "fallback-scan";
 }
 
 /** Filter for querying indexed runs. */
