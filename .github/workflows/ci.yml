@@ -21,6 +21,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run linked-versions:check
+      - run: pnpm run docs:check
       - run: pnpm run typecheck
 
   unit:
