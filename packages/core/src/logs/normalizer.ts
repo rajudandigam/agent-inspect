@@ -29,13 +29,18 @@ function hasToken(hay: string, token: string): boolean {
   return hay.includes(token);
 }
 
+// "error"/"failed" must be a complete dot-delimited token ("x.error",
+// "x.failed.y"); substrings like "error_budget" or "error_retry" are not
+// error signals.
+const ERROR_TOKEN_RE = /\.(error|failed)(\.|$)/;
+
 function inferKind(eventName: string): InspectKind {
   if (hasToken(eventName, ".llm.")) return "LLM";
   if (hasToken(eventName, ".tool.")) return "TOOL";
   if (hasToken(eventName, ".agent.")) return "AGENT";
   if (hasToken(eventName, ".retriever.")) return "RETRIEVER";
   if (hasToken(eventName, ".result.")) return "RESULT";
-  if (eventName.endsWith(".error") || eventName.endsWith(".failed") || eventName.includes(".error") || eventName.includes(".failed")) {
+  if (ERROR_TOKEN_RE.test(eventName)) {
     return "ERROR";
   }
   return "LOG";
@@ -139,7 +144,7 @@ export class EventNormalizer {
       status = mapping.status;
     } else if (mapping?.kind === "ERROR") {
       status = "error";
-    } else if (eventName.includes(".failed") || eventName.includes(".error")) {
+    } else if (ERROR_TOKEN_RE.test(eventName)) {
       status = "error";
     } else if (mapping?.startsRun || mapping?.startsStep) {
       status = "running";
