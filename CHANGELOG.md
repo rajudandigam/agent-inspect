@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.6.1
+
+### Patch Changes
+
+- 5766d50: Self-hosting ingestion security documentation and opt-in hardening guidance.
+
 ## 6.6.0
 
 ### Minor Changes

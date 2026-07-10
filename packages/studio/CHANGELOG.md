@@ -1,5 +1,13 @@
 # @agent-inspect/studio
 
+## 6.6.1
+
+### Patch Changes
+
+- 5766d50: Self-hosting ingestion security documentation and opt-in hardening guidance.
+- Updated dependencies [5766d50]
+  - agent-inspect@6.6.1
+
 ## 6.6.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @agent-inspect/circuit
 
+## 6.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - agent-inspect@6.6.1
+
 ## 6.6.0
 
 ### Patch Changes

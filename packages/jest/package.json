@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/jest",
-  "version": "6.6.0",
+  "version": "6.6.1",
   "license": "MIT",
   "type": "module",
   "description": "Optional Jest reporter for AgentInspect local trace artifacts",
