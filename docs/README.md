@@ -57,7 +57,7 @@ This folder is the full canonical reference. The marketing site and root README 
 | Doc | Topic |
 | --- | ----- |
 | [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) | Redact / scan / verify-safe |
-| [BUNDLES.md](./BUNDLES.md) | Evidence bundles (if present) |
+| [BUNDLES.md](./BUNDLES.md) | Evidence bundles |
 | [ADAPTER-SDK-PRIVACY.md](./ADAPTER-SDK-PRIVACY.md) · [LIMITATIONS.md](./LIMITATIONS.md) · [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) | Safety and limits |
 
 ## Workspace and Studio
