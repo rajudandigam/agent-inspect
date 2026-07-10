@@ -35,6 +35,7 @@ jobs:
 
       - name: Verify (release-train gates)
         run: |
+          pnpm run linked-versions:check
           pnpm run test:all
           pnpm run fixtures:check
           pnpm run recipes:check
