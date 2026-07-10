@@ -61,6 +61,10 @@ const REQUIRED = {
     "fixtures/logs/malformed-json.log",
     "fixtures/logs/missing-run-id.log",
     "fixtures/logs/mixed-valid-invalid.log",
+    "fixtures/logs/tail-truncated-final.log",
+    "fixtures/logs/tail-missing-newline.log",
+    "fixtures/logs/tail-partial-object.log",
+    "fixtures/logs/tail-mixed-valid-invalid.log",
   ],
   configs: [
     "fixtures/configs/proactive-agent-inspect.logs.json",
@@ -82,6 +86,9 @@ const REQUIRED = {
 const MALFORMED_LOGS = new Set([
   "malformed-json.log",
   "mixed-valid-invalid.log",
+  "tail-truncated-final.log",
+  "tail-partial-object.log",
+  "tail-mixed-valid-invalid.log",
 ]);
 
 const FORBIDDEN = [
@@ -230,7 +237,8 @@ function validateJsonLog(rel) {
     base === "pino-agent-json.log" ||
     base === "mcp-tool-call-json.log" ||
     base === "nestjs-agent-json.log" ||
-    base === "proactive-json.log"
+    base === "proactive-json.log" ||
+    base === "tail-missing-newline.log"
   ) {
     for (let i = 0; i < lines.length; i++) {
       JSON.parse(lines[i]);

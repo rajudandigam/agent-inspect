@@ -96,6 +96,19 @@ describe("logs", () => {
     logSpy.mockRestore();
   });
 
+  it("truncated final line degrades with a warning and keeps the run", async () => {
+    const fixture = path.join(repoRoot, "fixtures/logs/tail-truncated-final.log");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await logs(fixture, { format: "json", warnings: "all" });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    // Prior valid lines still build the run tree...
+    expect(out).toContain("Run fixture_tail_truncated");
+    // ...and the interrupted tail surfaces as a warning, not a crash.
+    expect(out).toContain("MALFORMED_JSON");
+    expect(process.exitCode).toBe(0);
+    logSpy.mockRestore();
+  });
+
   it("missing file fails clearly", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     await logs("/no/such/file.log", { format: "json" });
