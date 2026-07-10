@@ -18,11 +18,11 @@ Use this order:
 2. `AGENTS.md`
 3. `docs/implementation/RELEASE-TRAIN-STATE.md`
 4. `docs/implementation/CURRENT-TASK.md`
-5. `docs/implementation/POST-V3.5-ADOPTION-PLAN.md`
-6. canonical roadmap `docs/implementation/ROADMAP_V3_5_TO_V7.md` and the active release-train plan under `docs/implementation/release-trains/` (v3.5.6 + v4-v7)
+5. canonical pre-v7 roadmap `docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md`
+6. active release-train plan under `docs/implementation/release-trains/` (v6.4.1–v6.8.x pre-v7 stabilization)
 7. relevant RFC/proposal docs
 8. public `ROADMAP.md`
-9. historical docs under `docs/archive/` (including completed v3.0→v3.5 roadmap)
+9. historical docs under `docs/archive/` and `docs/implementation/ROADMAP_V3_5_TO_V7.md` (completed v3.5→v6.4 trains)
 
 Report material conflicts; never resolve them silently.
 
