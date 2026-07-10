@@ -1,5 +1,13 @@
 # @agent-inspect/mcp-server
 
+## 6.4.1
+
+### Patch Changes
+
+- 7e832d7: Trust and security patch: MCP result boundary, real bundle safety assessment, path sanitization, viewer XSS hardening, strict plugin manifests, gate validation, Studio init fixes, and packed quickstart E2E.
+- Updated dependencies [7e832d7]
+  - agent-inspect@6.4.1
+
 ## 6.4.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/vitest",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "license": "MIT",
   "type": "module",
   "description": "Optional Vitest reporter for AgentInspect local trace artifacts",
