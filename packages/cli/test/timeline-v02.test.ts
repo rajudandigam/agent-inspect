@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -28,7 +29,7 @@ describe("timeline CLI v0.2 fixtures", () => {
 
   it("renders manual-basic v0.2 fixture", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v0.2/manual-basic.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");

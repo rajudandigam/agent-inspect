@@ -1,6 +1,7 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -23,7 +24,7 @@ describe("search CLI", () => {
 
   it("finds error status", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces",
     );
     await cp(path.join(fixtures, "minimal-error.jsonl"), path.join(tmpDir, "minimal-error.jsonl"));
@@ -34,7 +35,7 @@ describe("search CLI", () => {
 
   it("finds tool steps", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces",
     );
     await cp(path.join(fixtures, "tool-with-io.jsonl"), path.join(tmpDir, "tool-with-io.jsonl"));
@@ -45,7 +46,7 @@ describe("search CLI", () => {
 
   it("emits valid JSON", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces",
     );
     await cp(path.join(fixtures, "minimal-success.jsonl"), path.join(tmpDir, "minimal-success.jsonl"));
@@ -56,7 +57,7 @@ describe("search CLI", () => {
 
   it("finds v0.2 runs and steps by normalized metadata", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
     );
     await cp(fixture, path.join(tmpDir, "dual-format-parity.jsonl"));
@@ -83,7 +84,7 @@ describe("search CLI", () => {
 
   it("filters results by session id", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/sessions/multi-agent-handoff",
     );
     await cp(path.join(fixtures, "handoff-planner.jsonl"), path.join(tmpDir, "handoff-planner.jsonl"));
@@ -102,7 +103,7 @@ describe("search CLI", () => {
 
   it("sets exit code 1 when the session id is not found", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/sessions/multi-agent-handoff",
     );
     await cp(path.join(fixtures, "handoff-planner.jsonl"), path.join(tmpDir, "handoff-planner.jsonl"));

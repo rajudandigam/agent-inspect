@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import {
   openTrace,
   TraceReadError,
@@ -156,7 +158,9 @@ function isTraceReadResult(value: unknown): value is TraceReadResult {
 }
 
 function traceInputFrom(value: string | URL): TraceInput {
-  return { type: "file", path: value instanceof URL ? value.pathname : value };
+  // URL.pathname is not a filesystem path on Windows (leading slash before
+  // the drive letter); fileURLToPath handles file: URLs on every platform.
+  return { type: "file", path: value instanceof URL ? fileURLToPath(value) : value };
 }
 
 async function resolveRead(

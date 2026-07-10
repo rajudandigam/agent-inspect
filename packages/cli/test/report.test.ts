@@ -1,6 +1,7 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -33,7 +34,7 @@ describe("report CLI", () => {
 
   it("renders markdown report to stdout", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -47,7 +48,7 @@ describe("report CLI", () => {
 
   it("writes html report to file", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -65,7 +66,7 @@ describe("report CLI", () => {
 
   it("emits valid JSON wrapper", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");

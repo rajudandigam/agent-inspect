@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
@@ -90,7 +91,7 @@ describe("persistedInspectEventToTraceEvents", () => {
 
   it("converts native v0.2 manual-basic fixture rows", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../../fixtures/traces-v0.2/manual-basic.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");
@@ -103,7 +104,7 @@ describe("persistedInspectEventToTraceEvents", () => {
 
   it("maps native tool error fixture to step error", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../../fixtures/traces-v0.2/manual-tool-error.jsonl",
     );
     const raw = await readFile(fixture, "utf-8");

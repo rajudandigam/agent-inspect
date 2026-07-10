@@ -1,6 +1,7 @@
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { buildSessionIndex } from "@agent-inspect/core/advanced";
 import { buildIndex } from "@agent-inspect/index-sqlite";
@@ -9,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { loadSessionRuns } from "../src/sessions-load.js";
 
 const fixturesRoot = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
+  path.dirname(fileURLToPath(import.meta.url)),
   "../../../fixtures/sessions",
 );
 

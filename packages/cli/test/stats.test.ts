@@ -1,6 +1,7 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -28,7 +29,7 @@ describe("stats CLI", () => {
 
   it("aggregates fixture directory", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces",
     );
     await cp(path.join(fixtures, "minimal-success.jsonl"), path.join(tmpDir, "minimal-success.jsonl"));
@@ -40,7 +41,7 @@ describe("stats CLI", () => {
 
   it("emits valid JSON", async () => {
     const fixtures = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces",
     );
     await cp(path.join(fixtures, "minimal-success.jsonl"), path.join(tmpDir, "minimal-success.jsonl"));
@@ -52,7 +53,7 @@ describe("stats CLI", () => {
 
   it("aggregates v0.2 run metadata and steps", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces-v0.2/dual-format-parity.jsonl",
     );
     await cp(fixture, path.join(tmpDir, "dual-format-parity.jsonl"));

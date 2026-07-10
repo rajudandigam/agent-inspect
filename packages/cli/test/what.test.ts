@@ -1,6 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -39,7 +40,7 @@ describe("what CLI", () => {
 
   it("renders concise summary for fixture run", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/minimal-success.jsonl",
     );
     const { readFile } = await import("node:fs/promises");
@@ -53,7 +54,7 @@ describe("what CLI", () => {
 
   it("emits valid JSON", async () => {
     const fixture = path.resolve(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(fileURLToPath(import.meta.url)),
       "../../../fixtures/traces/llm-with-tokens.jsonl",
     );
     const { readFile } = await import("node:fs/promises");

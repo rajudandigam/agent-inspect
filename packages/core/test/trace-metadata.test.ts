@@ -1,6 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 
 import type { TokenMetadata, TraceEvent } from "../src/types.js";
@@ -8,7 +9,7 @@ import { extractMetadata, buildRunSummary } from "../src/trace-metadata.js";
 
 const ts = 1_700_000_000_000;
 const repoRoot = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
+  path.dirname(fileURLToPath(import.meta.url)),
   "../../..",
 );
 
