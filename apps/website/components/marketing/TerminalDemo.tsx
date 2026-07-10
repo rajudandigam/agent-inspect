@@ -12,36 +12,43 @@ export function TerminalDemo() {
       <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-6 text-slate-200 sm:text-sm">
         <code>
           <span className="text-slate-500">$ </span>
-          <span>npx agent-inspect init --framework ai-sdk</span>
+          <span>npx agent-inspect init --yes</span>
           {"\n"}
           <span className="text-success">✓</span>
           <span> created agent-inspect.config.ts</span>
           {"\n"}
           <span className="text-success">✓</span>
-          <span> wrote .agent-inspect/demo-support-agent.jsonl</span>
+          <span> created examples/agent-inspect-demo.mjs</span>
           {"\n\n"}
           <span className="text-slate-500">$ </span>
-          <span>npx agent-inspect view demo-support-agent</span>
+          <span>node examples/agent-inspect-demo.mjs</span>
           {"\n"}
-          <span className="text-indigo-300">support-agent</span>
-          <span> 1.8s </span>
           <span className="text-success">✓</span>
+          <span> wrote .agent-inspect/run_….jsonl</span>
+          {"\n\n"}
+          <span className="text-slate-500">$ </span>
+          <span>npx agent-inspect list --dir .agent-inspect</span>
           {"\n"}
-          <span className="text-slate-500">├─ </span>
-          <span>classify intent 120ms </span>
-          <span className="text-success">✓</span>
+          <span className="text-indigo-300">run_abc123</span>
+          <span>  ok  42ms</span>
+          {"\n\n"}
+          <span className="text-slate-500">$ </span>
+          <span>npx agent-inspect check run_abc123 --dir .agent-inspect</span>
           {"\n"}
-          <span className="text-slate-500">├─ </span>
-          <span>search knowledge base 740ms </span>
           <span className="text-success">✓</span>
+          <span> checks passed</span>
+          {"\n\n"}
+          <span className="text-slate-500">$ </span>
+          <span>npx agent-inspect bundle run_abc123 --dir .agent-inspect --profile share</span>
           {"\n"}
-          <span className="text-slate-500">├─ </span>
-          <span>draft response 890ms </span>
           <span className="text-success">✓</span>
+          <span> share-safe bundle written</span>
+          {"\n\n"}
+          <span className="text-slate-500">$ </span>
+          <span>npx agent-inspect verify-safe run_abc123 --dir .agent-inspect</span>
           {"\n"}
-          <span className="text-slate-500">└─ </span>
-          <span>verify-safe 40ms </span>
           <span className="text-success">✓</span>
+          <span> SAFE (best-effort)</span>
         </code>
       </pre>
     </div>

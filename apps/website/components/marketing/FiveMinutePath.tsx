@@ -1,13 +1,5 @@
 import { CodeBlock } from "@/components/shared/CodeBlock";
-
-const commands = `npm install agent-inspect
-npx agent-inspect init --yes
-node examples/agent-inspect-demo.mjs
-npx agent-inspect list --dir .agent-inspect
-npx agent-inspect view <run-id> --dir .agent-inspect
-npx agent-inspect check .agent-inspect/*.jsonl --require-completed --detect-stalls
-npx agent-inspect redact --profile share --dir .agent-inspect
-npx agent-inspect verify-safe --dir .agent-inspect`;
+import { product } from "@/lib/product";
 
 export function FiveMinutePath() {
   return (
@@ -21,17 +13,18 @@ export function FiveMinutePath() {
             Five-minute path
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            One trace, one check, one safe artifact
+            One trace, one check, one safe bundle
           </h2>
           <p className="mt-4 text-lg leading-8 text-muted">
-            Install, run the deterministic demo, inspect the tree, check
-            completion and stalls, then redact before you share.
+            <code className="text-sm">init</code> scaffolds files; the demo writes the
+            trace. Then check, bundle with a share profile, and verify-safe using a
+            real run id.
           </p>
           <p className="mt-4 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm text-secondary">
-            The deterministic starter path works without API keys.
+            Deterministic starter path — no API keys required.
           </p>
         </div>
-        <CodeBlock code={commands} language="bash" />
+        <CodeBlock code={product.fiveMinuteCommands} language="bash" />
       </div>
     </section>
   );

@@ -1,43 +1,39 @@
 const faqs = [
   {
-    q: "Is AgentInspect a replacement for LangSmith or Langfuse?",
-    a: "No. It complements hosted observability tools. AgentInspect focuses on the local developer loop: traces on disk, CLI checks, and safe sharing.",
+    q: "Does AgentInspect upload traces?",
+    a: "No default upload and no hidden telemetry. Traces stay on disk unless you explicitly share a file, enable customer-owned Studio ingest, or configure a standards export.",
   },
   {
-    q: "What does it capture by default?",
-    a: "Metadata-only by default. Prompts and outputs are not captured unless you explicitly opt into content capture settings.",
+    q: "What can explicitly use the network?",
+    a: "Optional Studio GitHub/HTTP ingest (off by default), MCP clients talking to your servers, MCP server exposing local evidence to a connected client, and any standards/collector path you configure. See Network behavior docs.",
   },
   {
-    q: "Does it upload traces?",
-    a: "No upload by default. Traces are local files unless you explicitly export or share them.",
+    q: "Is Studio hosted by AgentInspect?",
+    a: "No. Studio Beta is customer-owned and binds to localhost by default. There is no AgentInspect-hosted cloud dashboard.",
   },
   {
-    q: "Which frameworks does it support?",
-    a: "Manual instrumentation, Vercel AI SDK (`@agent-inspect/ai-sdk`), OpenAI Agents (`@agent-inspect/openai-agents`), LangChain (`@agent-inspect/langchain`), structured logs, harness, and CI/test reporters.",
+    q: "Is this production APM?",
+    a: "No. Use hosted platforms or OpenTelemetry for production fleets. AgentInspect is for local debugging, deterministic trajectory regression, and safe evidence.",
   },
   {
-    q: "Can I use it in CI?",
-    a: "Yes. Run `check`, `eval`, `artifacts`, and `verify-safe` on local traces, then upload redacted artifacts with your CI platform.",
+    q: "What is Stable / Beta / Preview?",
+    a: "Support levels describe maturity. Core schema/checks/redaction are Stable; TraceContract/suites/index/Studio are Beta; MCP server and some ingest paths are Preview. See SUPPORT-LEVELS.md on GitHub.",
   },
   {
-    q: "Can I share traces safely?",
-    a: "Use `redact --profile share` (or `strict`) and `verify-safe` before attaching traces to PRs or issues. Profiles are best-effort safeguards, not compliance certifications.",
+    q: "Does it record prompts, outputs, or chain-of-thought?",
+    a: "Capture is metadata-only by default. It does not record chain-of-thought. Opt into content capture only when you intentionally need it.",
   },
   {
-    q: "Is it production monitoring?",
-    a: "No. Use hosted platforms or OpenTelemetry for production fleets and team dashboards.",
+    q: "How do contracts differ from evals?",
+    a: "TraceContract and checks are deterministic trajectory expectations. Eval helpers are local heuristics. Neither is an LLM judge by default.",
   },
   {
-    q: "Does it record chain-of-thought?",
-    a: "No. AgentInspect does not record chain-of-thought.",
+    q: "Why is v7 not scheduled?",
+    a: "v7 is conditional on real external adoption evidence (design partners and pilot teams). Completing code is not enough.",
   },
   {
-    q: "How much does it cost?",
-    a: "It is open source under the MIT license.",
-  },
-  {
-    q: "Where are the docs?",
-    a: "Starter docs live at https://agentinspect.vercel.app/docs/. Canonical GitHub docs remain the full reference during migration.",
+    q: "Where are the full docs?",
+    a: "This site summarizes the product. Canonical deep reference lives on GitHub under docs/.",
   },
 ];
 

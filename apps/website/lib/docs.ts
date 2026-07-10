@@ -56,6 +56,16 @@ export const docPages: DocPage[] = [
       { id: "where-it-fits", title: "Where it fits" },
     ],
     previous: "getting-started",
+    next: "concepts/evidence-loop",
+  },
+  {
+    slug: "concepts/evidence-loop",
+    title: "Evidence loop",
+    description:
+      "Capture or import → understand → enforce → verify/bundle → review locally or in Studio.",
+    section: "Concepts",
+    toc: [{ id: "loop", title: "Evidence loop" }],
+    previous: "concepts/local-first",
     next: "concepts/trace-check-redact",
   },
   {
@@ -69,7 +79,25 @@ export const docPages: DocPage[] = [
       { id: "check", title: "Check" },
       { id: "redact", title: "Redact" },
     ],
-    previous: "concepts/local-first",
+    previous: "concepts/evidence-loop",
+    next: "contracts",
+  },
+  {
+    slug: "contracts",
+    title: "Trace contracts",
+    description: "Typed TraceContract expectations (Beta) and current limitations.",
+    section: "Prevent regressions",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "concepts/trace-check-redact",
+    next: "suites-and-gates",
+  },
+  {
+    slug: "suites-and-gates",
+    title: "Suites and gates",
+    description: "Suites, cohorts, and CI gates over local traces (Beta).",
+    section: "Prevent regressions",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "contracts",
     next: "integrations",
   },
   {
@@ -79,7 +107,7 @@ export const docPages: DocPage[] = [
       "Manual instrumentation, framework adapters, logs, harness, CI reporters, and adapter SDK paths.",
     section: "Integrations",
     toc: [{ id: "paths", title: "Integration paths" }],
-    previous: "concepts/trace-check-redact",
+    previous: "suites-and-gates",
     next: "integrations/ai-sdk",
   },
   {
@@ -122,6 +150,43 @@ export const docPages: DocPage[] = [
       { id: "privacy", title: "Privacy" },
     ],
     previous: "integrations/openai-agents",
+    next: "workspace",
+  },
+  {
+    slug: "workspace",
+    title: "Workspace",
+    description: "Local workspaces, optional SQLite index, sessions, and bundles.",
+    section: "Workspace and Studio",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "integrations/langchain",
+    next: "studio",
+  },
+  {
+    slug: "studio",
+    title: "Studio Beta",
+    description:
+      "Customer-owned Studio analyzer. Localhost by default. Ingest disabled by default.",
+    section: "Workspace and Studio",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "workspace",
+    next: "mcp",
+  },
+  {
+    slug: "mcp",
+    title: "MCP",
+    description: "MCP client tracing and read-only MCP server (Preview).",
+    section: "MCP and standards",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "studio",
+    next: "standards",
+  },
+  {
+    slug: "standards",
+    title: "Standards",
+    description: "OpenInference-compatible and OTLP GenAI-aligned bridge.",
+    section: "MCP and standards",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "mcp",
     next: "cli",
   },
   {
@@ -134,7 +199,7 @@ export const docPages: DocPage[] = [
       { id: "overview", title: "Overview" },
       { id: "command-groups", title: "Command groups" },
     ],
-    previous: "integrations/langchain",
+    previous: "standards",
     next: "safe-sharing",
   },
   {
@@ -163,6 +228,24 @@ export const docPages: DocPage[] = [
       { id: "artifacts", title: "Artifacts" },
     ],
     previous: "safe-sharing",
+    next: "support-levels",
+  },
+  {
+    slug: "support-levels",
+    title: "Support levels",
+    description: "Stable, Supported, Beta, Preview, and Experimental labels.",
+    section: "Reference",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "ci",
+    next: "network-behavior",
+  },
+  {
+    slug: "network-behavior",
+    title: "Network behavior",
+    description: "Explicit network surfaces and defaults.",
+    section: "Reference",
+    toc: [{ id: "overview", title: "Overview" }],
+    previous: "support-levels",
     next: "compare",
   },
   {
@@ -175,7 +258,7 @@ export const docPages: DocPage[] = [
       { id: "positioning", title: "Positioning" },
       { id: "table", title: "Comparison" },
     ],
-    previous: "ci",
+    previous: "network-behavior",
     next: "contributing",
   },
   {
@@ -209,10 +292,18 @@ export const docsNav: DocsNavSection[] = [
     title: "Concepts",
     items: [
       { title: "Local-first", href: "/docs/concepts/local-first" },
+      { title: "Evidence loop", href: "/docs/concepts/evidence-loop" },
       {
         title: "Trace, check, redact",
         href: "/docs/concepts/trace-check-redact",
       },
+    ],
+  },
+  {
+    title: "Prevent regressions",
+    items: [
+      { title: "Trace contracts", href: "/docs/contracts" },
+      { title: "Suites and gates", href: "/docs/suites-and-gates" },
     ],
   },
   {
@@ -225,11 +316,27 @@ export const docsNav: DocsNavSection[] = [
     ],
   },
   {
+    title: "Workspace and Studio",
+    items: [
+      { title: "Workspace", href: "/docs/workspace" },
+      { title: "Studio Beta", href: "/docs/studio" },
+    ],
+  },
+  {
+    title: "MCP and standards",
+    items: [
+      { title: "MCP", href: "/docs/mcp" },
+      { title: "Standards", href: "/docs/standards" },
+    ],
+  },
+  {
     title: "Guides",
     items: [
       { title: "CLI", href: "/docs/cli" },
       { title: "Safe sharing", href: "/docs/safe-sharing" },
       { title: "CI artifacts", href: "/docs/ci" },
+      { title: "Support levels", href: "/docs/support-levels" },
+      { title: "Network behavior", href: "/docs/network-behavior" },
       { title: "Compare", href: "/docs/compare" },
     ],
   },

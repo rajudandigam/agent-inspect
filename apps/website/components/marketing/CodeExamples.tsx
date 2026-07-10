@@ -56,8 +56,9 @@ await generateText({
     code: `npx agent-inspect list --dir .agent-inspect
 npx agent-inspect view <run-id> --dir .agent-inspect
 npx agent-inspect report <run-id> --dir .agent-inspect
-npx agent-inspect check .agent-inspect/*.jsonl --require-completed
-npx agent-inspect verify-safe --dir .agent-inspect`,
+npx agent-inspect check <run-id> --dir .agent-inspect
+npx agent-inspect bundle <run-id> --dir .agent-inspect --profile share
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect`,
   },
   {
     id: "harness",

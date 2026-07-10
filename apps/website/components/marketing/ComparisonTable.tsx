@@ -43,7 +43,7 @@ const rows = [
   },
   {
     label: "Team dashboard",
-    agentInspect: "Not the goal",
+    agentInspect: "No maintainer-hosted dashboard; optional customer-owned Studio Beta",
     consoleLog: "No",
     hosted: "Yes",
     otel: "Via backend/viewer",
@@ -57,9 +57,10 @@ const rows = [
   },
   {
     label: "Best for",
-    agentInspect: "Local dev, CI artifacts, safe sharing",
+    agentInspect:
+      "Local debugging, deterministic trajectory regression, safe evidence, customer-owned review",
     consoleLog: "Tiny scripts",
-    hosted: "Production fleets and team collaboration",
+    hosted: "Production fleets and hosted collaboration",
     otel: "Platform observability foundation",
   },
 ];

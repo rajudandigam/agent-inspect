@@ -15,6 +15,24 @@ export function renderDocContent(slug: string): ReactNode {
       return <LocalFirstContent />;
     case "concepts/trace-check-redact":
       return <TraceCheckRedactContent />;
+    case "concepts/evidence-loop":
+      return <EvidenceLoopContent />;
+    case "contracts":
+      return <ContractsContent />;
+    case "suites-and-gates":
+      return <SuitesGatesContent />;
+    case "workspace":
+      return <WorkspaceContent />;
+    case "studio":
+      return <StudioContent />;
+    case "mcp":
+      return <McpContent />;
+    case "standards":
+      return <StandardsContent />;
+    case "support-levels":
+      return <SupportLevelsContent />;
+    case "network-behavior":
+      return <NetworkBehaviorContent />;
     case "integrations":
       return <IntegrationsContent />;
     case "integrations/ai-sdk":
@@ -43,9 +61,9 @@ function DocsHomeContent() {
     <>
       <h2 id="start-here">Start here</h2>
       <p>
-        AgentInspect is local-first trace + check + redact for TypeScript AI
-        agents. These pages are a starter shell. Canonical detail still lives in
-        the repository docs on GitHub.
+        AgentInspect is local-first trajectory evidence for TypeScript AI agents:
+        debug, regression-test, and safely share runs. Canonical deep reference
+        lives in the repository docs on GitHub; these pages summarize the current product.
       </p>
       <DocsCardGrid
         cards={[
@@ -129,15 +147,18 @@ npx agent-inspect report <run-id> --dir .agent-inspect`}
 
       <h2 id="check">Check traces</h2>
       <DocsCodeBlock
-        code="npx agent-inspect check .agent-inspect/*.jsonl --require-completed --detect-stalls"
+        code="npx agent-inspect check <run-id> --dir .agent-inspect"
       />
 
-      <h2 id="share">Redact and verify safe</h2>
+      <h2 id="share">Bundle and verify safe</h2>
       <DocsCodeBlock
-        code={`npx agent-inspect redact --profile share --dir .agent-inspect
-npx agent-inspect verify-safe --dir .agent-inspect`}
+        code={`npx agent-inspect bundle <run-id> --dir .agent-inspect --profile share
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect`}
       />
-
+      <p>
+        <code>init</code> only scaffolds files; the demo writes the trace. Always
+        pass a run id (or file path) to check, bundle, and verify-safe.
+      </p>
       <h2 id="next-steps">Next steps</h2>
       <ul>
         <li>
@@ -430,8 +451,8 @@ function SafeSharingContent() {
 
       <h2 id="workflow">Workflow</h2>
       <DocsCodeBlock
-        code={`npx agent-inspect redact --profile share --dir .agent-inspect
-npx agent-inspect verify-safe --dir .agent-inspect`}
+        code={`npx agent-inspect bundle <run-id> --dir .agent-inspect --profile share
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect`}
       />
       <ul>
         <li>Use `--profile share` for PR/issue attachments</li>
@@ -544,6 +565,150 @@ function ContributingContent() {
         <a href={githubDoc("community/CONTRIBUTING.md")}>
           Full reference in GitHub docs
         </a>
+      </p>
+    </>
+  );
+}
+
+function EvidenceLoopContent() {
+  return (
+    <>
+      <h2 id="loop">Evidence loop</h2>
+      <p>
+        Capture or import → understand causality → enforce expectations → verify
+        and bundle → review locally or in customer-owned Studio Beta.
+      </p>
+      <p>
+        <a href={githubDoc("GOLDEN-PATH.md")}>Golden path (GitHub)</a>
+      </p>
+    </>
+  );
+}
+
+function ContractsContent() {
+  return (
+    <>
+      <h2 id="overview">TraceContract (Beta)</h2>
+      <p>
+        Typed trajectory expectations via <code>defineTraceContract</code> /
+        <code>evaluateTraceContract</code>. Vitest/Jest matchers are not shipped.
+      </p>
+      <p>
+        <a href={githubDoc("TRACE-CONTRACTS.md")}>Full guide on GitHub</a>
+      </p>
+    </>
+  );
+}
+
+function SuitesGatesContent() {
+  return (
+    <>
+      <h2 id="overview">Suites, cohorts, and gates (Beta)</h2>
+      <p>
+        Deterministic regression tooling over local traces. All-skipped suites
+        must not pass; cohort tolerances and sample diagnostics matter.
+      </p>
+      <p>
+        <a href={githubDoc("SUITES-COHORTS-GATES.md")}>Full guide on GitHub</a>
+      </p>
+    </>
+  );
+}
+
+function WorkspaceContent() {
+  return (
+    <>
+      <h2 id="overview">Workspace</h2>
+      <p>
+        Organize project-local runs, reports, bundles, sessions, and an optional
+        disposable SQLite index. JSONL remains the source of truth.
+      </p>
+      <p>
+        <a href={githubDoc("WORKSPACE.md")}>Workspace</a>
+        {" · "}
+        <a href={githubDoc("INDEX.md")}>Index</a>
+      </p>
+    </>
+  );
+}
+
+function StudioContent() {
+  return (
+    <>
+      <h2 id="overview">Studio Beta</h2>
+      <p>
+        Customer-owned, read-only analyzer over registered workspaces. Localhost
+        by default. Explicit ingest is disabled by default. No AgentInspect-hosted
+        cloud.
+      </p>
+      <p>
+        <a href={githubDoc("SELF-HOSTING.md")}>Self-hosting</a>
+        {" · "}
+        <a href={`${site.github}/tree/main/packages/studio`}>Package README</a>
+      </p>
+    </>
+  );
+}
+
+function McpContent() {
+  return (
+    <>
+      <h2 id="overview">MCP</h2>
+      <p>
+        Client tracing via <code>@agent-inspect/mcp</code>. Read-only MCP server
+        (Preview) exposes local evidence to a connected client through a
+        share-profile boundary.
+      </p>
+      <p>
+        <a href={`${site.github}/tree/main/packages/mcp`}>MCP client</a>
+        {" · "}
+        <a href={`${site.github}/tree/main/packages/mcp-server`}>MCP server</a>
+      </p>
+    </>
+  );
+}
+
+function StandardsContent() {
+  return (
+    <>
+      <h2 id="overview">Standards bridge</h2>
+      <p>
+        OpenInference-compatible and OTLP GenAI-aligned mappings with fixture
+        validation and known-loss reporting. External Collector/Phoenix proof may
+        still be pending — do not claim universal compliance.
+      </p>
+      <p>
+        <a href={githubDoc("STANDARDS.md")}>STANDARDS.md</a>
+      </p>
+    </>
+  );
+}
+
+function SupportLevelsContent() {
+  return (
+    <>
+      <h2 id="overview">Support levels</h2>
+      <p>
+        Stable, Supported, Beta, Preview, and Experimental labels for packages and
+        surfaces.
+      </p>
+      <p>
+        <a href={githubDoc("SUPPORT-LEVELS.md")}>SUPPORT-LEVELS.md</a>
+      </p>
+    </>
+  );
+}
+
+function NetworkBehaviorContent() {
+  return (
+    <>
+      <h2 id="overview">Network behavior</h2>
+      <p>
+        Core writes local files. No default upload. Optional Studio ingest, MCP,
+        and standards export are explicit when enabled.
+      </p>
+      <p>
+        <a href={githubDoc("NETWORK-BEHAVIOR.md")}>NETWORK-BEHAVIOR.md</a>
       </p>
     </>
   );

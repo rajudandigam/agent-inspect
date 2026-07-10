@@ -1,0 +1,20 @@
+# AgentInspect
+
+> Debug, regression-test, and safely share TypeScript AI-agent behavior—locally.
+
+- Site: https://agentinspect.vercel.app/
+- Docs: https://agentinspect.vercel.app/docs/
+- GitHub: https://github.com/rajudandigam/agent-inspect
+- npm: https://www.npmjs.com/package/agent-inspect
+
+## Product
+
+Local trajectory evidence: execution trees, TraceContract checks, suites/gates, verified-safe bundles, optional customer-owned Studio Beta. No account, no default upload, metadata-only by default.
+
+## Key docs
+
+- https://github.com/rajudandigam/agent-inspect/blob/main/docs/FIRST-TRACE-IN-5-MINUTES.md
+- https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md
+- https://github.com/rajudandigam/agent-inspect/blob/main/docs/NETWORK-BEHAVIOR.md
+- https://github.com/rajudandigam/agent-inspect/blob/main/docs/TRACE-CONTRACTS.md
+- https://github.com/rajudandigam/agent-inspect/blob/main/docs/GOLDEN-PATH.md
