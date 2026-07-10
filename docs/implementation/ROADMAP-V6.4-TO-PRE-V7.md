@@ -1,12 +1,30 @@
 # AgentInspect Canonical Pre-v7 Roadmap
 
-**Status:** Canonical implementation roadmap proposal after the v6.4 audit  
+**Status:** Canonical implementation roadmap — **horizon trains published through 6.7.x; adoption freeze active**  
 **Audience:** Maintainers, Cursor sessions, contributors, adapter authors, Studio operators, and design partners  
-**Current baseline:** `agent-inspect@6.7.0` (technical launch candidate on npm)  
+**Current baseline:** `agent-inspect@6.7.1` on npm (technical LC scope shipped in **6.7.0**; **6.7.1** = release-tooling + public-truth patch)  
 **Persisted trace schema:** `1.0`  
 **Roadmap horizon:** `v6.4.1 → v6.5 → v6.6 → v6.7 → v6.8 → conditional v7`  
 **Primary goal:** Finish the trust, semantic correctness, team-workflow, interoperability, and launch-readiness work required before broad public adoption.  
-**Exit condition:** After v6.8.0, enter an 8–12 week feature freeze. Only bugs, security, compatibility, performance regressions, and documentation fixes may ship until the v7 adoption gates are reviewed.
+**Exit condition:** After the technical launch candidate, enter an 8–12 week feature freeze. Only bugs, security, compatibility, performance regressions, and documentation fixes may ship until the v7 adoption gates are reviewed.
+
+### Horizon status (2026-07-10)
+
+| Train | npm / outcome | Depth vs this roadmap |
+| ----- | ------------- | --------------------- |
+| **v6.4.1** | Published | Core trust/security **verified**; some adversarial corpus depth still partial |
+| **v6.4.2** | **Skipped** | No post-6.4.1 repair required |
+| **v6.5.0** | Published | TraceContract / suite / cohort **landed minimally**; Vitest/Jest matchers and full contract surface **not** complete |
+| **v6.5.1** | Deferred into freeze | `compat:smoke` on publish; full OS/Node matrix evidence **pending** |
+| **v6.6.0** | Published | Studio APIs strong; HTML product pages **partial** (sessions/suites/safety shells) |
+| **v6.6.1** | Published | Self-hosting guidance **verified** |
+| **v6.7.0** | Published | Standards fixtures + packed quickstart; Collector/Phoenix external proof **pending** |
+| **v6.7.1** | Published | Fixed Changesets group + public truth |
+| **v6.8.0** | **No distinct npm `6.8.0`** | Planned technical LC scope **combined into 6.7.0**; full golden-path automation **incomplete**; **external pilot gate open** |
+| **v6.8.x freeze** | **Active** as `v6.7.x-adoption-freeze` | Blocked on real design-partner / three-team evidence |
+| **v7** | **Not scheduled** | Conditional on adoption gates |
+
+Authoritative reconciliation: [reviews/V6.7.0-PRE-V7-RECONCILIATION-AUDIT.md](reviews/V6.7.0-PRE-V7-RECONCILIATION-AUDIT.md) · state: [RELEASE-TRAIN-STATE.md](RELEASE-TRAIN-STATE.md) · pilot kit: [../PRE-V7-PILOT-KIT.md](../PRE-V7-PILOT-KIT.md)
 
 > **v7 is not scheduled.** Completing implementation is not enough. AgentInspect must first prove repeated external use of trace contracts, suites, CI gates, safe evidence bundles, Studio, MCP workflows, and extension points.
 
