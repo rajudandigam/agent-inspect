@@ -88,13 +88,30 @@ export async function analyzeCohort(
             ...new Set(groups.map((group) => group.groupKey)),
           ].sort((a, b) => a.localeCompare(b));
           const items: CohortMetricComparison[] = [];
+          const minSample = options.tolerance?.minSampleSize ?? 1;
           for (const groupKey of groupKeys) {
+            const baselineGroup = groups.find(
+              (group) => group.groupKey === groupKey && group.cohortLabel === options.baseline,
+            );
+            const candidateGroup = groups.find(
+              (group) => group.groupKey === groupKey && group.cohortLabel === options.candidate,
+            );
+            if (
+              (baselineGroup && baselineGroup.runCount < minSample) ||
+              (candidateGroup && candidateGroup.runCount < minSample)
+            ) {
+              warnings.push(
+                `Insufficient sample for group ${groupKey}: need at least ${minSample} run(s) per cohort.`,
+              );
+              continue;
+            }
             items.push(
               ...compareCohortAggregates(groups, {
                 baseline: options.baseline,
                 candidate: options.candidate,
                 metrics,
                 groupKey,
+                maxRelativeDelta: options.tolerance?.maxRelativeDelta,
               }),
             );
           }

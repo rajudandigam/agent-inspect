@@ -86,6 +86,13 @@ export interface CohortAnalysisResult {
   warnings: string[];
 }
 
+export interface CohortToleranceOptions {
+  /** Minimum runs per cohort label before comparisons are considered valid. */
+  minSampleSize?: number;
+  /** Allowed relative delta (0–1) before a metric comparison is a regression. */
+  maxRelativeDelta?: number;
+}
+
 export interface AnalyzeCohortOptions {
   traceDir: string;
   baseline?: string;
@@ -93,6 +100,7 @@ export interface AnalyzeCohortOptions {
   cohortKey?: string;
   groupBy?: string;
   metrics?: CohortMetricId[];
+  tolerance?: CohortToleranceOptions;
 }
 
 export interface RenderCohortReportOptions {

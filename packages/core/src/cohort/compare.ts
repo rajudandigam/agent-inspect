@@ -10,15 +10,26 @@ function compareNumber(
   baseline?: number,
   candidate?: number,
   higherIsWorse = true,
+  maxRelativeDelta?: number,
 ): CohortMetricComparison | undefined {
   if (baseline === undefined && candidate === undefined) return undefined;
   const delta =
     baseline !== undefined && candidate !== undefined
       ? candidate - baseline
       : undefined;
-  const regression =
+  let regression =
     delta !== undefined &&
     ((higherIsWorse && delta > 0) || (!higherIsWorse && delta < 0));
+  if (
+    regression &&
+    maxRelativeDelta !== undefined &&
+    baseline !== undefined &&
+    baseline !== 0 &&
+    delta !== undefined
+  ) {
+    const relative = Math.abs(delta / baseline);
+    if (relative <= maxRelativeDelta) regression = false;
+  }
   return {
     metric,
     baseline,
@@ -50,11 +61,13 @@ export function compareCohortAggregates(
     candidate: string;
     metrics: readonly CohortMetricId[];
     groupKey?: string;
+    maxRelativeDelta?: number;
   },
 ): CohortMetricComparison[] {
   const baselineAgg = pickAggregate(groups, options.baseline, options.groupKey);
   const candidateAgg = pickAggregate(groups, options.candidate, options.groupKey);
   const comparisons: CohortMetricComparison[] = [];
+  const tolerance = options.maxRelativeDelta;
 
   for (const metric of options.metrics) {
     switch (metric) {
@@ -64,6 +77,8 @@ export function compareCohortAggregates(
           "Error rate",
           baselineAgg?.errorRate,
           candidateAgg?.errorRate,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;

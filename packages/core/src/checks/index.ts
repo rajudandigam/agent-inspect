@@ -2598,3 +2598,14 @@ export function runTraceChecks(
     diagnostics,
   };
 }
+
+export {
+  defineTraceContract,
+  evaluateTraceContract,
+  type TraceContract,
+  type TraceContractInput,
+  type TraceContractLlmRules,
+  type TraceContractObservationRules,
+  type TraceContractRunRules,
+  type TraceContractToolRules,
+} from "./contract.js";

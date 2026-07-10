@@ -266,9 +266,16 @@ export async function runSuite(options: RunSuiteOptions = {}): Promise<SuiteRunR
   };
 
   const finishedAt = new Date(options.nowMs ?? Date.now()).toISOString();
-  const ok = summary.failed === 0 && summary.errors === 0;
+  const allSkipped = cases.length > 0 && summary.skipped === cases.length;
+  const ok = summary.failed === 0 && summary.errors === 0 && !allSkipped;
   const status =
-    summary.errors > 0 ? "error" : summary.failed > 0 || !ok ? "fail" : "pass";
+    summary.errors > 0
+      ? "error"
+      : allSkipped
+        ? "fail"
+        : summary.failed > 0 || !ok
+          ? "fail"
+          : "pass";
 
   return {
     ok,

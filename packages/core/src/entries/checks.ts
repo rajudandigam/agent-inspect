@@ -39,6 +39,12 @@ export type {
   ToolOrderingRuleOptions,
   ToolUsageRuleOptions,
   ObservedOutcomeRuleOptions,
+  TraceContract,
+  TraceContractInput,
+  TraceContractLlmRules,
+  TraceContractObservationRules,
+  TraceContractRunRules,
+  TraceContractToolRules,
 } from "../checks/index.js";
 
 export {
@@ -67,5 +73,7 @@ export {
   createToolFailureRule,
   createToolOrderingRule,
   createToolUsageRule,
+  defineTraceContract,
+  evaluateTraceContract,
   runTraceChecks,
 } from "../checks/index.js";
