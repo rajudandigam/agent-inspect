@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/studio",
-  "version": "6.7.1",
+  "version": "6.7.2",
   "license": "MIT",
   "type": "module",
   "description": "Optional self-hosted read-only Studio analyzer for multi-project AgentInspect workspaces",
