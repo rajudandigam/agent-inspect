@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Presentation and documentation alignment for the 6.7.x launch candidate (public README, task guides, package guides, website, demos, validation tooling). No runtime product expansion. See the upcoming **6.7.2** release notes after Version Packages.
+
 ## 6.7.1
 
 ### Patch Changes
@@ -199,17 +203,15 @@
 
 - 70f3fb2: v3.1 adoption train: public `@agent-inspect/harness`, `agent-inspect init` and `doctor` commands, adoption starters, and onboarding docs.
 
-## Unreleased
+## Historical (pre-3.5 train notes)
+
+The v3.0→v3.5 feature train is complete. Older in-progress notes below are kept for history.
+
+### README adoption polish (shipped in 3.5.x docs)
 
 README adoption polish (brand header, product-loop visual, npm link hygiene). Docs-only; no runtime feature changes.
 
 See [docs/implementation/reviews/README-ADOPTION-POLISH-REVIEW.md](docs/implementation/reviews/README-ADOPTION-POLISH-REVIEW.md).
-
----
-
-## Historical (pre-3.5 train notes)
-
-The v3.0→v3.5 feature train is complete. Older in-progress notes below are kept for history.
 
 ### v3.1 (shipped in 3.1.0)
 
@@ -263,9 +265,9 @@ The v3.0→v3.5 feature train is complete. Older in-progress notes below are kep
 
   Adds the public optional `@agent-inspect/vitest` and `@agent-inspect/jest` reporter packages, the shared experimental `agent-inspect/reporters` helpers, and the `agent-inspect ci-summary` workflow for deterministic local reporter manifests and CI artifacts.
 
-## Unreleased
+### Draft notes (superseded by 2.3.0 / 2.4.0 releases)
 
-### Draft v2.4.0 Notes
+#### Draft v2.4.0 Notes
 
 - Added session/workflow causality model and `agent-inspect/advanced` session index helpers (`buildSessionIndex`, scope/cohort helpers, session fixtures).
 - Added `agent-inspect sessions` and `agent-inspect session` CLI for multi-run handoff/retry navigation with timeline, critical-path, diagnostics, and JSON output.
@@ -273,7 +275,7 @@ The v3.0→v3.5 feature train is complete. Older in-progress notes below are kep
 - Added public optional `@agent-inspect/mcp` for local MCP **client** `tools/list` and `tools/call` telemetry with bounded summaries and `source.type: mcp-client` metadata.
 - No schema version change, no MCP gateway/server, no timestamp-only causality inference, and no root/core dependency on MCP SDKs.
 
-### Draft v2.3.0 Notes
+#### Draft v2.3.0 Notes
 
 - Hardened the official adapter paths for AI SDK, OpenAI Agents JS, and LangChain/LangGraph with no-network recipes, local-only defaults, clearer lifecycle coverage, and executable adapter conformance evidence.
 - AI SDK coverage now includes route-style telemetry factory guidance, per-request integration isolation, tool/stream/error/parallel fixtures, token metadata, and the required `recordInputs: false` / `recordOutputs: false` host settings.
