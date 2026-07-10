@@ -1,5 +1,13 @@
 # @agent-inspect/guardrails
 
+## 6.6.0
+
+### Patch Changes
+
+- Updated dependencies [5766d50]
+  - @agent-inspect/redact@6.6.0
+  - agent-inspect@6.6.0
+
 ## 6.5.0
 
 ### Patch Changes

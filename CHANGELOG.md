@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.6.0
+
+### Minor Changes
+
+- 5766d50: Studio product pages (projects, runs, sessions, suites, safety, search), index refresh status, and Docker Compose example.
+
 ## 6.5.0
 
 ### Minor Changes
