@@ -19,6 +19,7 @@ const RECIPES = [
   "log4js-json-layout",
   "nestjs-json-logging",
   "retry-fallback",
+  "decision-metadata",
   "parallel-tools",
   "github-actions-artifact",
   "deterministic-ci-checks",

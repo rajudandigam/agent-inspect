@@ -1,0 +1,5 @@
+Route chosen: fast-lane
+choose-route
+tool:resolve-ticket
+Safe fields recorded: decisionId, groupId, policyVersion,
+Not recorded: chain-of-thought, prompts, model reasoning.
