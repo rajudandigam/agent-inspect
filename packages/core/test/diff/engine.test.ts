@@ -304,6 +304,27 @@ describe("diffRuns", () => {
     ]);
     const out = diffRuns(left, right);
     expect(out.differences.some((d) => d.kind === "output")).toBe(true);
+    // One preview change is one difference, not also a metadata diff.
+    expect(out.differences.some((d) => d.kind === "metadata")).toBe(false);
+    expect(out.summary.totalDifferences).toBe(1);
+  });
+
+  it("still reports metadata diffs alongside output when other keys change", () => {
+    const left = manualTraceEventsToComparableRun([
+      rs("r", "n", 1),
+      ss("r", "s", "step", 2, "logic", undefined, { outputPreview: "a", model: "m1" }),
+      sc("r", "s", "success", 3, 1),
+      rc("r", "success", 4, 5),
+    ]);
+    const right = manualTraceEventsToComparableRun([
+      rs("r", "n", 1),
+      ss("r", "s", "step", 2, "logic", undefined, { outputPreview: "b", model: "m2" }),
+      sc("r", "s", "success", 3, 1),
+      rc("r", "success", 4, 5),
+    ]);
+    const out = diffRuns(left, right);
+    expect(out.differences.some((d) => d.kind === "output")).toBe(true);
+    expect(out.differences.some((d) => d.kind === "metadata")).toBe(true);
   });
 
   it("records first divergence from first filtered difference", () => {

@@ -98,7 +98,14 @@ export function manualTraceEventsToComparableRun(events: TraceEvent[]): RunCompa
       meta = { ...(meta ?? {}), agent_inspect_diff_parent_missing: true };
     }
 
+    // Previews are compared as their own "output" dimension; strip them from
+    // the metadata copy so one preview change is not also reported as a
+    // metadata diff.
     const outputPreview = extractOutputPreview(meta);
+    if (meta !== undefined && ("outputPreview" in meta || "resultPreview" in meta)) {
+      delete meta.outputPreview;
+      delete meta.resultPreview;
+    }
 
     const sc: StepComparable = {
       id: acc.id,
