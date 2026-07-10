@@ -25,6 +25,8 @@ examples/recipes/**/.agent-inspect-baseline/
 examples/recipes/**/.agent-inspect-candidate/
 examples/recipes/**/.agent-inspect-reporter-artifacts/
 examples/adapter-sdk/**/.agent-inspect-minimal-adapter/
+examples/adapter-sdk/**/.agent-inspect-custom-renderer/
+examples/adapter-sdk/**/.agent-inspect-custom-transform/
 docs-local
 fixtures/studio/.agent-inspect/*.db*
 fixtures/studio/.agent-inspect/*.db-shm
