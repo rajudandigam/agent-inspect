@@ -1,6 +1,6 @@
 # AgentInspect docs
 
-Local-first TypeScript AI agent toolkit: **trace → check → redact** on your machine.
+Local-first TypeScript AI agent toolkit: **debug, regression-test, and safely share** agent behavior on your machine.
 
 **Current release:** [agent-inspect@6.7.1](https://www.npmjs.com/package/agent-inspect) (eighteen linked packages). Technical launch candidate; external pilot evidence pending. Schema **1.0**. Node.js **≥ 20**.
 
@@ -8,25 +8,26 @@ Local-first TypeScript AI agent toolkit: **trace → check → redact** on your 
 **Docs site:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)  
 **npm / GitHub entry:** [../README.md](../README.md)
 
-This folder is the full canonical reference. The marketing site and root README share the same product thesis; deep detail lives here.
-
 ## Three workflows
 
 | Workflow | Start |
 | -------- | ----- |
 | **Debug one run** | [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) · [GETTING-STARTED.md](./GETTING-STARTED.md) |
-| **Prevent one regression** | [API.md](./API.md) (checks / contracts) · [CLI.md](./CLI.md) (`check`, `suite`, `gate`) |
-| **Share one safe artifact** | [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · `verify-safe` / bundles |
+| **Prevent one regression** | [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) · [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) |
+| **Share one safe artifact** | [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [BUNDLES.md](./BUNDLES.md) |
 
 ## Start
 
 | Doc | For |
 | --- | --- |
-| [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) | Fastest path from install to share-safe artifact |
+| [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) | Fastest path from install to share-safe bundle |
+| [GOLDEN-PATH.md](./GOLDEN-PATH.md) | What is automated vs pilot-pending |
 | [GETTING-STARTED.md](./GETTING-STARTED.md) | Observe, manual steps, adapters |
-| [ADOPTION.md](./ADOPTION.md) | Team onboarding and starters |
+| [ADOPTION.md](./ADOPTION.md) | Team onboarding |
 | [USE-CASES.md](./USE-CASES.md) | Problem → command → starter |
-| [PRE-V7-PILOT-KIT.md](./PRE-V7-PILOT-KIT.md) | Design-partner / external pilot checklist |
+| [PRE-V7-PILOT-KIT.md](./PRE-V7-PILOT-KIT.md) | External pilot checklist |
+| [SUPPORT-LEVELS.md](./SUPPORT-LEVELS.md) | Stable / Supported / Beta / Preview |
+| [NETWORK-BEHAVIOR.md](./NETWORK-BEHAVIOR.md) | Explicit network surfaces |
 
 ## Capture
 
@@ -35,6 +36,7 @@ This folder is the full canonical reference. The marketing site and root README 
 | [ADAPTERS.md](./ADAPTERS.md) · [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md) | Framework integrations |
 | [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) · [OPENAI-AGENTS-LOCAL.md](./OPENAI-AGENTS-LOCAL.md) · [NESTJS.md](./NESTJS.md) | Framework guides |
 | [LOGS.md](./LOGS.md) · [LOG-TO-TREE-QUICKSTART.md](./LOG-TO-TREE-QUICKSTART.md) · [LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md) | Log ingest |
+| [STANDARDS.md](./STANDARDS.md) | OpenInference / OTLP |
 
 ## Inspect
 
@@ -42,13 +44,15 @@ This folder is the full canonical reference. The marketing site and root README 
 | --- | ----- |
 | [API.md](./API.md) · [CLI.md](./CLI.md) | Programmatic and terminal APIs |
 | [DIFF.md](./DIFF.md) · [EXPORTS.md](./EXPORTS.md) | Compare and export |
-| [WORKSPACE.md](./WORKSPACE.md) · [INDEX.md](./INDEX.md) | Local workspace and optional index |
+| [SESSIONS-AND-OUTCOMES.md](./SESSIONS-AND-OUTCOMES.md) | Sessions and outcomes |
+| [WORKSPACE.md](./WORKSPACE.md) · [INDEX.md](./INDEX.md) | Workspace and optional index |
 
 ## Prevent regressions
 
 | Doc | Topic |
 | --- | ----- |
-| [API.md](./API.md) | Checks, TraceContract, suites |
+| [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) | Typed TraceContract (Beta) |
+| [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) | Suites, cohorts, CI gates |
 | [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) | CI / test artifacts |
 | [COMPARE.md](./COMPARE.md) | Positioning vs hosted tools |
 
@@ -72,8 +76,8 @@ This folder is the full canonical reference. The marketing site and root README 
 
 | Doc | Topic |
 | --- | ----- |
-| [`@agent-inspect/mcp`](../packages/mcp/README.md) · [`@agent-inspect/mcp-server`](../packages/mcp-server/README.md) | MCP client tracing / read-only server |
-| [STANDARDS.md](./STANDARDS.md) | OpenInference / OTLP bridge and support levels |
+| [`@agent-inspect/mcp`](../packages/mcp/README.md) · [`@agent-inspect/mcp-server`](../packages/mcp-server/README.md) | MCP client / read-only server |
+| [STANDARDS.md](./STANDARDS.md) | OpenInference / OTLP bridge |
 
 ## Reference
 
@@ -88,11 +92,10 @@ This folder is the full canonical reference. The marketing site and root README 
 
 | Doc | Use |
 | --- | --- |
-| [TECHNICAL-GUIDE.md](./TECHNICAL-GUIDE.md) | Full technical overview — blogs, articles, outreach |
+| [TECHNICAL-GUIDE.md](./TECHNICAL-GUIDE.md) | Full technical overview |
 | [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | Live 3-minute demo |
-| [SCREENSHOTS.md](./SCREENSHOTS.md) | GIF demos and recording guide |
+| [SCREENSHOTS.md](./SCREENSHOTS.md) | GIF demos |
 | [DESIGN-PARTNER-GUIDE.md](./DESIGN-PARTNER-GUIDE.md) · [TEAM-WORKFLOWS.md](./TEAM-WORKFLOWS.md) | Team rollout |
-| [PRE-V7-PILOT-KIT.md](./PRE-V7-PILOT-KIT.md) | External pilot evidence checklist |
 | [PITCH.md](./PITCH.md) · [SHOW-HN-DRAFT.md](./SHOW-HN-DRAFT.md) | Launch copy |
 
 ## Elsewhere

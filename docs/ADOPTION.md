@@ -20,7 +20,7 @@ npx agent-inspect init --yes
 node examples/agent-inspect-demo.mjs
 npx agent-inspect list --dir .agent-inspect
 npx agent-inspect view <run-id> --dir .agent-inspect
-npx agent-inspect verify-safe --dir .agent-inspect
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect
 ```
 
 No API keys required for the init demo. See [examples/starters/](../examples/starters/README.md).

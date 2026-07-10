@@ -10,11 +10,12 @@ AgentInspect is a local-first trace workbench for TypeScript AI agents: capture 
 | --------- | ------------ | --------------------------------------- | --------------------------- | ------------------------------- |
 | Where traces live | Local JSONL on your disk | Vendor or self-hosted backend | Vendor backend | Your collector + backend |
 | Account / setup | None; `npm install` + CLI | Account or deployment | Account | SDK + collector + backend |
-| Primary surface | CLI (`view`, `report`, `diff`, `check`), local viewer, in-repo VS Code extension | Web dashboards | Web dashboards, eval UI | Dashboards, alerting |
+| Primary surface | CLI (`view`, `report`, `diff`, `check`, suites/gates), local viewer, optional Studio Beta | Web dashboards | Web dashboards, eval UI | Dashboards, alerting |
 | Evals | Deterministic local heuristics and CI gates (`check`, `eval`, `circuit`, `guardrails`) | Platform evals | Datasets, scoring, regressions at scale | Not the focus |
 | Retention / fleet view | Not the goal | Strong | Strong | Strong |
 | Data sharing | Explicit `redact` + `scan` / `verify-safe` before you share a file | Team access controls | Team access controls | Org pipelines |
-| Network behavior | No upload; everything stays local unless you share a file | Uploads traces by design | Uploads by design | Ships telemetry by design |
+| Network behavior | No default upload; explicit customer-owned ingest only | Uploads traces by design | Uploads by design | Ships telemetry by design |
+| Team review | Optional customer-owned Studio Beta (not maintainer-hosted) | Strong | Strong | Strong |
 
 If you need hosted retention, fleet dashboards, dataset management, or org-wide pipelines, use one of those platforms alongside AgentInspect. Boundaries are listed in [LIMITATIONS.md](./LIMITATIONS.md); concrete inner-loop workflows in [USE-CASES.md](./USE-CASES.md).
 
