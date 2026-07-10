@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.5.0
+
+### Minor Changes
+
+- e48a964: Add experimental TraceContract API in checks, fix all-skipped suite pass semantics, and cohort tolerance/sample diagnostics.
+
 ## 6.4.1
 
 ### Patch Changes
