@@ -99,4 +99,30 @@ describe("search CLI", () => {
     ]);
     expect(parsed.every((row) => row.sessionId === "sess-handoff-001")).toBe(true);
   });
+
+  it("sets exit code 1 when the session id is not found", async () => {
+    const fixtures = path.resolve(
+      path.dirname(new URL(import.meta.url).pathname),
+      "../../../fixtures/sessions/multi-agent-handoff",
+    );
+    await cp(path.join(fixtures, "handoff-planner.jsonl"), path.join(tmpDir, "handoff-planner.jsonl"));
+
+    const prevExitCode = process.exitCode;
+    try {
+      process.exitCode = 0;
+      await searchCommand({ dir: tmpDir, session: "sess-does-not-exist" });
+      const out = logSpy.mock.calls.flat().join("\n");
+      expect(out).toContain("Session not found: sess-does-not-exist");
+      expect(process.exitCode).toBe(1);
+
+      process.exitCode = 0;
+      logSpy.mockClear();
+      await searchCommand({ dir: tmpDir, session: "sess-does-not-exist", json: true });
+      const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
+      expect(parsed).toEqual([]);
+      expect(process.exitCode).toBe(1);
+    } finally {
+      process.exitCode = prevExitCode ?? 0;
+    }
+  });
 });
