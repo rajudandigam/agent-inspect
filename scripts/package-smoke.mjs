@@ -383,6 +383,7 @@ const optionalPackageChecks = [
   {
     dir: "packages/mcp-server",
     name: "@agent-inspect/mcp-server",
+    bundledWorkspaceDirs: ["packages/redact"],
     peerDependencies: {},
     installPeers: [],
     esm: `
