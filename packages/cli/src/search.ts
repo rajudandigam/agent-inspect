@@ -69,6 +69,7 @@ export async function searchCommand(
           console.log(`Session not found: ${sessionId}`);
           console.log(`Trace directory: ${traceDir}`);
         }
+        process.exitCode = 1;
         return;
       }
       metas = scoped.metas;
