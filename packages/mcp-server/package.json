@@ -38,6 +38,7 @@
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "dependencies": {
+    "@agent-inspect/redact": "workspace:*",
     "agent-inspect": "workspace:*"
   },
   "peerDependencies": {},

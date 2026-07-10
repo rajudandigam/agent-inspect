@@ -1,0 +1,18 @@
+{
+  "suiteName": "<img src=x onerror=alert(1)>",
+  "status": "fail",
+  "summary": { "passed": 0, "failed": 1 },
+  "cases": [
+    {
+      "id": "<script>alert('xss')</script>",
+      "status": "fail",
+      "message": "\"><svg onload=alert(1)>",
+      "toolPath": ["../../../etc/passwd"],
+      "observations": [{ "name": "<b>bold</b>", "status": "failed" }],
+      "diagnostics": [{ "message": "javascript:alert(1)" }],
+      "failureDiff": { "summary": { "errors": 1 } }
+    }
+  ],
+  "ciArtifactsDir": "/tmp/<script>",
+  "bundleExportHint": "<iframe src=evil>"
+}

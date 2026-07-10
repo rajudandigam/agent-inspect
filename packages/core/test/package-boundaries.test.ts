@@ -163,7 +163,9 @@ describe("package boundaries", () => {
     const mcpServer = await readPkg("packages/mcp-server/package.json");
     expect(mcpServer.name).toBe("@agent-inspect/mcp-server");
     expect(mcpServer.private).toBeUndefined();
-    expect(keys(mcpServer.dependencies)).toEqual(["agent-inspect"]);
+    expect(keys(mcpServer.dependencies).sort()).toEqual(
+      ["@agent-inspect/redact", "agent-inspect"].sort(),
+    );
     expect(keys(mcpServer.peerDependencies)).toEqual([]);
   });
 

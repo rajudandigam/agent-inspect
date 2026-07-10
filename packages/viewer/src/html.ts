@@ -26,27 +26,36 @@ export const viewerIndexHtml = `<!DOCTYPE html>
     const params = new URLSearchParams(location.search);
     const mode = params.get("mode") || "traces";
 
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
     function renderSuite(data) {
       const rows = data.cases.map((c) =>
-        '<tr><td>' + c.id + '</td><td class="' + c.status + '">' + c.status +
-        '</td><td>' + (c.message || '') + '</td><td>' + c.toolPath.join(' → ') +
-        '</td><td>' + c.observations.map((o) => o.name + ':' + o.status).join(', ') + '</td></tr>'
+        '<tr><td>' + escapeHtml(c.id) + '</td><td class="' + escapeHtml(c.status) + '">' + escapeHtml(c.status) +
+        '</td><td>' + escapeHtml(c.message || '') + '</td><td>' + escapeHtml(c.toolPath.join(' → ')) +
+        '</td><td>' + escapeHtml(c.observations.map((o) => o.name + ':' + o.status).join(', ')) + '</td></tr>'
       ).join('');
       const failed = data.cases.filter((c) => c.status !== 'pass');
       const detail = failed.map((c) => {
-        let html = '<h3>Case ' + c.id + '</h3><ul>';
-        if (c.failureDiff) html += '<li>Diff errors: ' + c.failureDiff.summary.errors + '</li>';
-        if (c.timeline) html += '<li>Timeline steps: ' + c.timeline.entries.length + '</li>';
-        html += '<li>Diagnostics: ' + c.diagnostics.map((d) => d.message).join('; ') + '</li></ul>';
+        let html = '<h3>Case ' + escapeHtml(c.id) + '</h3><ul>';
+        if (c.failureDiff) html += '<li>Diff errors: ' + escapeHtml(c.failureDiff.summary.errors) + '</li>';
+        if (c.timeline) html += '<li>Timeline steps: ' + escapeHtml(c.timeline.entries.length) + '</li>';
+        html += '<li>Diagnostics: ' + escapeHtml(c.diagnostics.map((d) => d.message).join('; ')) + '</li></ul>';
         return html;
       }).join('');
-      return '<section><h2>Suite: ' + data.suiteName + ' (' + data.status + ')</h2>' +
-        '<p>Passed ' + data.summary.passed + ', failed ' + data.summary.failed + '</p>' +
+      return '<section><h2>Suite: ' + escapeHtml(data.suiteName) + ' (' + escapeHtml(data.status) + ')</h2>' +
+        '<p>Passed ' + escapeHtml(data.summary.passed) + ', failed ' + escapeHtml(data.summary.failed) + '</p>' +
         '<table><thead><tr><th>Case</th><th>Status</th><th>Message</th><th>Tool path</th><th>Observations</th></tr></thead><tbody>' +
         rows + '</tbody></table>' +
         '<section><h2>Failure detail</h2>' + (detail || '<p class="pass">No failures</p>') + '</section>' +
-        '<section><h2>CI artifacts</h2><p>' + (data.ciArtifactsDir || 'n/a') + '</p></section>' +
-        '<section><h2>Bundle export</h2><p>' + data.bundleExportHint + '</p></section>';
+        '<section><h2>CI artifacts</h2><p>' + escapeHtml(data.ciArtifactsDir || 'n/a') + '</p></section>' +
+        '<section><h2>Bundle export</h2><p>' + escapeHtml(data.bundleExportHint) + '</p></section>';
     }
 
     async function load() {
@@ -62,8 +71,8 @@ export const viewerIndexHtml = `<!DOCTYPE html>
       if (mode === "workspace") {
         nav.innerHTML = '<a href="/api/workspace">/api/workspace</a>';
         const data = await fetch("/api/workspace").then((r) => r.json());
-        content.innerHTML = '<section><h2>Workspace: ' + (data.project || 'workspace') + '</h2>' +
-          '<p>Runs: ' + data.runs.length + '</p><pre>' + JSON.stringify(data, null, 2) + '</pre></section>';
+        content.innerHTML = '<section><h2>Workspace: ' + escapeHtml(data.project || 'workspace') + '</h2>' +
+          '<p>Runs: ' + escapeHtml(data.runs.length) + '</p><pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre></section>';
         return;
       }
       nav.innerHTML = '<a href="/api/traces">/api/traces</a> · <a href="/api/sessions">/api/sessions</a>';

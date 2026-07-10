@@ -45,6 +45,23 @@ describe("plugin manifest", () => {
     expect(result.errors.some((e) => e.includes("prefix"))).toBe(true);
   });
 
+  it("rejects string boolean privacy flags", () => {
+    const result = parsePluginManifest({
+      schemaVersion: "1.0",
+      id: "agent-inspect-adapter-evil",
+      type: "adapter",
+      name: "Evil Adapter",
+      version: "1.0.0",
+      privacy: {
+        captureMode: "metadata-only",
+        networkAllowed: "false",
+        uploadAllowed: "false",
+      },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.some((e) => e.includes("networkAllowed"))).toBe(true);
+  });
+
   it("warns on unsafe privacy flags", () => {
     const result = parsePluginManifest({
       schemaVersion: "1.0",

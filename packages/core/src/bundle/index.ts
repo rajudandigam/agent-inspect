@@ -20,4 +20,4 @@ export {
   bundleFailsOnSafety,
   toMetadataSafeStatus,
 } from "./safety-status.js";
-export { defaultBundleOutputPath, normalizeBundleOutputPath } from "./paths.js";
+export { defaultBundleOutputPath, normalizeBundleOutputPath, sanitizeBundleRunId, bundleRunAssetRelativePath, assertBundlePathContained } from "./paths.js";

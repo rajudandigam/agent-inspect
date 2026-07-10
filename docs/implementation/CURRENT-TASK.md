@@ -4,24 +4,18 @@
 executionMode: autonomous-release-train
 currentTrain: pre-v7-stabilization
 trainStatus: active
-currentChunk: 6.4.1-1
-nextAction: Fix demo + packed five-minute E2E; fix verify-safe README quickstart
+currentChunk: 6.4.2
+nextAction: Post-6.4.1 publish verification; proceed to v6.5.0 if v6.4.2 skipped
 ```
 
 ## Published baseline
 
-**6.4.0** — confirmed on npm (publish run `29048645051`).
+**6.4.0** — npm. **6.4.1** — changeset staged; publish after Version Packages merge.
 
-## Active train
+## Completed
 
-**pre-v7-stabilization** — v6.4.1 through v6.8.x per [ROADMAP-V6.4-TO-PRE-V7.md](./ROADMAP-V6.4-TO-PRE-V7.md).
+v6.4.1 trust/security chunks (MCP boundary, bundle safety, paths, XSS, manifests, gates, Studio init, fixtures, public truth).
 
-## Next chunk (6.4.1-1)
+## Next
 
-- Fix README `verify-safe` quickstart (missing positional arg)
-- Add packed five-minute E2E validation
-- See [V6.4.1-EXECUTION-PLAN.md](./release-trains/V6.4.1-EXECUTION-PLAN.md)
-
-## v7.0.0
-
-**Not scheduled.** No v7 implementation until v6.8.x freeze and adoption gates pass.
+v6.4.2 reserved repair (skip if post-publish verify clean) → v6.5.0 TraceContract.

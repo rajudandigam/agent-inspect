@@ -35,6 +35,9 @@ function validateOptions(options: RunGateOptions): string[] {
   if (options.maxErrorRate !== undefined && options.maxErrorRate < 0) {
     errors.push("--max-error-rate must be a non-negative percentage.");
   }
+  if (options.maxErrorRate !== undefined && options.maxErrorRate > 100) {
+    errors.push("--max-error-rate must be at most 100.");
+  }
 
   if (options.maxP95DurationMs !== undefined && options.maxP95DurationMs < 0) {
     errors.push("--max-p95-duration must be a non-negative millisecond value.");

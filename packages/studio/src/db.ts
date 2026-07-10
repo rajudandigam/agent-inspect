@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 import Database from "better-sqlite3";
@@ -104,11 +104,16 @@ export function isPostgresDbPath(dbPath: string): boolean {
 export function openStudioDb(dbPath: string): Database.Database {
   if (isPostgresDbPath(dbPath)) {
     throw new Error(
-      "Postgres studio databases are not implemented in v6.0.0; use a SQLite file path.",
+      "Postgres studio databases are not supported; use a SQLite file path (preview only).",
     );
   }
   const dir = path.dirname(dbPath);
-  void mkdir(dir, { recursive: true });
+  try {
+    mkdirSync(dir, { recursive: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to create studio database directory: ${message}`);
+  }
   const db = new Database(dbPath);
   db.pragma("journal_mode = WAL");
   db.exec(SCHEMA_SQL);

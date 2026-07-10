@@ -36,6 +36,33 @@ export interface PluginManifestParseResult {
   warnings: string[];
 }
 
+const CAPTURE_MODES = new Set(["metadata-only", "preview", "full"]);
+
+function parseStrictBoolean(
+  value: unknown,
+  label: string,
+  errors: string[],
+): boolean | undefined {
+  if (value === undefined) return undefined;
+  if (value === true) return true;
+  if (value === false) return false;
+  errors.push(`${label} must be a boolean true or false, not ${JSON.stringify(value)}`);
+  return undefined;
+}
+
+function parseCaptureMode(
+  value: unknown,
+  errors: string[],
+): PrivacyChecklistInput["captureMode"] | undefined {
+  if (value === undefined) return undefined;
+  const mode = String(value);
+  if (!CAPTURE_MODES.has(mode)) {
+    errors.push(`privacy.captureMode must be one of: metadata-only, preview, full`);
+    return undefined;
+  }
+  return mode as PrivacyChecklistInput["captureMode"];
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -88,20 +115,35 @@ export function parsePluginManifest(input: unknown): PluginManifestParseResult {
       errors.push("privacy must be an object");
     } else {
       privacy = {};
-      if (input.privacy.captureMode !== undefined) {
-        privacy.captureMode = String(input.privacy.captureMode) as PrivacyChecklistInput["captureMode"];
+      const captureMode = parseCaptureMode(input.privacy.captureMode, errors);
+      if (captureMode !== undefined) privacy.captureMode = captureMode;
+      const networkAllowed = parseStrictBoolean(
+        input.privacy.networkAllowed,
+        "privacy.networkAllowed",
+        errors,
+      );
+      if (networkAllowed !== undefined) privacy.networkAllowed = networkAllowed;
+      const uploadAllowed = parseStrictBoolean(
+        input.privacy.uploadAllowed,
+        "privacy.uploadAllowed",
+        errors,
+      );
+      if (uploadAllowed !== undefined) privacy.uploadAllowed = uploadAllowed;
+      const redactionDocumented = parseStrictBoolean(
+        input.privacy.redactionDocumented,
+        "privacy.redactionDocumented",
+        errors,
+      );
+      if (redactionDocumented !== undefined) {
+        privacy.redactionDocumented = redactionDocumented;
       }
-      if (input.privacy.networkAllowed !== undefined) {
-        privacy.networkAllowed = Boolean(input.privacy.networkAllowed);
-      }
-      if (input.privacy.uploadAllowed !== undefined) {
-        privacy.uploadAllowed = Boolean(input.privacy.uploadAllowed);
-      }
-      if (input.privacy.redactionDocumented !== undefined) {
-        privacy.redactionDocumented = Boolean(input.privacy.redactionDocumented);
-      }
-      if (input.privacy.frameworkDepsPackageScoped !== undefined) {
-        privacy.frameworkDepsPackageScoped = Boolean(input.privacy.frameworkDepsPackageScoped);
+      const frameworkDepsPackageScoped = parseStrictBoolean(
+        input.privacy.frameworkDepsPackageScoped,
+        "privacy.frameworkDepsPackageScoped",
+        errors,
+      );
+      if (frameworkDepsPackageScoped !== undefined) {
+        privacy.frameworkDepsPackageScoped = frameworkDepsPackageScoped;
       }
       if (privacy.networkAllowed === true || privacy.uploadAllowed === true) {
         warnings.push("plugin declares network or upload — review before install");

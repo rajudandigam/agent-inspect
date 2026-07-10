@@ -587,6 +587,9 @@ importers:
 
   packages/mcp-server:
     dependencies:
+      '@agent-inspect/redact':
+        specifier: workspace:*
+        version: link:../redact
       agent-inspect:
         specifier: workspace:*
         version: link:../..

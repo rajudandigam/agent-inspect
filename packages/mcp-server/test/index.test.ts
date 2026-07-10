@@ -72,9 +72,18 @@ describe("@agent-inspect/mcp-server", () => {
     const result = await callReadOnlyTool(context, "create_share_safe_bundle", { runId });
     expect(result.isError).toBe(false);
     const payload = JSON.parse(result.content[0]!.text as string) as {
-      metadata: { runIds: string[] };
+      metadata: { safeStatus: string };
     };
-    expect(payload.metadata.runIds).toContain(runId);
+    expect(["SAFE", "SAFE_WITH_WARNINGS"]).toContain(payload.metadata.safeStatus);
+  });
+
+  it("applies MCP result boundary on read_trace", async () => {
+    const context = createMcpServerContext({ traceDir });
+    const result = await callReadOnlyTool(context, "read_trace", { runId });
+    expect(result.isError).toBe(false);
+    const text = result.content[0]!.text as string;
+    expect(text.length).toBeGreaterThan(0);
+    expect(text.length).toBeLessThan(600_000);
   });
 
   it("handles tools/list over stdio", async () => {

@@ -45,7 +45,7 @@ node examples/agent-inspect-demo.mjs
 npx agent-inspect list --dir .agent-inspect
 npx agent-inspect view <run-id> --dir .agent-inspect
 npx agent-inspect report <run-id> --dir .agent-inspect
-npx agent-inspect verify-safe --dir .agent-inspect
+npx agent-inspect verify-safe <run-id> --dir .agent-inspect
 ```
 
 Install → one trace → one failure check → one share-safe artifact in under five minutes.
@@ -153,7 +153,7 @@ See [Compare](https://agentinspect.vercel.app/docs/compare/).
 
 ## Install details
 
-Current release: **3.5.5** (sixteen linked npm packages). Persisted trace schema **1.0**. Requires **Node.js >= 20**.
+Current release: **6.4.0** (sixteen linked npm packages). Persisted trace schema **1.0**. Requires **Node.js >= 20**.
 
 ```bash
 pnpm add agent-inspect

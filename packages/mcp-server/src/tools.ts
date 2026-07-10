@@ -5,6 +5,7 @@ import {
   buildBundleMetadata,
   buildRunTimeline,
   buildRunWhatSummary,
+  bundleFailsOnSafety,
   extractOutcomesFromTraceEvents,
   loadTraceMetadataList,
   renderRunWhat,
@@ -16,6 +17,9 @@ import { diffRuns, manualTraceEventsToComparableRun } from "agent-inspect/diff";
 import { exportMarkdown, exportRunTree } from "agent-inspect/exporters";
 import { persistedInspectEventsToTraceEvents } from "agent-inspect/persisted";
 import { openTrace } from "agent-inspect/readers";
+
+import { assessTraceForMcp } from "./assess-trace.js";
+import { prepareMcpToolResult } from "./prepare-result.js";
 
 export interface McpServerContext {
   traceDir: string;
@@ -146,6 +150,31 @@ function textResult(payload: unknown) {
   };
 }
 
+function deliverMcpPayload(
+  payload: unknown,
+  context: McpServerContext,
+) {
+  const prepared = prepareMcpToolResult(payload, {
+    redactionProfile: redactionProfileForExport(context),
+  });
+  const body =
+    prepared.diagnostics.length > 0 || prepared.truncated
+      ? {
+          ...(typeof prepared.payload === "object" &&
+          prepared.payload !== null &&
+          !Array.isArray(prepared.payload)
+            ? prepared.payload
+            : { value: prepared.payload }),
+          _mcp: {
+            diagnostics: prepared.diagnostics,
+            truncated: prepared.truncated,
+            redactionFindings: prepared.redactionFindings,
+          },
+        }
+      : prepared.payload;
+  return textResult(body);
+}
+
 function errorResult(message: string) {
   return {
     content: [{ type: "text", text: message }],
@@ -209,13 +238,14 @@ export async function callReadOnlyTool(
       const metas = await loadTraceMetadataList(context.traceDir, files, (fileName) =>
         td.getPath(fileName),
       );
-      return textResult(
+      return deliverMcpPayload(
         metas.map((meta) => ({
           runId: meta.runId,
           name: meta.name,
           status: meta.status,
           file: path.basename(meta.filePath),
         })),
+        context,
       );
     }
     case "read_trace": {
@@ -225,12 +255,15 @@ export async function callReadOnlyTool(
         read.events.length > context.maxEvents
           ? read.events.slice(0, context.maxEvents)
           : read.events;
-      return textResult({
-        runId,
-        format: read.format,
-        truncated: read.events.length > events.length,
-        events,
-      });
+      return deliverMcpPayload(
+        {
+          runId,
+          format: read.format,
+          truncated: read.events.length > events.length,
+          events,
+        },
+        context,
+      );
     }
     case "search_traces": {
       const query = String(args.query ?? "").trim();
@@ -245,17 +278,20 @@ export async function callReadOnlyTool(
         name: query,
         limit: 25,
       });
-      return textResult(results);
+      return deliverMcpPayload(results, context);
     }
     case "find_first_error": {
       const runId = String(args.runId ?? "");
       const { read } = await openRunTrace(context, runId);
       const timeline = buildRunTimeline(legacyTraceEvents(read.events));
       const firstError = timeline.entries.find((entry) => entry.isError);
-      return textResult({
-        runId,
-        firstError: firstError ?? null,
-      });
+      return deliverMcpPayload(
+        {
+          runId,
+          firstError: firstError ?? null,
+        },
+        context,
+      );
     }
     case "find_slowest_path": {
       const runId = String(args.runId ?? "");
@@ -268,11 +304,14 @@ export async function callReadOnlyTool(
         .filter((entry) => entry.durationMs !== undefined && Number.isFinite(entry.durationMs))
         .sort((a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0))
         .slice(0, 5);
-      return textResult({
-        runId,
-        slowest: ranked[0] ?? null,
-        top: ranked,
-      });
+      return deliverMcpPayload(
+        {
+          runId,
+          slowest: ranked[0] ?? null,
+          top: ranked,
+        },
+        context,
+      );
     }
     case "compare_runs": {
       const leftRunId = String(args.leftRunId ?? "");
@@ -283,11 +322,14 @@ export async function callReadOnlyTool(
         manualTraceEventsToComparableRun(legacyTraceEvents(left.read.events)),
         manualTraceEventsToComparableRun(legacyTraceEvents(right.read.events)),
       );
-      return textResult({
-        summary: diff.summary,
-        differences: diff.differences.slice(0, 50),
-        truncated: diff.differences.length > 50,
-      });
+      return deliverMcpPayload(
+        {
+          summary: diff.summary,
+          differences: diff.differences.slice(0, 50),
+          truncated: diff.differences.length > 50,
+        },
+        context,
+      );
     }
     case "run_checks": {
       const runId = String(args.runId ?? "");
@@ -296,7 +338,7 @@ export async function callReadOnlyTool(
         { read },
         { rules: [createRunStatusRule()], select: ["run.status"], runId },
       );
-      return textResult(result);
+      return deliverMcpPayload(result, context);
     }
     case "create_share_safe_report": {
       const runId = String(args.runId ?? "");
@@ -309,43 +351,55 @@ export async function callReadOnlyTool(
         redacted: true,
         redactionProfile: profile,
       });
-      return textResult({ runId, profile, markdown: markdown.content });
+      return deliverMcpPayload({ runId, profile, markdown: markdown.content }, context);
     }
     case "summarize_failed_run": {
       const runId = String(args.runId ?? "");
       const { read } = await openRunTrace(context, runId);
       const traceEvents = legacyTraceEvents(read.events);
       const summary = buildRunWhatSummary(traceEvents);
-      return textResult({
-        runId,
-        status: summary.status,
-        summary: renderRunWhat(summary),
-        failedStepNames: summary.failedStepNames,
-        correlation: summary.correlation ?? null,
-      });
+      return deliverMcpPayload(
+        {
+          runId,
+          status: summary.status,
+          summary: renderRunWhat(summary),
+          failedStepNames: summary.failedStepNames,
+          correlation: summary.correlation ?? null,
+        },
+        context,
+      );
     }
     case "retrieve_decision_notes": {
       const runId = String(args.runId ?? "");
       const { read } = await openRunTrace(context, runId);
       const notes = decisionNotes(read.events);
-      return textResult({ runId, decisions: notes, count: notes.length });
+      return deliverMcpPayload({ runId, decisions: notes, count: notes.length }, context);
     }
     case "find_failed_observation": {
       const runId = String(args.runId ?? "");
       const { read } = await openRunTrace(context, runId);
       const outcomes = extractOutcomesFromTraceEvents(legacyTraceEvents(read.events));
       const failed = outcomes.filter((outcome) => outcome.status === "failed");
-      return textResult({
-        runId,
-        failed,
-        count: failed.length,
-      });
+      return deliverMcpPayload(
+        {
+          runId,
+          failed,
+          count: failed.length,
+        },
+        context,
+      );
     }
     case "create_share_safe_bundle": {
       const runId = String(args.runId ?? "");
       const { read } = await openRunTrace(context, runId);
       const run = read.runs.find((item) => item.runId === runId) ?? read.runs[0];
       if (!run) return errorResult(`Run tree not found: ${runId}`);
+      const safety = assessTraceForMcp(read, runId);
+      if (bundleFailsOnSafety(safety.status, false)) {
+        return errorResult(
+          `Share-safe bundle refused: safety status is ${safety.status}. Resolve findings before export.`,
+        );
+      }
       const profile = redactionProfileForExport(context);
       const markdown = exportMarkdown(run, {
         format: "markdown",
@@ -362,20 +416,31 @@ export async function callReadOnlyTool(
         profile,
         resolve: { runIds: [runId] },
         checks: {
-          aggregateStatus: "SAFE",
-          runs: [{ runId, status: "SAFE", errors: 0, warnings: 0, findings: 0 }],
+          aggregateStatus: safety.status,
+          runs: [
+            {
+              runId,
+              status: safety.status,
+              errors: safety.errors,
+              warnings: safety.warnings,
+              findings: safety.findings,
+            },
+          ],
         },
         files: ["report.md", "tree.json"],
       });
-      return textResult({
-        runId,
-        profile,
-        metadata,
-        files: {
-          "report.md": markdown.content,
-          "tree.json": tree.content,
+      return deliverMcpPayload(
+        {
+          runId,
+          profile,
+          metadata,
+          files: {
+            "report.md": markdown.content,
+            "tree.json": tree.content,
+          },
         },
-      });
+        context,
+      );
     }
     default:
       return errorResult(`Unknown tool: ${name}`);

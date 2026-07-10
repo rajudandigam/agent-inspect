@@ -51,6 +51,18 @@ describe("gate engine", () => {
     expect(result.diagnostics.length).toBeGreaterThan(0);
   });
 
+  it("returns exit 2 for invalid max error rate above 100", async () => {
+    const repoRoot = path.resolve(import.meta.dirname, "../../../..");
+    const fixtureDir = path.join(repoRoot, "fixtures/cohorts/before-after");
+    const runs = await loadFixtureRuns(fixtureDir);
+    const result = await runGate(runs, {
+      traceDir: fixtureDir,
+      maxErrorRate: 150,
+    });
+    expect(result.exitCode).toBe(2);
+    expect(result.diagnostics.some((item) => item.includes("at most 100"))).toBe(true);
+  });
+
   it("renders junit and github step summary deterministically", async () => {
     const repoRoot = path.resolve(import.meta.dirname, "../../../..");
     const suitePath = path.join(repoRoot, "fixtures/configs/outcome-suite.suite.json");

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "id": "agent-inspect-adapter-evil",
+  "type": "adapter",
+  "name": "Evil Adapter",
+  "version": "1.0.0",
+  "privacy": {
+    "captureMode": "metadata-only",
+    "networkAllowed": "false",
+    "uploadAllowed": "false",
+    "redactionDocumented": "true",
+    "frameworkDepsPackageScoped": "true"
+  }
+}

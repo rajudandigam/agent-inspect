@@ -262,6 +262,9 @@ export {
   bundleFailsOnSafety,
   defaultBundleOutputPath,
   normalizeBundleOutputPath,
+  sanitizeBundleRunId,
+  bundleRunAssetRelativePath,
+  assertBundlePathContained,
   resolveBundleRunIds,
   toMetadataSafeStatus,
 } from "../bundle/index.js";

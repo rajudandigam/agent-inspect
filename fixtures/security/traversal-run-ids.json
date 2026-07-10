@@ -1,0 +1,12 @@
+{
+  "runIds": [
+    "../../../etc/passwd",
+    "..\\..\\windows\\system32",
+    "valid-run-id",
+    "",
+    ".",
+    "..",
+    "run/with/slash",
+    "run<script>.jsonl"
+  ]
+}

@@ -38,6 +38,12 @@ function parseRate(value: string | undefined): number | undefined {
   if (!Number.isFinite(parsed)) {
     throw new Error(`Invalid --max-error-rate: ${value}`);
   }
+  if (parsed < 0) {
+    throw new Error("--max-error-rate must be a non-negative percentage.");
+  }
+  if (parsed > 100) {
+    throw new Error("--max-error-rate must be at most 100.");
+  }
   return parsed;
 }
 

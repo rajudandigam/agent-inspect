@@ -14,6 +14,9 @@ import {
   resolveBundleRunIds,
   resolveTraceDir,
   aggregateBundleSafeStatus,
+  sanitizeBundleRunId,
+  bundleRunAssetRelativePath,
+  assertBundlePathContained,
   type BundleCheckResults,
   type BundleRedactionProfile,
   type BundleRedactionReport,
@@ -117,7 +120,8 @@ async function resolveOutputDir(
     const manifest = await readWorkspaceManifestFile(location);
     if (manifest.ok && manifest.manifest) {
       const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const label = runIds.length === 1 ? runIds[0]! : `multi-${runIds.length}`;
+      const label =
+        runIds.length === 1 ? sanitizeBundleRunId(runIds[0]!) : `multi-${runIds.length}`;
       return resolveInsideWorkspace(
         location.workspaceDir,
         path.join(manifest.manifest.bundlesDir, `bundle-${label}-${stamp}`),
@@ -136,7 +140,7 @@ async function writeBundleFile(
   content: string,
   files: string[],
 ): Promise<void> {
-  const outPath = path.join(outputDir, relativePath);
+  const outPath = assertBundlePathContained(outputDir, relativePath);
   await mkdir(path.dirname(outPath), { recursive: true });
   await writeFile(outPath, content, "utf-8");
   files.push(relativePath);
@@ -149,7 +153,7 @@ function renderBundleIndexHtml(parts: {
   const links = parts.runIds
     .map(
       (runId) =>
-        `<li><a href="assets/runs/${escapeHtml(runId)}.html">${escapeHtml(runId)}</a></li>`,
+        `<li><a href="${escapeHtml(bundleRunAssetRelativePath(runId, ".html"))}">${escapeHtml(runId)}</a></li>`,
     )
     .join("");
   const sections = parts.runIds
@@ -342,11 +346,16 @@ export async function bundleCommand(
 
   for (const runId of resolveResult.runIds) {
     const jsonl = redactedJsonlByRun.get(runId) ?? "";
-    await writeBundleFile(outputDir, `assets/runs/${runId}.jsonl`, jsonl, files);
+    await writeBundleFile(
+      outputDir,
+      bundleRunAssetRelativePath(runId, ".jsonl"),
+      jsonl,
+      files,
+    );
     const html = htmlByRun.get(runId) ?? "";
     await writeBundleFile(
       outputDir,
-      `assets/runs/${runId}.html`,
+      bundleRunAssetRelativePath(runId, ".html"),
       runReportWrap(html, runId),
       files,
     );
