@@ -79,6 +79,37 @@ describe("EventNormalizer", () => {
     expect((e as any).status).toBe("error");
   });
 
+  it("error/failed match complete dot tokens, including mid-name", () => {
+    const n = new EventNormalizer({ config: baseConfig });
+    const mid = n.normalize(
+      rec({ decisionId: "d", event: "app.error.timeout", timestamp: 1 }),
+    );
+    expect((mid as any).kind).toBe("ERROR");
+    expect((mid as any).status).toBe("error");
+  });
+
+  it("does not flag error/failed substrings inside larger tokens", () => {
+    const n = new EventNormalizer({ config: baseConfig });
+
+    const budget = n.normalize(
+      rec({ decisionId: "d", event: "payment.error_budget.checked", timestamp: 1 }),
+    );
+    expect((budget as any).kind).toBe("LOG");
+    expect((budget as any).status).toBeUndefined();
+
+    const retry = n.normalize(
+      rec({ decisionId: "d", event: "proactive.tool.error_retry", timestamp: 1 }),
+    );
+    expect((retry as any).kind).toBe("TOOL");
+    expect((retry as any).status).toBeUndefined();
+
+    const reset = n.normalize(
+      rec({ decisionId: "d", event: "worker.failed_attempts_reset", timestamp: 1 }),
+    );
+    expect((reset as any).kind).toBe("LOG");
+    expect((reset as any).status).toBeUndefined();
+  });
+
   it("attributes exclude used keys and preserve metadata", () => {
     const n = new EventNormalizer({ config: baseConfig });
     const e = n.normalize(
