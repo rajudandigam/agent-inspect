@@ -27,7 +27,7 @@ npm install @agent-inspect/redact
 import { redact } from "@agent-inspect/redact";
 
 const result = redact(
-  { apiKey: "sk-secret", message: "hello" },
+  { apiKey: "demo-token", message: "hello" },
   { profile: "share" },
 );
 console.log(result.value, result.findings);
