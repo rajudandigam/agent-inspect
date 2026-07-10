@@ -37,6 +37,12 @@ See [`examples/adapter-sdk/minimal-source-adapter`](../../examples/adapter-sdk/m
 for a dependency-free fake framework source that registers adapter metadata,
 captures a local metadata-only trace, and runs `runAdapterConformance`.
 
+## Custom renderer example
+
+See [`examples/adapter-sdk/custom-renderer`](../../examples/adapter-sdk/custom-renderer)
+for a standalone `TraceRenderer` that renders a metadata-only markdown summary
+from a persisted run tree and composes with `renderWithSafety`.
+
 ## Privacy
 
 - SDK helpers enforce local-first patterns; adapters must not upload by default
