@@ -8,9 +8,13 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 **Principles:** CLI-first · TypeScript-first · dependency-light · safe-by-default · framework-aware but not framework-locked · no vendor upload by default · no SaaS/dashboard scope.
 
-**Current release on npm:** **3.5.5** — sixteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#355).
+**Current release on npm:** **6.7.0** — eighteen linked public packages including `agent-inspect`, framework adapters, reporters, redact, eval, mcp, guardrails, circuit, viewer, mcp-server, harness, index-sqlite, studio, and adapter-sdk. Persisted trace schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#670).
 
-**Active direction (post-v3.5):** **OSS contributor activation** around the shipped v3 trace workbench plus **v4 workspace planning** — the next phase evolves AgentInspect from a broad local toolkit into a focused local and self-hosted trace workspace. v3.1→v3.5 train complete — see [CHANGELOG.md](CHANGELOG.md#355). Long-term direction: [docs/implementation/ROADMAP_V3_5_TO_V7.md](docs/implementation/ROADMAP_V3_5_TO_V7.md).
+**Current (pre-v7):** Technical launch candidate shipped at **6.7.0**. Train is in **6.7.x adoption freeze** — security, correctness, compatibility, packaging, and documentation fixes only. External pilot/design-partner evidence is pending before any distinct `6.8.0` publication. Canonical maintainer roadmap: [docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md](docs/implementation/ROADMAP-V6.4-TO-PRE-V7.md).
+
+**Later:** v7 remains **conditional** on adoption gates — not scheduled. See [docs/implementation/release-trains/V7.0.0-READINESS-ASSESSMENT.md](docs/implementation/release-trains/V7.0.0-READINESS-ASSESSMENT.md).
+
+**Historical direction:** OSS contributor activation and v3→v7 planning — [docs/implementation/ROADMAP_V3_5_TO_V7.md](docs/implementation/ROADMAP_V3_5_TO_V7.md).
 
 **Core product gap (maintainer-owned):** one unified persisted run model across manual traces, structured logs, framework callbacks, CI artifacts, and standards exports — not a contributor starter issue.
 
@@ -126,7 +130,19 @@ Activation helpers: [docs/community/OUTREACH-TEMPLATES.md](docs/community/OUTREA
 
 ---
 
-## Next
+## Now — pre-v7 stabilization / adoption freeze
+
+Focus is **truthful public presentation**, **release tooling**, and **external pilot evidence** — not new product surface. See [docs/implementation/RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md).
+
+| Area | Status |
+| ---- | ------ |
+| Technical LC | Shipped as **6.7.0** (planned v6.8 scope combined) |
+| External pilot | Pending — [PRE-V7-ADOPTION-EVIDENCE.md](docs/implementation/PRE-V7-ADOPTION-EVIDENCE.md) |
+| v7 | Conditional — not scheduled |
+
+---
+
+## Next (historical — pre-v6.4)
 
 Published sequence after **v2.0.0** — directional, not delivery guarantees.
 

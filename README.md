@@ -33,6 +33,14 @@ agent-inspect turns AI-agent runs into readable **local execution trees**: frame
 
 **Default loop:** capture locally → inspect / report / diff → check in CI → redact before sharing.
 
+## Three workflows
+
+| Workflow | What you do | Start |
+| -------- | ----------- | ----- |
+| **Debug one run** | Capture → inspect → find first error | [60-second quickstart](#60-second-quickstart) |
+| **Prevent one regression** | Typed contracts, suites, CI gates | [Checks](docs/API.md#checks) · [`suite`](docs/CLI.md) |
+| **Share one safe artifact** | Redact → verify-safe → bundle | [Safe sharing](docs/SAFE-TRACE-SHARING.md) |
+
 ```bash
 npm install agent-inspect
 ```
@@ -112,6 +120,8 @@ Blessed starters (no API keys): [examples/starters](https://github.com/rajudandi
 | [`@agent-inspect/circuit`](packages/circuit/README.md) | Loop / retry / timeout analyzers |
 | [`@agent-inspect/viewer`](packages/viewer/README.md) | Localhost viewer |
 | [`@agent-inspect/adapter-sdk`](packages/adapter-sdk/README.md) | Third-party adapters |
+| [`@agent-inspect/index-sqlite`](packages/index-sqlite/README.md) | Optional SQLite index |
+| [`@agent-inspect/studio`](packages/studio/README.md) | Customer-owned Studio (Beta) |
 | [`@agent-inspect/tui`](packages/tui/README.md) | Optional terminal UI |
 | `agent-inspect-vscode` | VS Code extension (in-repo; not on Marketplace yet) |
 
@@ -153,7 +163,7 @@ See [Compare](https://agentinspect.vercel.app/docs/compare/).
 
 ## Install details
 
-Current release: **6.4.0** (sixteen linked npm packages). Persisted trace schema **1.0**. Requires **Node.js >= 20**.
+Current release: **6.7.0** (eighteen linked npm packages). Technical launch candidate; external pilot evidence pending. Persisted trace schema **1.0**. Requires **Node.js >= 20**.
 
 ```bash
 pnpm add agent-inspect

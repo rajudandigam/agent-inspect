@@ -2,7 +2,7 @@
 
 **Status:** Canonical implementation roadmap proposal after the v6.4 audit  
 **Audience:** Maintainers, Cursor sessions, contributors, adapter authors, Studio operators, and design partners  
-**Current baseline:** `agent-inspect@6.4.0`  
+**Current baseline:** `agent-inspect@6.7.0` (technical launch candidate on npm)  
 **Persisted trace schema:** `1.0`  
 **Roadmap horizon:** `v6.4.1 → v6.5 → v6.6 → v6.7 → v6.8 → conditional v7`  
 **Primary goal:** Finish the trust, semantic correctness, team-workflow, interoperability, and launch-readiness work required before broad public adoption.  

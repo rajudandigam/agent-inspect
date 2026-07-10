@@ -3,12 +3,14 @@
 ```yaml
 currentTrain: "pre-v7-completion-from-current-6.7"
 trainStatus: "blocked-on-external-pilot"
-currentChunk: "6.7.1-C7a"
+currentChunk: "6.7.1-R"
 publishedVersion: "6.7.0"
-nextAction: "6.7.1 corrective release tooling + public truth; then wait for real pilot evidence"
+nextAction: "6.7.1 release readiness + patch changeset + publish verify"
 completedChunks:
   - "v6.4.1 through v6.7.0 npm publication"
   - "v6.7.0 reconciliation audit"
+  - "6.7.1-C7a linked-package fixed group + version check"
+  - "6.7.1-C7b public truth (README, ROADMAP, MCP server version)"
 executionMode: "autonomous-release-train"
 updatedAt: "2026-07-10"
 ```

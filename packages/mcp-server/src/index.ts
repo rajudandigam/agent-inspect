@@ -1,4 +1,7 @@
 import readline from "node:readline";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   READ_ONLY_TOOLS,
@@ -6,6 +9,13 @@ import {
   createMcpServerContext,
   type McpServerContext,
 } from "./tools.js";
+
+const packageVersion = JSON.parse(
+  readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+    "utf8",
+  ),
+).version as string;
 
 type JsonRpcRequest = {
   jsonrpc?: string;
@@ -73,7 +83,7 @@ export async function runReadOnlyMcpServer(
             id,
             result: {
               protocolVersion: "2024-11-05",
-              serverInfo: { name: "@agent-inspect/mcp-server", version: "2.5.0" },
+              serverInfo: { name: "@agent-inspect/mcp-server", version: packageVersion },
               capabilities: { tools: {} },
             },
           }),
