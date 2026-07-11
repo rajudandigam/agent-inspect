@@ -1,0 +1,46 @@
+name: Docs / example request
+description: Improve README, docs/, examples, recipes, or community guides
+title: "[docs] "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs documentation or an example?
+      description: Missing guide, unclear API, wrong example, broken link, or a recipe gap.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Getting started / first trace
+        - CLI reference
+        - API reference
+        - Framework adapters
+        - Log ingest
+        - Safe sharing / redaction
+        - Examples and recipes
+        - Fixtures
+        - Contributor / community docs
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior of the docs
+      description: Link the page or section as it is today, if it exists.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would good look like?
+      description: Sketch the content, table, or example you would expect to find.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: Any samples in this request use synthetic data only.
+          required: true
