@@ -56,9 +56,10 @@ Choose the smallest matching path for the issue:
 
 | PR type | Typical files | Useful validation |
 | --- | --- | --- |
-| Docs-only | `docs/`, `README.md`, `CONTRIBUTING.md` | `pnpm typecheck`, `pnpm test` |
+| Docs-only | `docs/`, `README.md`, `CONTRIBUTING.md` | `pnpm typecheck`, `pnpm test`, `pnpm docs:check` |
 | Fixture | `fixtures/`, fixture docs, fixture tests | `pnpm fixtures:check`, plus relevant tests |
 | Recipe | `examples/recipes/`, recipe docs | `pnpm recipes:check`, plus relevant tests |
+| Test / regression | `packages/*/test/` | focused `pnpm exec vitest run <files>`, then `pnpm test` |
 
 Do not change runtime code for a docs-only issue. If the change starts touching
 package exports, schema behavior, dependency policy, redaction, or release
@@ -71,6 +72,7 @@ For docs-only PRs, run at least:
 ```bash
 pnpm typecheck
 pnpm test
+pnpm docs:check
 ```
 
 For larger changes, use the relevant checks from the root
