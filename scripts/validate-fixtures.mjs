@@ -80,6 +80,11 @@ const REQUIRED = {
     "fixtures/performance/perf-medium.jsonl",
     "fixtures/performance/perf-large.jsonl",
   ],
+  standards: [
+    "fixtures/standards/openinference-basic.json",
+    "fixtures/standards/otlp-basic.json",
+    "fixtures/standards/openinference-export-golden.json",
+  ],
 };
 
 /** Log files that are intentionally not line-valid JSON. */
@@ -342,6 +347,12 @@ try {
     scanForbidden(rel);
   }
 
+  for (const rel of REQUIRED.standards) {
+    assertFile(rel);
+    JSON.parse(readText(rel));
+    scanForbidden(rel);
+  }
+
   for (const rel of walkFixturesFiles()) {
     scanForbidden(rel);
   }
@@ -356,6 +367,7 @@ try {
   console.log(
     `  performance: ${REQUIRED.performanceTraces.length} v0.1 JSONL files validated`,
   );
+  console.log(`  standards: ${REQUIRED.standards.length} JSON files`);
   process.exit(0);
 } catch (e) {
   console.error("[fixtures:check] FAILED:", e instanceof Error ? e.message : e);

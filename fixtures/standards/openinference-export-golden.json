@@ -1,0 +1,99 @@
+{
+  "exporter": "agent-inspect",
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "0.1.2",
+  "trace_id": "9e09f46349e4a1a9e8af60e39f89e4a1",
+  "spans": [
+    {
+      "trace_id": "9e09f46349e4a1a9e8af60e39f89e4a1",
+      "span_id": "e5a49fc77e27c4c4",
+      "name": "support-agent",
+      "start_time_unix_nano": "1700000000000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.kind": "RUN",
+        "agent_inspect.confidence": "explicit",
+        "agent_inspect.source.type": "manual",
+        "agent_inspect.run_id": "run_manual_basic_v1",
+        "agent_inspect.event_id": "run_1",
+        "agent_inspect.status": "running"
+      },
+      "status": {
+        "code": "UNSET"
+      }
+    },
+    {
+      "trace_id": "9e09f46349e4a1a9e8af60e39f89e4a1",
+      "span_id": "f0d979ffd0e22f99",
+      "parent_span_id": "e5a49fc77e27c4c4",
+      "name": "plan",
+      "start_time_unix_nano": "1700000001000000000",
+      "end_time_unix_nano": "1700000002000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.kind": "LOGIC",
+        "agent_inspect.confidence": "explicit",
+        "agent_inspect.source.type": "manual",
+        "agent_inspect.run_id": "run_manual_basic_v1",
+        "agent_inspect.event_id": "logic_1",
+        "agent_inspect.status": "ok",
+        "agent_inspect.duration_ms": 1000
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "9e09f46349e4a1a9e8af60e39f89e4a1",
+      "span_id": "6567185e810a45df",
+      "parent_span_id": "f0d979ffd0e22f99",
+      "name": "search",
+      "start_time_unix_nano": "1700000002000000000",
+      "end_time_unix_nano": "1700000002500000000",
+      "attributes": {
+        "openinference.span.kind": "TOOL",
+        "agent_inspect.kind": "TOOL",
+        "agent_inspect.confidence": "explicit",
+        "agent_inspect.source.type": "manual",
+        "agent_inspect.run_id": "run_manual_basic_v1",
+        "agent_inspect.event_id": "tool_1",
+        "agent_inspect.status": "ok",
+        "agent_inspect.duration_ms": 500
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "9e09f46349e4a1a9e8af60e39f89e4a1",
+      "span_id": "05342e413894840c",
+      "parent_span_id": "6567185e810a45df",
+      "name": "generate",
+      "start_time_unix_nano": "1700000003000000000",
+      "end_time_unix_nano": "1700000004200000000",
+      "attributes": {
+        "openinference.span.kind": "LLM",
+        "agent_inspect.kind": "LLM",
+        "agent_inspect.confidence": "explicit",
+        "agent_inspect.source.type": "manual",
+        "agent_inspect.run_id": "run_manual_basic_v1",
+        "agent_inspect.event_id": "llm_1",
+        "agent_inspect.status": "ok",
+        "agent_inspect.duration_ms": 1200,
+        "llm.model_name": "fixture-model",
+        "llm.token_count.prompt": 10,
+        "llm.token_count.completion": 5
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ],
+  "warnings": [
+    "OpenInference-compatible JSON export is experimental until verified against specific backends.",
+    "This file was generated locally and not sent anywhere.",
+    "RUN mapped to CHAIN for span compatibility.",
+    "LOGIC mapped to CHAIN for span compatibility."
+  ]
+}

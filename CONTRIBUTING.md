@@ -143,7 +143,7 @@ Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
 - [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md) — fork, branch, validation, and PR flow
 - [ROADMAP.md](ROADMAP.md) — Now / Next / Future
 - [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md) — expanded list with issue draft links
-- Draft issues in [.github/ISSUE_DRAFTS/](.github/ISSUE_DRAFTS/) — copy into GitHub Issues when ready
+- [Live issues](https://github.com/rajudandigam/agent-inspect/issues) — pick `status:ready`, `community-owned` work
 
 ## Code of conduct
 

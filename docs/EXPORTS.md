@@ -36,6 +36,14 @@ agent-inspect export minimal-success --dir fixtures/traces --format markdown
 - **HTML:** export writes a local file; a rendered-report visual is pending re-record ([RECORDING.md](./assets/demos/RECORDING.md)). Use `agent-inspect export <run-id> --format html -o report.html` and open the file locally.
 - **OpenInference / OTLP JSON:** compatibility-oriented shapes for local handoff — validate with `--validate` before sharing. No dedicated GIF; see format tables below.
 
+### Fixture-backed export evidence
+
+The canonical OpenInference export of a persisted schema **1.0** trace is committed at
+[`fixtures/standards/openinference-export-golden.json`](../fixtures/standards/openinference-export-golden.json)
+(generated from `fixtures/traces-v1.0/manual-basic.jsonl`; regeneration is asserted byte-stable in
+`packages/core/test/exporters/openinference-export-golden.test.ts`). Nanosecond timestamps are decimal strings,
+matching the import fixtures and the OTLP exporter.
+
 ## Common options
 
 | Flag | Notes |
