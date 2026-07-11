@@ -89,6 +89,8 @@ export function compareCohortAggregates(
           "Average duration (ms)",
           baselineAgg?.avgDurationMs,
           candidateAgg?.avgDurationMs,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -99,6 +101,8 @@ export function compareCohortAggregates(
           "Average LLM calls",
           baselineAgg?.avgLlmCallCount,
           candidateAgg?.avgLlmCallCount,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -109,6 +113,8 @@ export function compareCohortAggregates(
           "Average token usage",
           baselineAgg?.avgTokenUsage,
           candidateAgg?.avgTokenUsage,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -119,6 +125,8 @@ export function compareCohortAggregates(
           "Average retries",
           baselineAgg?.avgRetryCount,
           candidateAgg?.avgRetryCount,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -129,6 +137,8 @@ export function compareCohortAggregates(
           "Observation failure rate",
           baselineAgg?.observationFailureRate,
           candidateAgg?.observationFailureRate,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -165,6 +175,8 @@ export function compareCohortAggregates(
           "Guardrail failures",
           baselineAgg?.avgGuardrailFailures,
           candidateAgg?.avgGuardrailFailures,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -175,6 +187,8 @@ export function compareCohortAggregates(
           "Circuit violations",
           baselineAgg?.avgCircuitViolations,
           candidateAgg?.avgCircuitViolations,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
@@ -185,6 +199,8 @@ export function compareCohortAggregates(
           "Redaction warnings",
           baselineAgg?.avgRedactionWarnings,
           candidateAgg?.avgRedactionWarnings,
+          true,
+          tolerance,
         );
         if (item) comparisons.push(item);
         break;
