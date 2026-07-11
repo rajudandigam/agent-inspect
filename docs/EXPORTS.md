@@ -98,6 +98,7 @@ Prefer the smallest useful artifact — a summary or synthetic reproduction beat
 
 ## Related docs
 
+- [STANDARDS-GRADUATION.md](./STANDARDS-GRADUATION.md) — export → review → optional import path
 - [CLI.md](./CLI.md) — `export` command reference
 - [SCHEMA.md](./SCHEMA.md) — trace event model and redaction notes
 - [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) — checklist before posting

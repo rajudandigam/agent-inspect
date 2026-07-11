@@ -31,6 +31,10 @@ GenAI attribute mapping follows `OTEL_GEN_AI_SEMCONV_PIN` (see exporters API). N
 
 Fixture: [fixtures/standards/otlp-basic.json](../fixtures/standards/otlp-basic.json)
 
+## Graduation guide
+
+Full path from local export through review to optional customer-owned import: [STANDARDS-GRADUATION.md](./STANDARDS-GRADUATION.md).
+
 ## Import recipes
 
 - [Phoenix / OpenInference](../examples/recipes/phoenix-openinference-import/)
