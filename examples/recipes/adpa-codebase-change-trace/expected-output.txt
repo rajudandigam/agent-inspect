@@ -1,0 +1,17 @@
+ADPA codebase-change trace written
+Trace directory: ./.agent-inspect-runs
+Run id: run_p2MWboavgk
+
+Sequence: intent -> contract -> docs update -> code change
+          -> isolated validation -> full validation
+
+Governance and Langfuse fields are safe references only.
+Not captured: write tokens, secrets, prompts, ledger contents.
+
+Redacted review report:
+  npx agent-inspect report run_p2MWboavgk --dir ./.agent-inspect-runs --redaction-profile share -o ./review-report.md
+Share-safe offline bundle (by run or by session):
+  npx agent-inspect bundle run_p2MWboavgk --dir ./.agent-inspect-runs --profile share --out ./bundle-out
+  npx agent-inspect bundle --session sess-adpa-change-demo --dir ./.agent-inspect-runs --profile share --out ./bundle-out
+Search validation outcomes:
+  npx agent-inspect search --dir ./.agent-inspect-runs --observation passed

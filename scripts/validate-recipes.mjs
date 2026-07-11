@@ -47,6 +47,7 @@ const RECIPES = [
   "trace-suite-basic",
   "cohort-baseline-candidate",
   "github-actions-gate",
+  "adpa-codebase-change-trace",
 ];
 
 const LOG_RECIPE_FILES = {
