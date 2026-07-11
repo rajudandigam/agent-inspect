@@ -1,0 +1,4 @@
+{"event":"proactive.job.started","decisionId":"fixture_tail_truncated","timestamp":1746451220000}
+{"event":"proactive.tool.search","decisionId":"fixture_tail_truncated","timestamp":1746451220100}
+{"event":"proactive.result.done","decisionId":"fixture_tail_truncated","timestamp":1746451220200}
+{"event":"proactive.job.completed","decisionId":"fixture_tail_truncated","timesta

@@ -1,0 +1,3 @@
+{"event":"proactive.job.started","decisionId":"fixture_tail_no_newline","timestamp":1746451221000}
+{"event":"proactive.tool.search","decisionId":"fixture_tail_no_newline","timestamp":1746451221100}
+{"event":"proactive.job.completed","decisionId":"fixture_tail_no_newline","timestamp":1746451221200}

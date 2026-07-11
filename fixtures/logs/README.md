@@ -15,6 +15,10 @@ Text files for **v0.3 log-to-tree**, **v0.4 tail**, parser warnings, and integra
 | `malformed-json.log` | **No** (intentionally broken lines) | Parser skips garbage |
 | `missing-run-id.log` | Yes, but no join key | Missing run id warnings |
 | `mixed-valid-invalid.log` | Mixed | Resilience / warning summaries |
+| `tail-truncated-final.log` | **No** (final line cut mid-write, no trailing newline) | Interrupted-write tail degradation |
+| `tail-missing-newline.log` | Yes (no trailing newline at EOF) | EOF without newline parses cleanly |
+| `tail-partial-object.log` | **No** (unterminated JSON object at EOF) | Partial-object tail degradation |
+| `tail-mixed-valid-invalid.log` | Mixed (truncated line between valid tail lines) | Interleaved-write tail resilience |
 
 ## Safety
 
