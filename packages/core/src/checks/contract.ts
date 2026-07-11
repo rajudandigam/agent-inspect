@@ -78,22 +78,76 @@ export interface TraceContract {
 }
 
 function normalizeStatus(status: string): "ok" | "error" | "running" {
+  if (status === "ok" || status === "error" || status === "running") return status;
   if (status === "success") return "ok";
   if (status === "failed") return "error";
-  if (status === "running") return "running";
   return "error";
 }
 
 function contractToRules(contract: TraceContract): TraceCheckRule[] {
   const rules: TraceCheckRule[] = [];
 
-  if (contract.run?.allowedStatuses?.length === 1) {
+  const allowedStatuses = contract.run?.allowedStatuses ?? [];
+  if (allowedStatuses.length === 1) {
     rules.push(
       createRunStatusRule({
-        expected: normalizeStatus(contract.run.allowedStatuses[0]!),
-        allowIncomplete: contract.run.requireCompleted === false,
+        expected: normalizeStatus(allowedStatuses[0]!),
+        allowIncomplete: contract.run?.requireCompleted === false,
       }),
     );
+  } else if (allowedStatuses.length > 1) {
+    const expected = [...new Set(allowedStatuses.map(normalizeStatus))];
+    const allowIncomplete = contract.run?.requireCompleted === false;
+    rules.push({
+      id: "contract.run.allowedStatuses",
+      category: "run",
+      defaultSeverity: "error",
+      evaluate(context) {
+        const findings: TraceCheckFinding[] = [];
+        const actual = context.selectedRun?.status ?? "unknown";
+        if (!expected.includes(actual as "ok" | "error" | "running")) {
+          findings.push(
+            contractFailFinding(
+              "contract.run.allowedStatuses",
+              `Run status ${actual} is not one of the allowed statuses: ${expected.join(", ")}.`,
+              context.selectedRun
+                ? [
+                    {
+                      runId: context.selectedRun.runId,
+                      kind: "RUN",
+                      name: context.selectedRun.name,
+                      status: context.selectedRun.status,
+                    },
+                  ]
+                : [],
+              expected,
+              actual,
+            ),
+          );
+        }
+        if (!allowIncomplete) {
+          const running = context.events.filter((event) => event.status === "running");
+          if (running.length > 0) {
+            findings.push(
+              contractFailFinding(
+                "contract.run.allowedStatuses",
+                "Run contains incomplete running events.",
+                running.map((event) => ({
+                  runId: event.runId,
+                  eventId: event.eventId,
+                  kind: event.kind,
+                  name: event.name,
+                  status: event.status,
+                })),
+                "no running events",
+                running.length,
+              ),
+            );
+          }
+        }
+        return findings;
+      },
+    });
   } else if (contract.run?.requireCompleted !== false) {
     rules.push(createRunStatusRule({ allowIncomplete: false }));
   }
