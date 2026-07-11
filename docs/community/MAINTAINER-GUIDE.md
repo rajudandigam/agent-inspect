@@ -93,6 +93,8 @@ After a successful npm publish:
 
 ## Triage labels
 
+Full lifecycle taxonomy (`status:*`, `priority:*`, `difficulty:*`, `area:*`, ownership) and the claim / needs-info / stale-work flows: [ISSUE-TRIAGE.md](./ISSUE-TRIAGE.md). Response-time targets: [REVIEW-SLA.md](./REVIEW-SLA.md).
+
 | Label | Use |
 | ----- | --- |
 | `good first issue` | Safe for new contributors |

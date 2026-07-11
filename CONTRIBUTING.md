@@ -144,6 +144,8 @@ Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
 - [ROADMAP.md](ROADMAP.md) — Now / Next / Future
 - [docs/community/GOOD-FIRST-ISSUES.md](docs/community/GOOD-FIRST-ISSUES.md) — expanded list with issue draft links
 - [Live issues](https://github.com/rajudandigam/agent-inspect/issues) — pick `status:ready`, `community-owned` work
+- [docs/community/ISSUE-TRIAGE.md](docs/community/ISSUE-TRIAGE.md) — claim flow, labels, and stale-work policy
+- [docs/community/REVIEW-SLA.md](docs/community/REVIEW-SLA.md) — response-time targets for issues and PR reviews
 
 ## Code of conduct
 
