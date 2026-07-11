@@ -5,6 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import type { StudioContext } from "../context.js";
 import { insertIngestFile } from "../db.js";
 import { importStudioRegistry } from "../import.js";
+import type { StudioRegistryHttpIngest } from "../registry.js";
 import type { StudioServerOptions } from "../types.js";
 import {
   buildGitHubArtifactSourceKey,
@@ -34,10 +35,14 @@ export interface HttpIngestConfig {
 
 export function resolveHttpIngestConfig(
   options: StudioServerOptions,
-  registryEnabled?: boolean,
+  registryHttp?: StudioRegistryHttpIngest,
 ): HttpIngestConfig {
-  const http = options.context?.registry.ingest?.http;
-  const enabled = options.ingestHttp === true || registryEnabled === true || http?.enabled === true;
+  // Prefer the resolved registry config: on the lazy-context path
+  // (createStudioServer without options.context) options.context stays
+  // undefined, and reading it here silently dropped registry path/tokenEnv/
+  // maxBytes while only `enabled` was threaded through.
+  const http = registryHttp ?? options.context?.registry.ingest?.http;
+  const enabled = options.ingestHttp === true || http?.enabled === true;
   const basePath = (http?.path ?? DEFAULT_HTTP_INGEST_BASE_PATH).trim() || DEFAULT_HTTP_INGEST_BASE_PATH;
   const tokenEnv = resolveIngestTokenEnv({
     ...(options.ingestTokenEnv !== undefined ? { tokenEnv: options.ingestTokenEnv } : {}),
@@ -88,7 +93,7 @@ export async function handleHttpIngestRequest(
   options: StudioServerOptions,
   pathname: string,
 ): Promise<boolean> {
-  const config = resolveHttpIngestConfig(options, ctx.registry.ingest?.http?.enabled);
+  const config = resolveHttpIngestConfig(options, ctx.registry.ingest?.http);
   if (!isHttpIngestRoute(pathname, config)) return false;
 
   if (!config.enabled) {

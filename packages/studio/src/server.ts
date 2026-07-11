@@ -52,7 +52,7 @@ export function createStudioServer(options: StudioServerOptions = {}): Server {
         contextPromise = createStudioContext(options);
       }
       const ctx = await contextPromise;
-      const httpConfig = resolveHttpIngestConfig(options, ctx.registry.ingest?.http?.enabled);
+      const httpConfig = resolveHttpIngestConfig(options, ctx.registry.ingest?.http);
 
       if (isHttpIngestRoute(pathname, httpConfig)) {
         const handled = await handleHttpIngestRequest(req, res, ctx, options, pathname);
