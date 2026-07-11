@@ -1,5 +1,13 @@
 const DEFAULT_MAX_SUMMARY_LENGTH = 240;
 
+function fallbackString(value: unknown): string {
+  try {
+    return String(value);
+  } catch {
+    return "[unserializable]";
+  }
+}
+
 export function summarizeMcpValue(
   value: unknown,
   maxLength = DEFAULT_MAX_SUMMARY_LENGTH,
@@ -9,10 +17,14 @@ export function summarizeMcpValue(
     if (typeof value === "string") {
       text = value;
     } else {
-      text = JSON.stringify(value);
+      // JSON.stringify returns undefined (not a string) for undefined,
+      // functions, and symbols; falling through with undefined would crash
+      // instrumentation at text.length below.
+      const serialized = JSON.stringify(value);
+      text = serialized === undefined ? fallbackString(value) : serialized;
     }
   } catch {
-    text = String(value);
+    text = fallbackString(value);
   }
   if (text.length <= maxLength) return text;
   return `${text.slice(0, Math.max(0, maxLength - 3))}...`;
