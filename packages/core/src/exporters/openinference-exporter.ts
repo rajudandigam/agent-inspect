@@ -11,8 +11,9 @@ export interface OpenInferenceSpan {
   span_id: string;
   parent_span_id?: string;
   name: string;
-  start_time_unix_nano: number;
-  end_time_unix_nano?: number;
+  /** Decimal string: epoch-nanosecond values exceed Number.MAX_SAFE_INTEGER. */
+  start_time_unix_nano: string;
+  end_time_unix_nano?: string;
   attributes: Record<string, unknown>;
   status?: {
     code: "OK" | "ERROR" | "UNSET";
@@ -32,6 +33,17 @@ export interface OpenInferenceExport {
 
 function hexFrom(seed: string, byteLen: number): string {
   return crypto.createHash("sha256").update(seed, "utf8").digest("hex").slice(0, byteLen * 2);
+}
+
+/**
+ * Convert epoch milliseconds to exact epoch nanoseconds. Computed in BigInt
+ * because realistic epochs exceed Number.MAX_SAFE_INTEGER once scaled to
+ * nanoseconds (1.7e18 vs 9.0e15), which silently loses precision in doubles.
+ */
+function unixNano(ms: number): bigint {
+  const whole = Math.trunc(ms);
+  const fractionNs = Math.round((ms - whole) * 1e6);
+  return BigInt(whole) * 1_000_000n + BigInt(fractionNs);
 }
 
 function mapInspectKindToOI(
@@ -95,10 +107,10 @@ export function exportOpenInference(
     const parentSpanHex = ev.parentId
       ? hexFrom(`${tree.runId}:${ev.parentId}`, 8)
       : undefined;
-    const startNs = Math.round(ev.timestamp * 1e6);
-    let endNs: number | undefined;
+    const startNs = unixNano(ev.timestamp);
+    let endNs: bigint | undefined;
     if (ev.durationMs !== undefined && Number.isFinite(ev.durationMs)) {
-      endNs = startNs + Math.round(ev.durationMs * 1e6);
+      endNs = startNs + unixNano(ev.durationMs);
     }
 
     const { openInferenceKind } = mapInspectKindToOI(ev.kind, warnings);
@@ -156,8 +168,8 @@ export function exportOpenInference(
       span_id: spanId,
       parent_span_id: parentSpanHex,
       name: ev.name,
-      start_time_unix_nano: startNs,
-      end_time_unix_nano: endNs,
+      start_time_unix_nano: startNs.toString(),
+      end_time_unix_nano: endNs?.toString(),
       attributes: attrs,
       status,
     });

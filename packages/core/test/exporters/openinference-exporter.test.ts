@@ -121,4 +121,76 @@ describe("exportOpenInference", () => {
     };
     expect(parsed.spans[0]!.status?.code).toBe("ERROR");
   });
+
+  it("emits exact nanosecond timestamps as decimal strings for realistic epochs", () => {
+    // 1750000000123 ms * 1e6 = 1.750000000123e18 ns, far beyond
+    // Number.MAX_SAFE_INTEGER; a double round-trip loses up to ~128 ns.
+    const startMs = 1_750_000_000_123;
+    const durationMs = 456;
+    const events: TraceEvent[] = [
+      {
+        schemaVersion: "0.1",
+        event: "run_started",
+        timestamp: startMs,
+        runId: "run_ns",
+        name: "ns",
+        startTime: startMs,
+      },
+      {
+        schemaVersion: "0.1",
+        event: "step_started",
+        timestamp: startMs,
+        runId: "run_ns",
+        stepId: "s",
+        name: "x",
+        type: "logic",
+        startTime: startMs,
+      },
+      {
+        schemaVersion: "0.1",
+        event: "step_completed",
+        timestamp: startMs + durationMs,
+        runId: "run_ns",
+        stepId: "s",
+        status: "success",
+        endTime: startMs + durationMs,
+        durationMs,
+      },
+      {
+        schemaVersion: "0.1",
+        event: "run_completed",
+        timestamp: startMs + durationMs,
+        runId: "run_ns",
+        status: "success",
+        endTime: startMs + durationMs,
+        durationMs,
+      },
+    ];
+    const tree = manualTraceEventsToRunTree(events);
+    const parsed = JSON.parse(exportOpenInference(tree).content) as {
+      spans: { start_time_unix_nano: string; end_time_unix_nano?: string }[];
+    };
+
+    const span = parsed.spans[0]!;
+    expect(span.start_time_unix_nano).toBe("1750000000123000000");
+    expect(span.end_time_unix_nano).toBe("1750000000579000000");
+    // Values of this magnitude exceed Number.MAX_SAFE_INTEGER, so they must
+    // never appear as raw JSON number literals (RFC 8259 interop range).
+    expect(BigInt(span.start_time_unix_nano) > BigInt(Number.MAX_SAFE_INTEGER)).toBe(true);
+    expect(exportOpenInference(tree).content).not.toMatch(/_unix_nano":\s*\d/);
+  });
+
+  it("matches the OTLP exporter's string encoding and the committed import fixture", () => {
+    const tree = manualTraceEventsToRunTree(treeWithLlm());
+    const parsed = JSON.parse(exportOpenInference(tree).content) as {
+      spans: { start_time_unix_nano: unknown; end_time_unix_nano?: unknown }[];
+    };
+    for (const span of parsed.spans) {
+      expect(typeof span.start_time_unix_nano).toBe("string");
+      expect(span.start_time_unix_nano).toMatch(/^\d+$/);
+      if (span.end_time_unix_nano !== undefined) {
+        expect(typeof span.end_time_unix_nano).toBe("string");
+      }
+    }
+  });
 });
