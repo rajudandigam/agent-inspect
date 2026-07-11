@@ -2,84 +2,34 @@
 
 Quick index: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md)
 
-Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/github/](../../docs/archive/github/).
+The live issue tracker is the source of truth. Use GitHub `#NNN` links — not archived draft markdown under [docs/archive/github/](../../docs/archive/github/).
 
 ---
 
-## Live issues by lane (v3.5.x)
+## How to find live work
 
-### OSS Hygiene
+- [`community-owned` + `status:ready`](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen+label%3Acommunity-owned+label%3Astatus%3Aready) — vetted, unblocked, freeze-compatible
+- [`good first issue`](https://github.com/rajudandigam/agent-inspect/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — smallest scoped entries
+- Filter further by area label: `area:core`, `area:cli`, `area:logs`, `area:mcp`, `area:index`, `area:studio`, `area:viewer`, `area:community`, `area:release`
 
-| Issue | Summary |
-| ----- | ------- |
-| [#9](https://github.com/rajudandigam/agent-inspect/issues/9) | Production observability comparison doc (v3 package map) |
-| [#19](https://github.com/rajudandigam/agent-inspect/issues/19) | Keep contributor docs synced with live issues |
-| [#67](https://github.com/rajudandigam/agent-inspect/issues/67) | Improve `agent-inspect doctor` troubleshooting messages |
+Every issue lists its contribution lane, difficulty, priority, acceptance criteria, and validation commands. Check the comments for maintainer notes and existing claims before starting.
 
-### Examples and Fixtures
+## Current milestones and what they want
 
-| Issue | Summary |
-| ----- | ------- |
-| [#10](https://github.com/rajudandigam/agent-inspect/issues/10) | Retry / circuit-breaker fixture pack |
-| [#13](https://github.com/rajudandigam/agent-inspect/issues/13) | Decision metadata recipe (no chain-of-thought) |
-| [#27](https://github.com/rajudandigam/agent-inspect/issues/27) | Log ingest config cookbook |
-| [#29](https://github.com/rajudandigam/agent-inspect/issues/29) | LangChain persisted trace example |
-| [#69](https://github.com/rajudandigam/agent-inspect/issues/69) | Streaming limitations — verify/expand [STREAMING-LIMITATIONS.md](../STREAMING-LIMITATIONS.md) |
-
-### Adapter SDK Examples
-
-| Issue | Summary |
-| ----- | ------- |
-| [#60](https://github.com/rajudandigam/agent-inspect/issues/60) | Minimal third-party adapter example |
-| [#61](https://github.com/rajudandigam/agent-inspect/issues/61) | Adapter SDK privacy checklist |
-| [#62](https://github.com/rajudandigam/agent-inspect/issues/62) | Custom renderer example |
-| [#63](https://github.com/rajudandigam/agent-inspect/issues/63) | Custom transform example |
-
-### UI and Performance Polish
-
-| Issue | Summary |
-| ----- | ------- |
-| [#65](https://github.com/rajudandigam/agent-inspect/issues/65) | VS Code onboarding screenshots/GIF |
-| [#66](https://github.com/rajudandigam/agent-inspect/issues/66) | VS Code: open sample trace command |
-| [#68](https://github.com/rajudandigam/agent-inspect/issues/68) | Performance fixture pack (`pnpm perf:baseline`) |
-
-### Standards and Graduation
-
-| Issue | Summary |
-| ----- | ------- |
-| [#7](https://github.com/rajudandigam/agent-inspect/issues/7) | OpenInference export fixture (v3 schema) |
-| [#25](https://github.com/rajudandigam/agent-inspect/issues/25) | Phoenix/OpenInference import graduation guide |
-
----
-
-## Shipped (closed)
-
-| Issue | Shipped as |
-| ----- | ---------- |
-| #8 | Diff CLI examples |
-| #11–#12 | timeline / stats CLI (v1.4.0) |
-| #14 | LangChain streaming metadata (v1.3.0) |
-| [#18](https://github.com/rajudandigam/agent-inspect/issues/18) | First PR walkthrough via [#71](https://github.com/rajudandigam/agent-inspect/pull/71) |
-| #20 | [INSTALL-SMOKE-TEST.md](../INSTALL-SMOKE-TEST.md) |
-| #21 | winston-json-logs recipe |
-| #22 | mcp-client-tracing recipe |
-| #23–#24, #30 | AI SDK adapter + CI artifact recipes |
-| #26 | [SAFE-TRACE-SHARING.md](../SAFE-TRACE-SHARING.md) |
-| #28 | → [#68](https://github.com/rajudandigam/agent-inspect/issues/68) |
-| #58–#59 | Roadmap + good-first index hygiene (2026-06-30) |
-| [#64](https://github.com/rajudandigam/agent-inspect/issues/64) | Extension submission template via [#70](https://github.com/rajudandigam/agent-inspect/pull/70) |
-
-Full table: [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md#shipped-closed--do-not-reopen).
-
----
+| Milestone | Typical work |
+| --------- | ------------ |
+| **6.7.3 — Correctness & Portability** | Windows/POSIX portability, index-versus-scan parity, malformed-input corpora, exit-code and JSON determinism regression tests |
+| **Contributor Experience — 2026 Q3** | Issue forms, PR template, docs hygiene checks, triage and ownership guides |
+| **Standards Evidence** | OpenInference/OTLP export goldens, MCP privacy/adversarial fixtures, graduation guides |
+| **Golden Path & Examples** | Persisted-trace walkthroughs, recipes, Studio/viewer onboarding and accessibility |
 
 ## How to pick an issue
 
-1. Start from a **live issue** in the lane tables above — e.g. [#7](https://github.com/rajudandigam/agent-inspect/issues/7), [#9](https://github.com/rajudandigam/agent-inspect/issues/9), [#19](https://github.com/rajudandigam/agent-inspect/issues/19), or [#60](https://github.com/rajudandigam/agent-inspect/issues/60) for first-time contributors.
-2. **Comment** on the issue before opening a PR.
-3. Match patterns in `fixtures/`, `examples/recipes/`, or `docs/`.
-4. Run validation from [CONTRIBUTING.md](../../CONTRIBUTING.md).
-5. Open a focused PR referencing the issue number.
+1. Start from a live issue in one of the queries above.
+2. **Comment** on the issue with your plan before opening a PR.
+3. Match patterns in `fixtures/`, `examples/recipes/`, or `docs/` — extend existing layouts rather than inventing parallel ones.
+4. Run the validation commands from [CONTRIBUTING.md](../../CONTRIBUTING.md) (docs changes also run `pnpm docs:check`).
+5. Open a focused PR referencing the issue number. One concern per PR.
 
 Related: [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md) · [OUTREACH-TEMPLATES.md](./OUTREACH-TEMPLATES.md) · [CONTRIBUTOR-ROLES.md](./CONTRIBUTOR-ROLES.md)
 
@@ -95,9 +45,12 @@ Related: [DISCUSSIONS-STARTERS.md](./DISCUSSIONS-STARTERS.md) · [OUTREACH-TEMPL
 | **Package exports** | Published layout and consumer contracts |
 | **OTLP sink architecture** | Future opt-in only |
 | **Official adapter internals** | Use `@agent-inspect/adapter-sdk` examples instead |
+| **Release process** | Maintainers own Changesets, versions, and publishing |
 
 ---
 
 ## Labels (reference)
 
-`good first issue`, `documentation`, `help wanted`, `cli`, `examples`, `fixtures`, `exports`, `testing`, `logging`, `security`, `community contribution`, `roadmap`, `roadmap-next`, `langchain`, `adapter`, `maintainer-owned`.
+Lane and status: `community-owned`, `maintainer-owned`, `status:ready`, `good first issue`, `help wanted`, `difficulty:intermediate`, `priority:p1`/`p2`.
+Areas: `area:core`, `area:cli`, `area:logs`, `area:mcp`, `area:index`, `area:workspace`, `area:studio`, `area:viewer`, `area:community`, `area:release`.
+Topics: `documentation`, `testing`, `fixtures`, `examples`, `security`, `integration:mcp`, `support:supported`, `support:preview`, `support:experimental`.

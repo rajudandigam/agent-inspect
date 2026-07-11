@@ -14,7 +14,7 @@ It is **not**:
 
 - a SaaS observability platform
 - a production monitoring system
-- a web dashboard product
+- a hosted dashboard service (the self-hosted, customer-owned Studio is in scope)
 - a vendor telemetry upload pipeline
 - a replay engine or cost analytics engine
 
@@ -64,23 +64,26 @@ For user-facing clean install verification, follow [docs/INSTALL-SMOKE-TEST.md](
 3. **Honest boundaries** — document experimental vs stable surfaces; do not overclaim production observability.
 4. **Minimal diffs** — match existing patterns; avoid drive-by refactors.
 5. **Tests for behavior changes** — add or update tests when runtime behavior changes.
-6. **Schema compatibility** — manual traces use `schemaVersion: "0.1"`; do not break existing JSONL readers without a major version plan.
+6. **Schema compatibility** — the persisted schema is **1.0**; readers accept 0.1/0.2/1.0, and manual helpers may still write `schemaVersion: "0.1"`. Do not break existing JSONL readers without a major version plan.
 
 ## Package boundaries
 
-| Package | Published? | Role |
-| -------- | ---------- | ---- |
-| `agent-inspect` (root) | Yes | Public tarball: core + CLI |
-| `@agent-inspect/core` | No (private workspace) | Tracing, storage, logs, export, diff |
-| `@agent-inspect/cli` | No (private workspace) | `agent-inspect` binary |
-| `@agent-inspect/langchain` | Yes (optional) | LangChain.js callback adapter |
-| `@agent-inspect/tui` | Yes (optional) | Ink/React terminal viewer |
+AgentInspect **6.7.2** ships **eighteen linked public packages** (versions move together via the Changesets fixed group):
+
+| Group | Packages |
+| ----- | -------- |
+| Root | `agent-inspect` (core APIs + CLI, the public tarball) |
+| Framework adapters | `@agent-inspect/ai-sdk`, `openai-agents`, `langchain`, `mcp`, `adapter-sdk` |
+| Test reporters and gates | `@agent-inspect/vitest`, `jest`, `eval`, `guardrails`, `circuit`, `harness` |
+| Inspection surfaces | `@agent-inspect/viewer`, `tui`, `studio`, `mcp-server`, `index-sqlite`, `redact` |
+
+Private workspace internals: `@agent-inspect/core` (tracing, storage, logs, export, diff) and `@agent-inspect/cli` (the binary). Both ship inside the root `agent-inspect` tarball and are not separate install targets.
 
 **Root runtime dependencies** are intentionally lean: `chalk`, `commander`, `nanoid` only.
 
-Do **not** add `@langchain/core`, `ink`, `react`, OpenTelemetry SDKs, or vendor client libraries to the root `agent-inspect` package.
+Do **not** add `@langchain/core`, `ink`, `react`, `better-sqlite3`, OpenTelemetry SDKs, or vendor client libraries to the root `agent-inspect` package.
 
-Heavy dependencies belong in optional packages (`@agent-inspect/tui`, `@agent-inspect/langchain`) or stay out of scope.
+Heavy dependencies belong in the optional packages that already carry them (`@agent-inspect/tui`, `langchain`, `index-sqlite`, `studio`, framework adapters) or stay out of scope.
 
 ## Dependency policy
 
@@ -116,9 +119,10 @@ Log and trace ingestion must remain conservative:
 | Tarball smoke | `pnpm pack:smoke` |
 | Fixtures | `pnpm fixtures:check` |
 | Recipes | `pnpm recipes:check` |
+| Docs links and public truth | `pnpm docs:check` |
 | Pack dry-run | `npm pack --dry-run` |
 
-**Docs-only PRs:** at minimum `pnpm typecheck` and `pnpm test`.
+**Docs-only PRs:** at minimum `pnpm typecheck`, `pnpm test`, and `pnpm docs:check`.
 
 **Runtime PRs:** `pnpm test:all` and relevant smoke checks.
 
