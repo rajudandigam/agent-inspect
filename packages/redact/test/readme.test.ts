@@ -11,7 +11,8 @@ const packageRoot = path.resolve(
 
 function readExampleSnippet(): string {
   const readme = readFileSync(path.join(packageRoot, "README.md"), "utf8");
-  const example = readme.match(/## Example\s+```ts\n([\s\S]*?)\n```/);
+  // \r? keeps the match working on CRLF checkouts (git autocrlf on Windows).
+  const example = readme.match(/## Example\s+```ts\r?\n([\s\S]*?)\r?\n```/);
 
   if (!example?.[1]) {
     throw new Error("README Example must contain a TypeScript code block");
