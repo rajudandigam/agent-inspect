@@ -1,0 +1,66 @@
+name: Feature / RFC proposal
+description: Propose a scoped enhancement aligned with local-first execution-tree debugging
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AgentInspect stays local-first, CLI-first, and dependency-light. Proposals for hosted dashboards, telemetry upload, replay engines, or cost analytics are out of scope (see [docs/LIMITATIONS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/LIMITATIONS.md)).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What local debugging pain does this solve (inner loop, CLI, traces, logs)?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The smallest shape that solves the problem. Name the commands or APIs it touches.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI
+        - Core tracing / schema
+        - Log ingest
+        - Framework adapter
+        - Test reporters and gates
+        - Inspection surfaces (viewer / tui / studio / mcp-server / index)
+        - Redaction / privacy
+        - New optional package
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: support
+    attributes:
+      label: Expected support level
+      description: Per docs/SUPPORT-LEVELS.md, where should this live?
+      options:
+        - Core (root agent-inspect)
+        - Supported optional package
+        - Experimental optional package
+        - Community extension (outside this repo)
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Boundary check
+      description: Why this stays local-first and dependency-light (no vendor SDKs or upload paths in root/core).
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: This is not hosted observability, default telemetry upload, replay, or cost analytics.
+          required: true
