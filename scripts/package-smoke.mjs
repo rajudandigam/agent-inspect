@@ -473,6 +473,122 @@ const optionalPackageChecks = [
       void runner.listTargets();
     `,
   },
+  {
+    dir: "packages/index-sqlite",
+    name: "@agent-inspect/index-sqlite",
+    peerDependencies: {},
+    installPeers: [],
+    // better-sqlite3 needs its install script to fetch/build the native
+    // binding; the global install stays --ignore-scripts and only this dep
+    // is rebuilt afterward.
+    rebuildNativeDeps: ["better-sqlite3"],
+    esm: `
+      import { mkdtempSync, writeFileSync, existsSync, rmSync } from "node:fs";
+      import os from "node:os";
+      import path from "node:path";
+      import {
+        buildIndex,
+        cleanIndex,
+        indexStatus,
+        queryRuns,
+        resolveIndexDbPath,
+        INDEX_DB_FILENAME,
+      } from "@agent-inspect/index-sqlite";
+
+      const traceDir = mkdtempSync(path.join(os.tmpdir(), "agent-inspect-sqlite-smoke-"));
+      try {
+        writeFileSync(
+          path.join(traceDir, "smoke-run.jsonl"),
+          [
+            '{"schemaVersion":"0.1","event":"run_started","timestamp":1700000000000,"runId":"smoke-run","name":"smoke-run","startTime":1700000000000}',
+            '{"schemaVersion":"0.1","event":"step_started","timestamp":1700000000010,"runId":"smoke-run","stepId":"s1","name":"tool:probe","type":"tool","startTime":1700000000010}',
+            '{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000000060,"runId":"smoke-run","stepId":"s1","status":"success","endTime":1700000000060,"durationMs":50}',
+            '{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000000100,"runId":"smoke-run","status":"success","endTime":1700000000100,"durationMs":100}',
+          ].join("\\n") + "\\n",
+        );
+
+        const built = await buildIndex({ traceDir });
+        if (built.runs !== 1 || built.steps < 1) throw new Error("buildIndex counts wrong");
+        const dbPath = resolveIndexDbPath(traceDir);
+        if (!dbPath.endsWith(INDEX_DB_FILENAME)) throw new Error("db path wrong");
+        const status = indexStatus(dbPath);
+        if (!status.exists || !status.healthy || status.runs !== 1) throw new Error("status wrong");
+        const runs = queryRuns(dbPath, { status: "success" });
+        if (runs.length !== 1 || runs[0].runId !== "smoke-run") throw new Error("query wrong");
+        await cleanIndex(dbPath);
+        if (existsSync(dbPath)) throw new Error("cleanIndex left db behind");
+      } finally {
+        rmSync(traceDir, { recursive: true, force: true });
+      }
+    `,
+    cjs: `
+      const { mkdtempSync, writeFileSync, existsSync, rmSync } = require("node:fs");
+      const os = require("node:os");
+      const path = require("node:path");
+      const {
+        buildIndex,
+        cleanIndex,
+        indexStatus,
+        queryRuns,
+        resolveIndexDbPath,
+        INDEX_DB_FILENAME,
+      } = require("@agent-inspect/index-sqlite");
+
+      (async () => {
+        const traceDir = mkdtempSync(path.join(os.tmpdir(), "agent-inspect-sqlite-smoke-cjs-"));
+        try {
+          writeFileSync(
+            path.join(traceDir, "smoke-run.jsonl"),
+            [
+              '{"schemaVersion":"0.1","event":"run_started","timestamp":1700000000000,"runId":"smoke-run","name":"smoke-run","startTime":1700000000000}',
+              '{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000000100,"runId":"smoke-run","status":"success","endTime":1700000000100,"durationMs":100}',
+            ].join("\\n") + "\\n",
+          );
+
+          const built = await buildIndex({ traceDir });
+          if (built.runs !== 1) throw new Error("buildIndex counts wrong");
+          const dbPath = resolveIndexDbPath(traceDir);
+          const runs = queryRuns(dbPath, { name: "smoke" });
+          if (runs.length !== 1) throw new Error("query wrong");
+          if (!indexStatus(dbPath).healthy) throw new Error("status wrong");
+          await cleanIndex(dbPath);
+          if (existsSync(dbPath)) throw new Error("cleanIndex left db behind");
+        } finally {
+          rmSync(traceDir, { recursive: true, force: true });
+        }
+      })().catch((error) => {
+        console.error(error);
+        process.exit(1);
+      });
+    `,
+    ts: `
+      import {
+        buildIndex,
+        queryRuns,
+        indexStatus,
+        isIndexStale,
+        INDEX_SCHEMA_VERSION,
+        type BuildIndexOptions,
+        type BuildIndexResult,
+        type IndexedRun,
+        type IndexStatus,
+        type RunQuery,
+      } from "@agent-inspect/index-sqlite";
+
+      const options: BuildIndexOptions = { traceDir: ".agent-inspect", maxRuns: 10 };
+      const result: Promise<BuildIndexResult> = buildIndex(options);
+      void result;
+      const query: RunQuery = { status: "success", tool: "probe", limit: 5 };
+      const runs: IndexedRun[] = queryRuns("trace-index.sqlite", query);
+      void runs;
+      const status: IndexStatus = indexStatus("trace-index.sqlite");
+      void status;
+      const stale: boolean = isIndexStale("trace-index.sqlite", 0);
+      void stale;
+      const version: "1" = INDEX_SCHEMA_VERSION;
+      void version;
+    `,
+  },
 ];
 
 function assertHelp(label, stdout, stderr, status) {
@@ -535,8 +651,20 @@ function fail(label, detail) {
   process.exit(1);
 }
 
+// npm/pnpm and .bin entries are cmd shims on Windows and can only be spawned
+// through a shell; real executables (node.exe) spawn directly so paths with
+// spaces stay intact. Whitespace-bearing args are quoted for shell mode.
+function spawnCli(cmd, args, opts = {}) {
+  const useShell =
+    process.platform === "win32" && !cmd.toLowerCase().endsWith(".exe");
+  const safeArgs = useShell
+    ? args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg))
+    : args;
+  return spawnSync(cmd, safeArgs, { encoding: "utf8", shell: useShell, ...opts });
+}
+
 function run(label, cmd, args, opts = {}) {
-  const result = spawnSync(cmd, args, { encoding: "utf8", ...opts });
+  const result = spawnCli(cmd, args, opts);
   if (result.status !== 0) {
     fail(label, `${result.stdout || ""}\n${result.stderr || ""}`.trim());
   }
@@ -730,6 +858,14 @@ function smokeOptionalPackages(rootTgzPath, tmpRoot) {
       ...bundledTarballs,
       ...check.installPeers,
     ]);
+    for (const nativeDep of check.rebuildNativeDeps ?? []) {
+      // The clean install runs with --ignore-scripts; native deps that need
+      // their install script (prebuild download/build) are rebuilt one by one.
+      run(`${check.name} rebuild ${nativeDep}`, "npm", ["rebuild", nativeDep], {
+        cwd: installDir,
+        stdio: "inherit",
+      });
+    }
     runOptionalConsumer(check, installDir);
     smoked.push(check.name);
   }
@@ -745,9 +881,8 @@ function smokeOptionalPackages(rootTgzPath, tmpRoot) {
 
 // Force non-JSON output so we can reliably read the .tgz filename even when
 // the environment sets npm_config_json=true (common in CI/release tooling).
-const packProc = spawnSync("npm", ["pack", "--silent", "--ignore-scripts"], {
+const packProc = spawnCli("npm", ["pack", "--silent", "--ignore-scripts"], {
   cwd: root,
-  encoding: "utf8",
   env: {
     ...process.env,
     npm_config_json: "false",
@@ -824,23 +959,21 @@ try {
     process.exit(1);
   }
 
-  const binVersion = spawnSync(binPath, ["--version"], {
+  const binVersion = spawnCli(binPath, ["--version"], {
     cwd: tmpRoot,
-    encoding: "utf8",
   });
   if (
     binVersion.status !== 0 ||
-    binVersion.stdout.trim() !== expectedVersion
+    (binVersion.stdout ?? "").trim() !== expectedVersion
   ) {
     console.error(
-      `[pack:smoke] CLI version mismatch: expected ${expectedVersion}, got ${binVersion.stdout.trim() || "<empty>"}\n${binVersion.stderr}`,
+      `[pack:smoke] CLI version mismatch: expected ${expectedVersion}, got ${(binVersion.stdout ?? "").trim() || "<empty>"}\n${binVersion.stderr ?? ""}`,
     );
     process.exit(1);
   }
 
-  const binHelp = spawnSync(binPath, ["--help"], {
+  const binHelp = spawnCli(binPath, ["--help"], {
     cwd: tmpRoot,
-    encoding: "utf8",
   });
   assertHelp("./node_modules/.bin/agent-inspect --help", binHelp.stdout, binHelp.stderr, binHelp.status);
 
