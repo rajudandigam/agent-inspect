@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and discussions
+    url: https://github.com/rajudandigam/agent-inspect/discussions
+    about: Ask questions, share workflows, or float ideas before opening an issue.
+  - name: Security reports
+    url: https://github.com/rajudandigam/agent-inspect/blob/main/SECURITY.md
+    about: Report vulnerabilities privately per the security policy. Do not open public issues with secrets or unredacted traces.

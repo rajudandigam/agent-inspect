@@ -1,6 +1,6 @@
 # Contributor lanes
 
-AgentInspect is a local-first, CLI-first trace workbench for TypeScript AI agents. Contributor work focuses on **activation** around the shipped v3 system while maintainers plan the v4 workspace direction ([canonical roadmap](../implementation/ROADMAP_V3_5_TO_V7.md)).
+AgentInspect is a local-first, CLI-first trace workbench for TypeScript AI agents. Contributor work focuses on **correctness, evidence, and contributor experience** around the shipped 6.7.2 system during the adoption freeze ([public sequencing](../../ROADMAP.md)).
 
 Pick a lane that matches your interest. Each lane lists what it covers, good starting points, and what stays maintainer-owned.
 
@@ -24,9 +24,9 @@ Pick a lane that matches your interest. Each lane lists what it covers, good sta
 
 ## Lane 4 — UI and performance polish
 
-- **Covers:** VS Code docs, viewer onboarding, performance fixtures.
-- **Start:** `packages/viewer/`, `packages/vscode/`, performance fixtures.
-- **Maintainer-owned:** viewer/studio architecture.
+- **Covers:** VS Code docs, viewer/Studio onboarding, empty-state and accessibility tests, performance fixtures.
+- **Start:** `packages/viewer/`, `packages/studio/`, `packages/vscode/`, `fixtures/performance/`.
+- **Maintainer-owned:** viewer/studio architecture, auth, ingestion defaults.
 
 ## Lane 5 — Standards and graduation
 
@@ -36,7 +36,7 @@ Pick a lane that matches your interest. Each lane lists what it covers, good sta
 
 ## Maintainer-owned (not good-first)
 
-Unified persisted InspectEvent model, schema evolution, redaction/security internals, package export policy, official adapter internals, OTLP sink architecture, release process, and all v4-v7 runtime work (see [ROADMAP_V3_5_TO_V7.md](../implementation/ROADMAP_V3_5_TO_V7.md)).
+Unified persisted InspectEvent model, schema evolution, redaction/security internals, package export policy, official adapter internals, OTLP sink architecture, release process, and runtime behavior changes during the freeze (flag them on the issue for maintainer sign-off first).
 
 ## How to start
 

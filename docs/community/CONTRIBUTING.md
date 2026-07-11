@@ -23,7 +23,7 @@ agent-inspect/
 ## Workflow
 
 1. Fork and branch from `main`.
-2. Pick an issue from [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) or [.github/ISSUE_DRAFTS/](../../.github/ISSUE_DRAFTS/).
+2. Pick an issue from [GOOD-FIRST-ISSUES.md](../../GOOD-FIRST-ISSUES.md) or the [live issue list](https://github.com/rajudandigam/agent-inspect/issues).
 3. Comment before starting **maintainer-owned** work.
 4. Keep PRs focused; match existing code style.
 5. Run validation (see root CONTRIBUTING.md).

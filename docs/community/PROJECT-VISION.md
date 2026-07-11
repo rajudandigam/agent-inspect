@@ -31,18 +31,18 @@ It extends over time without becoming a hosted observability platform.
 | **Honest boundaries** | Stable vs experimental surfaces documented explicitly |
 | **No vendor upload by default** | No SaaS account, no cloud ingestion pipeline in core |
 
-## Stable v1.x promise
+## Stable promises (6.7.2)
 
 - Manual tracing APIs: `inspectRun`, `step`, `step.llm`, `step.tool`, `observe`
-- JSONL traces: `schemaVersion: "0.1"`
-- CLI: `list`, `view`, `clean`
+- Persisted trace schema **1.0**; readers accept 0.1/0.2/1.0, manual helpers may still write `schemaVersion: "0.1"`
+- CLI inspect surface: `list`, `view`, `report`, `search`, `diff`, `check`, `clean`
 - Failures: `step_completed` with `status: "error"` (no `step_failed` event)
 
 ## What we are not building
 
 - SaaS observability platform
 - Production monitoring / alerting replacement
-- Web dashboard product
+- Hosted dashboard service (the self-hosted, customer-owned Studio is in scope)
 - Eval dataset manager or prompt manager
 - Cost analytics engine
 - Replay / fork engine
