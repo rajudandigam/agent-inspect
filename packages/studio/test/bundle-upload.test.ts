@@ -103,5 +103,33 @@ describe("studio bundle upload importer", () => {
     });
     expect(second.imported).toBe(false);
     expect(second.destPath).toBe(first.destPath);
+
+    // Edited bundle CONTENT with unchanged metadata.json must re-import;
+    // hashing only metadata previously kept serving the stale copy.
+    await writeFile(path.join(bundleSrc, "summary.md"), "# summary (edited)", "utf8");
+    const third = await importBundleUpload({
+      db,
+      registryPath,
+      registry: parsed.registry!,
+      bundlePath: bundleSrc,
+      enabled: true,
+    });
+    expect(third.imported).toBe(true);
+    expect(third.destPath).not.toBe(first.destPath);
+    const fsp = await import("node:fs/promises");
+    expect(await fsp.readFile(path.join(third.destPath!, "summary.md"), "utf8")).toBe(
+      "# summary (edited)",
+    );
+
+    // And the edited state is itself idempotent on the next re-import.
+    const fourth = await importBundleUpload({
+      db,
+      registryPath,
+      registry: parsed.registry!,
+      bundlePath: bundleSrc,
+      enabled: true,
+    });
+    expect(fourth.imported).toBe(false);
+    expect(fourth.destPath).toBe(third.destPath);
   });
 });

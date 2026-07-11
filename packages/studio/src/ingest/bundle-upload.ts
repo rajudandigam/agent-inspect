@@ -72,6 +72,34 @@ export async function validateBundleDirectory(bundleDir: string): Promise<string
   return errors;
 }
 
+/**
+ * Deterministic hash over the full bundle contents (sorted relative paths and
+ * file bytes). Hashing only metadata.json let edited trace files slip past
+ * dedup, so a re-imported bundle kept serving the stale copy.
+ */
+async function hashBundleContents(bundleDir: string): Promise<string> {
+  const hash = createHash("sha256");
+  const walk = async (dir: string, relPrefix: string): Promise<void> => {
+    const entries = (await readdir(dir, { withFileTypes: true })).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    for (const entry of entries) {
+      const abs = path.join(dir, entry.name);
+      const rel = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+      if (entry.isDirectory()) {
+        await walk(abs, rel);
+      } else if (entry.isFile()) {
+        hash.update(rel);
+        hash.update("\0");
+        hash.update(await readFile(abs));
+        hash.update("\0");
+      }
+    }
+  };
+  await walk(bundleDir, "");
+  return hash.digest("hex");
+}
+
 async function copyDirectoryRecursive(sourceDir: string, destDir: string): Promise<void> {
   await mkdir(destDir, { recursive: true });
   const entries = await readdir(sourceDir, { withFileTypes: true });
@@ -134,8 +162,7 @@ export async function importBundleUpload(
     };
   }
 
-  const metadataRaw = await readFile(path.join(bundlePath, "metadata.json"), "utf8");
-  const contentHash = createHash("sha256").update(metadataRaw).digest("hex");
+  const contentHash = await hashBundleContents(bundlePath);
   const sourceKey = `bundle:${bundlePath}`;
   const existing = findIngestFileBySourceKey(options.db, sourceKey);
   if (existing && existing.contentHash === contentHash) {
