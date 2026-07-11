@@ -1,0 +1,78 @@
+name: Bug report
+description: Report incorrect behavior in AgentInspect tracing, CLI, packages, or docs
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. AgentInspect is local-first: please use synthetic or redacted data everywhere in this form. See [SAFE-TRACE-SHARING](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SAFE-TRACE-SHARING.md).
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong, in one or two sentences.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where the problem lives.
+      options:
+        - CLI (list/view/search/report/diff/check and friends)
+        - Core tracing / persisted traces
+        - Log ingest (logs/tail)
+        - Framework adapter (ai-sdk / openai-agents / langchain / mcp / adapter-sdk)
+        - Test reporters and gates (vitest / jest / eval / guardrails / circuit / harness)
+        - Inspection surfaces (viewer / tui / studio / mcp-server / index-sqlite)
+        - Redaction / privacy
+        - Docs / examples / fixtures
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AgentInspect version
+      description: Package version or commit SHA from main.
+      placeholder: agent-inspect@6.7.2
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Commands plus a minimal snippet or synthetic trace. Reports without a reproduction are hard to act on.
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Node version, OS, package manager.
+      placeholder: Node 22, Ubuntu 24.04, pnpm 9
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: This report contains synthetic or redacted data only — no real prompts, production logs, tokens, or PII.
+          required: true
+        - label: This is not a request for hosted observability, vendor upload, replay, or cost analytics (see docs/LIMITATIONS.md).
+          required: true
