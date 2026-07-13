@@ -23,12 +23,12 @@ pnpm install
 pnpm start
 ```
 
-Then run the printed CLI commands, or:
+Then run the printed CLI commands. Run ids are generated (`run_xxx`), so copy the `Run id:` the recipe prints:
 
 ```bash
-npx agent-inspect what what-report-recipe --dir ./.agent-inspect-runs
-npx agent-inspect report what-report-recipe --dir ./.agent-inspect-runs --format markdown
-npx agent-inspect report what-report-recipe --dir ./.agent-inspect-runs \
+npx agent-inspect what <run-id> --dir ./.agent-inspect-runs
+npx agent-inspect report <run-id> --dir ./.agent-inspect-runs --format markdown
+npx agent-inspect report <run-id> --dir ./.agent-inspect-runs \
   --format html --redaction-profile share -o ./report.html
 ```
 
