@@ -31,6 +31,7 @@ This directory contains maintainer-owned architecture proposals for AgentInspect
 | [SELF-HOSTED-STUDIO-V6.0.md](./SELF-HOSTED-STUDIO-V6.0.md) | v6.0.0 | Customer-owned self-hosted Studio (`@agent-inspect/studio`); read-only multi-project analyzer; SQLite default; optional Postgres; localhost + optional auth; no maintainer cloud |
 | [CLIENT-HOSTED-INGESTION-V6.1.md](./CLIENT-HOSTED-INGESTION-V6.1.md) | v6.1.0 | Self-hosted Studio ingestion (file-drop, GitHub artifacts, optional HTTP + token, bundle upload); disabled by default; studio package only; no maintainer cloud |
 | [mneme-architectural-intent-metadata.md](./mneme-architectural-intent-metadata.md) | proposal only | Architectural-intent metadata contract (`architecturalIntent`, schema 0.1) for attaching Mneme decision/rule evaluation context to runs or steps; no runtime integration |
+| [browser-mcp-observed-outcomes.md](./browser-mcp-observed-outcomes.md) | proposal only | Browser/MCP observed-outcome vocabulary and rendering review against the shipped `observeOutcome()` surface; method-vocabulary and tree-rendering gaps, conventions, follow-up recipe plan |
 
 ## Rules
 
