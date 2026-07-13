@@ -19,10 +19,10 @@ pnpm install
 pnpm start
 ```
 
-Then create a bundle from the generated trace:
+Then create a bundle from the generated trace. Run ids are generated (`run_xxx`), so copy the `Run id:` the recipe prints:
 
 ```bash
-npx agent-inspect bundle bundle-recipe-run \
+npx agent-inspect bundle <run-id> \
   --dir ./.agent-inspect \
   --out ./bundle-out \
   --json

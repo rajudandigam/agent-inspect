@@ -1,7 +1,11 @@
 
 Result: Fixture answer (2 hits)
 
+Run id: run_4ekECagWbZ
+
 Inspect this run:
-  npx agent-inspect what what-report-recipe --dir /path/to/.agent-inspect-runs
-  npx agent-inspect report what-report-recipe --dir /path/to/.agent-inspect-runs --format markdown
-  npx agent-inspect report what-report-recipe --dir /path/to/.agent-inspect-runs --format html -o ./report.html
+  npx agent-inspect what run_4ekECagWbZ --dir /path/to/.agent-inspect-runs
+  npx agent-inspect report run_4ekECagWbZ --dir /path/to/.agent-inspect-runs --format markdown
+  npx agent-inspect report run_4ekECagWbZ --dir /path/to/.agent-inspect-runs --format html -o ./report.html
+
+(The run id is generated per run; copy the one your run prints.)
