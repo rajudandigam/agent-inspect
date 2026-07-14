@@ -1,10 +1,12 @@
 import http from "node:http";
+import type { IncomingMessage } from "node:http";
 import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { isStudioRequestAuthorized } from "../src/auth.js";
 import { createStudioContext, createStudioServer } from "../src/index.js";
 
 async function getJson(baseUrl: string, route: string, headers: Record<string, string> = {}) {
@@ -64,5 +66,57 @@ describe("studio auth", () => {
     const authHeader = `Basic ${Buffer.from(`studio:secret`).toString("base64")}`;
     const allowed = await getJson(baseUrl, "/api/health", { Authorization: authHeader });
     expect(allowed.status).toBe(200);
+  });
+});
+
+describe("isStudioRequestAuthorized", () => {
+  const passwordEnv = "STUDIO_AUTH_UNIT_PASSWORD";
+  const options = { auth: "basic" as const, passwordEnv };
+
+  function fakeReq(authorization?: string): IncomingMessage {
+    return { headers: authorization ? { authorization } : {} } as IncomingMessage;
+  }
+
+  function basicHeader(user: string, password: string): string {
+    return `Basic ${Buffer.from(`${user}:${password}`).toString("base64")}`;
+  }
+
+  beforeEach(() => {
+    process.env[passwordEnv] = "correct-password";
+  });
+
+  afterEach(() => {
+    delete process.env[passwordEnv];
+  });
+
+  it("accepts the exact password for any username", () => {
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "correct-password")), options)).toBe(true);
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("someone-else", "correct-password")), options)).toBe(true);
+  });
+
+  it("rejects a wrong password of the same length", () => {
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "correct-passwore")), options)).toBe(false);
+  });
+
+  it("rejects passwords of a different length", () => {
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "correct")), options)).toBe(false);
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "correct-password-longer")), options)).toBe(false);
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "")), options)).toBe(false);
+  });
+
+  it("rejects a missing or malformed authorization header", () => {
+    expect(isStudioRequestAuthorized(fakeReq(), options)).toBe(false);
+    expect(isStudioRequestAuthorized(fakeReq("Bearer correct-password"), options)).toBe(false);
+    const noColon = `Basic ${Buffer.from("no-colon-here").toString("base64")}`;
+    expect(isStudioRequestAuthorized(fakeReq(noColon), options)).toBe(false);
+  });
+
+  it("rejects everything when the password env var is unset", () => {
+    delete process.env[passwordEnv];
+    expect(isStudioRequestAuthorized(fakeReq(basicHeader("studio", "correct-password")), options)).toBe(false);
+  });
+
+  it("allows requests when auth mode is none", () => {
+    expect(isStudioRequestAuthorized(fakeReq(), {})).toBe(true);
   });
 });

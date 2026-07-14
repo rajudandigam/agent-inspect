@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 
 import type { StudioServerOptions } from "./types.js";
@@ -26,6 +27,17 @@ function parseBasicAuth(header: string | undefined): string | undefined {
   }
 }
 
+/**
+ * Constant-time password comparison. Hashing both sides first keeps the
+ * buffers equal length (required by timingSafeEqual) without leaking the
+ * expected password length.
+ */
+function timingSafePasswordEqual(provided: string, expected: string): boolean {
+  const providedDigest = createHash("sha256").update(provided, "utf8").digest();
+  const expectedDigest = createHash("sha256").update(expected, "utf8").digest();
+  return timingSafeEqual(providedDigest, expectedDigest);
+}
+
 export function isStudioRequestAuthorized(
   req: IncomingMessage,
   options: StudioServerOptions,
@@ -35,7 +47,8 @@ export function isStudioRequestAuthorized(
   const expected = resolveStudioPassword(options);
   if (!expected) return false;
   const provided = parseBasicAuth(req.headers.authorization);
-  return provided === expected;
+  if (provided === undefined) return false;
+  return timingSafePasswordEqual(provided, expected);
 }
 
 export function studioAuthRequiredResponse(): {
