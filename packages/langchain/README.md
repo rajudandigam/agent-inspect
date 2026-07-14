@@ -51,7 +51,17 @@ const handler = new AgentInspectCallback({
 
 ## CLI
 
-`npx agent-inspect view` · `check` · `eval`
+With `persist: true`, use the same directory configured in `traceDir`:
+
+```bash
+npx agent-inspect list --dir ./.agent-inspect
+npx agent-inspect view <run-id> --dir ./.agent-inspect --summary
+npx agent-inspect report <run-id> --dir ./.agent-inspect
+```
+
+Persisted traces remain local. Before sharing an export or report, follow the
+[safe trace sharing checklist](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SAFE-TRACE-SHARING.md)
+and review the generated artifact for sensitive metadata.
 
 ## Docs
 
