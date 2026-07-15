@@ -1,5 +1,11 @@
 # @agent-inspect/guardrails
 
+## 6.7.3
+
+### Patch Changes
+
+- @agent-inspect/redact@6.7.3
+
 ## 6.7.2
 
 ### Patch Changes

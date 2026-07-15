@@ -1,5 +1,12 @@
 # @agent-inspect/viewer
 
+## 6.7.3
+
+### Patch Changes
+
+- Updated dependencies [ac6747d]
+  - agent-inspect@6.7.3
+
 ## 6.7.2
 
 ### Patch Changes

@@ -4,8 +4,8 @@
 executionMode: autonomous-release-train
 currentTrain: v6.7.x-adoption-freeze
 trainStatus: active
-currentChunk: 6.7.3-patch-publish
-nextAction: Release gate → Version Packages 6.7.3 → trusted publish verify → return to freeze
+currentChunk: 6.7.3-publish
+nextAction: Push Version Packages 6.7.3; verify npm; return to adoption freeze
 ```
 
-Corrective patch for post-6.7.2 fixes (contracts, OpenInference timestamps, cohorts, Windows paths, CLI exits, Studio auth/ingest). External pilot evidence still pending. **v7 not scheduled.**
+6.7.3 Version Packages prepared locally (fixed group aligned). External pilot evidence still pending. **v7 not scheduled.**

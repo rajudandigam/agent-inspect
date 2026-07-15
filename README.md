@@ -131,7 +131,7 @@ Details: [Safe sharing](https://github.com/rajudandigam/agent-inspect/blob/main/
 
 ## Project status
 
-**Current release:** **6.7.2** (eighteen linked npm packages). Technical launch candidate; external pilot evidence pending. Persisted schema **1.0**. Node.js **≥ 20**. **v7 not scheduled.**
+**Current release:** **6.7.3** (eighteen linked npm packages). Technical launch candidate; external pilot evidence pending. Persisted schema **1.0**. Node.js **≥ 20**. **v7 not scheduled.**
 
 [Roadmap](ROADMAP.md) · [Pilot kit](https://github.com/rajudandigam/agent-inspect/blob/main/docs/PRE-V7-PILOT-KIT.md) · [Changelog](CHANGELOG.md)
 

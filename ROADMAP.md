@@ -12,7 +12,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 ## Current — 6.7.x adoption freeze
 
-**Current release on npm:** **6.7.2** (eighteen fixed-group public packages). Persisted schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#672).
+**Current release on npm:** **6.7.3** (eighteen fixed-group public packages). Persisted schema **1.0**. See [CHANGELOG.md](CHANGELOG.md#673).
 
 | Area | Status |
 | ---- | ------ |
