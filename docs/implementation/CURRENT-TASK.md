@@ -3,9 +3,9 @@
 ```yaml
 executionMode: autonomous-release-train
 currentTrain: v6.7.x-adoption-freeze
-trainStatus: active
-currentChunk: 6.7.3-publish
-nextAction: Push Version Packages 6.7.3; verify npm; return to adoption freeze
+trainStatus: blocked-on-external-pilot
+currentChunk: freeze-monitoring
+nextAction: Collect real design-partner and three-team pilot evidence; do not schedule v7
 ```
 
-6.7.3 Version Packages prepared locally (fixed group aligned). External pilot evidence still pending. **v7 not scheduled.**
+Published **6.7.3** (corrective patch). External pilot/design-partner evidence still pending. **v7 not scheduled.**

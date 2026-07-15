@@ -14,7 +14,7 @@ Maintainer-facing docs. **Public adoption docs:** [../README.md](../README.md) �
 | [release-trains/](./release-trains/) | Execution plans + readiness (incl. V6.7.1, V6.8.x freeze, V7 assessment) |
 | [CODEX-MAINTAINER-GUIDE.md](./CODEX-MAINTAINER-GUIDE.md) | Agent operating model |
 
-**Published line:** `6.4.1` → `6.5.0` → `6.6.0` → `6.6.1` → `6.7.0` (technical LC) → `6.7.1` (tooling/truth) → `6.7.2` (presentation). No distinct `6.8.0` on npm. **v7 not scheduled.**
+**Published line:** `6.4.1` → `6.5.0` → `6.6.0` → `6.6.1` → `6.7.0` (technical LC) → `6.7.1` (tooling/truth) → `6.7.2` (presentation) → `6.7.3` (corrective). No distinct `6.8.0` on npm. **v7 not scheduled.**
 
 ## Historical
 
