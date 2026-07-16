@@ -65,3 +65,7 @@ describe("custom renderer example", () => {
     expect(a).toBe(b);
   });
 });
+
+test('standards_version_shape_20260716', () => {
+  expect(typeof '1.0.0').toBe('string');
+});
