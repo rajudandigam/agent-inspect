@@ -119,6 +119,19 @@ describe("explain CLI", () => {
     expect(out).toContain("Generated locally without provider or network calls.");
   });
 
+  it("reports a completed run as success, matching list/view", async () => {
+    await writeTrace();
+
+    await explainCommand("explain-run", { dir: tmpDir, json: true });
+
+    const parsed = JSON.parse(String(logSpy.mock.calls[0]?.[0]));
+    expect(parsed.explanation.status).toBe("success");
+    const statusFact = parsed.explanation.facts.find(
+      (f: { id: string }) => f.id === "run.status",
+    );
+    expect(statusFact?.value).toBe("success");
+  });
+
   it("handles unsupported input as a user-facing error", async () => {
     await explainCommand(path.join(tmpDir, "missing.jsonl"), { json: true });
 

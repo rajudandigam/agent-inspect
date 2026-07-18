@@ -255,10 +255,36 @@ describe("traceEventsToPersistedRunTrees", () => {
     const trees = traceEventsToPersistedRunTrees(events);
     expect(trees).toHaveLength(1);
     expect(trees[0]!.runId).toBe(runId);
-    // TreeBuilder derives status from all events; run_started rows stay "running"
-    // unlike manualTraceEventsToRunTree which uses run_completed for run status.
-    expect(trees[0]!.status).toBe("running");
+    // A completed run reports its terminal RUN status, matching
+    // manualTraceEventsToRunTree/extractMetadata, even though the bridge keeps
+    // the "running" started rows as separate events.
+    expect(trees[0]!.status).toBe("ok");
     expect(trees[0]!.children.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("keeps a run running until its completion event is present", () => {
+    const runId = "run_incomplete";
+    const events: TraceEvent[] = [
+      rs(runId, "support-agent", TS),
+      ss(runId, "step_1", "tool-step", TS + 10, "tool"),
+      sc(runId, "step_1", "success", TS + 50, 40),
+    ];
+
+    const trees = traceEventsToPersistedRunTrees(events);
+    expect(trees[0]!.status).toBe("running");
+  });
+
+  it("reports a failed run as error from its completion status", () => {
+    const runId = "run_failed";
+    const events: TraceEvent[] = [
+      rs(runId, "support-agent", TS),
+      ss(runId, "step_1", "tool-step", TS + 10, "tool"),
+      sc(runId, "step_1", "error", TS + 50, 40),
+      rc(runId, "error", TS + 100, 100),
+    ];
+
+    const trees = traceEventsToPersistedRunTrees(events);
+    expect(trees[0]!.status).toBe("error");
   });
 
   it("legacy bridge output is broadly compatible with manualTraceEventsToRunTree", () => {
