@@ -10,13 +10,33 @@ function inc<T extends string>(map: Record<T, number>, key: T): void {
 }
 
 function computeRunStatus(events: InspectEvent[]): InspectRunTree["status"] {
+  // Derive the run status from the RUN node lifecycle, matching
+  // manualTraceEventsToRunTree and extractMetadata: a run is "running" only
+  // until its RUN completion is recorded. The v0.1 bridge writes each node as a
+  // "started" event (status "running") followed by a "completed" event, so a
+  // finished run still carries "running" started rows; those must not force the
+  // whole run back to "running". Events arrive timestamp-sorted, so the last
+  // terminal RUN status wins.
+  let runTerminal: "ok" | "error" | undefined;
+  let sawRunEvent = false;
+  for (const e of events) {
+    if (e.kind !== "RUN") continue;
+    sawRunEvent = true;
+    if (e.status === "ok" || e.status === "error") {
+      runTerminal = e.status;
+    }
+  }
+  if (sawRunEvent) {
+    return runTerminal ?? "running";
+  }
+
+  // Fallback for traces with no RUN node (e.g. log-only ingestion).
   let hasRunning = false;
   for (const e of events) {
     if (e.status === "error") return "error";
     if (e.status === "running") hasRunning = true;
   }
-  if (hasRunning) return "running";
-  return "ok";
+  return hasRunning ? "running" : "ok";
 }
 
 export class TreeBuilder {

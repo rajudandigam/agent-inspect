@@ -42,6 +42,18 @@ interface FlatNode {
   index: number;
 }
 
+/**
+ * Maps the reader run-tree status vocabulary ("ok"/"error"/"running") to the
+ * user-facing status vocabulary that list/view/stats report ("success"/...),
+ * so explain agrees with the other commands for the same run.
+ */
+function toDisplayStatus(status: InspectRunTree["status"] | undefined): string {
+  if (status === "ok") return "success";
+  if (status === "error") return "error";
+  if (status === "running") return "running";
+  return "unknown";
+}
+
 function flatten(nodes: InspectNode[], out: FlatNode[] = []): FlatNode[] {
   for (const node of nodes) {
     out.push({ node, index: out.length + 1 });
@@ -121,7 +133,7 @@ function buildFacts(run: InspectRunTree, redactor: Redactor): ExplainFact[] {
   const facts = [
     fact("run.id", "Run id", run.runId, redactor),
     fact("run.name", "Run name", run.name ?? run.runId, redactor),
-    fact("run.status", "Run status", run.status ?? "unknown", redactor),
+    fact("run.status", "Run status", toDisplayStatus(run.status), redactor),
     fact("run.totalEvents", "Total events", run.metadata.totalEvents, redactor),
     fact("run.stepCount", "Top-level step count", run.children.length, redactor),
     fact("run.nodeCount", "Total node count", nodes.length, redactor),
@@ -212,7 +224,7 @@ export function buildLocalExplanation(
     mode,
     runId: String(redactValue(redactor, "runId", run.runId)),
     ...(run.name !== undefined ? { name: String(redactValue(redactor, "name", run.name)) } : {}),
-    ...(run.status !== undefined ? { status: run.status } : {}),
+    ...(run.status !== undefined ? { status: toDisplayStatus(run.status) } : {}),
     redactionProfile,
     facts,
     inferences: mode === "dry-run" ? [] : buildInferences(run, facts),
