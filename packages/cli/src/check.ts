@@ -104,6 +104,84 @@ export interface ResolvedPreset {
   select: string[];
 }
 
+const DEFAULT_SELECT = ["run.status"];
+
+/**
+ * Preserve first-seen order while dropping empty and duplicate rule ids.
+ */
+export function uniqueSelectIds(ids: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const id of ids) {
+    const trimmed = id.trim();
+    if (trimmed === "" || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+/**
+ * Rule ids implied by CLI shorthand flags on this invocation.
+ * Does not include config-only constructed rules.
+ */
+export function cliShorthandSelectIds(options: CheckCommandOptions): string[] {
+  const ids: string[] = [];
+  if (options.failOnObservation !== undefined && options.failOnObservation.trim() !== "") {
+    ids.push("outcome.status");
+  }
+  if ((options.requiredTool?.length ?? 0) > 0 || (options.forbiddenTool?.length ?? 0) > 0) {
+    ids.push("tool.usage");
+  }
+  if ((options.allowedModel?.length ?? 0) > 0 || options.maxTotalTokens !== undefined) {
+    ids.push("llm.usage");
+  }
+  if (options.maxDurationMs !== undefined) {
+    ids.push("run.duration");
+  }
+  if (options.maxStepDuration !== undefined) {
+    ids.push("run.maxStepDuration");
+  }
+  if (options.detectStalls === true) {
+    ids.push("run.stall");
+  }
+  return ids;
+}
+
+/**
+ * Canonical check select union:
+ * 1. Preset base ids
+ * 2. Explicit `--rule`
+ * 3. Config `checks.select` (no silent expansion of unrelated configured rules)
+ * 4. CLI shorthand ids used on this invocation
+ * Empty explicit select (no preset / `--rule` / config select) keeps auto-select
+ * of constructed rules plus default `run.status`.
+ */
+export function unionCheckSelect(input: {
+  presetSelect?: readonly string[];
+  explicitRules?: readonly string[];
+  configSelect?: readonly string[];
+  shorthandIds?: readonly string[];
+  constructedRuleIds?: readonly string[];
+}): string[] {
+  const explicit = uniqueSelectIds([
+    ...(input.presetSelect ?? []),
+    ...(input.explicitRules ?? []),
+    ...(input.configSelect ?? []),
+  ]);
+  if (explicit.length === 0) {
+    return uniqueSelectIds([
+      ...DEFAULT_SELECT,
+      ...(input.constructedRuleIds ?? []).filter((id) => id !== "run.status"),
+    ]);
+  }
+  const constructed = new Set(input.constructedRuleIds ?? []);
+  const shorthand = (input.shorthandIds ?? []).filter(
+    (id) => constructed.size === 0 || constructed.has(id),
+  );
+  return uniqueSelectIds([...explicit, ...shorthand]);
+}
+
 /**
  * Resolve an additive check preset into option/select patches.
  * Omitting preset returns undefined and leaves default check behavior unchanged.
@@ -194,7 +272,6 @@ type RuleBuildResult = {
   diagnostics: TraceCheckDiagnostic[];
 };
 
-const DEFAULT_SELECT = ["run.status"];
 const CONFIG_EXTENSIONS = new Set([".json", ".js", ".mjs", ".cjs"]);
 const TS_CONFIG_EXTENSIONS = new Set([".ts", ".mts", ".cts"]);
 
@@ -325,7 +402,6 @@ function applyResolvedPreset(
     options: {
       ...options,
       ...(resolved.requireCompleted ? { requireCompleted: true } : {}),
-      rule: [...resolved.select, ...(options.rule ?? [])],
     },
   };
 }
@@ -333,6 +409,7 @@ function applyResolvedPreset(
 function buildRules(
   config: CheckConfig,
   options: CheckCommandOptions,
+  presetSelect: readonly string[] = [],
 ): RuleBuildResult {
   const diagnostics: TraceCheckDiagnostic[] = [];
   const checks = normalizeConfig(config);
@@ -458,24 +535,15 @@ function buildRules(
     rules.push(createSafetyOversizedAttributeRule(safety));
   }
 
-  const select = [
-    ...(asStringArray(checks.select) ?? []),
-    ...(options.rule ?? []),
-  ];
-
-  // Shorthand flags construct rules; auto-select those rule ids so they are
-  // not silently dropped when the user did not pass --rule / config select.
-  if (select.length === 0) {
-    const auto = new Set<string>(DEFAULT_SELECT);
-    for (const rule of rules) {
-      if (rule.id !== "run.status") auto.add(rule.id);
-    }
-    return {
-      rules,
-      select: [...auto],
-      diagnostics,
-    };
-  }
+  const constructedRuleIds = rules.map((rule) => rule.id);
+  const shorthandIds = cliShorthandSelectIds(options);
+  const select = unionCheckSelect({
+    presetSelect,
+    explicitRules: options.rule ?? [],
+    configSelect: asStringArray(checks.select) ?? [],
+    shorthandIds,
+    constructedRuleIds,
+  });
 
   return {
     rules,
@@ -654,7 +722,7 @@ export async function checkCommand(
       config = applied.config;
       effectiveOptions = applied.options;
     }
-    const built = buildRules(config, effectiveOptions);
+    const built = buildRules(config, effectiveOptions, resolved?.select ?? []);
     if (built.diagnostics.some((item) => item.severity === "error")) {
       result = errorResult("AI_CHECK_INVALID_CONFIG", "Invalid check configuration.");
       result.diagnostics = [...built.diagnostics];

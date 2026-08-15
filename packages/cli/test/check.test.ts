@@ -240,6 +240,164 @@ describe("check command", () => {
     expect(serialized).not.toContain("should-not-leak");
   });
 
+  it("does not silently expand config select with unrelated configured rules", async () => {
+    const file = await writeTrace(tmp, "long.jsonl", [
+      event("event-a", {
+        timestamp: "2026-06-26T00:00:00.000Z",
+        durationMs: 5000,
+      }),
+    ]);
+    const config = path.join(tmp, "select-only-status.json");
+    await writeFile(
+      config,
+      JSON.stringify({
+        checks: {
+          select: ["run.status"],
+          run: { maxDurationMs: 1 },
+        },
+      }),
+      "utf-8",
+    );
+
+    const result = await runCheck(file, { config });
+
+    expect(process.exitCode).toBe(0);
+    expect(result.status).toBe("pass");
+    expect(result.findings?.some((item) => item.ruleId === "run.duration")).toBeFalsy();
+  });
+
+  it("executes --fail-on-observation with --preset trajectory", async () => {
+    const file = await writeTrace(tmp, "failed-outcome.jsonl", [
+      event("event-run"),
+      event("event-outcome", {
+        eventId: "outcome-1",
+        kind: "OUTCOME",
+        name: "policyShown",
+        attributes: {
+          outcomeStatus: "failed",
+          expectation: "Refund policy visible",
+        },
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "trajectory",
+      failOnObservation: "failed",
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(result.findings?.some((item) => item.ruleId === "outcome.status")).toBe(true);
+  });
+
+  it("executes --required-tool with --preset safety", async () => {
+    const file = await writeTrace(tmp, "no-tool.jsonl", [
+      event("event-a", {
+        kind: "LLM",
+        name: "llm:gpt-4.1-mini",
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "safety",
+      requiredTool: ["search_docs"],
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(result.findings?.some((item) => item.ruleId === "tool.usage")).toBe(true);
+  });
+
+  it("executes --allowed-model and --max-total-tokens with --preset trajectory", async () => {
+    const file = await writeTrace(tmp, "llm.jsonl", [
+      event("event-run"),
+      event("event-llm", {
+        kind: "LLM",
+        name: "llm:gpt-4.1-mini",
+        attributes: { model: "gpt-4.1-mini" },
+        tokenUsage: { input: 10, output: 10, total: 20 },
+      }),
+    ]);
+
+    const modelResult = await runCheck(file, {
+      preset: "trajectory",
+      allowedModel: ["gpt-4o-mini"],
+    });
+    expect(process.exitCode).toBe(1);
+    expect(modelResult.findings?.some((item) => item.ruleId === "llm.usage")).toBe(true);
+
+    process.exitCode = 0;
+    const tokenResult = await runCheck(file, {
+      preset: "trajectory",
+      maxTotalTokens: "1",
+    });
+    expect(process.exitCode).toBe(1);
+    expect(tokenResult.findings?.some((item) => item.ruleId === "llm.usage")).toBe(true);
+  });
+
+  it("executes --max-duration-ms with --preset trajectory", async () => {
+    const file = await writeTrace(tmp, "slow.jsonl", [
+      event("event-a", {
+        timestamp: "2026-06-26T00:00:00.000Z",
+        durationMs: 5000,
+      }),
+      event("event-b", {
+        eventId: "event-b",
+        timestamp: "2026-06-26T00:00:05.000Z",
+        durationMs: 1,
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "trajectory",
+      maxDurationMs: "1",
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(result.findings?.some((item) => item.ruleId === "run.duration")).toBe(true);
+  });
+
+  it("executes --max-step-duration with --preset trajectory", async () => {
+    const file = await writeTrace(tmp, "slow-step.jsonl", [
+      event("event-run"),
+      event("event-llm", {
+        kind: "LLM",
+        name: "llm:gpt-4.1-mini",
+        durationMs: 5000,
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "trajectory",
+      maxStepDuration: "1ms",
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(result.findings?.some((item) => item.ruleId === "run.maxStepDuration")).toBe(true);
+  });
+
+  it("executes --detect-stalls with --preset trajectory", async () => {
+    const file = await writeTrace(tmp, "stall.jsonl", [
+      event("event-run"),
+      event("event-llm", {
+        kind: "LLM",
+        name: "llm:gpt-4.1-mini",
+        status: "running",
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "trajectory",
+      detectStalls: true,
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(result.findings?.some((item) => item.ruleId === "run.stall")).toBe(true);
+  });
+
   it("writes local evidence on failure when --evidence-on fail", async () => {
     const cwd = process.cwd();
     process.chdir(tmp);
@@ -290,5 +448,53 @@ describe.skipIf(!builtCliHasCheckCommand)("built check CLI", () => {
     expect(result.stdout).toContain("--format");
     expect(result.stdout).toContain("--config");
     expect(result.stdout).toContain("--rule");
+  });
+
+  it("executes trajectory plus --fail-on-observation from the packed CLI", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-packed-check-"));
+    try {
+      const file = path.join(tmp, "failed-outcome.jsonl");
+      await writeFile(
+        file,
+        jsonl(
+          event("event-run"),
+          event("event-outcome", {
+            eventId: "outcome-1",
+            kind: "OUTCOME",
+            name: "policyShown",
+            attributes: {
+              outcomeStatus: "failed",
+              expectation: "Refund policy visible",
+            },
+          }),
+        ),
+        "utf-8",
+      );
+
+      const result = spawnSync(
+        process.execPath,
+        [
+          cliDist,
+          "check",
+          file,
+          "--preset",
+          "trajectory",
+          "--fail-on-observation",
+          "failed",
+          "--json",
+        ],
+        { encoding: "utf-8" },
+      );
+
+      expect(result.status).toBe(1);
+      const parsed = JSON.parse(result.stdout) as {
+        status?: string;
+        findings?: { ruleId?: string }[];
+      };
+      expect(parsed.status).toBe("fail");
+      expect(parsed.findings?.some((item) => item.ruleId === "outcome.status")).toBe(true);
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
   });
 });
