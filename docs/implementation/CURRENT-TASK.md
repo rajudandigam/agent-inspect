@@ -16,4 +16,4 @@ pendingManualGate: 6.18.0-external-acceptance
 
 ## Published baseline
 
-**6.17.1** (all 18 packages verified on npm)
+**6.17.2** (all 18 packages; Version Packages in flight / npm Trusted Publishing)
