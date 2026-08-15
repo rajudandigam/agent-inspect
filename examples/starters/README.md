@@ -6,9 +6,9 @@ Full guide: [docs/ADOPTION.md](../../docs/ADOPTION.md) · Positioning: [docs/POS
 
 | Starter | Unique-value beat | After `pnpm start` |
 | ------- | ----------------- | ------------------ |
-| [broken-agent-debugging](./broken-agent-debugging/) | Wrong tool → causal report → share-checked redact | `report` / `check` / `redact` / `verify-safe` with `<run-id>` |
+| [broken-agent-debugging](./broken-agent-debugging/) | Debug / Prevent / Share: good, regression, and synthetic PII | `demo-good` / `demo-regression` / `demo-pii` then `check` / `bundle` / `verify-safe` |
 | [coding-agent-debug-loop](./coding-agent-debug-loop/) | MCP inspect + Evidence v2 | `pnpm run inspect-mcp` · `mcp configure --client cursor` |
-| [ci-eval-redact](./ci-eval-redact/) | CI check + share-safe artifact | `check <run-id>` · `redact <run-id> --profile share` |
+| [ci-eval-redact](./ci-eval-redact/) | CI check + share-checked artifact | `check <run-id>` · `redact <run-id> --profile share` |
 | [custom-observe](./custom-observe/) | Manual `inspectRun` / `step` | `list` · `check <run-id>` |
 | [ai-sdk](./ai-sdk/) | Vercel AI SDK adapter | same |
 | [openai-agents](./openai-agents/) | OpenAI Agents adapter | same |

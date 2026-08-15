@@ -133,9 +133,26 @@ if (!existsSync(manifestPath)) {
   }
 }
 
-// Asset budget: no committed demo zip
+// Asset budget: no committed demo zip; showcase GIFs/posters stay bounded
 for (const f of walkFiles("docs/assets")) {
   if (f.endsWith(".zip")) failures.push(`committed demo zip not allowed: ${f}`);
+}
+const showcase = "docs/assets/showcase";
+if (exists(showcase)) {
+  const provenance = path.join(showcase, "provenance.json");
+  if (!exists(provenance)) failures.push("docs/assets/showcase/provenance.json is required");
+  for (const f of walkFiles(showcase)) {
+    const st = statSync(path.join(root, f));
+    if (f.endsWith(".gif") && st.size > 1024 * 1024) {
+      failures.push(`showcase GIF exceeds 1MB: ${f}`);
+    }
+    if (f.endsWith(".png") && st.size > 512 * 1024) {
+      failures.push(`showcase PNG exceeds 512KB: ${f}`);
+    }
+    if ((f.endsWith(".webm") || f.endsWith(".mp4")) && st.size > 2 * 1024 * 1024) {
+      failures.push(`showcase video exceeds 2MB: ${f}`);
+    }
+  }
 }
 
 // Duplicate AI maintainer handbook: no CODEX-MAINTAINER-GUIDE

@@ -29,7 +29,7 @@ export const docsRoutes = {
   langchain: "/docs/integrations/langchain",
   langgraph: "/docs/integrations/langgraph",
   traceFacts: "/docs/trace-facts",
-  contracts: "/docs/contracts",
+  contracts: "/docs/trace-contracts",
   testMatchers: "/docs/test-matchers",
   evidenceV2: "/docs/evidence-v2",
   codingAgentLoop: "/docs/coding-agent-loop",

@@ -1,0 +1,60 @@
+{
+  "diagnostics": [],
+  "findings": [
+    {
+      "actual": [
+        {
+          "expectation": "Refund policy visible to the customer",
+          "name": "policyShown",
+          "status": "failed"
+        }
+      ],
+      "evidence": [
+        {
+          "eventId": "step_knhEzrCFwK",
+          "kind": "OUTCOME",
+          "name": "policyShown",
+          "path": "outcome.policyShown",
+          "runId": "demo-regression",
+          "status": "failed"
+        }
+      ],
+      "expected": {
+        "failOn": [
+          "failed"
+        ]
+      },
+      "message": "Observed outcome count 1 matched [failed].",
+      "ruleId": "outcome.status",
+      "severity": "error",
+      "status": "fail"
+    },
+    {
+      "actual": "search_docs",
+      "evidence": [
+        {
+          "eventId": "step_TGbAMI1_fn_started",
+          "kind": "TOOL",
+          "name": "tool:search_docs",
+          "runId": "demo-regression",
+          "status": "error"
+        }
+      ],
+      "expected": "tool absent",
+      "message": "Forbidden tool search_docs appeared.",
+      "ruleId": "tool.usage",
+      "severity": "error",
+      "status": "fail"
+    }
+  ],
+  "format": "agent-inspect-v1.0-jsonl",
+  "ok": false,
+  "runId": "demo-regression",
+  "status": "fail",
+  "summary": {
+    "errors": 0,
+    "failed": 2,
+    "passed": 0,
+    "warnings": 0
+  }
+}

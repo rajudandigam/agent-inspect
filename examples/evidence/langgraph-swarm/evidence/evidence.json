@@ -3,7 +3,7 @@
     "note": "Best-effort local safety verification only; not a compliance certification.",
     "status": "SAFE"
   },
-  "createdAt": "2026-08-12T23:25:08.000Z",
+  "createdAt": "2026-08-15T18:35:37.965Z",
   "evidenceFormatVersion": "1.0",
   "files": [
     {
@@ -14,7 +14,7 @@
     {
       "path": "evidence.html",
       "role": "report",
-      "sha256": "1033cab7349d27a5679995817648bb77a8fbe488e3a22e87416bebc631b14e68"
+      "sha256": "f2614c40ac6d46f284ef652b8d6c2cd80825fc55ee24808095b863ef555ccb8a"
     },
     {
       "path": "trace.jsonl",

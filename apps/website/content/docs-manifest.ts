@@ -35,7 +35,7 @@ export const docsManifest: DocsManifestEntry[] = [
   },
   {
     slug: ["contracts"],
-    source: "docs/TRACE-CONTRACTS.md",
+    source: "docs/CONTRACTS.md",
     section: "Prevent regressions",
   },
   {
@@ -50,7 +50,7 @@ export const docsManifest: DocsManifestEntry[] = [
   },
   {
     slug: ["test-matchers"],
-    source: "docs/TRACE-CONTRACTS.md",
+    source: "docs/TEST-MATCHERS.md",
     section: "Prevent regressions",
   },
   {

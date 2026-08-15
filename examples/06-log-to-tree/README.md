@@ -6,7 +6,7 @@ Answer the v0.3 spike question:
 
 > Does a local log-to-tree view help understand a real agent run faster than raw logs?
 
-**Visual demo:** JSON logs → tree recording is pending re-record — see [docs/SCREENSHOTS.md](../../docs/SCREENSHOTS.md#json-logs--tree) and [docs/LOGS.md](../../docs/LOGS.md).
+**Visual demo:** JSON logs → tree recordings remain in the older [docs/assets/demos](../../docs/assets/demos/) set. Prefer the 6.17.x Debug / Prevent / Share showcase in [docs/SCREENSHOTS.md](../../docs/SCREENSHOTS.md).
 
 ## Why this exists
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-label="Capture or import one local trace, then debug the run, prevent trajectory regressions, and prepare share-checked evidence">
+  <rect width="900" height="220" fill="#ffffff"/>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif">
+    <rect x="20" y="70" width="200" height="80" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="120" y="104" text-anchor="middle" font-size="14" font-weight="600" fill="#312e81">One local trace</text>
+    <text x="120" y="124" text-anchor="middle" font-size="11" fill="#475569">JSONL you own</text>
+    <path d="M230 110h40" stroke="#64748b" stroke-width="2"/>
+    <polygon points="270,110 262,106 262,114" fill="#64748b"/>
+    <rect x="280" y="20" width="180" height="56" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <text x="370" y="44" text-anchor="middle" font-size="14" font-weight="600" fill="#064e3b">Debug</text>
+    <text x="370" y="62" text-anchor="middle" font-size="11" fill="#475569">view · report · explain</text>
+    <rect x="280" y="82" width="180" height="56" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="370" y="106" text-anchor="middle" font-size="14" font-weight="600" fill="#78350f">Prevent</text>
+    <text x="370" y="124" text-anchor="middle" font-size="11" fill="#475569">check · contract · CI</text>
+    <rect x="280" y="144" width="180" height="56" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+    <text x="370" y="168" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Share</text>
+    <text x="370" y="186" text-anchor="middle" font-size="11" fill="#475569">redact · verify-safe · bundle</text>
+    <path d="M470 110h40" stroke="#64748b" stroke-width="2"/>
+    <polygon points="510,110 502,106 502,114" fill="#64748b"/>
+    <rect x="520" y="70" width="360" height="80" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="700" y="104" text-anchor="middle" font-size="14" font-weight="600" fill="#4c1d95">Same evidence loop</text>
+    <text x="700" y="124" text-anchor="middle" font-size="11" fill="#475569">Local-first · share-checked · no default upload</text>
+  </g>
+</svg>

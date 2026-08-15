@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"/>
+<meta name="referrer" content="no-referrer"/>
+<title>AgentInspect evidence</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1a1a1a;--muted:#5c5c5c;--line:#d8d8d4;--accent:#0b5fff;--safe:#0a7a3e;--warn:#9a6700;--unsafe:#b42318;--unknown:#5c5c5c}
+*{box-sizing:border-box}
+body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--fg);line-height:1.5}
+a{color:var(--accent)}
+header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--line);background:#fff}
+header h1{margin:0 0 .35rem;font-size:1.35rem}
+.note{margin:0;color:var(--muted);font-size:.92rem;max-width:52rem}
+.layout{display:grid;grid-template-columns:14rem 1fr;min-height:70vh}
+nav{padding:1rem;border-right:1px solid var(--line);background:#fff}
+nav .nav-link{display:block;padding:.4rem .55rem;margin:0 0 .2rem;border-radius:.35rem;text-decoration:none;color:inherit}
+nav .nav-link:hover,nav .nav-link:focus{background:#eef3ff;outline:2px solid var(--accent);outline-offset:1px}
+main{padding:1.25rem 1.5rem}
+.panel[hidden]{display:none}
+.badge{display:inline-block;padding:.15rem .55rem;border-radius:.3rem;font-size:.85rem;font-weight:600}
+.st-safe{color:var(--safe)}.st-warn{color:var(--warn)}.st-unsafe{color:var(--unsafe)}.st-unknown{color:var(--unknown)}
+table{border-collapse:collapse;width:100%;max-width:48rem;background:#fff}
+th,td{border:1px solid var(--line);padding:.4rem .55rem;text-align:left;vertical-align:top}
+th{background:#f0f0ec}
+.summary-md,pre.data{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--line);padding:.75rem;max-width:52rem}
+.muted{color:var(--muted)}
+ul.runs{margin:.4rem 0 1rem;padding-left:1.2rem}
+@media print{
+  nav{display:none}
+  .layout{display:block}
+  .panel[hidden]{display:block!important;page-break-before:always}
+  header{border:0}
+}
+@media (max-width:720px){
+  .layout{grid-template-columns:1fr}
+  nav{border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.25rem}
+}
+ul.tree{list-style:none;padding-left:1rem;margin:.5rem 0}
+ul.tree.nested{padding-left:1.25rem;border-left:1px solid var(--line);margin:.25rem 0}
+.tree-node.is-error .nm,.wf-row.is-error .nm,.causal-tip .nm{color:var(--unsafe)}
+.waterfall{display:flex;flex-direction:column;gap:.45rem;max-width:52rem}
+.wf-row{display:grid;grid-template-columns:minmax(10rem,18rem) 1fr;gap:.6rem;align-items:center}
+.wf-track{position:relative;height:.7rem;background:#e8e8e4;border-radius:.25rem;overflow:hidden}
+.wf-bar{position:absolute;top:0;bottom:0;background:var(--accent);border-radius:.25rem}
+.wf-row.is-error .wf-bar{background:var(--unsafe)}
+.causal-chain{max-width:44rem}
+.causal-msg{margin:.25rem 0 0;color:var(--muted);font-size:.92rem}
+.run-block{margin:0 0 1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.run-block:last-child{border-bottom:0}
+@media (max-width:720px){
+  .wf-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>AgentInspect evidence</h1>
+  <p class="note">Generated locally by AgentInspect. Share-checked evidence for review — not a compliance or security certification.</p>
+</header>
+<div class="layout">
+<nav aria-label="Evidence views">
+<a class="nav-link" href="#view-summary" data-view="summary">Summary</a>
+<a class="nav-link" href="#view-tree" data-view="tree">Tree</a>
+<a class="nav-link" href="#view-timeline" data-view="timeline">Timeline</a>
+<a class="nav-link" href="#view-causal" data-view="causal">Causal failure</a>
+<a class="nav-link" href="#view-tools-llm" data-view="tools-llm">Tools / LLM</a>
+<a class="nav-link" href="#view-outcomes" data-view="outcomes">Outcomes</a>
+<a class="nav-link" href="#view-contracts" data-view="contracts">Contracts / checks</a>
+<a class="nav-link" href="#view-circuit" data-view="circuit">Circuit / guardrails</a>
+<a class="nav-link" href="#view-diff" data-view="diff">Diff</a>
+<a class="nav-link" href="#view-safety" data-view="safety">Safety / redaction</a>
+<a class="nav-link" href="#view-provenance" data-view="provenance">Provenance</a>
+</nav>
+<main id="main">
+  <section id="view-summary" class="panel" tabindex="-1">
+    <h2>Summary</h2>
+    <p>Artifact status: <span class="badge st-safe">SAFE</span>
+    </p>
+    <p>Profile: <code>share</code> · Verification: <code>share</code></p>
+    <p>Generator: <code>agent-inspect@6.17.1</code>
+     · Created: <code>2026-08-15T18:35:38.643Z</code></p>
+    <h3>Runs</h3>
+    <ul class="runs"><li><code>demo-good</code></li></ul>
+    <h3>Check summary</h3>
+    <table>
+      <thead><tr><th>runId</th><th>artifact</th><th>errors</th><th>warnings</th><th>findings</th></tr></thead>
+      <tbody><tr><td><code>demo-good</code></td><td class="st-safe">SAFE</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+    </table>
+    <h3>Text summary</h3>
+    <pre class="summary-md">Check status: pass</pre>
+  </section>
+  <section id="view-tree" class="panel" hidden>
+    <h2>Tree</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-timeline" class="panel" hidden>
+    <h2>Timeline</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-causal" class="panel" hidden>
+    <h2>Causal failure</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-tools-llm" class="panel" hidden>
+    <h2>Tools / LLM</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-outcomes" class="panel" hidden>
+    <h2>Outcomes</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-contracts" class="panel" hidden>
+    <h2>Contracts / checks</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-circuit" class="panel" hidden>
+    <h2>Circuit / guardrails</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-diff" class="panel" hidden>
+    <h2>Diff</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-safety" class="panel" hidden>
+    <h2>Safety / redaction</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+  <section id="view-provenance" class="panel" hidden>
+    <h2>Provenance</h2>
+    <p class="muted">This view will be filled in a later AgentInspect 6.10 release. The shell is offline-ready.</p>
+  </section>
+</main>
+</div>
+<script type="application/json" id="ai-evidence-data">{"evidenceFormatVersion":"1.0","generator":{"name":"agent-inspect","version":"6.17.1"},"createdAt":"2026-08-15T18:35:38.643Z","runIds":["demo-good"],"assessment":{"status":"SAFE"},"policy":{"redactionProfile":"share","verificationPolicy":"share"},"checkSummary":{"aggregateStatus":"SAFE","runs":[{"runId":"demo-good","status":"SAFE","errors":0,"warnings":0,"findings":0}]}}</script>
+<script>
+(function(){
+  var links=document.querySelectorAll("nav .nav-link");
+  var panels=document.querySelectorAll("main .panel");
+  function show(id){
+    for(var i=0;i<panels.length;i++){
+      var p=panels[i];
+      var on=p.id==="view-"+id;
+      if(on){p.removeAttribute("hidden");}else{p.setAttribute("hidden","");}
+    }
+    for(var j=0;j<links.length;j++){
+      var a=links[j];
+      if(a.getAttribute("data-view")===id){a.setAttribute("aria-current","page");}
+      else{a.removeAttribute("aria-current");}
+    }
+  }
+  for(var k=0;k<links.length;k++){
+    links[k].addEventListener("click",function(ev){
+      var id=ev.currentTarget.getAttribute("data-view");
+      if(!id)return;
+      ev.preventDefault();
+      if(history.replaceState){history.replaceState(null,"","#view-"+id);}
+      show(id);
+      var panel=document.getElementById("view-"+id);
+      if(panel)panel.focus();
+    });
+  }
+  var hash=(location.hash||"").replace(/^#view-/,"");
+  var initial="summary";
+  for(var n=0;n<links.length;n++){
+    if(links[n].getAttribute("data-view")===hash){initial=hash;break;}
+  }
+  show(initial);
+})();
+</script>
+</body>
+</html>

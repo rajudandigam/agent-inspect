@@ -1,11 +1,11 @@
 # AgentInspect
 
-> Debug and regression-test TypeScript AI agents from local evidence
+> Local-first evidence for TypeScript AI agents
 
-AgentInspect captures framework-faithful execution trees, evaluates them with deterministic TraceFacts and TraceContract rules, creates integrity-verifiable Evidence v2, and lets coding assistants inspect the same local facts over read-only MCP—without a collector, account, or default upload.
+AgentInspect turns TypeScript agent runs into readable execution trees, deterministic trajectory checks, and portable Evidence v2—without requiring an account, collector, or default upload.
 
-- Category: The local evidence debugger and trajectory-test toolkit for TypeScript AI agents
-- Outcome: See what your agent did. Prove the fix. Keep the evidence.
+- Category: Local-first evidence for TypeScript AI agents
+- Outcome: Capture once. Debug, prevent, and share from the same local trace.
 - Status: Current release: 6.17.1 · schema 1.0 · Node.js 20+ · MIT · actively maintained
 - Site: https://agentinspect.vercel.app
 - Docs: https://agentinspect.vercel.app/docs/
@@ -27,12 +27,13 @@ AgentInspect captures framework-faithful execution trees, evaluates them with de
 - LLM-as-judge eval hosting as the primary product
 - Compliance certification from the library itself
 
-## Four pillars
+## Three jobs
 
-1. **Capture faithfully** — Framework-aware execution trees and local JSONL you own.
-2. **Test behavior deterministically** — TraceFacts, TraceContract, checks, suites, cohorts, CI gates, and test matchers.
-3. **Produce portable evidence** — Offline Evidence v2 with integrity verification and share-policy disclosure.
-4. **Debug with coding assistants locally** — Read-only MCP over the same TraceFacts, without a collector or hosted trace database.
+1. **Debug** — Read nested steps, tools, model metadata, and the first causal failure from local JSONL.
+2. **Prevent** — Deterministic check presets, TraceContract, suites, and CI gates.
+3. **Share** — Share-checked Evidence v2 with integrity verification (not compliance certification).
+
+Optional Preview: read-only MCP over the same local facts.
 
 ## Packages
 
@@ -48,7 +49,7 @@ AgentInspect captures framework-faithful execution trees, evaluates them with de
 
 - https://agentinspect.vercel.app/docs/getting-started
 - https://agentinspect.vercel.app/docs/trace-facts
-- https://agentinspect.vercel.app/docs/contracts
+- https://agentinspect.vercel.app/docs/trace-contracts
 - https://agentinspect.vercel.app/docs/evidence-v2
 - https://agentinspect.vercel.app/docs/coding-agent-loop
 - https://agentinspect.vercel.app/docs/integrations/langgraph

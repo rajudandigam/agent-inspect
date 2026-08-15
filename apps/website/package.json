@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node ../../scripts/copy-showcase-to-website.mjs && next dev",
+    "build": "node ../../scripts/copy-showcase-to-website.mjs && next build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

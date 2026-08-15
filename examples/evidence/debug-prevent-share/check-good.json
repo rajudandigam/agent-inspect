@@ -1,0 +1,14 @@
+{
+  "diagnostics": [],
+  "findings": [],
+  "format": "agent-inspect-v1.0-jsonl",
+  "ok": true,
+  "runId": "demo-good",
+  "status": "pass",
+  "summary": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 0,
+    "warnings": 0
+  }
+}

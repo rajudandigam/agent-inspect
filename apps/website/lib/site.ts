@@ -1,7 +1,7 @@
 export const site = {
   name: "agent-inspect",
   title:
-    "agent-inspect — Debug and regression-test TypeScript AI agents from local evidence",
+    "agent-inspect — Local-first evidence for TypeScript AI agents",
   description:
     "Local evidence debugger and trajectory-test toolkit for TypeScript AI agents — framework-faithful execution trees, TraceFacts, TraceContract, Evidence v2, and read-only MCP without a collector or default upload.",
   keywords: [

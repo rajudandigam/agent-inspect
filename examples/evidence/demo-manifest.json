@@ -14,6 +14,23 @@
       "fixture": "fixtures/langgraph/deep-swarm-nested-ok.jsonl",
       "label": "Deep nested swarm fixture",
       "evidenceOk": true
+    },
+    {
+      "id": "debug-prevent-share",
+      "fixture": "examples/starters/broken-agent-debugging",
+      "label": "Canonical keyless Debug / Prevent / Share showcase",
+      "evidenceOk": true,
+      "files": [
+        "demo-good.jsonl",
+        "demo-regression.jsonl",
+        "demo-pii.jsonl",
+        "check-good.json",
+        "check-regression.json",
+        "bundle-verify.json",
+        "evidence/evidence.html",
+        "evidence/evidence.json",
+        "README.md"
+      ]
     }
   ]
 }

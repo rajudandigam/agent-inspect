@@ -1,0 +1,135 @@
+{
+  "generatedAt": "1970-01-01T00:00:00.000Z",
+  "packageVersion": "6.17.1",
+  "rejected": [
+    {
+      "path": "docs/demo-kit/b77a3f11-0728-4ddc-89ea-e27049ddd2e4.gif",
+      "reason": "PNG mislabeled as GIF; zero animation frames"
+    },
+    {
+      "path": "docs/demo-kit/06-run-live.mp4",
+      "reason": "Not re-recorded from the canonical starter; omitted from published showcase"
+    },
+    {
+      "path": "docs/demo-kit/02-gate-pass-fail.mp4",
+      "reason": "Captioned check as gate and used /private/tmp; re-recorded as check-pass-fail"
+    }
+  ],
+  "assets": [
+    {
+      "id": "check-pass-fail",
+      "command": "check --preset trajectory plus shorthands (pass then fail)",
+      "files": {
+        "gif": "docs/assets/showcase/gif/check-pass-fail.gif",
+        "mp4": "docs/assets/showcase/video/check-pass-fail.mp4",
+        "webm": "docs/assets/showcase/video/check-pass-fail.webm",
+        "poster": "docs/assets/showcase/posters/check-pass-fail.png"
+      },
+      "sha256": {
+        "gif": "e37c7c7b55985d85a13b4cf8d7d3d38041e6da2107971e97b47a331b5d9738ee",
+        "mp4": "08352a2c9a33e66c8b37959b87cfd57ccb10a757fc867ef5608b44de13ee16dc",
+        "webm": "11f9e8249dbc35767b30908400727bf4acac75c967166d6c86f24960658569df"
+      },
+      "width": 900,
+      "height": 525,
+      "durationSec": 13.2,
+      "caption": "The same deterministic check exits 0 for demo-good and 1 for demo-regression.",
+      "transcript": "agent-inspect check demo-good --preset trajectory (exit 0); check demo-regression --preset trajectory plus shorthands (exit 1).",
+      "bytes": {
+        "gif": 172209
+      }
+    },
+    {
+      "id": "evidence-bundle",
+      "command": "bundle --profile share && bundle verify",
+      "files": {
+        "gif": "docs/assets/showcase/gif/evidence-bundle.gif",
+        "mp4": "docs/assets/showcase/video/evidence-bundle.mp4",
+        "webm": "docs/assets/showcase/video/evidence-bundle.webm",
+        "poster": "docs/assets/showcase/posters/evidence-bundle.png"
+      },
+      "sha256": {
+        "gif": "612849552157963ead35323ec6167c43d228b67eb0f930b36ec93b3cf6d739bc",
+        "mp4": "4782d363480645e2cf4d64d61741606145e29c9f20e50c188dfaca6ae0321e8f",
+        "webm": "784dd6c5c53ca08ea51f4519c2107e28b45dda8b0f5a51f05dbde5bd730e50fe"
+      },
+      "width": 900,
+      "height": 525,
+      "durationSec": 7.2,
+      "caption": "Write share-checked Evidence v2 to ./evidence and verify hashes offline.",
+      "transcript": "agent-inspect bundle demo-good --profile share --out ./evidence; agent-inspect bundle verify ./evidence.",
+      "bytes": {
+        "gif": 49757
+      }
+    },
+    {
+      "id": "redact",
+      "command": "redact --profile share writes a derived copy",
+      "files": {
+        "gif": "docs/assets/showcase/gif/redact.gif",
+        "mp4": "docs/assets/showcase/video/redact.mp4",
+        "webm": "docs/assets/showcase/video/redact.webm",
+        "poster": "docs/assets/showcase/posters/redact.png"
+      },
+      "sha256": {
+        "gif": "867cdd9906e7716ac15186f52c46a4a705e283bc195788fa78b552161f29f3e7",
+        "mp4": "6a075775fbc38648d8737868f1f6a38ce9a0ffa13ef3f93b6280b293377ff915",
+        "webm": "5b47606bb6a31e34b94a0087a69dba7d2b2c0c969c8f6fff8a673138b781f06e"
+      },
+      "width": 900,
+      "height": 525,
+      "durationSec": 4.3,
+      "caption": "redact writes a derived copy and does not mutate the source.",
+      "transcript": "agent-inspect redact demo-pii --profile share -o demo-pii.safe.jsonl",
+      "bytes": {
+        "gif": 18700
+      }
+    },
+    {
+      "id": "debug-tree",
+      "command": "list then view (source tape)",
+      "files": {
+        "gif": "docs/assets/showcase/gif/debug-tree.gif",
+        "mp4": "docs/assets/showcase/video/debug-tree.mp4",
+        "webm": "docs/assets/showcase/video/debug-tree.webm",
+        "poster": "docs/assets/showcase/posters/debug-tree.png"
+      },
+      "sha256": {
+        "gif": "0847b660e4361037be93b53d091ea16e556bb5e10aaf3404597efacd991dce16",
+        "mp4": "c1aaf31df360e20674030a08a070d92b7da63c038283be431f9ebe6e7b07fbf6",
+        "webm": "29c2561057503a932f87614618a0c92e28f28e60a5e8679fe91da7bb7f876fc2"
+      },
+      "width": 900,
+      "height": 484,
+      "durationSec": 10.6,
+      "caption": "List a local run, then inspect the execution tree.",
+      "transcript": "agent-inspect list --dir .agent-inspect; agent-inspect view demo-good --summary",
+      "bytes": {
+        "gif": 96917
+      }
+    },
+    {
+      "id": "explain",
+      "command": "explain demo-good",
+      "files": {
+        "gif": "docs/assets/showcase/gif/explain.gif",
+        "mp4": "docs/assets/showcase/video/explain.mp4",
+        "webm": "docs/assets/showcase/video/explain.webm",
+        "poster": "docs/assets/showcase/posters/explain.png"
+      },
+      "sha256": {
+        "gif": "ec546b9a4463d12e0f2dca30ab9487a336080302ffb1c4852fab7d83747e97aa",
+        "mp4": "3191e1415472031665165c355badfac8ee048cc007701161e86c7f541c8df7d4",
+        "webm": "8f70334a2c26c0f0fb5518fac9b358806e72afe31431c7e7c524bef47cf9bfae"
+      },
+      "width": 900,
+      "height": 551,
+      "durationSec": 7.3,
+      "caption": "explain summarizes the local demo-good run.",
+      "transcript": "agent-inspect explain demo-good --dir .agent-inspect",
+      "bytes": {
+        "gif": 74432
+      }
+    }
+  ]
+}

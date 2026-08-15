@@ -5,6 +5,7 @@ packages:
   - "examples/08-langchain-adapter"
   - "examples/adapter-sdk/*"
   - "examples/recipes/*"
+  - "examples/starters/broken-agent-debugging"
 allowBuilds:
   esbuild: true
   unrs-resolver: false

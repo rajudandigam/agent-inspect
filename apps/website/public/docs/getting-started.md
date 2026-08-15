@@ -1,6 +1,6 @@
 # First trace in 5 minutes
 
-Goal: install → one trace → one check → one share-safe bundle.
+Goal: install → one trace → one check → one share-checked Evidence v2.
 
 **Docs site:** [https://agentinspect.vercel.app/docs/getting-started/](https://agentinspect.vercel.app/docs/getting-started/)
 

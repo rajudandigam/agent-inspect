@@ -131,6 +131,134 @@ for (const sample of samples) {
   });
 }
 
+const showcaseDir = path.join(
+  root,
+  "examples/starters/broken-agent-debugging",
+);
+const demoAgent = path.join(showcaseDir, "demo-agent.mjs");
+if (existsSync(demoAgent)) {
+  for (const variant of ["good", "regression", "pii"]) {
+    const generated = spawnSync(process.execPath, [demoAgent, variant], {
+      cwd: showcaseDir,
+      encoding: "utf8",
+    });
+    if (generated.status !== 0) {
+      console.error(generated.stdout);
+      console.error(generated.stderr);
+      throw new Error(`showcase demo-agent ${variant} failed`);
+    }
+  }
+
+  const dest = path.join(outRoot, "debug-prevent-share");
+  rmSync(dest, { recursive: true, force: true });
+  mkdirSync(dest, { recursive: true });
+  copyFileSync(
+    path.join(showcaseDir, ".agent-inspect", "demo-good.jsonl"),
+    path.join(dest, "demo-good.jsonl"),
+  );
+  copyFileSync(
+    path.join(showcaseDir, ".agent-inspect", "demo-regression.jsonl"),
+    path.join(dest, "demo-regression.jsonl"),
+  );
+  copyFileSync(
+    path.join(showcaseDir, ".agent-inspect-pii", "demo-pii.jsonl"),
+    path.join(dest, "demo-pii.jsonl"),
+  );
+
+  const goodCheck = run([
+    "check",
+    path.join(dest, "demo-good.jsonl"),
+    "--preset",
+    "trajectory",
+    "--required-tool",
+    "retrieve_policy",
+    "--fail-on-observation",
+    "failed",
+    "--json",
+  ]);
+  writeFileSync(path.join(dest, "check-good.json"), goodCheck);
+
+  const regressionCheck = spawnSync(
+    process.execPath,
+    [
+      cli,
+      "check",
+      path.join(dest, "demo-regression.jsonl"),
+      "--preset",
+      "trajectory",
+      "--required-tool",
+      "retrieve_policy",
+      "--forbidden-tool",
+      "search_docs",
+      "--fail-on-observation",
+      "failed",
+      "--json",
+    ],
+    { cwd: root, encoding: "utf8" },
+  );
+  if (regressionCheck.status !== 1) {
+    throw new Error(
+      `expected regression check exit 1, got ${regressionCheck.status}`,
+    );
+  }
+  writeFileSync(path.join(dest, "check-regression.json"), regressionCheck.stdout);
+
+  const evidenceDir = path.join(dest, "evidence");
+  run([
+    "check",
+    path.join(dest, "demo-good.jsonl"),
+    "--preset",
+    "trajectory",
+    "--evidence-on",
+    "always",
+    "--evidence-dir",
+    evidenceDir,
+    "--evidence-profile",
+    "share",
+    "--evidence-format",
+    "directory",
+  ]);
+  const verifyOut = run(["bundle", "verify", evidenceDir, "--json"]);
+  writeFileSync(path.join(dest, "bundle-verify.json"), verifyOut);
+
+  writeFileSync(
+    path.join(dest, "README.md"),
+    [
+      "# Debug / Prevent / Share showcase traces",
+      "",
+      "Generated from `examples/starters/broken-agent-debugging` (keyless, synthetic).",
+      "",
+      "- `demo-good.jsonl` / `demo-regression.jsonl` / `demo-pii.jsonl`",
+      "- `check-good.json` / `check-regression.json`",
+      "- `evidence/` — Evidence v2 from the good run",
+      "",
+      "```bash",
+      "pnpm build && pnpm demo:generate && pnpm demo:verify",
+      "```",
+      "",
+    ].join("\n"),
+  );
+
+  const verify = JSON.parse(verifyOut);
+  manifest.samples.push({
+    id: "debug-prevent-share",
+    fixture: "examples/starters/broken-agent-debugging",
+    label: "Canonical keyless Debug / Prevent / Share showcase",
+    evidenceOk: verify.ok === true,
+    files: [
+      "demo-good.jsonl",
+      "demo-regression.jsonl",
+      "demo-pii.jsonl",
+      "check-good.json",
+      "check-regression.json",
+      "bundle-verify.json",
+      "evidence/evidence.html",
+      "evidence/evidence.json",
+      "README.md",
+    ],
+  });
+}
+
 writeFileSync(
   path.join(outRoot, "demo-manifest.json"),
   `${JSON.stringify(manifest, null, 2)}\n`,

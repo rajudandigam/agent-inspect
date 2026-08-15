@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/shared/CopyButton";
 import { product } from "@/lib/product";
 import { site } from "@/lib/site";
 
-import { TerminalDemo } from "./TerminalDemo";
+import { ShowcaseMedia } from "./ShowcaseMedia";
 
 export function Hero() {
   return (
@@ -14,7 +14,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.18),transparent_45%)]" />
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <div>
-          <Badge tone="primary">Local evidence debugger · MCP-ready</Badge>
+          <Badge tone="primary">Local evidence debugger</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
             {product.headline}
           </h1>
@@ -37,8 +37,8 @@ export function Hero() {
               Run the five-minute path
               <ArrowRight className="h-4 w-4" aria-hidden />
             </ButtonLink>
-            <ButtonLink href="/docs/mcp" variant="secondary">
-              Coding-agent MCP loop
+            <ButtonLink href="/docs/trace-contracts" variant="secondary">
+              Trajectory checks
             </ButtonLink>
             <ButtonLink href={site.github} variant="secondary" external>
               View on GitHub
@@ -50,7 +50,6 @@ export function Hero() {
               `v${product.version}`,
               "TraceFacts",
               "Evidence v2",
-              "MCP Preview",
               "MIT",
             ].map((item) => (
               <Badge key={item}>{item}</Badge>
@@ -71,7 +70,7 @@ export function Hero() {
           </div>
         </div>
 
-        <TerminalDemo />
+        <ShowcaseMedia />
       </div>
     </section>
   );

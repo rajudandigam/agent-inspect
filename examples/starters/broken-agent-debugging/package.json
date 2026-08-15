@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node run.mjs",
-    "fixed": "node run-fixed.mjs"
+    "start": "node demo-agent.mjs regression",
+    "good": "node demo-agent.mjs good",
+    "regression": "node demo-agent.mjs regression",
+    "pii": "node demo-agent.mjs pii",
+    "fixed": "node demo-agent.mjs good"
   },
   "dependencies": {
     "agent-inspect": "workspace:*"

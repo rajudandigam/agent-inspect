@@ -1,6 +1,7 @@
 # Evidence format (Portable Evidence v2)
 
-**Status:** experimental contract for AgentInspect **6.10+**  
+**Status:** Supported workflow for AgentInspect **6.17.x** (not a compliance certification)
+
 **Authority:** [implementation/ROADMAP.md](./implementation/ROADMAP.md) · [history/RELEASE-HISTORY.md](./history/RELEASE-HISTORY.md)
 
 AgentInspect **evidence** is a local, share-checked, integrity-verifiable artifact for reviewing one or more agent runs offline — the “Playwright report for an agent run,” not a compliance certification.

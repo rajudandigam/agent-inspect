@@ -34,7 +34,7 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
   "getting-started": {
     title: "Getting started",
     description:
-      "Install AgentInspect, run the deterministic demo, inspect a trace, check it, and create a share-safe artifact.",
+      "Install AgentInspect, run the deterministic demo, inspect a trace, check it, and create share-checked Evidence v2.",
   },
   "concepts/local-first": {
     title: "Local-first",
@@ -52,20 +52,20 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
       "The AgentInspect product loop: capture what happened, check expectations, and redact before sharing.",
   },
   contracts: {
-    title: "Trace contracts",
-    description: "Typed TraceContract expectations (Beta) and experimental matchers.",
+    title: "Trace contracts (alias)",
+    description: "Alias of Trace contracts. Canonical URL: /docs/trace-contracts.",
   },
   "trace-facts": {
     title: "TraceFacts",
     description: "Experimental TraceFacts / logical projection for deterministic checks.",
   },
   "trace-contracts": {
-    title: "Trace contracts (alias)",
-    description: "Alias of Trace contracts.",
+    title: "Trace contracts",
+    description: "Typed TraceContract expectations (Beta) and experimental matchers.",
   },
   "test-matchers": {
     title: "Test matchers",
-    description: "Experimental Vitest/Jest TraceContract matchers.",
+    description: "Experimental Vitest/Jest TraceContract matchers (canonical details on Trace contracts).",
   },
   "suites-and-gates": {
     title: "Suites and gates",
@@ -211,7 +211,7 @@ const NAV_SECTION_ORDER = [
 ] as const;
 
 /** Slugs omitted from the sidebar (aliases stay routable). */
-const NAV_HIDDEN_SLUGS = new Set(["trace-contracts"]);
+const NAV_HIDDEN_SLUGS = new Set(["contracts"]);
 
 function navLabel(page: DocPage): string {
   if (page.slug === "") return "Overview";

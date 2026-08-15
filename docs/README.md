@@ -9,14 +9,15 @@ Local-first TypeScript AI agent toolkit: **debug, regression-test, and safely sh
 **npm / GitHub entry:** [../README.md](../README.md)
 **Product facts:** [product/PUBLIC-PRODUCT-FACTS.md](./product/PUBLIC-PRODUCT-FACTS.md)
 
-## Four pillars
+## Three jobs
 
-| Pillar | Start |
-| ------ | ----- |
-| **Capture faithfully** | [GETTING-STARTED.md](./GETTING-STARTED.md) · [ADAPTERS.md](./ADAPTERS.md) |
-| **Test behavior deterministically** | [TRACE-FACTS.md](./TRACE-FACTS.md) · [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) · [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) |
-| **Produce portable evidence** | [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md) · [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [BUNDLES.md](./BUNDLES.md) |
-| **Debug with coding assistants locally** | [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [MCP.md](./MCP.md) |
+| Job | Start |
+| --- | ----- |
+| **Debug** | [GETTING-STARTED.md](./GETTING-STARTED.md) · [ADAPTERS.md](./ADAPTERS.md) |
+| **Prevent** | [TRACE-FACTS.md](./TRACE-FACTS.md) · [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) · [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) |
+| **Share** | [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md) · [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) · [BUNDLES.md](./BUNDLES.md) |
+
+Optional Preview: [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [MCP.md](./MCP.md)
 
 ## Start here
 
@@ -24,7 +25,7 @@ Local-first TypeScript AI agent toolkit: **debug, regression-test, and safely sh
 | --- | --- |
 | [WHY-AGENTINSPECT.md](./WHY-AGENTINSPECT.md) | Product position and when to install |
 | [DECISION-GUIDE.md](./DECISION-GUIDE.md) | Choose capture path, checks, Evidence, MCP |
-| [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) | Fastest path from install to share-safe bundle |
+| [FIRST-TRACE-IN-5-MINUTES.md](./FIRST-TRACE-IN-5-MINUTES.md) | Fastest path from install to share-checked Evidence v2 |
 | [GOLDEN-PATH.md](./GOLDEN-PATH.md) | Packed + developer golden path |
 | [EVIDENCE-FIRST-ACCEPTANCE.md](./EVIDENCE-FIRST-ACCEPTANCE.md) | Flagship Evidence loop contract |
 | [NO-EGRESS-POLICY.md](./NO-EGRESS-POLICY.md) | AgentInspect-surface no-egress policy |

@@ -2,5 +2,17 @@
   "framework": null,
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
-  "outputDirectory": "out"
+  "outputDirectory": "out",
+  "redirects": [
+    {
+      "source": "/docs/contracts",
+      "destination": "/docs/trace-contracts",
+      "permanent": true
+    },
+    {
+      "source": "/docs/contracts/",
+      "destination": "/docs/trace-contracts/",
+      "permanent": true
+    }
+  ]
 }

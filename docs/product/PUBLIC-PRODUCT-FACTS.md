@@ -9,27 +9,28 @@ Single source of public product truth for README, website, npm descriptions, AI 
 | Field | Value |
 |-------|-------|
 | Name | agent-inspect |
-| Category | The local evidence debugger and trajectory-test toolkit for TypeScript AI agents |
-| Headline | Debug and regression-test TypeScript AI agents from local evidence |
-| Outcome | See what your agent did. Prove the fix. Keep the evidence |
+| Category | Local-first evidence for TypeScript AI agents |
+| Headline | See what your agent did. Catch the wrong path in CI. Keep the evidence local. |
+| Outcome | Capture once. Debug, prevent, and share from the same local trace. |
 | Version | 6.17.1 |
 | Schema | 1.0 |
 | Node | >=20 |
 | License | MIT |
 | Public packages | 18 (Changesets fixed group) |
 | Status line | Current release: 6.17.1 · schema 1.0 · Node.js 20+ · MIT · actively maintained |
-| Maintenance | The 6.16 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution |
+| Maintenance | The 6.17 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution |
 
 ## Supporting sentence
 
-AgentInspect captures framework-faithful execution trees, evaluates them with deterministic TraceFacts and TraceContract rules, creates integrity-verifiable Evidence v2, and lets coding assistants inspect the same local facts over read-only MCP—without a collector, account, or default upload.
+AgentInspect turns TypeScript agent runs into readable execution trees, deterministic trajectory checks, and portable Evidence v2—without requiring an account, collector, or default upload.
 
-## Four pillars
+## Three jobs (one local trace)
 
-1. **Capture faithfully** — Framework-aware execution trees and local JSONL you own.
-2. **Test behavior deterministically** — TraceFacts, TraceContract, checks, suites, cohorts, CI gates, and test matchers.
-3. **Produce portable evidence** — Offline Evidence v2 with integrity verification and share-policy disclosure.
-4. **Debug with coding assistants locally** — Read-only MCP over the same TraceFacts, without a collector or hosted trace database.
+1. **Debug** — Read nested steps, tools, model metadata, and the first causal failure from local JSONL.
+2. **Prevent** — Deterministic check presets, TraceContract, suites, and CI gates — no LLM judge required.
+3. **Share** — Share-checked Evidence v2 with integrity verification. Not a compliance certification.
+
+Optional Preview: read-only MCP over the same local facts.
 
 ## Proof language (public-safe)
 
@@ -55,6 +56,10 @@ Do not use on active public surfaces (README, website marketing, package READMEs
 - external pilot evidence pending (as product status)
 - blocked on external evidence / hold / calendar wait
 - v7 not scheduled (marketing FAQ/homepage)
-- TraceContract matchers not shipped / Vitest/Jest matchers are not shipped
+- MCP-ready
+- Four pillars
+- share-safe (use share-checked)
+- The 6.16 line is actively maintained
+- pending re-record
 
 Machine-readable twin: [PUBLIC-PRODUCT-FACTS.json](./PUBLIC-PRODUCT-FACTS.json).

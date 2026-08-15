@@ -1,0 +1,14 @@
+{
+  "aggregateStatus": "SAFE",
+  "runs": [
+    {
+      "runId": "demo-good",
+      "status": "SAFE",
+      "errors": 0,
+      "warnings": 0,
+      "findings": 0
+    }
+  ],
+  "findings": [],
+  "diagnostics": []
+}

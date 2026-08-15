@@ -1,6 +1,6 @@
 # Evidence-first acceptance contract
 
-**Status:** Shipped flagship loop contract for the **6.14** line (`agent-inspect@6.14.0`+). Internal adoption measurement continues separately and is not a public publication blocker for this surface.
+**Status:** Shipped flagship loop contract (`agent-inspect@6.17.1`). Internal adoption measurement continues separately and is not a public publication blocker for this surface.
 
 ## Flagship loop
 

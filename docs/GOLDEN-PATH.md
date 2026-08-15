@@ -1,6 +1,6 @@
 # Golden path
 
-The recommended local evidence path for the current **6.14** release line.
+The recommended local evidence path for the current **6.17.x** release line.
 
 ## Automated packed path (CI)
 

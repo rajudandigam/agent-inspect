@@ -135,6 +135,42 @@ for (const rel of strictSurfaces) {
   }
 }
 
+const ledgerPath = path.join(root, "docs/product/PUBLIC-CLAIM-LEDGER.json");
+if (!existsSync(ledgerPath)) {
+  failures.push("docs/product/PUBLIC-CLAIM-LEDGER.json is required");
+} else {
+  const ledger = JSON.parse(readFileSync(ledgerPath, "utf8"));
+  if (ledger.lastReviewedVersion !== version) {
+    failures.push(
+      `PUBLIC-CLAIM-LEDGER.json lastReviewedVersion ${ledger.lastReviewedVersion} must match root ${version}`,
+    );
+  }
+  const banned = [
+    ...(factsPath && existsSync(factsPath)
+      ? JSON.parse(readFileSync(factsPath, "utf8")).bannedPublicPhrases ?? []
+      : []),
+    ...(ledger.bannedPhrases ?? []),
+  ];
+  const surfaces = [
+    "README.md",
+    "apps/website/lib/product.ts",
+    "apps/website/components/marketing/Hero.tsx",
+    "apps/website/public/llms.txt",
+    "docs/GOLDEN-PATH.md",
+    "docs/SCREENSHOTS.md",
+  ];
+  for (const rel of surfaces) {
+    const abs = path.join(root, rel);
+    if (!existsSync(abs)) continue;
+    const text = readFileSync(abs, "utf8");
+    for (const phrase of banned) {
+      if (typeof phrase === "string" && phrase && text.includes(phrase)) {
+        failures.push(`${rel}: banned claim phrase "${phrase}"`);
+      }
+    }
+  }
+}
+
 if (failures.length > 0) {
   console.error("[public-truth:check] failures:\n" + failures.map((f) => `  - ${f}`).join("\n"));
   process.exit(1);

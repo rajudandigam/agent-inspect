@@ -1,29 +1,29 @@
 # AgentInspect Website Copy
 
-Source copy for the marketing site (aligned with **6.12.x**). Prefer `apps/website/lib/product.ts` for version/package count.
+Source copy for the marketing site (aligned with **6.17.x**). Prefer `apps/website/lib/product.ts` for version/package count.
 
 ## Hero
 
-**Eyebrow:** Local evidence debugger · MCP-ready
+**Eyebrow:** Local evidence debugger
 
-**Headline:** The local evidence debugger for TypeScript agents
+**Headline:** See what your agent did. Catch the wrong path in CI. Keep the evidence local.
 
-**Subheadline:** Faithful execution trees, deterministic regression checks, share-checked evidence, and coding-agent access—without a collector or account.
+**Subheadline:** AgentInspect turns TypeScript agent runs into readable execution trees, deterministic trajectory checks, and portable Evidence v2—without requiring an account, collector, or default upload.
 
-**Trust:** No account · no default upload · metadata-only by default · optional customer-owned Studio
+**Trust:** No account · no collector · no default upload · metadata-only by default
 
 **Primary command:** `npm install agent-inspect`
 
-**CTAs:** Run the five-minute path · Coding-agent MCP loop · View on GitHub
+**CTAs:** Run the five-minute path · Trajectory checks · View on GitHub
 
 **Hero flow:**
 
 ```text
-1. Capture one real run
-2. Find the causal failure
-3. Ask your coding agent to inspect it
-4. Lock the fix with a contract
-5. Attach the share-checked evidence
+1. Capture one local run
+2. Debug the execution tree
+3. Prevent the wrong trajectory in CI
+4. Share-checked Evidence v2
+5. Optional: inspect the same facts over read-only MCP
 ```
 
 ## Five-minute path

@@ -1,10 +1,10 @@
 # Why AgentInspect
 
-**Category:** The local evidence debugger and trajectory-test toolkit for TypeScript AI agents.
+**Category:** Local-first evidence for TypeScript AI agents.
 
-**Headline:** Debug and regression-test TypeScript AI agents from local evidence.
+**Headline:** See what your agent did. Catch the wrong path in CI. Keep the evidence local.
 
-**Outcome:** See what your agent did. Prove the fix. Keep the evidence.
+**Outcome:** Capture once. Debug, prevent, and share from the same local trace.
 
 ## When to install
 
@@ -23,12 +23,13 @@ Install AgentInspect when you need to:
 
 AgentInspect complements platforms like LangSmith, Langfuse, and Phoenix; it owns the laptop → PR evidence loop.
 
-## Four pillars
+## Three jobs
 
-1. **Capture faithfully** — Framework-aware trees and local JSONL.
-2. **Test behavior deterministically** — TraceFacts, TraceContract, checks, suites, gates, matchers.
-3. **Produce portable evidence** — Offline Evidence v2 with integrity verification.
-4. **Debug with coding assistants locally** — Read-only MCP over the same TraceFacts.
+1. **Debug** — Read nested steps, tools, model metadata, and the first causal failure from local JSONL.
+2. **Prevent** — Deterministic TraceFacts / TraceContract checks, suites, and CI gates.
+3. **Share** — Share-checked Evidence v2 with integrity verification (not compliance certification).
+
+Optional Preview: read-only MCP over the same local facts.
 
 ## Proof language (public-safe)
 

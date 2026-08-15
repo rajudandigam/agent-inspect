@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "status": "pass",
+  "root": "/Users/dand/Dev/agent-inspect/examples/evidence/debug-prevent-share/evidence",
+  "checkedFiles": 3,
+  "issues": [],
+  "assessment": {
+    "note": "Best-effort local safety verification only; not a compliance certification.",
+    "status": "SAFE"
+  },
+  "generator": {
+    "name": "agent-inspect",
+    "version": "6.17.1"
+  }
+}
