@@ -1,5 +1,11 @@
 # @agent-inspect/circuit
 
+## 6.17.2
+
+### Patch Changes
+
+- a7a7ea8: Union CLI check shorthands with preset select, resolve nested v0.1 LLM metadata in checks, and present Debug / Prevent / Share with curated showcase media.
+
 ## 6.17.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @agent-inspect/mcp-server
 
+## 6.17.2
+
+### Patch Changes
+
+- a7a7ea8: Union CLI check shorthands with preset select, resolve nested v0.1 LLM metadata in checks, and present Debug / Prevent / Share with curated showcase media.
+- Updated dependencies [a7a7ea8]
+  - agent-inspect@6.17.2
+  - @agent-inspect/redact@6.17.2
+
 ## 6.17.1
 
 ### Patch Changes
