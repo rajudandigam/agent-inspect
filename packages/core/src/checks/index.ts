@@ -938,6 +938,28 @@ function stringAttr(event: PersistedInspectEvent, keys: readonly string[]): stri
   return undefined;
 }
 
+/**
+ * Reads a string from `attributes.metadata`. v0.1 traces carry LLM identity
+ * (model/provider/finishReason) under nested `metadata`, which the bridge keeps
+ * at `attributes.metadata.*` rather than promoting to a top-level attribute the
+ * way it promotes tokens to `tokenUsage`. Checks must look there too.
+ */
+function metadataStringAttr(
+  event: PersistedInspectEvent,
+  keys: readonly string[],
+): string | undefined {
+  const metadata = event.attributes?.metadata;
+  if (typeof metadata !== "object" || metadata === null || Array.isArray(metadata)) {
+    return undefined;
+  }
+  const record = metadata as Record<string, unknown>;
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim() !== "") return value;
+  }
+  return undefined;
+}
+
 function numericAttr(event: PersistedInspectEvent, keys: readonly string[]): number | undefined {
   for (const key of keys) {
     const value = event.attributes?.[key];
@@ -1026,18 +1048,22 @@ function semanticEvents(
 }
 
 function llmModel(event: PersistedInspectEvent): string | undefined {
+  const keys = ["model", "modelId", "responseModelId", "modelName", "model_name"];
   return (
-    stringAttr(event, ["model", "modelId", "responseModelId", "modelName", "model_name"]) ??
+    stringAttr(event, keys) ??
+    metadataStringAttr(event, keys) ??
     stripPrefix(event.name, ["llm:", "generation:", "transcription:", "speech:"])
   );
 }
 
 function llmProvider(event: PersistedInspectEvent): string | undefined {
-  return stringAttr(event, ["provider", "providerName", "provider_name"]);
+  const keys = ["provider", "providerName", "provider_name"];
+  return stringAttr(event, keys) ?? metadataStringAttr(event, keys);
 }
 
 function llmFinishReason(event: PersistedInspectEvent): string | undefined {
-  return stringAttr(event, ["finishReason", "rawFinishReason", "finish_reason"]);
+  const keys = ["finishReason", "rawFinishReason", "finish_reason"];
+  return stringAttr(event, keys) ?? metadataStringAttr(event, keys);
 }
 
 function retryCount(event: PersistedInspectEvent): number | undefined {

@@ -474,6 +474,36 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.status).toBe("pass");
     expect(result.findings).toHaveLength(0);
   });
+
+  it("resolves LLM model, provider, and finish reason from nested metadata", () => {
+    // v0.1 traces bridge LLM identity under attributes.metadata rather than
+    // promoting it to top-level attributes, so the checks must look there.
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      attributes: {
+        metadata: { model: "gpt-4o", provider: "openai", finishReason: "stop" },
+      },
+      tokenUsage: { input: 10, output: 5, total: 15 },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createLlmUsageRule({
+            allowedModels: ["gpt-4o"],
+            allowedProviders: ["openai"],
+            finishReasons: ["stop"],
+          }),
+        ],
+      },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
 });
 
 describe("built-in structure and safety checks", () => {
