@@ -34,6 +34,11 @@ For community extension or adapter registry proposals, start from the
 package metadata, maintainer contact, privacy defaults, conformance evidence,
 and known gaps before a registry entry is reviewed.
 
+For public proof narratives, start from the
+[anonymized technical case-study template](ANONYMIZED-CASE-STUDY-TEMPLATE.md).
+It keeps submissions focused on version, stack, scenario, Evidence/TraceContract
+findings, outcome, and explicit public-safety checks rather than raw traces.
+
 ## Package boundaries (detailed)
 
 ### Root `agent-inspect`
