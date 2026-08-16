@@ -21,7 +21,8 @@ Curated terminal recordings and diagrams for AgentInspect **6.17.x**. They show 
 | [debug-tree.gif](assets/showcase/gif/debug-tree.gif) | Debug — `list` then inspect a local run |
 | [check-pass-fail.gif](assets/showcase/gif/check-pass-fail.gif) | Prevent — `check --preset trajectory` plus shorthands, pass then fail |
 | [evidence-bundle.gif](assets/showcase/gif/evidence-bundle.gif) | Share — `bundle --profile share` then `bundle verify` (relative `./evidence`) |
-| [value-loop.svg](assets/showcase/diagrams/value-loop.svg) | Capture once → debug, prevent, share |
+| [readme-product-loop.svg](assets/readme-product-loop.svg) | README loop: one local trace → debug → prevent → share |
+| [value-loop.svg](assets/showcase/diagrams/value-loop.svg) | Alternate stacked Debug / Prevent / Share diagram |
 
 The check tape is named for the `check` command, not `gate`.
 

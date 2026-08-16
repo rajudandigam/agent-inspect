@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="AgentInspect">
+  <defs>
+    <linearGradient id="ai-mark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#ai-mark)"/>
+  <path d="M16 16h16M16 24h12M16 32h16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="36" cy="24" r="5" fill="none" stroke="#fff" stroke-width="2"/>
+  <path d="M39.5 27.5L44 32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

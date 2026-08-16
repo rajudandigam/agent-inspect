@@ -1,11 +1,8 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/agent-inspect-logo-dark.svg?sanitize=true">
-    <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/agent-inspect-logo.svg?sanitize=true" width="240" alt="AgentInspect">
-  </picture>
+  <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/agent-inspect-logo-mark.svg?sanitize=true" width="56" height="56" alt="AgentInspect">
 </p>
-
-<p align="center"><strong>Local-first evidence for TypeScript AI agents</strong></p>
+<p align="center"><strong>agent-inspect</strong></p>
+<p align="center">Local-first evidence for TypeScript AI agents</p>
 
 <h1 align="center">
   See what your agent did.<br>
@@ -47,7 +44,7 @@ npm install agent-inspect
 Agent code rarely fails as one function call. It plans, retrieves, calls tools, invokes a model, retries, and produces side effects. Flat logs show fragments. AgentInspect keeps the run as local JSONL and gives you one evidence loop from the same trace.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/showcase/diagrams/value-loop.svg" alt="Capture or import one local trace, then debug the run, prevent trajectory regressions, and prepare share-checked evidence" width="900">
+  <img src="https://raw.githubusercontent.com/rajudandigam/agent-inspect/main/docs/assets/readme-product-loop.svg?sanitize=true" alt="Capture one local trace, then debug, prevent, and share from the same evidence loop" width="900">
 </p>
 
 ## One trace. Three jobs.
