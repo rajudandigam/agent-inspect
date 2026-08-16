@@ -27,6 +27,7 @@ Maintainers add rows after merged PRs or notable community help. **Do not add fa
 | @luohui1 | Fixtures / tests | MCP tool-call log fixture ([#37](https://github.com/rajudandigam/agent-inspect/pull/37)) | 2026-07 |
 | @w3lld1 | Examples / adapter-sdk | Minimal adapter SDK third-party example ([#85](https://github.com/rajudandigam/agent-inspect/pull/85)) | 2026-07 |
 | @Nickgonzales76017 | Tests / TraceFacts / MCP | TraceFacts semantic-field parity across TypeScript API, CLI Evidence, and read-only MCP ([#229](https://github.com/rajudandigam/agent-inspect/pull/229)) | 2026-08 |
+| @ayushcodes13 | Documentation / community | Anonymized technical case-study contribution template ([#234](https://github.com/rajudandigam/agent-inspect/pull/234)) | 2026-08 |
 
 ### Recognition policy
 
