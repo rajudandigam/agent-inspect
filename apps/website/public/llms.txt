@@ -6,7 +6,7 @@ AgentInspect turns TypeScript agent runs into readable execution trees, determin
 
 - Category: Local-first evidence for TypeScript AI agents
 - Outcome: Capture once. Debug, prevent, and share from the same local trace.
-- Status: Current release: 6.17.2 · schema 1.0 · Node.js 20+ · MIT · actively maintained
+- Status: Current release: 6.17.3 · schema 1.0 · Node.js 20+ · MIT · actively maintained
 - Site: https://agentinspect.vercel.app
 - Docs: https://agentinspect.vercel.app/docs/
 - GitHub: https://github.com/rajudandigam/agent-inspect

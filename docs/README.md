@@ -2,7 +2,7 @@
 
 Local-first TypeScript AI agent toolkit: **debug, regression-test, and safely share** agent behavior on your machine.
 
-**Current release:** [agent-inspect@6.17.2](https://www.npmjs.com/package/agent-inspect) (eighteen linked packages) · schema **1.0** · Node.js **≥ 20** · **MIT** · **actively maintained**.
+**Current release:** [agent-inspect@6.17.3](https://www.npmjs.com/package/agent-inspect) (eighteen linked packages) · schema **1.0** · Node.js **≥ 20** · **MIT** · **actively maintained**.
 
 **Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/)
 **Docs site:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/)
