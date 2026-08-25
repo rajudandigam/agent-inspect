@@ -1,5 +1,11 @@
 # @agent-inspect/redact
 
+## 6.17.3
+
+### Patch Changes
+
+- 737bb03: Docs updates (README mark/loop, case-study template, Evidence retention guidance, support reproduction), TraceFacts/Evidence/OTLP/CLI regression tests, and exclude the RUN boundary from `run.slowestNode`.
+
 ## 6.17.2
 
 ### Patch Changes

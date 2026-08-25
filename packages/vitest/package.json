@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/vitest",
-  "version": "6.17.2",
+  "version": "6.17.3",
   "license": "MIT",
   "type": "module",
   "description": "Vitest reporter and experimental TraceContract matchers for AgentInspect local evidence",
