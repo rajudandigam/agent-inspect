@@ -42,6 +42,12 @@ npx @agent-inspect/mcp-server --dir .agent-inspect
 | `compare_runs` | Structural diff |
 | `create_share_checked_evidence` | Share-gated Evidence package |
 
+### First causal failure ambiguity
+
+Unlinked failures remain unrelated. `get_first_causal_failure` does not infer
+causal parents from event adjacency or timing alone, so ambiguous relationships
+remain explicit rather than being fabricated.
+
 Results are redacted (share profile by default), bounded, and deterministic for the same inputs.
 
 ## Privacy
