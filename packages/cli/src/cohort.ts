@@ -27,10 +27,17 @@ export interface CohortCommandOptions {
 function normalizeMetrics(raw: string | undefined): CohortMetricId[] | undefined {
   const parsed = parseCohortMetricList(raw);
   if (parsed.length === 0) return undefined;
-  const allowed = new Set(COHORT_METRIC_IDS);
-  return parsed.filter((item): item is CohortMetricId =>
-    allowed.has(item as CohortMetricId),
-  );
+  const allowed = new Set<string>(COHORT_METRIC_IDS);
+  const invalid = parsed.filter((metric) => !allowed.has(metric));
+  if (invalid.length > 0) {
+    const valueLabel = invalid.length === 1 ? "value" : "values";
+    const invalidList = invalid.map((metric) => `"${metric}"`).join(", ");
+    throw new Error(
+        `Unsupported cohort --metric ${valueLabel}: ${invalidList}. Valid metrics: ${COHORT_METRIC_IDS.join(", ")}.`,
+    );
+  }
+
+  return parsed as CohortMetricId[];
 }
 
 async function writeArtifacts(
@@ -53,6 +60,7 @@ async function writeArtifacts(
 
 export async function cohortCommand(options: CohortCommandOptions = {}): Promise<void> {
   try {
+    const metrics = normalizeMetrics(options.metric);
     const traceDir = resolveTraceDir({ dir: options.dir });
     const { runs } = await loadSessionRuns(traceDir);
     const result = await analyzeCohort(runs, {
@@ -61,7 +69,7 @@ export async function cohortCommand(options: CohortCommandOptions = {}): Promise
       candidate: options.candidate,
       cohortKey: options.cohortKey,
       groupBy: options.groupBy,
-      metrics: normalizeMetrics(options.metric),
+      metrics,
     });
 
     const format = options.format ?? (options.json ? "json" : "markdown");

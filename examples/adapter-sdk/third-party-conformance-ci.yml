@@ -1,0 +1,56 @@
+# Third-party AgentInspect adapter conformance CI (template)
+#
+# Copy this file into your adapter repository at
+# .github/workflows/agent-inspect-conformance.yml and adjust the install/build/
+# test commands to your toolchain. It runs your adapter's conformance suite on a
+# Node LTS matrix with no provider keys and no network calls.
+#
+# Your test suite should build persisted events from your adapter and assert
+# runAdapterConformance(...) from @agent-inspect/adapter-sdk reports ok, e.g.:
+#
+#   import { runAdapterConformance } from "@agent-inspect/adapter-sdk";
+#   const result = await runAdapterConformance({
+#     adapterId: "my-adapter",
+#     events,                       // PersistedInspectEvent[] your adapter emits
+#     expectedKinds: ["RUN", "LLM"],
+#     forbiddenRawStrings: ["super-secret-key"], // must not leak into events
+#   });
+#   expect(result.ok).toBe(true);
+#
+# See docs/ADAPTER-CONFORMANCE.md for the shared expectations.
+
+name: agent-inspect conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Use whatever your repo uses (npm ci / pnpm i --frozen-lockfile / yarn).
+      - name: Install
+        run: npm ci
+
+      # Build the adapter if your package needs a build step.
+      - name: Build
+        run: npm run build --if-present
+
+      # Run the conformance suite. Keep it offline: no provider keys, no network.
+      - name: Conformance
+        run: npm test
+        env:
+          # Adapter conformance is metadata-only and must not require secrets.
+          CI: "true"

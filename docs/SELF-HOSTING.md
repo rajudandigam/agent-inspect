@@ -125,6 +125,7 @@ Postgres URLs are reserved for team deployments and are **not required** for loc
 
 ## Related docs
 
+- [STUDIO-IMPORT-BUNDLE.md](./STUDIO-IMPORT-BUNDLE.md) — walkthrough: share-safe bundle → local Studio
 - [STUDIO-IMPORT-GITHUB-ARTIFACT.md](./STUDIO-IMPORT-GITHUB-ARTIFACT.md) — walkthrough: GitHub Actions artifact → local Studio
 - [SELF-HOSTED-STUDIO-V6.0.md](./proposals/SELF-HOSTED-STUDIO-V6.0.md)
 - [CLIENT-HOSTED-INGESTION-V6.1.md](./proposals/CLIENT-HOSTED-INGESTION-V6.1.md)

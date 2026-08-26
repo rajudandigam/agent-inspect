@@ -6,6 +6,8 @@
 
 **Operating guidance:** [EVIDENCE-RETENTION.md](./EVIDENCE-RETENTION.md) covers retention, size, and PR-attachment.
 
+**TypeScript consumer:** [Build, read, and verify Evidence v2 with published APIs](../examples/evidence-v2-typescript/README.md).
+
 AgentInspect **evidence** is a local, share-checked, integrity-verifiable artifact for reviewing one or more agent runs offline — the “Playwright report for an agent run,” not a compliance certification.
 
 ## Relationship to existing bundles

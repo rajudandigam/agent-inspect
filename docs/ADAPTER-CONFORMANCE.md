@@ -58,6 +58,30 @@ This is an internal official-adapter gate, not a third-party certification progr
 
 An adapter can be documented as supported only after no-network fixtures cover run, step, tool, LLM, error, streaming, and metadata-bound expectations for that framework path.
 
+## Third-party adapter conformance CI
+
+The gate above is the internal official-adapter gate, not a third-party certification program. Third-party adapter authors run the **public** conformance helper from [`@agent-inspect/adapter-sdk`](https://www.npmjs.com/package/@agent-inspect/adapter-sdk) in their own CI:
+
+```ts
+import { runAdapterConformance } from "@agent-inspect/adapter-sdk";
+
+const result = await runAdapterConformance({
+  adapterId: "my-adapter",
+  events, // PersistedInspectEvent[] your adapter emits
+  expectedKinds: ["RUN", "LLM"],
+  forbiddenRawStrings: ["super-secret-key"], // must not leak into events
+});
+// assert result.ok in your test runner
+```
+
+A copyable GitHub Actions template lives at [`examples/adapter-sdk/third-party-conformance-ci.yml`](../examples/adapter-sdk/third-party-conformance-ci.yml). Copy it to `.github/workflows/agent-inspect-conformance.yml` in your adapter repo and adjust the install/build/test commands. The template:
+
+- runs on a Node LTS matrix (18 / 20 / 22),
+- requires **no provider keys** and makes **no network calls** (conformance is metadata-only),
+- keeps the framework SDK as a peer dependency of your adapter, never of AgentInspect core.
+
+See the runnable examples under [`examples/adapter-sdk/`](../examples/adapter-sdk/) for adapters that call `runAdapterConformance` end to end.
+
 ## v3.2 adoption evidence refresh
 
 - [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) — blessed AI SDK path (`generateText`, `streamText`, Next.js recipe, troubleshooting)

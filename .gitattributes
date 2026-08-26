@@ -1,0 +1,4 @@
+# Evidence manifests hash exact artifact bytes; keep fixture checkouts deterministic.
+examples/evidence/**/evidence/*.json text eol=lf
+examples/evidence/**/evidence/*.jsonl text eol=lf
+examples/evidence/**/evidence/*.html text eol=lf

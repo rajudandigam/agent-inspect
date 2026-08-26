@@ -1,0 +1,110 @@
+name: Design-partner / public-proof feedback
+description: Share design-partner or public-proof findings against the AgentInspect golden path
+title: "[feedback] "
+labels: ["area:community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trialing AgentInspect. This form captures design-partner / public-proof findings.
+
+        AgentInspect is local-first — **use synthetic or redacted data everywhere in this form**. Do **not** attach production traces, secrets, tokens, or customer data. See [SAFE-TRACE-SHARING](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SAFE-TRACE-SHARING.md), the [Design partner guide](https://github.com/rajudandigam/agent-inspect/blob/main/docs/DESIGN-PARTNER-GUIDE.md), and an [anonymized synthetic example](https://github.com/rajudandigam/agent-inspect/blob/main/docs/community/DESIGN-PARTNER-FEEDBACK-EXAMPLE.md).
+  - type: input
+    id: version
+    attributes:
+      label: AgentInspect version
+      description: Package version or commit SHA (6.17.1 or newer).
+      placeholder: agent-inspect@6.17.3
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Node / OS
+      description: Node version and operating system.
+      placeholder: Node 20.x on Ubuntu 22.04
+    validations:
+      required: true
+  - type: input
+    id: stack
+    attributes:
+      label: Stack
+      description: Framework / adapter under trial (ai-sdk, openai-agents, langchain, mcp, manual, ...).
+      placeholder: langchain / LangGraph
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: What agent workflow you traced, described with synthetic detail only.
+    validations:
+      required: true
+  - type: textarea
+    id: golden-path
+    attributes:
+      label: Golden-path steps
+      description: |
+        Which golden-path milestones you reached and how long each took.
+      value: |
+        - First trace (< 30 min from install):
+        - First CI check on a trace:
+        - Share-checked evidence bundle attached to an issue/PR:
+    validations:
+      required: true
+  - type: dropdown
+    id: retained-ci
+    attributes:
+      label: Retained CI workflow
+      description: Did you wire a retained TraceContract / suite / gate into CI?
+      options:
+        - "Yes — running in CI"
+        - "Prototype only, not retained"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: studio-status
+    attributes:
+      label: Studio trial status
+      description: Self-hosted read-only Studio analyzer.
+      options:
+        - "Tried it"
+        - "Plan to try"
+        - "Not applicable"
+    validations:
+      required: true
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Blockers
+      description: What stopped you or slowed you down. Synthetic detail only.
+    validations:
+      required: false
+  - type: dropdown
+    id: keep-using
+    attributes:
+      label: Keep-using decision
+      description: Would you keep using AgentInspect after the trial?
+      options:
+        - "Yes"
+        - "Maybe — depends on the blockers above"
+        - "No"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Safe summary
+      description: A short shareable summary of the outcome. Synthetic / redacted only.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: This report contains synthetic or redacted data only — no real prompts, production logs, tokens, or PII.
+          required: true
+        - label: I did not attach production traces, secrets, tokens, or customer data.
+          required: true

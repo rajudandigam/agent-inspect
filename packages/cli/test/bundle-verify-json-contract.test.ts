@@ -27,9 +27,11 @@ interface VerifyPayload {
   root: string;
   checkedFiles: number;
   issues: VerifyIssue[];
-  assessment: { note: string; sourceStatus: string; status: string };
-  generator: { name: string; version: string };
+  assessment?: { note: string; sourceStatus: string; status: string };
+  generator?: { name: string; version: string };
 }
+
+const failurePayloadKeys = ["checkedFiles", "issues", "ok", "root", "status"];
 
 function jsonl(...rows: unknown[]): string {
   return `${rows.map((row) => JSON.stringify(row)).join("\n")}\n`;
@@ -98,13 +100,13 @@ describe("bundle verify --json contract", () => {
     expect(typeof payload.checkedFiles).toBe("number");
     expect(payload.checkedFiles).toBeGreaterThan(0);
     expect(payload.issues).toEqual([]);
-    expect(Object.keys(payload.assessment).sort()).toEqual([
+    expect(Object.keys(payload.assessment!).sort()).toEqual([
       "note",
       "sourceStatus",
       "status",
     ]);
-    expect(payload.generator.name).toBe("agent-inspect");
-    expect(typeof payload.generator.version).toBe("string");
+    expect(payload.generator!.name).toBe("agent-inspect");
+    expect(typeof payload.generator!.version).toBe("string");
     expect(process.exitCode ?? 0).toBe(0);
   });
 
@@ -147,18 +149,36 @@ describe("bundle verify --json contract", () => {
   });
 
   it("reports a missing manifest deterministically", async () => {
-    const empty = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-verify-empty-"));
-    try {
-      await bundleVerifyCommand(empty, { json: true });
-      const payload = lastPayload();
-      expect(payload.ok).toBe(false);
-      expect(payload.status).toBe("fail");
-      expect(payload.checkedFiles).toBe(0);
-      expect(payload.issues[0]?.code).toBe("manifest_missing");
-      expect(payload.issues[0]?.path).toBe("evidence.json");
-      expect(process.exitCode).toBe(1);
-    } finally {
-      await rm(empty, { recursive: true, force: true });
-    }
+    const out = await bundleOut("missing-manifest-bundle");
+    await rm(path.join(out, "evidence.json"));
+
+    await bundleVerifyCommand(out, { json: true });
+    const payload = lastPayload();
+    expect(Object.keys(payload).sort()).toEqual(failurePayloadKeys);
+    expect(payload.ok).toBe(false);
+    expect(payload.status).toBe("fail");
+    expect(typeof payload.root).toBe("string");
+    expect(payload.checkedFiles).toBe(0);
+    expect(Array.isArray(payload.issues)).toBe(true);
+    expect(payload.issues[0]?.code).toBe("manifest_missing");
+    expect(payload.issues[0]?.path).toBe("evidence.json");
+    expect(process.exitCode).toBe(1);
+  });
+
+  it("reports a malformed manifest deterministically", async () => {
+    const out = await bundleOut("malformed-manifest-bundle");
+    await writeFile(path.join(out, "evidence.json"), "{invalid json\n", "utf-8");
+
+    await bundleVerifyCommand(out, { json: true });
+    const payload = lastPayload();
+    expect(Object.keys(payload).sort()).toEqual(failurePayloadKeys);
+    expect(payload.ok).toBe(false);
+    expect(payload.status).toBe("fail");
+    expect(typeof payload.root).toBe("string");
+    expect(payload.checkedFiles).toBe(0);
+    expect(Array.isArray(payload.issues)).toBe(true);
+    expect(payload.issues[0]?.code).toBe("manifest_invalid");
+    expect(payload.issues[0]?.path).toBe("evidence.json");
+    expect(process.exitCode).toBe(1);
   });
 });
