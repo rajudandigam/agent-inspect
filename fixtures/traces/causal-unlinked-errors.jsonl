@@ -1,0 +1,6 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000020000,"runId":"causal-unlinked-errors","name":"causal-unlinked-errors","startTime":1700000020000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000020010,"runId":"causal-unlinked-errors","stepId":"error_a","name":"validate-input","type":"logic","startTime":1700000020010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000020030,"runId":"causal-unlinked-errors","stepId":"error_a","status":"error","endTime":1700000020030,"durationMs":20,"error":{"message":"synthetic validation failure"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000020040,"runId":"causal-unlinked-errors","stepId":"error_b","name":"persist-result","type":"tool","startTime":1700000020040}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000020060,"runId":"causal-unlinked-errors","stepId":"error_b","status":"error","endTime":1700000020060,"durationMs":20,"error":{"message":"synthetic persistence failure"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000020070,"runId":"causal-unlinked-errors","status":"error","endTime":1700000020070,"durationMs":70,"error":{"message":"run ended with unlinked failures"}}
