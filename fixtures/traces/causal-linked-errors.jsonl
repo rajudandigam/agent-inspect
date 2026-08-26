@@ -1,0 +1,6 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1700000010000,"runId":"causal-linked-errors","name":"causal-linked-errors","startTime":1700000010000}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000010010,"runId":"causal-linked-errors","stepId":"root_fetch","name":"fetch-policy","type":"tool","startTime":1700000010010}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000010040,"runId":"causal-linked-errors","stepId":"root_fetch","status":"error","endTime":1700000010040,"durationMs":30,"error":{"message":"upstream policy service unavailable"}}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1700000010050,"runId":"causal-linked-errors","stepId":"symptom_render","parentId":"root_fetch","name":"render-decision","type":"logic","startTime":1700000010050}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1700000010070,"runId":"causal-linked-errors","stepId":"symptom_render","status":"error","endTime":1700000010070,"durationMs":20,"error":{"message":"decision could not be rendered"}}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1700000010080,"runId":"causal-linked-errors","status":"error","endTime":1700000010080,"durationMs":80,"error":{"message":"run ended with linked failures"}}

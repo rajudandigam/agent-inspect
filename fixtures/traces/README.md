@@ -15,6 +15,8 @@ Small **manual trace** files consumed by list/view/export/diff and compatibility
 |------|---------|
 | `minimal-success.jsonl` | Shortest successful run |
 | `minimal-error.jsonl` | Failed step + failed run |
+| `causal-linked-errors.jsonl` | Upstream error + explicitly linked downstream symptom |
+| `causal-unlinked-errors.jsonl` | Two chronological errors with no fabricated parent relationship |
 | `nested-3-levels.jsonl` | Three nested steps via explicit `parentId` |
 | `parallel-siblings.jsonl` | Multiple root-level steps (ordering) |
 | `llm-with-tokens.jsonl` | LLM step with input/output/total/cached token metadata |
