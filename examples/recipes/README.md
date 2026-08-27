@@ -30,6 +30,66 @@ npx agent-inspect view <run_id> --dir ./examples/recipes/<recipe-name>/.agent-in
 
 Use `AGENT_INSPECT_SILENT=true` to suppress live terminal tree output during scripts.
 
+## Choose a recipe
+
+Pick by the job you are doing. Every cell below is derived from the recipe's own
+`package.json` and README, from each package's declared **Support level**, and from
+[SUPPORT-LEVELS.md](../../docs/SUPPORT-LEVELS.md) and
+[NETWORK-BEHAVIOR.md](../../docs/NETWORK-BEHAVIOR.md) — nothing here is asserted
+independently of those sources.
+
+**All 40 recipes need no API key and make no network calls.** They are mocks-only and
+local by construction; the two MCP rows note where network enters once a recipe is
+pointed at something real, per NETWORK-BEHAVIOR.md.
+
+| Recipe | Developer job | Stack / integration | API key? | Network behavior | Support level | Main command |
+|---|---|---|---|---|---|---|
+| [ai-sdk-local-telemetry](ai-sdk-local-telemetry) | AI SDK tracing | `@agent-inspect/ai-sdk`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-ai-sdk-local-telemetry start` |
+| [ai-sdk-next-route](ai-sdk-next-route) | AI SDK tracing (per request) | `@agent-inspect/ai-sdk`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-ai-sdk-next-route start` |
+| [circuit-breaker-basic](circuit-breaker-basic) | Trip a circuit breaker | `@agent-inspect/circuit` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-circuit-breaker-basic start` |
+| [cohort-baseline-candidate](cohort-baseline-candidate) | Compare a cohort baseline | `agent-inspect` (CLI only) | No | No network | Beta <sup>Suites / cohorts / gates</sup> | `pnpm --filter agent-inspect-recipe-cohort-baseline-candidate start` |
+| [decision-metadata](decision-metadata) | Record decisions without chain-of-thought | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-decision-metadata start` |
+| [deterministic-ci-checks](deterministic-ci-checks) | CI trajectory regression | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-deterministic-ci-checks start` |
+| [eval-ci-artifacts](eval-ci-artifacts) | Gate CI on an eval | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-eval-ci-artifacts start` |
+| [eval-local-checks](eval-local-checks) | Run a local eval | `@agent-inspect/eval`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-eval-local-checks start` |
+| [github-actions-artifact](github-actions-artifact) | Keep a CI trace artifact | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-github-actions-artifact start` |
+| [github-actions-gate](github-actions-gate) | Gate CI on a contract | `agent-inspect` | No | No network | Beta <sup>Suites / cohorts / gates; TraceContract API</sup> | `pnpm --filter agent-inspect-recipe-github-actions-gate start` |
+| [guardrails-basic](guardrails-basic) | Apply guardrails | `@agent-inspect/guardrails` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-guardrails-basic start` |
+| [harness-adapter-local](harness-adapter-local) | Run a harness adapter | `@agent-inspect/harness`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-harness-adapter-local start` |
+| [harness-basic](harness-basic) | Run a fixture harness | `@agent-inspect/harness`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-harness-basic start` |
+| [langfuse-local-import](langfuse-local-import) | Langfuse interop | `agent-inspect` | No | No network | Preview <sup>Standards round-trip / Collector-Phoenix external proof</sup> | `pnpm --filter agent-inspect-recipe-langfuse-local-import start` |
+| [langgraph-callback-local](langgraph-callback-local) | LangGraph tracing | `@agent-inspect/langchain`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-langgraph-callback-local start` |
+| [langgraph-gate-evidence](langgraph-gate-evidence) | Gate LangGraph on Evidence | `agent-inspect` (CLI only) | No | No network | Beta <sup>TraceFacts programmatic API; Suites / cohorts / gates</sup> | `pnpm --filter agent-inspect-recipe-langgraph-gate-evidence start` |
+| [langgraph-swarm-local](langgraph-swarm-local) | LangGraph swarm tracing | `@agent-inspect/langchain`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-langgraph-swarm-local start` |
+| [log4js-json-layout](log4js-json-layout) | Turn existing logs into a tree | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-log4js-json-layout start` |
+| [mcp-client-tracing](mcp-client-tracing) | MCP client tracing | `@agent-inspect/mcp`<br>`agent-inspect` | No | Recipe is offline; the adapter calls **your** MCP servers when pointed at a real one | Supported | `pnpm --filter agent-inspect-recipe-mcp-client-tracing start` |
+| [multi-agent-handoff](multi-agent-handoff) | Follow a multi-agent handoff | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-multi-agent-handoff start` |
+| [nestjs-json-logging](nestjs-json-logging) | Turn existing logs into a tree | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-nestjs-json-logging start` |
+| [nestjs-langgraph-local](nestjs-langgraph-local) | LangGraph tracing in NestJS | `@agent-inspect/langchain`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-nestjs-langgraph-local start` |
+| [observed-outcome-basic](observed-outcome-basic) | Validate observed outcomes | `agent-inspect` | No | No network | Supported <sup>Workspace / bundles / observed outcomes / Evidence v2</sup> | `pnpm --filter agent-inspect-recipe-observed-outcome-basic start` |
+| [openai-agents-local-tracing](openai-agents-local-tracing) | OpenAI Agents tracing | `@agent-inspect/openai-agents`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-openai-agents-local-tracing start` |
+| [parallel-tools](parallel-tools) | Inspect parallel tool calls | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-parallel-tools start` |
+| [phoenix-openinference-import](phoenix-openinference-import) | OpenInference interop | `agent-inspect` | No | No network | Preview <sup>Standards round-trip / Collector-Phoenix external proof</sup> | `pnpm --filter agent-inspect-recipe-phoenix-openinference-import start` |
+| [pino-json-logs](pino-json-logs) | Turn existing logs into a tree | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-pino-json-logs start` |
+| [proactive-agent-logs](proactive-agent-logs) | Turn existing logs into a tree | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-proactive-agent-logs start` |
+| [rag-pipeline](rag-pipeline) | Debug a RAG pipeline | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-rag-pipeline start` |
+| [read-only-mcp-server](read-only-mcp-server) | Read evidence through MCP | `@agent-inspect/mcp-server`<br>`agent-inspect` | No | Exposes local evidence to a connected client (share-profile boundary) | Preview | `pnpm --filter agent-inspect-recipe-read-only-mcp-server start` |
+| [redact-share-safe-file](redact-share-safe-file) | Share a trace safely | `@agent-inspect/redact` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-redact-share-safe-file start` |
+| [retry-fallback](retry-fallback) | Understand model fallback | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-retry-fallback start` |
+| [runtime-and-ingestion](runtime-and-ingestion) | Ingest traces from any format | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-runtime-and-ingestion start` |
+| [shareable-bundle-basic](shareable-bundle-basic) | Build a shareable bundle | `agent-inspect` | No | No network | Supported <sup>Workspace / bundles / observed outcomes / Evidence v2</sup> | `pnpm --filter agent-inspect-recipe-shareable-bundle-basic start` |
+| [test-reporter-artifacts](test-reporter-artifacts) | Attach traces to test runs | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-test-reporter-artifacts start` |
+| [tool-failure-retry](tool-failure-retry) | Understand tool retries | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-tool-failure-retry start` |
+| [trace-suite-basic](trace-suite-basic) | Run a trace suite | `agent-inspect` (CLI only) | No | No network | Beta <sup>Suites / cohorts / gates</sup> | `pnpm --filter agent-inspect-recipe-trace-suite-basic start` |
+| [what-report-inspect](what-report-inspect) | Inspect a failed run | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-what-report-inspect start` |
+| [winston-json-logs](winston-json-logs) | Turn existing logs into a tree | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-winston-json-logs start` |
+| [workspace-basic](workspace-basic) | Organise runs in a workspace | `agent-inspect` | No | No network | Supported <sup>Workspace / bundles / observed outcomes / Evidence v2</sup> | `pnpm --filter agent-inspect-recipe-workspace-basic start` |
+
+Support level is the **lowest-maturity** surface the recipe exercises, so
+a recipe is never presented as more settled than its least-settled part. Levels come from
+each package README's `**Support level:**` line, except where a recipe uses a feature that SUPPORT-LEVELS.md rates separately from the package shipping it — those rows name the governing row in superscript. See
+[SUPPORT-LEVELS.md](../../docs/SUPPORT-LEVELS.md) for what each level promises.
+
 ## Recipe index
 
 | Recipe | Demonstrates | AgentInspect features | Runnable | External services |
