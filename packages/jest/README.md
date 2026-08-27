@@ -3,7 +3,7 @@
 Jest reporter for local AgentInspect failure artifacts, plus **experimental** TraceContract matchers.
 
 
-**Support level:** Supported (reporter) · Experimental (matchers) — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+**Support level:** Supported (reporter) · Experimental (matchers) — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md). Network behavior: [NETWORK-BEHAVIOR.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/NETWORK-BEHAVIOR.md).
 
 ## When to use
 

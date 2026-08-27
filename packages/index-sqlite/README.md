@@ -3,7 +3,7 @@
 Optional, disposable **local SQLite index** for faster queries over [AgentInspect](https://github.com/rajudandigam/agent-inspect) JSONL traces.
 
 
-**Support level:** Beta — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
+**Support level:** Beta — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md). Network behavior: [NETWORK-BEHAVIOR.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/NETWORK-BEHAVIOR.md).
 
 - **Local-only:** no network, no default upload.
 - **JSONL stays the source of truth.** The index is a derived cache and is always safe to delete.
