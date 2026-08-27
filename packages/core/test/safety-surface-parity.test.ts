@@ -111,4 +111,37 @@ describe("safety surface parity (6.14.2-6)", () => {
     );
     expect(unsafe.findings.some((f) => f.ruleId === "safety.redaction")).toBe(true);
   });
+
+  it("flags camelCase compound credentials without flagging maxTokens (#239)", () => {
+    expect(isCredentialSensitiveKey("userPassword")).toBe(true);
+    expect(isCredentialSensitiveKey("clientSecret")).toBe(true);
+    expect(isCredentialSensitiveKey("maxTokens")).toBe(false);
+    expect(isCredentialSensitiveKey("emailNote")).toBe(false);
+
+    const findings = runTraceChecks(
+      {
+        read: readResult([
+          persisted("camel", {
+            attributes: {
+              userPassword: "hunter2",
+              clientSecret: "sk-abc",
+              maxTokens: 2048,
+            },
+          }),
+        ]),
+      },
+      { rules: [createSafetyRedactionRule()] },
+    ).findings.filter((f) => f.ruleId === "safety.redaction");
+
+    const paths = findings.flatMap((f) => [
+      f.message,
+      ...f.evidence.map((e) => e.path ?? ""),
+      typeof f.actual === "object" && f.actual && "path" in f.actual
+        ? String((f.actual as { path?: string }).path ?? "")
+        : "",
+    ]);
+    expect(paths.some((p) => p.includes("userPassword"))).toBe(true);
+    expect(paths.some((p) => p.includes("clientSecret"))).toBe(true);
+    expect(paths.some((p) => p.includes("maxTokens"))).toBe(false);
+  });
 });

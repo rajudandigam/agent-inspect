@@ -41,6 +41,31 @@ describe("@agent-inspect/redact", () => {
     });
   });
 
+  it("redacts camelCase compound credentials without key-redacting maxTokens (#239)", () => {
+    const result = redact({
+      userPassword: "hunter2",
+      user_password: "hunter2",
+      clientSecret: "sk-abc",
+      maxTokens: 2048,
+      tokenLimit: 100,
+      emailNote: "owner@example.test",
+    });
+    expect(result.value).toEqual({
+      userPassword: "[REDACTED]",
+      user_password: "[REDACTED]",
+      clientSecret: "[REDACTED]",
+      maxTokens: 2048,
+      tokenLimit: 100,
+      emailNote: "owner@example.test",
+    });
+    expect(result.findings.map((f) => f.detector)).toEqual(
+      expect.arrayContaining(["key.password", "key.secret"]),
+    );
+    expect(result.findings.some((f) => f.path === "emailNote" && f.matchKind === "key")).toBe(
+      false,
+    );
+  });
+
   it("does not mutate nested objects or arrays", () => {
     const input = { nested: { password: "p" }, arr: [{ email: "a@example.com" }] };
     const result = redact(input);
