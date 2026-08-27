@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/jest",
-  "version": "6.17.3",
+  "version": "6.17.4",
   "license": "MIT",
   "type": "module",
   "description": "Jest reporter and experimental TraceContract matchers for AgentInspect local evidence",

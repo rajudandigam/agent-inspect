@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.17.4
+
+### Patch Changes
+
+- c4b0f03: Fix camelCase / kebab / dot compound credential key redaction (`userPassword`, `clientSecret`) while keeping token-config keys and camelCase topic fields (`emailNote`) un-key-redacted.
+
 ## 6.17.3
 
 ### Patch Changes

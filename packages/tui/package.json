@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/tui",
-  "version": "6.17.3",
+  "version": "6.17.4",
   "license": "MIT",
   "type": "module",
   "private": false,
