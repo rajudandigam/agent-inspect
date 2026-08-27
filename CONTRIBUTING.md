@@ -4,7 +4,7 @@ Thank you for helping improve **AgentInspect** — a local-first execution-tree 
 
 **Website:** [https://agentinspect.vercel.app/](https://agentinspect.vercel.app/) · **Docs:** [https://agentinspect.vercel.app/docs/](https://agentinspect.vercel.app/docs/) · **Contributing (web):** [https://agentinspect.vercel.app/docs/contributing/](https://agentinspect.vercel.app/docs/contributing/)
 
-This guide covers setup, boundaries, validation, and what we expect in pull requests. For a first contributor PR flow, see [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md). For deeper maintainer notes, see [docs/community/CONTRIBUTING.md](docs/community/CONTRIBUTING.md).
+This guide covers setup, boundaries, validation, and what we expect in pull requests. For a first contributor PR flow, see [docs/community/FIRST-PR-WALKTHROUGH.md](docs/community/FIRST-PR-WALKTHROUGH.md). For deeper maintainer notes, see [docs/community/CONTRIBUTING.md](docs/community/CONTRIBUTING.md). For who reviews a change and why, see [docs/community/OWNERSHIP.md](docs/community/OWNERSHIP.md).
 
 ## What AgentInspect is (and is not)
 

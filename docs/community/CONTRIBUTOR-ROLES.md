@@ -14,6 +14,9 @@ How participation works in AgentInspect after the 1.1.0 open-source activation. 
 
 See [CONTRIBUTING.md](../../CONTRIBUTING.md) and [MAINTAINER-GUIDE.md](./MAINTAINER-GUIDE.md).
 
+For which *area* of the tree a change routes to for review, see
+[OWNERSHIP.md](./OWNERSHIP.md) and `.github/CODEOWNERS`.
+
 ---
 
 ## External contributor

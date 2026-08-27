@@ -1,0 +1,96 @@
+# CODEOWNERS — review routing for AgentInspect.
+#
+# WHAT THIS IS. GitHub requests a review from the owner of every path a pull
+# request touches. It is routing, not permission: it does not grant or restrict
+# access, and it does not gate merges unless branch protection is separately
+# configured to require owner review. This file deliberately does not do that
+# (#100) — changing branch protection or the collaborator list is out of scope.
+#
+# WHO. @rajudandigam is the only publicly identified maintainer, so every area
+# routes there today. That is a statement of fact about the project, not a
+# ceiling: when an area gains a second maintainer or a team, replace the handle
+# on that line and nothing else has to move. The area layout below exists so
+# that substitution is a one-line change per area rather than a re-derivation.
+#
+# HOW IT LINES UP WITH THE LABELS. The sections mirror the `area:` labels used
+# on issues, so a path, its label, and its owner are the same fact told three
+# ways. Adding an area means a label, a section here, and a row in
+# docs/community/OWNERSHIP.md.
+#
+# ORDER MATTERS. The LAST matching pattern wins, so the catch-all is first and
+# each area narrows it.
+
+# Catch-all. Anything not claimed by a section below.
+*                                   @rajudandigam
+
+# --- area:core ---------------------------------------------------------------
+/packages/core/                     @rajudandigam
+
+# --- area:cli ----------------------------------------------------------------
+/packages/cli/                      @rajudandigam
+/packages/tui/                      @rajudandigam
+
+# --- area:diff / area:logs (both live inside core) ---------------------------
+/packages/core/src/diff/            @rajudandigam
+/packages/core/src/logs/            @rajudandigam
+
+# --- area:index --------------------------------------------------------------
+/packages/index-sqlite/             @rajudandigam
+
+# --- area:workspace (bundles, evidence, gates — inside core) -----------------
+/packages/core/src/bundle/          @rajudandigam
+/packages/core/src/evidence/        @rajudandigam
+/packages/core/src/gate/            @rajudandigam
+
+# --- area:studio -------------------------------------------------------------
+/packages/studio/                   @rajudandigam
+
+# --- area:viewer -------------------------------------------------------------
+/packages/viewer/                   @rajudandigam
+
+# --- area:vscode -------------------------------------------------------------
+/packages/vscode/                   @rajudandigam
+
+# --- area:adapters -----------------------------------------------------------
+/packages/adapter-sdk/              @rajudandigam
+/packages/ai-sdk/                   @rajudandigam
+/packages/openai-agents/            @rajudandigam
+/packages/langchain/                @rajudandigam
+/packages/vitest/                   @rajudandigam
+/packages/jest/                     @rajudandigam
+/packages/harness/                  @rajudandigam
+/packages/eval/                     @rajudandigam
+/packages/guardrails/               @rajudandigam
+/packages/circuit/                  @rajudandigam
+/packages/redact/                   @rajudandigam
+
+# --- area:mcp ----------------------------------------------------------------
+/packages/mcp/                      @rajudandigam
+/packages/mcp-server/               @rajudandigam
+
+# --- area:standards ----------------------------------------------------------
+/packages/core/src/exporters/       @rajudandigam
+/fixtures/standards/                @rajudandigam
+
+# --- area:website ------------------------------------------------------------
+/apps/website/                      @rajudandigam
+
+# --- area:community ----------------------------------------------------------
+/CONTRIBUTING.md                    @rajudandigam
+/CODE_OF_CONDUCT.md                 @rajudandigam
+/GOOD-FIRST-ISSUES.md               @rajudandigam
+/docs/community/                    @rajudandigam
+/.github/ISSUE_TEMPLATE/            @rajudandigam
+/.github/PULL_REQUEST_TEMPLATE.md   @rajudandigam
+
+# --- area:release ------------------------------------------------------------
+# The highest-blast-radius paths: what ships, what CI enforces, and the files
+# whose claims the public-truth validators check.
+/.github/workflows/                 @rajudandigam
+/.github/CODEOWNERS                 @rajudandigam
+/scripts/                           @rajudandigam
+/package.json                       @rajudandigam
+/pnpm-workspace.yaml                @rajudandigam
+/docs/SUPPORT-LEVELS.md             @rajudandigam
+/docs/NETWORK-BEHAVIOR.md           @rajudandigam
+/docs/product/                      @rajudandigam
