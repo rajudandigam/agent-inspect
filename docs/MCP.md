@@ -4,6 +4,11 @@
 
 For the **6.11+ coding-agent debug loop** (flagship tools, causal failure, configure CLI, Evidence v2), see [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) and [coding-agent-instructions/](./coding-agent-instructions/).
 
+> This is **role 3** of three MCP workflows — reading evidence you already have.
+> It does not trace the connecting assistant. See
+> [MCP-ROLES.md](./MCP-ROLES.md) for how it differs from MCP client tracing
+> (`@agent-inspect/mcp`) and from instrumenting an MCP server.
+
 ## Quick start
 
 ```bash

@@ -61,6 +61,7 @@ Optional Preview: [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [MCP.md](./M
 | [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md) · [BUNDLES.md](./BUNDLES.md) | Evidence v2 |
 | [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) | Redaction and share checks |
 | [SUPPORT-REPRODUCTION.md](./SUPPORT-REPRODUCTION.md) | Safe, minimized support reproduction workflow |
+| [MCP-ROLES.md](./MCP-ROLES.md) | Which MCP role you are in: client tracing, server instrumentation, or read-only MCP |
 | [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) | Local MCP coding-agent loop |
 | [SELF-HOSTING.md](./SELF-HOSTING.md) | Customer-owned Studio |
 

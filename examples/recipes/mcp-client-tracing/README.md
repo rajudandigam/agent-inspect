@@ -38,3 +38,7 @@ npx agent-inspect session sess-123 --timeline
 - MCP server implementation
 - Hosted gateway or broker
 - Automatic tool invocation on behalf of the user
+
+## Which MCP role is this?
+
+This recipe is role 1 (MCP client tracing). See [MCP-ROLES.md](../../../docs/MCP-ROLES.md) for the three roles and what each can observe.
