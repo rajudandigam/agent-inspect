@@ -1,5 +1,15 @@
 # @agent-inspect/eval
 
+## 6.17.5
+
+### Patch Changes
+
+- 093811b: Harden deterministic TraceContract / check gates against fail-open empty configs (rule execution evidence, unique order IDs, requiredOrder implies presence, tool policy includes running invocations, ObservedOutcome requireAny), map #308–#311 release ownership, and make demo:verify / pack:smoke validation cross-platform without unnecessary shell invocation.
+- Updated dependencies [093811b]
+  - agent-inspect@6.17.5
+  - @agent-inspect/circuit@6.17.5
+  - @agent-inspect/guardrails@6.17.5
+
 ## 6.17.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.17.5
+
+### Patch Changes
+
+- 093811b: Harden deterministic TraceContract / check gates against fail-open empty configs (rule execution evidence, unique order IDs, requiredOrder implies presence, tool policy includes running invocations, ObservedOutcome requireAny), map #308–#311 release ownership, and make demo:verify / pack:smoke validation cross-platform without unnecessary shell invocation.
+
 ## 6.17.4
 
 ### Patch Changes

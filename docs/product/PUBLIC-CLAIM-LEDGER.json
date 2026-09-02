@@ -5,7 +5,7 @@
     "Local-first evidence for TypeScript AI agents",
     "Capture once. Debug, prevent, and share from the same local trace.",
     "No account · no collector · no default upload · metadata-only by default",
-    "Current published baseline 6.17.4, schema 1.0, Node.js >=20, MIT",
+    "Current published baseline 6.17.5, schema 1.0, Node.js >=20, MIT",
     "18-package fixed release group",
     "Zero open pilot findings at the 6.16.0 moderate + deep-swarm gates",
     "Evidence v2 is a Supported workflow, not compliance certification",

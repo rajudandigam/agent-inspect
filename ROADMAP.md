@@ -12,7 +12,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 ## Current — feedback integrity (`6.17.5`) then adapter parity (`6.18.x`)
 
-**Current release on npm:** **6.17.4** (eighteen fixed-group public packages). Persisted schema **1.0**. Node.js **≥ 20**. **MIT**. Actively maintained.
+**Current release on npm:** **6.17.5** (eighteen fixed-group public packages). Persisted schema **1.0**. Node.js **≥ 20**. **MIT**. Actively maintained.
 
 Active maintainer program: release integrity and capability truth (`6.17.5`), then bounded preview parity and later reader/contract trains — before any conditional v7 assessment.
 
