@@ -5,6 +5,8 @@ Read-only MCP server for the **local coding-agent debug loop**: list runs, summa
 
 **Support level:** Preview — see [SUPPORT-LEVELS.md](https://github.com/rajudandigam/agent-inspect/blob/main/docs/SUPPORT-LEVELS.md).
 
+[![agent-inspect MCP server](https://glama.ai/mcp/servers/rajudandigam/agent-inspect/badges/score.svg)](https://glama.ai/mcp/servers/rajudandigam/agent-inspect)
+
 ## When to use
 
 - Let Cursor, Claude Code, Codex, Gemini, or other MCP clients inspect local `.agent-inspect/` evidence
