@@ -19,4 +19,4 @@
 "@agent-inspect/vitest": patch
 ---
 
-Fix `search --name` + `--status` so run-level filters are applied conjunctively and status-only hits no longer bypass a non-matching name (#323). Raise Vitest test/hook timeouts so consumer-compat and API-surface fixtures do not flake under coverage on CI.
+Fix `search --name` + `--status` so run-level filters are applied conjunctively and status-only hits no longer bypass a non-matching name (#323). Unblock CI after Vitest 3 coverage hangs: serialize local `npm install` in compat fixtures, exclude those suites from coverage workers, and run them as a separate non-coverage CI step.

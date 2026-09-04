@@ -36,6 +36,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
+      # npm-install consumer fixtures hang under coverage workers; run them without coverage first.
+      - run: pnpm exec vitest run packages/core/test/consumer-compat.test.ts packages/core/test/package-exports-compat.test.ts packages/core/test/api-surface-snapshot.test.ts
       - run: pnpm run test:coverage
       - uses: actions/upload-artifact@v4
         if: always()

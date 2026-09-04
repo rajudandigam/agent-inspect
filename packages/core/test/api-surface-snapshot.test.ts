@@ -13,6 +13,8 @@ import { spawnSync } from "node:child_process";
 
 import { describe, expect, it } from "vitest";
 
+import { withNpmInstallLock } from "./helpers/npm-install-lock.js";
+
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const snapshotPath = path.join(
@@ -107,14 +109,16 @@ describe.skipIf(!distPresent)("published API surface snapshot (#211)", () => {
           ].join("\n"),
         );
 
-        const install = spawnSync(
-          "npm",
-          ["install", "--no-save", "--ignore-scripts", repoRoot],
-          {
-            cwd: projectDir,
-            encoding: "utf8",
-            shell: process.platform === "win32",
-          },
+        const install = withNpmInstallLock(() =>
+          spawnSync(
+            "npm",
+            ["install", "--no-save", "--ignore-scripts", repoRoot],
+            {
+              cwd: projectDir,
+              encoding: "utf8",
+              shell: process.platform === "win32",
+            },
+          ),
         );
         expect(install.status, install.stdout + install.stderr).toBe(0);
 

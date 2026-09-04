@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 
 import { afterAll, describe, expect, it } from "vitest";
 
+import { withNpmInstallLock } from "./helpers/npm-install-lock.js";
+
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const fixturesRoot = path.join(repoRoot, "test", "consumer-fixtures");
@@ -28,10 +30,12 @@ function installFixture(fixtureName: string): string {
   const dir = mkdtempSync(path.join(tmpdir(), `agent-inspect-${fixtureName}-`));
   tmpRoots.push(dir);
   cpSync(path.join(fixturesRoot, fixtureName), dir, { recursive: true });
-  execSync(`npm install "${repoRoot}"`, {
-    cwd: dir,
-    stdio: "pipe",
-    encoding: "utf-8",
+  withNpmInstallLock(() => {
+    execSync(`npm install "${repoRoot}"`, {
+      cwd: dir,
+      stdio: "pipe",
+      encoding: "utf-8",
+    });
   });
   return dir;
 }

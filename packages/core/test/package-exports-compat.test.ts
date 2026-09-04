@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 
 import { afterAll, describe, expect, it } from "vitest";
 
+import { withNpmInstallLock } from "./helpers/npm-install-lock.js";
+
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../../..");
 const tscBin = path.join(repoRoot, "node_modules", "typescript", "bin", "tsc");
@@ -54,10 +56,12 @@ function runTsc(projectDir: string): void {
 }
 
 function installAgentInspect(consumerDir: string): void {
-  execSync(`npm install "${repoRoot}"`, {
-    cwd: consumerDir,
-    stdio: "pipe",
-    encoding: "utf-8",
+  withNpmInstallLock(() => {
+    execSync(`npm install "${repoRoot}"`, {
+      cwd: consumerDir,
+      stdio: "pipe",
+      encoding: "utf-8",
+    });
   });
 }
 
