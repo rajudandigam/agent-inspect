@@ -1,5 +1,17 @@
 # @agent-inspect/vitest
 
+## 6.17.7
+
+### Patch Changes
+
+- f66c77a: Align high-confidence key/value credential redaction with verify-safe `key-value-secret` detection (for example `internal_token=<credential>`), keep path findings review-only, and document that redact remains best-effort (#327).
+- 4d617f5: Clarify that `observe()` records only the top-level run boundary (no invented `step_*` events), and accept `check --forbid-tool` as a compatibility alias for `--forbidden-tool`.
+- 0f4ada3: Fix `search --name` + `--status` so run-level filters are applied conjunctively and status-only hits no longer bypass a non-matching name (#323). Unblock CI after Vitest 3 coverage hangs: serialize local `npm install` in compat fixtures, exclude those suites from coverage workers, and run them as a separate non-coverage CI step.
+- Updated dependencies [f66c77a]
+- Updated dependencies [4d617f5]
+- Updated dependencies [0f4ada3]
+  - agent-inspect@6.17.7
+
 ## 6.17.6
 
 ### Patch Changes
