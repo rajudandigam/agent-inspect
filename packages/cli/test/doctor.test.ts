@@ -6,7 +6,14 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { doctorCommand, resolveInstalledPackage, runDoctorChecks } from "../src/doctor.js";
+import {
+  AGENT_INSPECT_NOT_RESOLVABLE_MESSAGE,
+  AGENT_INSPECT_NOT_RESOLVABLE_REMEDIATION,
+  DOCS_BASE,
+  doctorCommand,
+  resolveInstalledPackage,
+  runDoctorChecks,
+} from "../src/doctor.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const coreDistPresent = existsSync(path.join(repoRoot, "packages/core/dist/index.cjs"));
@@ -56,6 +63,14 @@ describe("doctor CLI", () => {
     expect(payload.checks.every((check: { id: string }) => typeof check.id === "string")).toBe(
       true,
     );
+  });
+
+  it("gives an actionable, doc-linked not-resolvable remediation for packed consumers", () => {
+    // Clarifies the common packed-consumer mistake (a global CLI install is not enough).
+    expect(AGENT_INSPECT_NOT_RESOLVABLE_MESSAGE).toMatch(/global CLI install is not enough/i);
+    expect(AGENT_INSPECT_NOT_RESOLVABLE_REMEDIATION).toContain("npm install agent-inspect");
+    expect(AGENT_INSPECT_NOT_RESOLVABLE_REMEDIATION).toContain(`${DOCS_BASE}/`);
+    expect(DOCS_BASE).toMatch(/^https:\/\/github\.com\/rajudandigam\/agent-inspect\/blob\/main\/docs$/);
   });
 
   it("treats unresolved package names as not installed", () => {

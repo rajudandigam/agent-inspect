@@ -31,6 +31,16 @@ export interface DoctorCommandOptions {
   cwd?: string;
 }
 
+/** Current docs base for actionable remediation links (resolves for packed consumers). */
+export const DOCS_BASE = "https://github.com/rajudandigam/agent-inspect/blob/main/docs";
+
+/** Message shown when agent-inspect cannot be resolved from the current project. */
+export const AGENT_INSPECT_NOT_RESOLVABLE_MESSAGE =
+  "agent-inspect does not resolve from this project. A global CLI install is not enough — the package must be a dependency here.";
+
+/** Remediation for the not-resolvable case (common packed-consumer mistake). */
+export const AGENT_INSPECT_NOT_RESOLVABLE_REMEDIATION = `Install it in this project: npm install agent-inspect (or pnpm add agent-inspect). See ${DOCS_BASE}/FIRST-TRACE-IN-5-MINUTES.md`;
+
 const OPTIONAL_PACKAGES: Record<InitFramework, string[]> = {
   custom: [],
   "ai-sdk": ["@agent-inspect/ai-sdk"],
@@ -46,7 +56,7 @@ function nodeVersionCheck(): DoctorCheckResult {
       id: "node-version",
       status: "fail",
       message: `Node ${process.versions.node} is below the supported minimum (20).`,
-      remediation: "Upgrade to Node 20 LTS or newer.",
+      remediation: `Upgrade to Node 20 LTS or newer, then reinstall. See ${DOCS_BASE}/GETTING-STARTED.md`,
       evidence: process.versions.node,
     };
   }
@@ -92,7 +102,7 @@ async function traceDirWritable(traceDir: string): Promise<DoctorCheckResult> {
       id: "trace-dir-writable",
       status: "fail",
       message: `Trace directory is not writable: ${resolved}`,
-      remediation: "Create the directory or set AGENT_INSPECT_TRACE_DIR to a writable path.",
+      remediation: `Create the directory or set AGENT_INSPECT_TRACE_DIR to a writable path. See ${DOCS_BASE}/GETTING-STARTED.md`,
       evidence: error instanceof Error ? error.message : String(error),
     };
   }
@@ -172,8 +182,8 @@ function importSmoke(cwd: string): DoctorCheckResult[] {
     results.push({
       id: "import-agent-inspect",
       status: "warn",
-      message: "agent-inspect is not installed in the current project.",
-      remediation: "Run npm install agent-inspect (or pnpm add agent-inspect).",
+      message: AGENT_INSPECT_NOT_RESOLVABLE_MESSAGE,
+      remediation: AGENT_INSPECT_NOT_RESOLVABLE_REMEDIATION,
     });
     results.push({
       id: "import-agent-inspect-cjs",
@@ -229,8 +239,8 @@ function versionMismatchCheck(cwd: string): DoctorCheckResult {
     return {
       id: "version-alignment",
       status: "warn",
-      message: `CLI version ${packageVersion} differs from local agent-inspect@${root.version}.`,
-      remediation: "Align versions with npm install agent-inspect@latest",
+      message: `CLI version ${packageVersion} differs from local agent-inspect@${root.version}. A packed consumer can hit this when npx uses a cached global CLI.`,
+      remediation: `Align versions with npm install agent-inspect@${packageVersion}, or run via the local binary. See ${DOCS_BASE}/KNOWN-ISSUES.md`,
       evidence: `cli=${packageVersion};local=${root.version}`,
     };
   }

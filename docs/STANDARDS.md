@@ -54,6 +54,7 @@ Run `pnpm public-truth:check` and `pnpm docs:check` after changing these sources
 
 - [Phoenix / OpenInference](../examples/recipes/phoenix-openinference-import/)
 - [Langfuse self-hosted](../examples/recipes/langfuse-local-import/)
+- [Local OpenTelemetry Collector round-trip](./OTEL-COLLECTOR-ROUNDTRIP.md)
 
 ## Vendor graduation (manual)
 

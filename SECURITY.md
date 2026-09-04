@@ -78,6 +78,10 @@ For a practical pre-share workflow, see `docs/SAFE-TRACE-SHARING.md`. For schema
 - Do not add vendor SDKs, OpenTelemetry SDKs, or framework dependencies to the main `agent-inspect` package.
 - Keep optional integrations (`@agent-inspect/langchain`, `@agent-inspect/tui`, `@agent-inspect/viewer`, `@agent-inspect/mcp-server`) separate so users do not pull them in by default.
 
+### Automated scanners (CI)
+
+Pull requests run GitHub **Dependency review** (`.github/workflows/dependency-review.yml`) and fail on newly introduced **high** or **critical** advisory severity. Routine unit/typecheck/size CI also exercises redaction, path containment, and Evidence safety tests. These scanners do **not** replace manual review of share profiles or Evidence packages before you disclose traces.
+
 ## Optional surfaces (v2.6)
 
 ### Local viewer (`agent-inspect serve`)
