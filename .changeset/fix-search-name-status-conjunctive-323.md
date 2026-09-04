@@ -19,4 +19,4 @@
 "@agent-inspect/vitest": patch
 ---
 
-Fix `search --name` + `--status` so run-level filters are applied conjunctively and status-only hits no longer bypass a non-matching name (#323).
+Fix `search --name` + `--status` so run-level filters are applied conjunctively and status-only hits no longer bypass a non-matching name (#323). Raise Vitest test/hook timeouts so consumer-compat and API-surface fixtures do not flake under coverage on CI.
