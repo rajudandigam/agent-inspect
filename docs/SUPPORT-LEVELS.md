@@ -49,7 +49,8 @@ shows). `pnpm package-readmes:check` enforces the agreement and runs as part of
 To promote or demote a surface:
 
 1. Edit the row in the matrix above.
-2. Edit the `**Support level:**` line in each affected `packages/*/README.md`.
+2. Edit the `**Support level:**` line in the affected public README: `README.md`
+   for the root `agent-inspect` package, or `packages/*/README.md` for scoped packages.
 3. Run `pnpm package-readmes:check`.
 
 The check also reports packages whose level is **unenforced** — those the matrix

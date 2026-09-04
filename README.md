@@ -33,6 +33,8 @@
   <a href="package.json"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node.js 20 or newer"></a>
 </p>
 
+**Support level:** Stable — see [SUPPORT-LEVELS.md](docs/SUPPORT-LEVELS.md). Network behavior: [NETWORK-BEHAVIOR.md](docs/NETWORK-BEHAVIOR.md).
+
 ```bash
 npm install agent-inspect
 ```

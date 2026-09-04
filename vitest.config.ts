@@ -201,7 +201,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["packages/**/*.test.ts"],
+    include: ["packages/**/*.test.ts", "scripts/**/*.test.mjs"],
     exclude: ["**/dist/**", "**/node_modules/**", "docs/**", "examples/**"],
     coverage: {
       provider: "v8",

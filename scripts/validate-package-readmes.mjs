@@ -7,9 +7,16 @@
  * behavior changes. This check makes the canonical docs the source of truth and
  * fails when a README drifts from them.
  */
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import {
+  buildPackageManifestIndex,
+  listUngovernedPackages,
+  listVisibleNonFixedPackages,
+  resolveFixedGroupReadmes,
+} from "./package-readme-coverage.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -78,22 +85,15 @@ const fixedGroup = new Set(
 );
 if (fixedGroup.size === 0) failures.push(".changeset/config.json: no fixed package group found");
 
-const readmes = [];
-const skipped = [];
-for (const dir of readdirSync(path.join(root, "packages"))) {
-  const pkgPath = path.join(root, "packages", dir, "package.json");
-  const readmePath = path.join(root, "packages", dir, "README.md");
-  if (!existsSync(pkgPath) || !existsSync(readmePath)) continue;
-  const name = JSON.parse(readFileSync(pkgPath, "utf8")).name;
-  const entry = {
-    name,
-    rel: path.posix.join("packages", dir, "README.md"),
-    text: readFileSync(readmePath, "utf8"),
-  };
-  if (fixedGroup.has(name)) readmes.push(entry);
-  else skipped.push(name);
-}
-if (readmes.length === 0) failures.push("no fixed-group package READMEs found under packages/");
+const manifestIndex = buildPackageManifestIndex(root);
+const resolved = resolveFixedGroupReadmes({
+  repositoryRoot: root,
+  fixedGroup,
+  manifestIndex,
+});
+failures.push(...resolved.failures);
+const readmes = resolved.readmes;
+const skipped = listVisibleNonFixedPackages({ fixedGroup, manifestIndex });
 
 for (const { name, rel, text } of readmes) {
   const declared = text.match(/\*\*Support level:\*\*\s*(\w+)/);
@@ -160,10 +160,7 @@ if (failures.length > 0) {
  * path made visible rather than a blocked build. Add a row naming the package
  * and this check starts enforcing agreement for it.
  */
-const ungoverned = readmes
-  .filter(({ name }) => !matrixLevels.has(name))
-  .map(({ name }) => name)
-  .sort();
+const ungoverned = listUngovernedPackages({ readmes, matrixLevels });
 
 console.log(
   `[package-readmes:check] OK (${readmes.length} fixed-group package READMEs` +
