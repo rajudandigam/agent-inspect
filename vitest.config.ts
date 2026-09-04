@@ -209,10 +209,10 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    // Consumer/compat fixtures run npm install + tsc; the Vitest 5s default
-    // flakes under coverage load on CI (main red after #319; blocks #324).
-    testTimeout: 60_000,
-    hookTimeout: 60_000,
+    // Consumer/compat fixtures run npm install + tsc; local installs currently
+    // take ~40s+ each, so the Vitest 5s/60s defaults flake on CI.
+    testTimeout: 180_000,
+    hookTimeout: 180_000,
     include: ["packages/**/*.test.ts"],
     exclude: [
       "**/dist/**",
