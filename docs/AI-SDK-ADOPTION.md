@@ -106,4 +106,20 @@ npx agent-inspect check .agent-inspect/<run>.jsonl
 - [ai-sdk-local-telemetry](../../examples/recipes/ai-sdk-local-telemetry/)
 - [ai-sdk-next-route](../../examples/recipes/ai-sdk-next-route/)
 
+## No-key packed consumer check
+
+After building the repository, run the clean packed-consumer path directly:
+
+```bash
+pnpm build
+node scripts/packed-ai-sdk-e2e.mjs
+```
+
+The same check participates in `pnpm pack:smoke`. It installs the packed root
+and `@agent-inspect/ai-sdk` tarballs with the supported `ai` peer in a clean
+temporary consumer, then verifies provider-independent telemetry integration
+through a deterministic AI SDK mock model. It uses no provider package, API
+key, or live provider call, and asserts that metadata-only evidence excludes
+the fixture prompt and output.
+
 See also [ADAPTERS.md](./ADAPTERS.md) and [ADAPTER-CONFORMANCE.md](./ADAPTER-CONFORMANCE.md).
