@@ -374,6 +374,39 @@ describe("check command", () => {
     expect(result.findings?.some((item) => item.ruleId === "tool.usage")).toBe(true);
   });
 
+  it("treats --forbid-tool as an alias of --forbidden-tool", async () => {
+    const file = await writeTrace(tmp, "forbidden-tool.jsonl", [
+      event("event-a", {
+        kind: "TOOL",
+        name: "tool:deleteAccount",
+        attributes: { toolName: "deleteAccount" },
+      }),
+    ]);
+
+    const canonical = await runCheck(file, {
+      forbiddenTool: ["deleteAccount"],
+    });
+    expect(process.exitCode).toBe(1);
+    expect(canonical.status).toBe("fail");
+    expect(canonical.findings?.filter((item) => item.ruleId === "tool.usage")).toHaveLength(1);
+
+    process.exitCode = 0;
+    const alias = await runCheck(file, {
+      forbidTool: ["deleteAccount"],
+    });
+    expect(process.exitCode).toBe(1);
+    expect(alias.status).toBe("fail");
+    expect(alias.findings?.filter((item) => item.ruleId === "tool.usage")).toHaveLength(1);
+
+    process.exitCode = 0;
+    const both = await runCheck(file, {
+      forbiddenTool: ["deleteAccount"],
+      forbidTool: ["deleteAccount"],
+    });
+    expect(process.exitCode).toBe(1);
+    expect(both.findings?.filter((item) => item.ruleId === "tool.usage")).toHaveLength(1);
+  });
+
   it("executes --allowed-model and --max-total-tokens with --preset trajectory", async () => {
     const file = await writeTrace(tmp, "llm.jsonl", [
       event("event-run"),

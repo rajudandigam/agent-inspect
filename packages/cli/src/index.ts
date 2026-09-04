@@ -386,6 +386,10 @@ export function createCliProgram(): Command {
       ...previous,
       value,
     ])
+    .option("--forbid-tool <name>", "alias for --forbidden-tool (repeatable)", (value, previous: string[] = []) => [
+      ...previous,
+      value,
+    ])
     .option("--allowed-model <model>", "allow an LLM model (repeatable)", (value, previous: string[] = []) => [
       ...previous,
       value,

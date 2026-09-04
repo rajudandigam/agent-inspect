@@ -71,7 +71,10 @@ export interface CheckCommandOptions {
   rule?: string[];
   maxDurationMs?: string;
   requiredTool?: string[];
+  /** Canonical CLI spelling: `--forbidden-tool`. */
   forbiddenTool?: string[];
+  /** Compatibility alias: `--forbid-tool` (same semantics as `forbiddenTool`). */
+  forbidTool?: string[];
   allowedModel?: string[];
   maxTotalTokens?: string;
   session?: string;
@@ -129,12 +132,38 @@ export function uniqueSelectIds(ids: readonly string[]): string[] {
  * Rule ids implied by CLI shorthand flags on this invocation.
  * Does not include config-only constructed rules.
  */
+export function resolveForbiddenToolOptions(options: CheckCommandOptions): string[] {
+  const merged = [...(options.forbiddenTool ?? []), ...(options.forbidTool ?? [])];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const name of merged) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    out.push(name);
+  }
+  return out;
+}
+
+export function withResolvedForbiddenTools(
+  options: CheckCommandOptions,
+): CheckCommandOptions {
+  return {
+    ...options,
+    forbiddenTool: resolveForbiddenToolOptions(options),
+    forbidTool: undefined,
+  };
+}
+
 export function cliShorthandSelectIds(options: CheckCommandOptions): string[] {
   const ids: string[] = [];
   if (options.failOnObservation !== undefined && options.failOnObservation.trim() !== "") {
     ids.push("outcome.status");
   }
-  if ((options.requiredTool?.length ?? 0) > 0 || (options.forbiddenTool?.length ?? 0) > 0) {
+  if (
+    (options.requiredTool?.length ?? 0) > 0 ||
+    (options.forbiddenTool?.length ?? 0) > 0 ||
+    (options.forbidTool?.length ?? 0) > 0
+  ) {
     ids.push("tool.usage");
   }
   if ((options.allowedModel?.length ?? 0) > 0 || options.maxTotalTokens !== undefined) {
@@ -1082,6 +1111,7 @@ export async function checkCommand(
   options: CheckCommandOptions = {},
   stdin: NodeJS.ReadableStream = process.stdin,
 ): Promise<void> {
+  options = withResolvedForbiddenTools(options);
   let result: TraceCheckResult;
   let phase: "config" | "read" = "config";
   let evidenceRead: TraceReadResult | undefined;

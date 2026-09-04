@@ -167,6 +167,8 @@ describe("@agent-inspect/cli", () => {
     expect(help).toContain("--config");
     expect(help).toContain("--rule");
     expect(help).toContain("--max-duration-ms");
+    expect(help).toContain("--forbidden-tool");
+    expect(help).toContain("--forbid-tool");
   });
 
   it("eval help mentions key options", () => {
