@@ -1,0 +1,4 @@
+Evidence v2 verification: pass
+Files checked: 7
+Tamper check: detected hash_mismatch for reproduction.json
+Evidence directory: .agent-inspect/evidence/reproducible-repair-evidence

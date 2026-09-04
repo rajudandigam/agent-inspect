@@ -41,6 +41,7 @@ const RECIPES = [
   "guardrails-basic",
   "circuit-breaker-basic",
   "read-only-mcp-server",
+  "reproducible-repair-evidence",
   "workspace-basic",
   "shareable-bundle-basic",
   "phoenix-openinference-import",

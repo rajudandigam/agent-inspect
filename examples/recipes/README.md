@@ -38,7 +38,7 @@ Pick by the job you are doing. Every cell below is derived from the recipe's own
 [NETWORK-BEHAVIOR.md](../../docs/NETWORK-BEHAVIOR.md) — nothing here is asserted
 independently of those sources.
 
-**All 40 recipes need no API key and make no network calls.** They are mocks-only and
+**All 42 recipes need no API key and make no network calls.** They are mocks-only and
 local by construction; the two MCP rows note where network enters once a recipe is
 pointed at something real, per NETWORK-BEHAVIOR.md.
 
@@ -75,6 +75,7 @@ pointed at something real, per NETWORK-BEHAVIOR.md.
 | [rag-pipeline](rag-pipeline) | Debug a RAG pipeline | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-rag-pipeline start` |
 | [read-only-mcp-server](read-only-mcp-server) | Read evidence through MCP | `@agent-inspect/mcp-server`<br>`agent-inspect` | No | Exposes local evidence to a connected client (share-profile boundary) | Preview | `pnpm --filter agent-inspect-recipe-read-only-mcp-server start` |
 | [redact-share-safe-file](redact-share-safe-file) | Share a trace safely | `@agent-inspect/redact` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-redact-share-safe-file start` |
+| [reproducible-repair-evidence](reproducible-repair-evidence) | Package a repair counterexample | `agent-inspect/advanced` | No | No network | Supported <sup>Evidence v2</sup> | `pnpm --filter agent-inspect-recipe-reproducible-repair-evidence start` |
 | [retry-fallback](retry-fallback) | Understand model fallback | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-retry-fallback start` |
 | [runtime-and-ingestion](runtime-and-ingestion) | Ingest traces from any format | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-runtime-and-ingestion start` |
 | [shareable-bundle-basic](shareable-bundle-basic) | Build a shareable bundle | `agent-inspect` | No | No network | Supported <sup>Workspace / bundles / observed outcomes / Evidence v2</sup> | `pnpm --filter agent-inspect-recipe-shareable-bundle-basic start` |
@@ -128,6 +129,7 @@ each package README's `**Support level:**` line, except where a recipe uses a fe
 | [guardrails-basic](guardrails-basic) | v2.5 deterministic guardrail samples | `@agent-inspect/guardrails`, phrase/PII/injection rules | yes | no |
 | [circuit-breaker-basic](circuit-breaker-basic) | v2.5 circuit repetition analysis | `@agent-inspect/circuit`, tool/args repetition | yes | no |
 | [read-only-mcp-server](read-only-mcp-server) | v2.6 read-only MCP trace tools | `@agent-inspect/mcp-server`, list/search/check tools | yes | no |
+| [reproducible-repair-evidence](reproducible-repair-evidence) | Package caller-owned repair records and detect tampering | Evidence v2 manifest and directory verification APIs | yes | no |
 | [workspace-basic](workspace-basic) | v4.0 local trace workspace | `agent-inspect/workspace`, create/status | yes | no |
 
 ## Multi-run sessions (v2.4)
