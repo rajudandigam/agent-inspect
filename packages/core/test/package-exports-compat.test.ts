@@ -57,7 +57,7 @@ function runTsc(projectDir: string): void {
 
 function installAgentInspect(consumerDir: string): void {
   withNpmInstallLock(() => {
-    execSync(`npm install "${repoRoot}"`, {
+    execSync(`npm install --no-audit --no-fund "${repoRoot}"`, {
       cwd: consumerDir,
       stdio: "pipe",
       encoding: "utf-8",

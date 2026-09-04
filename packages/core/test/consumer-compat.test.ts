@@ -31,7 +31,7 @@ function installFixture(fixtureName: string): string {
   tmpRoots.push(dir);
   cpSync(path.join(fixturesRoot, fixtureName), dir, { recursive: true });
   withNpmInstallLock(() => {
-    execSync(`npm install "${repoRoot}"`, {
+    execSync(`npm install --no-audit --no-fund "${repoRoot}"`, {
       cwd: dir,
       stdio: "pipe",
       encoding: "utf-8",

@@ -112,7 +112,14 @@ describe.skipIf(!distPresent)("published API surface snapshot (#211)", () => {
         const install = withNpmInstallLock(() =>
           spawnSync(
             "npm",
-            ["install", "--no-save", "--ignore-scripts", repoRoot],
+            [
+              "install",
+              "--no-save",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund",
+              repoRoot,
+            ],
             {
               cwd: projectDir,
               encoding: "utf8",
