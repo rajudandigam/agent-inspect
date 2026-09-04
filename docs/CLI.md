@@ -312,7 +312,7 @@ Options:
 - `--json`: print deterministic `TraceCheckResult` JSON
 - `--rule <id>`: select a rule id; repeatable
 - `--max-duration-ms <number>`: add `run.duration`
-- `--required-tool <name>` / `--forbidden-tool <name>`: add `tool.usage`
+- `--required-tool <name>` / `--forbidden-tool <name>` / `--forbid-tool <name>` (alias): add `tool.usage`
 - `--allowed-model <model>` / `--max-total-tokens <number>`: add `llm.usage`
 - `--session <id>`: check all runs in a workflow session (uses `--dir`; target may be `.`)
 - `--group <id>`: check all runs sharing a `groupId` metadata value
@@ -324,7 +324,7 @@ Options:
   - `trajectory`: completion/structure/relationship focus; excludes share-safety findings
   - `safety`: raw-content / secret / redaction focus
   - `comprehensive`: union of trajectory and safety
-  - Presets are a base select set. CLI shorthands on the same invocation (`--fail-on-observation`, `--required-tool`, `--forbidden-tool`, `--allowed-model`, `--max-total-tokens`, `--max-duration-ms`, `--max-step-duration`, `--detect-stalls`) extend that set; they are not dropped because the preset already selected rules. Config `checks.select` is not silently expanded with unrelated configured rules.
+  - Presets are a base select set. CLI shorthands on the same invocation (`--fail-on-observation`, `--required-tool`, `--forbidden-tool` / `--forbid-tool`, `--allowed-model`, `--max-total-tokens`, `--max-duration-ms`, `--max-step-duration`, `--detect-stalls`) extend that set; they are not dropped because the preset already selected rules. Config `checks.select` is not silently expanded with unrelated configured rules.
 - `--evidence-on <fail|always|never>`: write local Evidence v2 (no upload); omitted = never
 - `--evidence-dir <path>`: Evidence output directory or base path
 - `--evidence-profile <local|share|strict>`: redaction profile for Evidence (default `share`)

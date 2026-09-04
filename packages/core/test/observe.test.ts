@@ -50,6 +50,9 @@ describe("observe", () => {
     expect(started?.event === "run_started" && started.name).toBe("Agent.run");
     const done = events.find((e) => e.event === "run_completed");
     expect(done?.event === "run_completed" && done.status).toBe("success");
+    expect(events.some((e) => e.event === "step_started" || e.event === "step_completed")).toBe(
+      false,
+    );
   });
 
   it("wraps execute()", async () => {

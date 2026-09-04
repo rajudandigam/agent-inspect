@@ -74,7 +74,8 @@ await agent.run({
 This writes a local JSONL trace with stable event names (`schemaVersion: "0.1"`) when the observed `run` method is called:
 
 - `run_started`, `run_completed`
-- `step_started`, `step_completed`
+
+`observe()` records only that top-level `run` / `execute` / `invoke` boundary. It does **not** invent internal `step_*` events for work inside the method body. Use explicit `step()` / `step.tool()` / `step.llm()`, or a framework adapter, when you need a nested execution tree.
 
 ## 3. Manually instrument custom flows
 

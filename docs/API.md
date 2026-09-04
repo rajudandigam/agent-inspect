@@ -83,7 +83,7 @@ import {
 - **`step(name, fn, options?)`**: traces a named unit of work inside `inspectRun` (`step_started` / `step_completed`). Step `metadata` inherits the parent run's redaction and size-bound settings.
   - **`step.llm(model, fn)`**: convenience wrapper (`type: "llm"`, `metadata.model`).
   - **`step.tool(toolName, fn)`**: convenience wrapper (`type: "tool"`, `metadata.toolName`).
-- **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`.
+- **`observe(agent, options?)`**: proxy wrapper that traces top-level `run` / `execute` / `invoke` methods via `inspectRun`. Does not invent nested `step_*` events inside those methods; use `step()` / adapters for an internal tree.
 - **`observeOutcome(name, options)`** (v4.4.0+): records an observed outcome (`outcome_observed`) inside an active `inspectRun` context. Requires `expectation` and `status` (`passed` | `failed` | `unknown` | `skipped`); optional `method`, `actual`, and `evidence`. Outside a run → warn and no-op (never throws). `actual` / `evidence` are bounded and redacted before disk.
 - **`getCurrentCorrelationMetadata()`**: returns active run correlation fields (`correlationId`, `requestId`, `decisionId`, `groupId`) inside `inspectRun` / `maybeInspectRun`; `undefined` outside a traced run or when none were set.
 - **`RedactionProfile`**: `"local" | "share" | "strict"` — see `redactionProfile` on `InspectRunOptions` and `ExportOptions`.
