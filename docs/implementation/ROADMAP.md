@@ -1,9 +1,9 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.17.5`
+**Baseline:** `agent-inspect@6.17.6`
 **Roadmap horizon:** `6.17.6 → 6.17.7 → 6.17.8 → 6.18.0 → 6.19.0 → 6.20.0 → 6.21.0 → conditional 6.22.0`
 **Status:** Active canonical roadmap (permanent path; supersedes version-named roadmap seeds)
-**Primary objective:** Close capability-truth gaps, eliminate fail-open deterministic check behavior, keep release integrity green, contain Studio ingest and dependency advisories, make framework preview capture useful without weakening local-first safety, support arbitrary persisted agent-event sources through the existing reader architecture, and make deterministic contracts flexible enough for legitimate alternate agent paths
+**Primary objective:** Close capability-truth gaps, eliminate fail-open deterministic check behavior, keep release integrity green, align high-confidence redaction with verify-safe, make framework preview capture useful without weakening local-first safety, support arbitrary persisted agent-event sources through the existing reader architecture, and make deterministic contracts flexible enough for legitimate alternate agent paths
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
 **Network policy:** no new default network behavior
@@ -21,8 +21,9 @@ The canonical release sequence is:
 ```text
 6.17.5  Release integrity, capability truth, and adversarial check-engine integrity  (published)
 6.17.6  Security containment + dependency remediation  (published)
-6.17.7  Remote Studio / website / skill safety
-6.17.8  Workflows / scanners / SECURITY.md modernization
+6.17.7  High-confidence redaction/verify-safe parity + DX truth + Evidence recipe  (active)
+6.17.7b Deferred: remote Studio / website / skill safety  (explicit deferral from redefined 6.17.7)
+6.17.8  Workflows / scanners / SECURITY.md / contributor-queue reconciliation
 6.17.9  Corrective security defects only
 
 6.18.0  Adapter capture capabilities and bounded preview parity
@@ -116,10 +117,13 @@ Fail-closed deterministic gate hardening:
 
 | Release | Theme | GitHub | Notes |
 | --- | --- | --- | --- |
-| **6.18.0** | Bounded preview parity for AI SDK + OpenAI Agents | #311 | Shared capture contract; metadata-only remains default |
+| **6.17.7** | Redaction/verify-safe parity + DX truth + Evidence recipe | P0 redact issue; #316/#325 | Active; Studio/website/skill safety deferred |
+| **6.17.7b** | Remote Studio / website / skill safety | — | Explicit deferral from redefined 6.17.7 |
+| **6.17.8** | Workflows / scanners / contributor-queue reconciliation | #297/#306/#314 triage | Do not auto-close stale PRs |
+| **6.18.0** | Bounded preview parity for AI SDK + OpenAI Agents | #311, #213 | Shared capture contract; metadata-only remains default |
 | **6.19.0** | Custom `TraceReader` authoring + TrueForge receipt recipe | — | Foreign JSON → TraceReader → events → optional TraceTransform |
 | **6.20.0** | `alternatives.anyOf` + ordering modes | #309, #308 | Deterministic alternate paths; causal ordering modes |
-| **6.21.0** | Actor-scoped contracts + outcome provenance | — | Explicit metadata selectors; method/evidence requirements |
+| **6.21.0** | Actor-scoped contracts + outcome provenance | #320, #321 | Explicit metadata selectors; method/evidence requirements |
 | **6.22.0** | Conditional design-partner recipes | — | Handoff digests, control evidence, MCP retry fixture, CI envelope |
 
 ### 3.1 v6.18.0 — adapter capture parity (#311)
