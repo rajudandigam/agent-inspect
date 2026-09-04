@@ -208,36 +208,41 @@ function matchRunLevel(
     statusFilter?: string;
   },
 ): TraceSearchResult[] {
+  // Step-oriented filters are handled only by matchStepLevel.
   if (opts.stepTypeFilter || opts.toolQuery) return [];
-  const out: TraceSearchResult[] = [];
-  const fields: string[] = [];
 
-  if (opts.statusFilter && m.status === opts.statusFilter) {
-    fields.push("run.status");
-  }
-  if (opts.nameQuery && nameMatches(m.name ?? m.runId, opts.nameQuery)) {
-    fields.push("run.name");
+  // Structured run filters are conjunctive: every supplied filter must match.
+  // Previously status/name/duration were OR'd via field accumulation, so
+  // `--name missing --status error` could still emit a status-only run hit (#323).
+  if (opts.statusFilter && m.status !== opts.statusFilter) return [];
+  if (opts.nameQuery && !nameMatches(m.name ?? m.runId, opts.nameQuery)) {
+    return [];
   }
   if (
     opts.durationFilter &&
-    durationMatches(m.durationMs, opts.durationFilter)
+    !durationMatches(m.durationMs, opts.durationFilter)
   ) {
-    fields.push("run.durationMs");
+    return [];
   }
 
-  if (fields.length === 0) return out;
+  const fields: string[] = [];
+  if (opts.statusFilter) fields.push("run.status");
+  if (opts.nameQuery) fields.push("run.name");
+  if (opts.durationFilter) fields.push("run.durationMs");
+  if (fields.length === 0) return [];
 
-  out.push({
-    runId: m.runId,
-    runName: m.name,
-    runStatus: m.status,
-    timestamp: m.startedAt,
-    durationMs: m.durationMs,
-    matchReason: `run match: ${fields.join(", ")}`,
-    matchedFields: fields,
-    filePath: m.filePath,
-  });
-  return out;
+  return [
+    {
+      runId: m.runId,
+      runName: m.name,
+      runStatus: m.status,
+      timestamp: m.startedAt,
+      durationMs: m.durationMs,
+      matchReason: `run match: ${fields.join(", ")}`,
+      matchedFields: fields,
+      filePath: m.filePath,
+    },
+  ];
 }
 
 function matchStepLevel(

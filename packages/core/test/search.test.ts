@@ -32,6 +32,33 @@ describe("searchTraces", () => {
     expect(results.some((r) => r.runId === "minimal-error")).toBe(true);
   });
 
+  it("applies --name and --status conjunctively at run level (#323)", async () => {
+    const metas = [
+      await extractMetadata(path.join(fixturesDir, "minimal-error.jsonl")),
+      await extractMetadata(path.join(fixturesDir, "minimal-success.jsonl")),
+    ];
+    const mismatched = await searchTraces(metas, {
+      traceDir: fixturesDir,
+      name: "definitely_not_matching_xyz",
+      status: "error",
+    });
+    expect(mismatched).toEqual([]);
+
+    const matched = await searchTraces(metas, {
+      traceDir: fixturesDir,
+      name: "minimal-error",
+      status: "error",
+    });
+    expect(matched.some((r) => r.runId === "minimal-error")).toBe(true);
+    expect(
+      matched.every(
+        (r) =>
+          r.runStatus === "error" &&
+          (r.runName ?? r.runId).toLowerCase().includes("minimal-error"),
+      ),
+    ).toBe(true);
+  });
+
   it("finds tool steps by type", async () => {
     const metas = [
       await extractMetadata(path.join(fixturesDir, "tool-with-io.jsonl")),
