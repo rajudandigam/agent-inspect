@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { isCredentialSensitiveKey } from "./sensitive-key.js";
+import { valueContainsKeyValueSecret } from "./key-value-secret.js";
 
 export type RedactionProfile = "local" | "share" | "strict";
 
@@ -336,6 +337,17 @@ const credentialDetectors: readonly RedactionDetector[] = [
     severity: "error",
   }),
   {
+    id: "value.keyValueSecret",
+    severity: "error",
+    matchKind: "value",
+    detect(input) {
+      if (typeof input.value !== "string") return [];
+      return valueContainsKeyValueSecret(input.value)
+        ? [{ action: "replace", severity: "error", matchKind: "value" }]
+        : [];
+    },
+  },
+  {
     id: "value.creditCard",
     severity: "error",
     matchKind: "value",
@@ -636,3 +648,10 @@ export function createRedactor(options?: RedactorOptions): Redactor {
 export function redact<T = unknown>(value: T, options?: RedactOptions): RedactionResult<T> {
   return createRedactor(options).redact(value);
 }
+
+export {
+  KEY_VALUE_SECRET_PATTERN,
+  KEY_VALUE_SECRET_PATTERN_SOURCE,
+  valueContainsKeyValueSecret,
+} from "./key-value-secret.js";
+

@@ -4,7 +4,11 @@
 
 AgentInspect traces, log-ingest outputs, and exports are local files. They may still contain sensitive metadata that you attached manually, collected from logs, or included through optional preview settings. Use this checklist before sharing an artifact in a GitHub issue, Discussion, PR, support thread, or public post.
 
-This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **key-based safeguards**, not compliance-grade DLP.
+This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **best-effort transformation**, not compliance-grade DLP or a safety certification. Always finish with `verify-safe` before sharing.
+
+Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and require human review. Org-specific patterns need programmatic custom detectors today; a bounded local CLI policy is proposed separately and is not yet supported.
+
+`strict` is a stricter **rule set** (more keys), not a promise that every input produces bytes different from `share`.
 
 ## Quick presets (v1.3.0+)
 

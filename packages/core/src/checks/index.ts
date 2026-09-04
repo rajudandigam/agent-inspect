@@ -675,7 +675,12 @@ const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [
   { id: "openai-key", pattern: /sk-[A-Za-z0-9_-]{16,}/ },
   { id: "aws-access-key", pattern: /AKIA[0-9A-Z]{16}/ },
   { id: "github-token", pattern: /gh[opsu]_[A-Za-z0-9_]{20,}/ },
-  { id: "key-value-secret", pattern: /(api[_-]?key|token|password|secret)=\S{8,}/i },
+  // Keep in sync with packages/redact/src/key-value-secret.ts (KEY_VALUE_SECRET_PATTERN_SOURCE).
+  {
+    id: "key-value-secret",
+    pattern:
+      /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=([^\s"'\\]{8,})/i,
+  },
 ];
 
 type EventValueEntry = {

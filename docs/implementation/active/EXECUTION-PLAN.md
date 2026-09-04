@@ -37,8 +37,8 @@
 
 | Chunk | Status |
 | --- | --- |
-| `6.17.7-0-authorize` | in progress |
-| `6.17.7-1-p0-key-value-redact` | pending |
+| `6.17.7-0-authorize` | done (#332) |
+| `6.17.7-1-p0-key-value-redact` | in progress (#327) |
 | `6.17.7-2-observe-forbid-tool-dx` | pending |
 | `6.17.7-3-land-325` | pending |
 | `6.17.7-4-publish` | pending |

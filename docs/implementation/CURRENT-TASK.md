@@ -5,8 +5,8 @@ executionMode: maintainer-reviewed
 namedTrain: agentinspect-feedback-integrity-v6.17.5-to-v6.22
 currentTrain: v6.17.7-redaction-dx-evidence
 trainStatus: in-progress
-currentChunk: chunk-0-authorize
-nextAction: "Chunk 1 — P0 high-confidence key-value credential redaction parity (issue A); leave Version Packages #326 open until P0 + DX + #325 land"
+currentChunk: chunk-1-p0-key-value-redact
+nextAction: "Chunk 2 — observe docs + check --forbid-tool alias; leave #326 open"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/EXECUTION-PLAN.md
 pendingManualGate: ""

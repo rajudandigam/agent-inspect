@@ -92,9 +92,34 @@ Overrides are **opt-in**, **local**, and must not be framed as “making the pro
 ### Allowed override patterns
 
 1. **Extra sensitive keys** via `@agent-inspect/redact` `extraKeys` / `createRedactor({ extraKeys: [...] })` when your framework uses custom attribute names.
-2. **Custom detectors** via `detectors: [myDetector]` on `redact` / `createRedactor` for org-specific token shapes (keep detectors from emitting matched values into logs).
+2. **Custom detectors** via `detectors: [myDetector]` on `redact` / `createRedactor` for org-specific token shapes (keep detectors from emitting matched values into logs). Example (synthetic only):
+
+```ts
+import { redact, type RedactionDetector } from "@agent-inspect/redact";
+
+const houseDetector: RedactionDetector = {
+  id: "custom.houseCredential",
+  severity: "error",
+  matchKind: "value",
+  detect({ value }) {
+    if (typeof value !== "string") return [];
+    return /^house_credential=[A-Za-z0-9_-]{12,}$/.test(value)
+      ? [{ action: "replace" }]
+      : [];
+  },
+};
+
+redact(
+  { note: "house_credential=syntheticOnlyValue" },
+  { detectors: [houseDetector] },
+);
+```
+
+CLI custom policy files are **not** supported yet. Do not put secrets on the command line.
 3. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
 4. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
+
+High-confidence built-in credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in redaction profiles. Context-sensitive findings such as private filesystem paths may remain verification-only when automatic erasure would create excessive false positives or destroy legitimate debugging context. `redact` remains best-effort; `verify-safe` remains the final automated local assessment before sharing.
 
 ### Disallowed
 

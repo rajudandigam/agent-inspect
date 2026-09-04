@@ -85,4 +85,27 @@ describe("redact command", () => {
       redactCommand("-", {}, stdinFrom("{\"token\":\"secret\"}\nnot-json-secret\n")),
     ).rejects.toThrow("Input is not valid JSON or JSONL at line 2.");
   });
+
+  it("redacts high-confidence key/value credentials (#327)", async () => {
+    const file = await writeTrace(
+      tmp,
+      `${JSON.stringify({
+        schemaVersion: "0.2",
+        eventId: "event-kv",
+        runId: "run-kv-secret",
+        attributes: {
+          note: "internal_token=synthetic-house-secret-123456",
+          maxTokens: 4096,
+          lookalike: "secret=false",
+        },
+      })}\n`,
+    );
+    const output = path.join(tmp, "share.jsonl");
+    await redactCommand(file, { profile: "share", output });
+    const redacted = await readFile(output, "utf-8");
+    expect(redacted).toContain("[REDACTED]");
+    expect(redacted).not.toContain("synthetic-house-secret-123456");
+    expect(redacted).toContain("4096");
+    expect(redacted).toContain("secret=false");
+  });
 });

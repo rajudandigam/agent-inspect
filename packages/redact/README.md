@@ -37,6 +37,10 @@ console.log(result.value, result.findings);
 
 - Pure local transformation; no network
 - Profiles: `local` · `share` · `strict`
+- Redaction is best-effort, not a safety certification — run `verify-safe` before sharing
+- High-confidence credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in profiles
+- Context-sensitive findings may still require review; CLI custom policies are not yet supported (use programmatic `detectors`)
+- `strict` adds more key rules; it does not guarantee different bytes from `share` on every input
 
 ## API
 

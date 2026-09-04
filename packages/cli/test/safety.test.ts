@@ -156,6 +156,41 @@ describe("scan and verify-safe commands", () => {
     expect(verified.redactionSummary?.findings).toBeGreaterThan(0);
   });
 
+  it("redacts key/value credentials so artifact verify-safe no longer reports key-value-secret (#327)", async () => {
+    const secret = "internal_token=synthetic-house-secret-123456";
+    const file = await writeTrace(
+      tmp,
+      "kv-secret.jsonl",
+      jsonl(
+        event("event-a", {
+          attributes: {
+            note: secret,
+            pathHint: "/Users/synthetic/.ssh/id_rsa",
+          },
+        }),
+      ),
+    );
+
+    const scan = await runSafety(scanCommand, file);
+    expect(scan.findings?.some((f) => f.message?.includes("key-value-secret"))).toBe(true);
+
+    const verified = await runSafety(verifySafeCommand, file);
+    const artifactFindings = JSON.stringify(verified.artifactAssessment ?? verified);
+    expect(artifactFindings).not.toContain("synthetic-house-secret-123456");
+    expect(JSON.stringify(verified.findings ?? [])).not.toContain(
+      "synthetic-house-secret-123456",
+    );
+    // Path findings may remain verifier-only; credential KV must not remain on artifact.
+    const kvStillPresent = (verified.findings ?? []).some(
+      (f) =>
+        f.ruleId === "safety.secretPattern" &&
+        (f.message?.includes("key-value-secret") ?? false),
+    );
+    // After share redaction, verify-safe findings are from the artifact assessment path.
+    expect(verified.redactionSummary?.findings).toBeGreaterThan(0);
+    expect(kvStillPresent).toBe(false);
+  });
+
   it("explains findings without leaking matched values", async () => {
     const secret = "sk-explainSecretValue1234567890";
     const file = await writeTrace(
