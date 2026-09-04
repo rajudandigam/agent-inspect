@@ -40,9 +40,9 @@
 | `6.17.7-0-authorize` | done (#332) |
 | `6.17.7-1-p0-key-value-redact` | done (#333) |
 | `6.17.7-2-observe-forbid-tool-dx` | done (#334) |
-| `6.17.7-3-land-325` | in progress |
-| `6.17.7-4-publish` | pending |
+| `6.17.7-3-land-325` | done (#335) |
+| `6.17.7-4-publish` | done (#326 Version Packages; Trusted Publish in flight / verify npm) |
 
 ## Stop rule
 
-Do **not** merge Version Packages #326 or run local `changeset publish` / `npm publish` until chunks 1–3 are on `main` and the full release gate is green.
+Version Packages #326 merged. Confirm npm tags/releases for `6.17.7`, then hand off to 6.17.8 queue health (`6178-622-QUEUE.md`).
