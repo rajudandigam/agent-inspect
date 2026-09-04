@@ -1,0 +1,14 @@
+{
+  "name": "agent-inspect-recipe-reproducible-repair-evidence",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/index.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}
