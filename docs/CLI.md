@@ -444,6 +444,8 @@ Options:
 - `--dir <path>`: trace directory for run-id lookup
 - `--profile <local|share|strict>`: redaction profile (default `share`)
 - `-o, --output <path>`: write redacted content to a file
+- `--policy <path>`: local bounded redaction policy JSON file (see [SAFETY-POLICY.md](SAFETY-POLICY.md))
+- `--fail-on-residual`: exit non-zero when the redacted copy still has residual safety findings
 - `--json`: print deterministic JSON wrapper with findings
 
 Examples:
@@ -451,7 +453,39 @@ Examples:
 ```bash
 npx agent-inspect redact trace.jsonl --profile share --json
 npx agent-inspect redact trace.jsonl --profile strict -o trace.share.jsonl
+npx agent-inspect redact trace.jsonl --policy ./agent-inspect.redaction.json --json
+npx agent-inspect redact trace.jsonl --profile share --fail-on-residual -o trace.share.jsonl
 ```
+
+#### Residual safety (6.18+)
+
+`redact` produces a derived copy; it never certifies that the copy is safe to share. Every run assesses what the local safety pipeline still finds in the redacted output:
+
+```json
+{
+  "residualAssessment": {
+    "status": "UNSAFE",
+    "basis": "supported-trace",
+    "findingCount": 2,
+    "highConfidenceFindingCount": 1,
+    "codes": ["safety.rawPrompt"],
+    "note": "Best-effort local residual assessment of the redacted copy; not a certification that sharing is safe."
+  }
+}
+```
+
+- `status`: `SAFE` · `SAFE_WITH_WARNINGS` · `UNSAFE` · `UNKNOWN`.
+- `basis`: `supported-trace` when the redacted output re-opens as a trace and the full `verify-safe` rule set runs; `detector-only` for arbitrary JSON/JSONL that is not a supported trace, where only redaction detectors run and context-sensitive rules (raw content, oversized attributes) are **not** evaluated; `unavailable` when nothing could be assessed.
+- `codes`: sorted rule/detector identifiers. Matched secret or PII values are never included.
+
+Behavior is backward compatible:
+
+- Default stdout/file output and the default exit code are unchanged.
+- `--json` adds the `residualAssessment` field (and `policy` when `--policy` is used); existing fields keep their meaning.
+- Human mode prints one concise stderr warning only when the redacted copy is `UNSAFE` or `UNKNOWN`. Warning-level residue (for example a sensitive key name whose value is now a placeholder) stays in JSON output.
+- `--fail-on-residual` is the only way to change the exit code: `1` for `UNSAFE`, `2` for `UNKNOWN`, `0` otherwise.
+
+`verify-safe` remains the final local assessment before sharing.
 
 Recipe: [redact-share-safe-file](../examples/recipes/redact-share-safe-file/README.md).
 
@@ -482,6 +516,7 @@ Options:
 - `--run <run-id>`: select a run when input contains multiple runs
 - `--json`: print deterministic JSON safety result
 - `--explain`: explain each finding (detector/path/category/confidence/redaction/override/bundle gate) without printing matched secret values
+- `--policy <path>` (`verify-safe` only): local bounded redaction policy JSON file, applied to the same detector pipeline `redact --policy` uses (see [SAFETY-POLICY.md](SAFETY-POLICY.md))
 - `--max-string-length <number>`: unsafe threshold for string values
 - `--max-array-length <number>`: unsafe threshold for array values
 - `--max-object-keys <number>`: unsafe threshold for object key counts

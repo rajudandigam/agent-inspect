@@ -26,7 +26,7 @@ import {
 import { createEvidenceCiArtifacts } from "@agent-inspect/core/reporters";
 
 import { version as packageVersion } from "../../../package.json";
-import { redactTraceContent } from "./redact.js";
+import { redactTraceContent } from "./redact-content.js";
 import { inputFromTarget } from "./trace-input.js";
 
 export interface ArtifactsCommandOptions {

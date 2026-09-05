@@ -13,7 +13,7 @@ import type { TraceCheckResult } from "@agent-inspect/core/checks";
 import type { RedactionProfile } from "@agent-inspect/redact";
 
 import { version as packageVersion } from "../../../package.json";
-import { redactTraceContent } from "./redact.js";
+import { redactTraceContent } from "./redact-content.js";
 
 export type EvidenceOnMode = "fail" | "always" | "never";
 export type EvidenceEmitFormat = "directory" | "html" | "zip";

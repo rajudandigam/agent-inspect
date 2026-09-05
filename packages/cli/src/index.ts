@@ -631,12 +631,19 @@ export function createCliProgram(): Command {
     .option("--run <run-id>", "select a run when the trace contains multiple runs")
     .option("--json", "print deterministic JSON safety result")
     .option("--explain", "explain each finding (path, confidence, redaction, override, bundle gate)")
+    .option("--policy <path>", "local bounded redaction policy JSON file")
     .option("--max-string-length <number>", "unsafe threshold for string values")
     .option("--max-array-length <number>", "unsafe threshold for array values")
     .option("--max-object-keys <number>", "unsafe threshold for object key counts")
     .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
-    .action((target: string, opts: SafetyCommandOptions) => {
-      runCommand(() => verifySafeCommand(target, opts));
+    .action((target: string, opts: Omit<SafetyCommandOptions, "policy"> & { policy?: string }) => {
+      const { policy, ...rest } = opts;
+      runCommand(() =>
+        verifySafeCommand(target, {
+          ...rest,
+          ...(policy !== undefined ? { policyPath: policy } : {}),
+        }),
+      );
     });
 
   program
@@ -1001,6 +1008,11 @@ export function createCliProgram(): Command {
     )
     .option("-o, --output <path>", "write redacted content to a file")
     .option("--out <path>", "alias for --output")
+    .option("--policy <path>", "local bounded redaction policy JSON file")
+    .option(
+      "--fail-on-residual",
+      "exit non-zero when the redacted copy still has residual safety findings",
+    )
     .option("--json", "print deterministic JSON wrapper with findings")
     .action((target: string, opts: RedactCommandOptions) => {
       runCommand(() => redactCommand(target, opts));

@@ -115,9 +115,9 @@ redact(
 );
 ```
 
-CLI custom policy files are **not** supported yet. Do not put secrets on the command line.
-3. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
-4. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
+3. **Bounded local CLI policy** via `--policy ./agent-inspect.redaction.json` on `redact` and `verify-safe` (6.18+, experimental). See [Bounded local CLI policy](#bounded-local-cli-policy-618) below. Do not put secrets on the command line.
+4. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
+5. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
 
 High-confidence built-in credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in redaction profiles. Context-sensitive findings such as private filesystem paths may remain verification-only when automatic erasure would create excessive false positives or destroy legitimate debugging context. `redact` remains best-effort; `verify-safe` remains the final automated local assessment before sharing.
 
@@ -127,6 +127,53 @@ High-confidence built-in credentials (including bounded `token=` / `api_key=` / 
 - Disabling detectors globally “to make CI green”
 - Printing matched secret/PII values in CI logs or MCP tool output
 - Claiming overrides produce certified / compliant / guaranteed-safe artifacts
+
+### Bounded local CLI policy (6.18+)
+
+**Status:** experimental, additive. Wired into `agent-inspect redact --policy` and `agent-inspect verify-safe --policy`.
+
+A policy is a **local JSON file**. It only **adds** sensitive keys and bounded value patterns on top of the built-in profiles. It can never remove or weaken built-in high-confidence protection.
+
+```json
+{
+  "policyVersion": 1,
+  "sensitiveKeys": ["houseSecret"],
+  "valuePatterns": [
+    { "id": "house-prefix", "type": "prefix", "prefix": "hsk_", "severity": "error" },
+    { "id": "house-kv", "type": "key-value", "key": "house_token", "minSecretLength": 12 }
+  ]
+}
+```
+
+Pattern types (no raw regex is accepted):
+
+| Type | Matches |
+|------|---------|
+| `prefix` | a token starting with `prefix` at a word boundary, followed by at least `minSecretLength` secret-like characters |
+| `key-value` | `key=value` or `key: value` inside a string, where the value has at least `minSecretLength` secret-like characters |
+
+Per-rule fields: `id` (required, `[A-Za-z0-9._-]`), `type`, `prefix` or `key`, optional `minSecretLength` (default `8`), optional `severity` (`warning` default, or `error`).
+
+Bounds and rejections:
+
+| Bound | Limit |
+|-------|-------|
+| policy file size | 64 KiB |
+| total rules (`sensitiveKeys` + `valuePatterns`) | 200 |
+| `sensitiveKeys` / `key` length | 128 |
+| `prefix` length | 3–64 |
+| `id` length | 64 |
+| `minSecretLength` | 1–256 |
+
+The loader rejects unknown top-level and per-rule fields, a `policyVersion` other than `1`, duplicate rule ids, non-ASCII identifier characters, malformed JSON, directories, and oversized files. There is **no** JavaScript execution, **no** remote policy URL, and **no** environment interpolation — `${HOME}`-style text is literal and fails identifier validation. Matching is a bounded linear scan with no user-supplied regex, so a policy cannot introduce catastrophic backtracking.
+
+Policy detectors appear as `policy.<id>` in `redact --json` findings and in `verify-safe` `redactionSummary.detectors`. Both commands compile the same policy and apply it to the same detector pipeline. Matched values are never printed.
+
+Invalid policies fail loudly: `redact` exits `1` with a `--policy …` message; `verify-safe` reports `AI_SAFETY_INVALID_ARGUMENTS` with status `UNKNOWN`.
+
+### Residual safety after `redact` (6.18+)
+
+`redact` writes a derived copy and never mutates the source. It does **not** certify that the copy is safe to share. Each run reports a `residualAssessment` describing what the local safety pipeline still finds in the redacted output, so operators know whether `verify-safe` will still flag it. Default output and exit codes are unchanged; `--fail-on-residual` is the explicit opt-in that turns residual risk into a non-zero exit. See [CLI.md](CLI.md#611-redact) for the field contract.
 
 ### Explain + review loop
 
