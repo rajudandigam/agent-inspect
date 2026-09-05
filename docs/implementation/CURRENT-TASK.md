@@ -26,7 +26,8 @@ pendingManualGate: ""
 
 ## Later (authorized after 6.17.8)
 
-- **6.18.0** — differentiation starter, #307/#213, #311 preview, #328/#329, #330, capture-path docs, #295 scope
+- **6.18.0** — differentiation starter, #307/#213, #328/#329, #330, capture-path docs, #295 scope
+  - #311 shared adapter preview capture: implemented (changeset `618-adapter-preview-parity`); close the issue after 6.18.0 publishes
 - **6.19.0** — TraceReader authoring, derived failure roles, architectural-intent interop, prior-context refs
 - **6.20–6.22** — roadmap/labels only in this run
 

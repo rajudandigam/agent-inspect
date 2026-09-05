@@ -206,12 +206,13 @@ import { agentInspect } from "@agent-inspect/ai-sdk";
   - **`writer`**: optional explicit local `TraceWriter` for tests, recipes, and controlled runtime integration.
   - **`traceDir`**: optional local directory that creates a file writer inside the adapter package.
   - **`runName`**: optional local run name.
-  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` currently emits a diagnostic and falls back to metadata-only.
-  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; when preview capture is unsupported or not selected, they emit diagnostics instead of silently doing nothing.
-  - **`getDiagnostics()`**: exposes isolated adapter write, lifecycle/configuration, flush, and close failures without throwing into AI SDK callbacks.
+  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` persists bounded, redacted `*Preview` attributes via the shared adapter capture contract.
+  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; redaction runs before persistence and `maxPreviewChars` is a hard bound (further capped by `share` / `strict` profiles).
+  - **`onDiagnostic`**: optional local listener for capture diagnostics (`AI_CAPTURE_FIELD_UNAVAILABLE`, `AI_CAPTURE_PREVIEW_TRUNCATED`, `AI_CAPTURE_PREVIEW_REDACTED`). Listener failures are isolated.
+  - **`getDiagnostics()`**: exposes isolated adapter write, lifecycle/configuration, flush, and close failures without throwing into AI SDK callbacks, plus a `capture` block with the resolved capture mode and preview counters.
   - **`getWriterStats()`**, **`flush()`**, and **`close()`**: explicit writer lifecycle helpers. Failures are captured in diagnostics.
 
-Every AI SDK call using the adapter must keep telemetry local and metadata-only:
+Every AI SDK call using the adapter must keep telemetry local:
 
 ```ts
 experimental_telemetry: {
@@ -222,7 +223,7 @@ experimental_telemetry: {
 }
 ```
 
-The adapter records local v0.2 persisted events for run, LLM step, and tool lifecycle metadata. It does not persist raw prompts, messages, generated text, stream chunks, tool inputs, tool outputs, headers, request bodies, response bodies, or user `experimental_context`. Unsupported preview capture options are explicit diagnostics and keep this metadata-only behavior.
+The adapter records local v0.2 persisted events for run, LLM step, and tool lifecycle metadata. In the default `metadata-only` mode it does not persist raw prompts, messages, generated text, stream chunks, tool inputs, tool outputs, headers, request bodies, response bodies, or user `experimental_context`. With `capture: "preview"`, prompt, message, text, tool input, and tool output fields are persisted as bounded, redacted previews; headers, request bodies, response bodies, and `experimental_context` are still never previewed. See [ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview).
 
 No network writer, OpenTelemetry exporter, provider wrapper, or global monkey-patch is part of this package.
 
@@ -343,9 +344,10 @@ import { agentInspectProcessor } from "@agent-inspect/openai-agents";
   - **`writer`**: optional explicit local `TraceWriter` for tests, recipes, and controlled runtime integration.
   - **`traceDir`**: optional local directory that creates a file writer inside the adapter package.
   - **`workflowName`**: optional local run name overriding the SDK trace name.
-  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` currently emits a diagnostic and falls back to metadata-only.
-  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; when preview capture is unsupported or not selected, they emit diagnostics instead of silently doing nothing.
-  - **`getDiagnostics()`**: exposes isolated processor write, lifecycle/configuration, flush, and shutdown failures without throwing into OpenAI Agents callbacks.
+  - **`capture`**: `"metadata-only"` (default) or `"preview"`; `preview` persists bounded, redacted `inputPreview` / `outputPreview` span attributes via the shared adapter capture contract.
+  - **`redactionProfile`** and **`maxPreviewChars`**: preview-only knobs; redaction runs before persistence and `maxPreviewChars` is a hard bound (further capped by `share` / `strict` profiles).
+  - **`onDiagnostic`**: optional local listener for capture diagnostics (`AI_CAPTURE_FIELD_UNAVAILABLE`, `AI_CAPTURE_PREVIEW_TRUNCATED`, `AI_CAPTURE_PREVIEW_REDACTED`). Listener failures are isolated.
+  - **`getDiagnostics()`**: exposes isolated processor write, lifecycle/configuration, flush, and shutdown failures without throwing into OpenAI Agents callbacks, plus a `capture` block with the resolved capture mode and preview counters.
   - **`getWriterStats()`**, **`forceFlush()`**, and **`shutdown()`**: explicit writer lifecycle helpers. Failures are captured in diagnostics.
 
 Safe future usage must replace processors explicitly:
@@ -356,7 +358,7 @@ setTraceProcessors([agentInspectProcessor({ traceDir: "./.agent-inspect" })]);
 
 Do not use `addTraceProcessor()` as the default AgentInspect path; that leaves existing/default processors in place and can preserve backend export behavior in server runtimes.
 
-The processor records local v0.2 persisted events for trace/run, agent, generation/response, function/tool, handoff, guardrail, MCP tools, custom, transcription, and speech span metadata where safely representable. It does not persist raw prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, or hosted tool payloads by default.
+The processor records local v0.2 persisted events for trace/run, agent, generation/response, function/tool, handoff, guardrail, MCP tools, custom, transcription, and speech span metadata where safely representable. It does not persist raw prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, or hosted tool payloads by default. With `capture: "preview"`, span input/output fields are persisted as bounded, redacted previews; trace exporter credentials, headers, and request/response bodies are still never previewed. See [ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview).
 
 ## 15. Experimental persisted-event foundation (v1.2.0)
 

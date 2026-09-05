@@ -14,7 +14,10 @@ import { agentInspect } from "@agent-inspect/ai-sdk";
 import {
   buildRunWhatSummary,
 } from "agent-inspect/advanced";
-import type { InspectNode } from "agent-inspect/advanced";
+import type {
+  AdapterCaptureDiagnostic,
+  InspectNode,
+} from "agent-inspect/advanced";
 import {
   persistedInspectEventsToRunTrees,
   persistedInspectEventsToTraceEvents,
@@ -233,6 +236,15 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       lifecycleWarnings: 0,
       flushFailures: 0,
       closeFailures: 0,
+      capture: {
+        capture: "metadata-only",
+        redactionProfile: "local",
+        maxPreviewChars: 200,
+        previewFieldsCaptured: 0,
+        previewFieldsUnavailable: 0,
+        previewFieldsTruncated: 0,
+        previewFieldsRedacted: 0,
+      },
     });
   });
 
@@ -502,20 +514,20 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     expectNoRawText(eventsB, "raw parallel answer b");
   });
 
-  it("falls back from preview capture with explicit diagnostics and no raw text", async () => {
+  it("persists bounded preview attributes when capture is preview (#311)", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const diagnostics: AdapterCaptureDiagnostic[] = [];
     const writer = memoryWriter();
     const integration = agentInspect({
       writer,
-      runName: "preview-fallback-fixture",
+      runName: "preview-capture-fixture",
       capture: "preview",
-      redactionProfile: "strict",
-      maxPreviewChars: 8,
+      maxPreviewChars: 32,
+      onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
     });
 
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(String(warnSpy.mock.calls[0]?.[0])).toContain("AI_ADAPTER_PREVIEW_NOT_AVAILABLE");
-    expect(String(warnSpy.mock.calls[0]?.[0])).toContain("[agent-inspect:ai-sdk]");
+    // Preview is implemented, so the removed capability warning must not fire.
+    expect(warnSpy).not.toHaveBeenCalled();
 
     await generateText({
       model: new MockLanguageModelV3({
@@ -542,8 +554,7 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       },
     });
 
-    // Lifecycle callbacks must not repeat the capability warning.
-    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
 
     const events = writer.getEvents();
@@ -555,20 +566,106 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       ["RUN", "ok"],
     ]);
     expect(events[0]?.attributes).toMatchObject({
-      capture: "metadata-only",
-      requestedCapture: "preview",
-      previewCaptureSupported: false,
-      redactionProfile: "strict",
-      maxPreviewChars: 8,
+      capture: "preview",
+      previewCaptureSupported: true,
+      maxPreviewChars: 32,
     });
+    // The persist path normalizes an absent optional attribute to null.
+    expect(events[0]?.attributes?.requestedCapture).toBeNull();
+    expect(String(events[0]?.attributes?.inputPreview)).toContain(
+      "raw preview prompt",
+    );
+    expect(String(events[3]?.attributes?.outputPreview)).toContain(
+      "raw preview generated answer",
+    );
+
+    for (const event of events) {
+      for (const [key, value] of Object.entries(event.attributes ?? {})) {
+        if (!key.toLowerCase().includes("preview")) continue;
+        if (typeof value !== "string") continue;
+        expect(value.length).toBeLessThanOrEqual(33);
+      }
+    }
+
     expect(integration.getDiagnostics()).toMatchObject({
       writeFailures: 0,
-      lifecycleWarnings: 1,
-      lastWarning:
-        "AI SDK preview capture is not supported yet; falling back to metadata-only capture. Unsupported options: capture, redactionProfile, maxPreviewChars.",
+      lifecycleWarnings: 0,
+      capture: {
+        capture: "preview",
+        redactionProfile: "local",
+        maxPreviewChars: 32,
+      },
     });
-    expectNoRawText(events, "raw preview prompt");
-    expectNoRawText(events, "raw preview generated answer");
+    expect(integration.getDiagnostics().capture.previewFieldsCaptured).toBeGreaterThan(0);
+    expect(diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it("reports AI_CAPTURE_FIELD_UNAVAILABLE for unsourceable preview fields (#311)", async () => {
+    const diagnostics: AdapterCaptureDiagnostic[] = [];
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "preview-unavailable-fixture",
+      capture: "preview",
+      onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
+    });
+
+    await integration.onStart?.({
+      ...startEvent(),
+      prompt: undefined,
+      messages: undefined,
+    } as unknown as OnStartEvent);
+
+    expect(diagnostics.map((entry) => [entry.code, entry.field])).toEqual([
+      ["AI_CAPTURE_FIELD_UNAVAILABLE", "inputPreview"],
+    ]);
+    expect(writer.getEvents()[0]?.attributes?.inputPreview).toBeUndefined();
+    expect(integration.getDiagnostics().capture).toMatchObject({
+      previewFieldsUnavailable: 1,
+      lastDiagnosticCode: "AI_CAPTURE_FIELD_UNAVAILABLE",
+    });
+  });
+
+  it("redacts credential-shaped keys inside preview attributes (#311)", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "preview-redaction-fixture",
+      capture: "preview",
+      maxPreviewChars: 400,
+    });
+
+    await integration.onStart?.(startEvent());
+    await integration.onStepStart?.(stepStartEvent());
+    await integration.onToolCallStart?.(toolStartEvent());
+
+    const toolStart = writer
+      .getEvents()
+      .find((event) => event.kind === "TOOL");
+
+    expect(String(toolStart?.attributes?.inputPreview)).toContain("[REDACTED]");
+    expectNoRawText(writer.getEvents(), "raw tool input");
+    expect(integration.getDiagnostics().capture.previewFieldsRedacted).toBeGreaterThan(0);
+  });
+
+  it("keeps preview attributes redacted and short under the strict profile (#311)", async () => {
+    const writer = memoryWriter();
+    const integration = agentInspect({
+      writer,
+      runName: "preview-strict-fixture",
+      capture: "preview",
+      redactionProfile: "strict",
+      maxPreviewChars: 500,
+    });
+
+    await integration.onStart?.(startEvent());
+
+    const runStart = writer.getEvents()[0];
+
+    // Strict redacts whole preview fields and caps the bound at 80 characters.
+    expect(runStart?.attributes?.inputPreview).toBe('"[REDACTED]"');
+    expect(integration.getDiagnostics().capture.maxPreviewChars).toBe(80);
+    expectNoRawText(writer.getEvents(), "raw callback prompt");
   });
 
   it("records streamText run and LLM metadata after local stream consumption", async () => {
@@ -806,7 +903,7 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
     await expect(integration.onStart?.(startEvent())).resolves.toBeUndefined();
     await expect(integration.onToolCallStart?.(toolStartEvent())).resolves.toBeUndefined();
 
-    expect(integration.getDiagnostics()).toEqual({
+    expect(integration.getDiagnostics()).toMatchObject({
       writeFailures: 2,
       lifecycleWarnings: 1,
       flushFailures: 0,

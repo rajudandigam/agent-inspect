@@ -149,7 +149,9 @@
   "experimentalSubpaths": [],
   "subpaths": {
     "advanced": [
+      "ADAPTER_CAPTURE_DIAGNOSTIC_CODES",
       "COHORT_METRIC_IDS",
+      "DEFAULT_ADAPTER_MAX_PREVIEW_CHARS",
       "DEFAULT_MAX_EVENT_BYTES",
       "DEFAULT_MAX_METADATA_VALUE_LENGTH",
       "DEFAULT_MAX_PREVIEW_LENGTH",
@@ -206,6 +208,7 @@
       "bundleRunAssetRelativePath",
       "collectTraceSchemaVersions",
       "compareCohortAggregates",
+      "createAdapterPreviewCapture",
       "createInspector",
       "createInspectorRuntime",
       "createRunId",
@@ -296,6 +299,7 @@
       "renderSuiteReportMarkdown",
       "renderTimeline",
       "renderTraceStats",
+      "resolveAdapterMaxPreviewChars",
       "resolveBundleRunIds",
       "resolveRedactionProfile",
       "resolveSuiteCaseTrace",
@@ -309,6 +313,7 @@
       "runWithStepContext",
       "sanitizeBundleRunId",
       "searchTraces",
+      "serializeAdapterPreview",
       "serializeEvent",
       "serializeEvidenceManifest",
       "sessionKeyForRun",

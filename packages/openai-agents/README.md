@@ -44,14 +44,15 @@ Use **`setTraceProcessors` replacement** for local-only mode. Avoid `addTracePro
 - Local JSONL files only
 - AgentInspect does not upload traces to OpenAI
 - Metadata-only by default
-- `capture: "preview"` is accepted for compatibility but currently falls back to metadata-only and emits one `AI_ADAPTER_PREVIEW_NOT_AVAILABLE` console warning per processor instance
+- `capture: "preview"` is opt-in and persists bounded `inputPreview` / `outputPreview` span attributes, redacted before they reach disk and truncated at `maxPreviewChars`; there is no full-content mode
+- Redaction is key-based, so a preview can still contain sensitive free text — run `agent-inspect redact` before sharing
 
 ## API
 
 | Export | Purpose |
 | ------ | ------- |
 | `agentInspectOpenAiAgents(options)` | `TracingProcessor` for local persistence |
-| `getDiagnostics()` | Warnings for misconfiguration |
+| `getDiagnostics()` | Warnings for misconfiguration plus resolved capture mode and preview counters |
 
 ## CLI
 
@@ -66,7 +67,8 @@ Use **`setTraceProcessors` replacement** for local-only mode. Avoid `addTracePro
 
 - **Duplicate export:** Using `addTraceProcessor` keeps SDK default exporter — use replacement mode for local-only
 - **Handoffs/sessions:** Mapped to run metadata; see docs for session IDs
-- **Preview mode warning:** `capture: "preview"` is not implemented yet; AgentInspect emits `AI_ADAPTER_PREVIEW_NOT_AVAILABLE` once and keeps metadata-only persistence
+- **Empty previews in preview mode:** the span type carries no payload field (handoff, guardrail, agent), or the SDK omitted it. Payload-bearing spans report `AI_CAPTURE_FIELD_UNAVAILABLE` through `onDiagnostic` and `getDiagnostics().capture`
+- **Previews look cut off:** they are bounded by `maxPreviewChars`, which the `share` and `strict` redaction profiles cap further
 
 
 ## Version

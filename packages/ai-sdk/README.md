@@ -52,7 +52,8 @@ const result = await generateText({
 - Writes JSONL under `.agent-inspect/` only
 - No network calls from AgentInspect
 - Default capture: metadata-only
-- `capture: "preview"` is accepted for compatibility but currently falls back to metadata-only and emits one `AI_ADAPTER_PREVIEW_NOT_AVAILABLE` console warning per integration instance
+- `capture: "preview"` is opt-in and persists bounded `*Preview` attributes, redacted before they reach disk and truncated at `maxPreviewChars`; there is no full-content mode
+- Redaction is key-based, so a preview can still contain sensitive free text — run `agent-inspect redact` before sharing
 
 ## API
 
@@ -61,7 +62,7 @@ const result = await generateText({
 | `agentInspect(options)` | Telemetry integration factory |
 | `getTelemetryHandlers()` | Spread into AI SDK call |
 | `getTelemetryMetadata()` | Safe metadata for telemetry block |
-| `getDiagnostics()` | Local warnings (e.g. preview mode) |
+| `getDiagnostics()` | Local warnings plus resolved capture mode and preview counters |
 
 ## CLI
 
@@ -76,7 +77,8 @@ const result = await generateText({
 ## Troubleshooting
 
 - **No trace events:** Ensure `experimental_telemetry.isEnabled: true` and handlers are spread
-- **Preview mode warning:** `capture: "preview"` is not implemented yet; AgentInspect emits `AI_ADAPTER_PREVIEW_NOT_AVAILABLE` once and keeps metadata-only persistence
+- **Empty previews in preview mode:** the AI SDK did not provide the field for that step. AgentInspect reports `AI_CAPTURE_FIELD_UNAVAILABLE` through `onDiagnostic` and `getDiagnostics().capture`
+- **Previews look cut off:** they are bounded by `maxPreviewChars`, which the `share` and `strict` redaction profiles cap further
 
 
 ## Version

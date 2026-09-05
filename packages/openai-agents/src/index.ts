@@ -5,7 +5,11 @@ import type {
   Trace,
   TracingProcessor,
 } from "@openai/agents";
+import { createAdapterPreviewCapture } from "agent-inspect/advanced";
 import type {
+  AdapterCaptureDiagnostics,
+  AdapterDiagnosticListener,
+  AdapterPreviewCapture,
   RedactionProfile,
 } from "agent-inspect/advanced";
 import type {
@@ -19,8 +23,10 @@ import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 /**
  * Experimental capture mode for the OpenAI Agents JS adapter.
  *
- * @experimental This package is part of the framework adapter train. `preview` is
- * currently rejected with diagnostics and falls back to metadata-only capture.
+ * `metadata-only` is the default. `preview` persists bounded, redacted span
+ * input/output preview attributes through the shared adapter capture helper.
+ *
+ * @experimental This package is part of the framework adapter train.
  */
 export type AgentInspectOpenAiAgentsCaptureMode = "metadata-only" | "preview";
 
@@ -50,26 +56,33 @@ export interface AgentInspectOpenAiAgentsOptions {
   /**
    * Capture policy. Defaults to metadata-only.
    *
-   * @experimental `preview` is not implemented yet; requesting it records a
-   * diagnostic warning and keeps metadata-only persistence.
+   * @experimental `preview` persists bounded, redacted span input/output
+   * previews. It never persists full span content.
    */
   capture?: AgentInspectOpenAiAgentsCaptureMode;
 
   /**
-   * Redaction profile for future preview capture.
+   * Redaction profile applied to preview attributes before persistence.
+   * `share` and `strict` also cap `maxPreviewChars`.
    *
-   * @experimental Currently diagnostic-only because the processor persists
-   * metadata summaries and never writes raw span content by default.
+   * @experimental Effective only when `capture: "preview"`.
    */
   redactionProfile?: RedactionProfile;
 
   /**
-   * Bounds future preview capture.
+   * Upper bound for each serialized preview attribute. Defaults to 200.
    *
-   * @experimental Currently diagnostic-only because `preview` falls back to
-   * metadata-only capture.
+   * @experimental Effective only when `capture: "preview"`.
    */
   maxPreviewChars?: number;
+
+  /**
+   * Receives bounded capture diagnostics such as
+   * `AI_CAPTURE_FIELD_UNAVAILABLE`. Listener failures are isolated.
+   *
+   * @experimental
+   */
+  onDiagnostic?: AdapterDiagnosticListener;
 }
 
 export interface AgentInspectOpenAiAgentsDiagnostics {
@@ -80,6 +93,8 @@ export interface AgentInspectOpenAiAgentsDiagnostics {
   lastError?: string;
   lastWarning?: string;
   runtimeMappingImplemented: true;
+  /** Shared preview-capture counters (`@experimental`). */
+  capture: AdapterCaptureDiagnostics;
 }
 
 export interface AgentInspectOpenAiAgentsProcessor extends TracingProcessor {
@@ -420,6 +435,41 @@ function spanOutputSummary(data: SpanData): unknown {
   }
 }
 
+/**
+ * Raw span fields eligible for bounded preview capture, keyed by the logical
+ * preview name. Span types without a payload concept return `{}` so preview
+ * mode does not report false "field unavailable" diagnostics for them.
+ */
+function spanPreviewSources(
+  data: SpanData,
+  phase: "start" | "end",
+): Record<string, unknown> {
+  const withPhase = (
+    input: unknown,
+    output: unknown,
+  ): Record<string, unknown> =>
+    phase === "start" ? { input } : { input, output };
+
+  switch (data.type) {
+    case "generation":
+      return withPhase(data.input, data.output);
+    case "function":
+      return withPhase(data.input, data.output);
+    case "response":
+      return withPhase(data._input, data._response);
+    case "transcription":
+      return withPhase(data.input.data, data.output);
+    case "speech":
+      return withPhase(data.input, data.output.data);
+    case "custom":
+      return { input: data.data };
+    case "speech_group":
+      return { input: data.input };
+    default:
+      return {};
+  }
+}
+
 function traceEventId(traceId: string): string {
   return `openai_agents_trace:${traceId}`;
 }
@@ -434,8 +484,12 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
 
   private readonly writer: TraceWriter | undefined;
   private readonly requestedCapture: AgentInspectOpenAiAgentsCaptureMode;
-  private readonly effectiveCapture: "metadata-only" = "metadata-only";
-  private readonly diagnostics: AgentInspectOpenAiAgentsDiagnostics = {
+  private readonly preview: AdapterPreviewCapture;
+  private readonly effectiveCapture: AgentInspectOpenAiAgentsCaptureMode;
+  private readonly diagnostics: Omit<
+    AgentInspectOpenAiAgentsDiagnostics,
+    "capture"
+  > = {
     writeFailures: 0,
     lifecycleWarnings: 0,
     flushFailures: 0,
@@ -448,17 +502,24 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
 
   constructor(private readonly options: AgentInspectOpenAiAgentsOptions) {
     this.requestedCapture = options.capture ?? "metadata-only";
+    this.preview = createAdapterPreviewCapture({
+      capture: this.requestedCapture,
+      redactionProfile: options.redactionProfile,
+      maxPreviewChars: options.maxPreviewChars,
+      onDiagnostic: options.onDiagnostic,
+    });
+    this.effectiveCapture = this.preview.capture;
     this.writer = options.writer ?? (options.traceDir ? fileWriter({ dir: options.traceDir }) : undefined);
     for (const key of [
       "options",
       "writer",
       "requestedCapture",
+      "preview",
       "effectiveCapture",
       "diagnostics",
       "activeTraces",
       "activeSpans",
       "closed",
-      "previewCapabilityWarned",
     ] as const) {
       Object.defineProperty(this, key, { enumerable: false });
     }
@@ -500,10 +561,15 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
             this.requestedCapture === this.effectiveCapture
               ? undefined
               : this.requestedCapture,
-          previewCaptureSupported:
-            this.requestedCapture === "preview" ? false : undefined,
-          redactionProfile: this.options.redactionProfile,
-          maxPreviewChars: normalizeMaxPreviewChars(this.options.maxPreviewChars),
+          previewCaptureSupported: true,
+          // Preview rows report the effective bound/profile, which the
+          // `share` and `strict` profiles can lower below the request.
+          redactionProfile: this.preview.previewEnabled
+            ? this.preview.redactionProfile
+            : this.options.redactionProfile,
+          maxPreviewChars: this.preview.previewEnabled
+            ? this.preview.maxPreviewChars
+            : normalizeMaxPreviewChars(this.options.maxPreviewChars),
           groupId: trace.groupId ?? undefined,
           metadataKeyCount: countRecordKeys(trace.metadata),
         },
@@ -593,6 +659,7 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
         attributes: {
           ...commonSpanAttributes(span),
           ...specificSpanAttributes(span.spanData),
+          ...this.previewAttributes(span, "start"),
         },
         inputSummary: spanInputSummary(span.spanData),
         tokenUsage: summarizeUsage(
@@ -643,6 +710,7 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
           ...specificSpanAttributes(span.spanData),
           legacyEvent: "step_completed",
           errorDataSummary: summarizeOptionalUnknown(span.error?.data),
+          ...this.previewAttributes(span, "end"),
         },
         inputSummary: spanInputSummary(span.spanData),
         outputSummary: spanOutputSummary(span.spanData),
@@ -684,7 +752,19 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
   }
 
   getDiagnostics(): AgentInspectOpenAiAgentsDiagnostics {
-    return { ...this.diagnostics };
+    return { ...this.diagnostics, capture: this.preview.getDiagnostics() };
+  }
+
+  /** Bounded preview attributes for one span phase (empty unless enabled). */
+  private previewAttributes(
+    span: Span<SpanData>,
+    phase: "start" | "end",
+  ): Record<string, unknown> {
+    if (!this.preview.previewEnabled) return {};
+    return this.preview.applyPreviewFields(
+      {},
+      spanPreviewSources(span.spanData, phase),
+    );
   }
 
   getWriterStats(): TraceWriterStats | undefined {
@@ -712,26 +792,12 @@ class AgentInspectOpenAiAgentsTracingProcessor implements AgentInspectOpenAiAgen
     this.diagnostics.lastWarning = message;
   }
 
-  private previewCapabilityWarned = false;
-
   private recordCaptureOptionWarnings(): void {
+    if (this.effectiveCapture === "preview") return;
+
     const previewOnlyOptions: string[] = [];
-    if (this.requestedCapture === "preview") previewOnlyOptions.push("capture");
     if (this.options.redactionProfile !== undefined) previewOnlyOptions.push("redactionProfile");
     if (this.options.maxPreviewChars !== undefined) previewOnlyOptions.push("maxPreviewChars");
-
-    if (this.requestedCapture === "preview") {
-      const message =
-        `AI_ADAPTER_PREVIEW_NOT_AVAILABLE: capture:"preview" was requested, but this adapter currently persists metadata-only. Effective capture: metadata-only. No preview content was written. See docs/ADAPTERS.md.`;
-      this.recordLifecycleWarning(
-        `OpenAI Agents preview capture is not supported yet; falling back to metadata-only capture. Unsupported options: ${previewOnlyOptions.join(", ")}.`,
-      );
-      if (!this.previewCapabilityWarned) {
-        this.previewCapabilityWarned = true;
-        console.warn(`[agent-inspect:openai-agents] ${message}`);
-      }
-      return;
-    }
 
     if (previewOnlyOptions.length > 0) {
       this.recordLifecycleWarning(

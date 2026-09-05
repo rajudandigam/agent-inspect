@@ -49,6 +49,24 @@ export {
   resolveTraceSafetyOptions,
 } from "../trace-event-safety.js";
 
+export type {
+  AdapterCaptureDiagnostic,
+  AdapterCaptureDiagnosticCode,
+  AdapterCaptureDiagnostics,
+  AdapterCaptureMode,
+  AdapterDiagnosticListener,
+  AdapterPreviewCapture,
+  AdapterPreviewCaptureOptions,
+} from "../adapters/preview-capture.js";
+
+export {
+  ADAPTER_CAPTURE_DIAGNOSTIC_CODES,
+  DEFAULT_ADAPTER_MAX_PREVIEW_CHARS,
+  createAdapterPreviewCapture,
+  resolveAdapterMaxPreviewChars,
+  serializeAdapterPreview,
+} from "../adapters/preview-capture.js";
+
 export {
   TERMINAL_INDENT,
   MAX_TERMINAL_NAME_LENGTH,

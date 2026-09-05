@@ -14,7 +14,10 @@ type RetrieverDocuments = Parameters<
   NonNullable<BaseCallbackHandler["handleRetrieverEnd"]>
 >[0];
 import {
+  createAdapterPreviewCapture,
   getCurrentCorrelationMetadata,
+  type AdapterCaptureDiagnostics,
+  type AdapterPreviewCapture,
   type InspectEvent,
   type InspectKind,
 } from "agent-inspect/advanced";
@@ -24,7 +27,6 @@ import {
   extractLangGraphMetadata,
   extractModelName,
   extractTokenUsage,
-  safePreview,
   toPlainMetadata,
 } from "./metadata.js";
 import {
@@ -71,6 +73,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     AgentInspectCallbackOptions;
 
   readonly #redactor: Redactor;
+  readonly #capture: AdapterPreviewCapture;
   readonly #persistence?: LangChainTracePersistence;
   #events: InspectEvent[] = [];
   readonly #starts = new Map<string, StartEntry>();
@@ -99,6 +102,13 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       persist: intent.persist,
     };
     this.#redactor = new Redactor({ rules: this.#opts.redact });
+    this.#capture = createAdapterPreviewCapture({
+      capture: this.#opts.capture === "preview" ? "preview" : "metadata-only",
+      redactionProfile: this.#opts.redactionProfile,
+      maxPreviewChars: this.#opts.maxPreviewChars,
+      redact: this.#opts.redact,
+      onDiagnostic: this.#opts.onDiagnostic,
+    });
     if (intent.contradictory && !this.#opts.silent) {
       console.error(
         "[agent-inspect:langchain] persist:false with traceDir set — traces stay in-memory; remove traceDir or set persist:true",
@@ -111,7 +121,8 @@ export class AgentInspectCallback extends BaseCallbackHandler {
         runId: this.#opts.runId,
         redact: this.#opts.redact,
         silent: this.#opts.silent,
-        maxPreviewChars: this.#opts.maxPreviewChars,
+        maxPreviewChars: this.#capture.maxPreviewChars,
+        redactionProfile: this.#opts.redactionProfile,
       });
     }
   }
@@ -154,6 +165,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     hasTerminalError: boolean;
     inMemoryEventCount: number;
     deferredPersistStartCount: number;
+    capture: AdapterCaptureDiagnostics;
   } {
     const base = this.#persistence?.getDiagnostics() ?? {
       lateEventCount: 0,
@@ -173,6 +185,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       ...base,
       inMemoryEventCount: this.#events.length,
       deferredPersistStartCount: this.#deferredPersistStart.size,
+      capture: this.#capture.getDiagnostics(),
     };
   }
 
@@ -244,8 +257,8 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   }
 
   #streamPreviewLimit(): number {
-    if (this.#opts.capture !== "preview") return 0;
-    return this.#opts.maxStreamPreviewChars ?? this.#opts.maxPreviewChars ?? 200;
+    if (!this.#capture.previewEnabled) return 0;
+    return this.#opts.maxStreamPreviewChars ?? this.#capture.maxPreviewChars;
   }
 
   #attachStreamMetadata(attrs: Record<string, unknown>, lcRunId: string): void {
@@ -392,12 +405,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   }
 
   #applyPreview(attrs: Record<string, unknown>, previews: Record<string, unknown>): void {
-    if (this.#opts.capture !== "preview") return;
-    const max = this.#opts.maxPreviewChars;
-    for (const [k, v] of Object.entries(previews)) {
-      const p = safePreview(v, max);
-      if (p !== undefined) attrs[k] = p;
-    }
+    this.#capture.applyPreviewFields(attrs, previews);
   }
 
   #pushEvent(ev: InspectEvent): void {
