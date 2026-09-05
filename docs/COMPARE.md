@@ -11,11 +11,17 @@ AgentInspect is a local-first trace workbench for TypeScript AI agents: capture 
 Position AgentInspect as the **inner-loop local evidence** layer:
 
 ```text
+Observability collects, searches, and monitors traces.
+AgentInspect lets a local TypeScript test or CI job fail when the agent
+takes an unacceptable path, then packages bounded reviewable evidence.
+
 local evidence and inner-loop debugging → AgentInspect
 production observability → LangSmith / Langfuse / MLflow / Phoenix / APM
 prompt/output and red-team eval → Promptfoo / Evalite / other eval tools
 generic OTel trace access via MCP → OTel MCP servers
 ```
+
+Proof: `examples/starters/broken-agent-debugging` — good and regression variants return the **same** final answer; trajectory checks PASS vs FAIL (`node prove-same-output-wrong-path.mjs`).
 
 Handoff story:
 

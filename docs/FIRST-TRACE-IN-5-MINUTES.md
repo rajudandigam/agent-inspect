@@ -73,7 +73,7 @@ npx agent-inspect redact <run-id> --dir .agent-inspect --profile share -o redact
 
 | If you use… | Go to |
 | ----------- | ----- |
-| Broken agent demo | [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/README.md) |
+| Broken agent demo (same answer, wrong path) | [broken-agent-debugging starter](../examples/starters/broken-agent-debugging/README.md) (`node prove-same-output-wrong-path.mjs`) |
 | Coding-agent MCP loop | [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [coding-agent-debug-loop](../examples/starters/coding-agent-debug-loop/README.md) |
 | Contracts / CI gates | [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) · [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) |
 | AI SDK | [AI SDK adoption](./AI-SDK-ADOPTION.md) |

@@ -2,13 +2,39 @@
 
 Canonical keyless **Debug / Prevent / Share** showcase. Three synthetic variants, no API keys, no network.
 
+**Positioning:** Observability collects, searches, and monitors traces. AgentInspect lets a local TypeScript test or CI job fail when the agent takes an unacceptable path, then packages bounded reviewable evidence.
+
 | Variant | Run id | What it shows |
 | --- | --- | --- |
 | `good` | `demo-good` | plan → retrieve_policy → rank → generate → observed outcome passes |
-| `regression` | `demo-regression` | generate-before-retrieve, duplicate retrieve, failed tool, observed outcome fails |
+| `regression` | `demo-regression` | **same final answer**, but generate-before-retrieve, duplicate retrieve, forbidden `search_docs`, observed outcome fails |
 | `pii` | `demo-pii` | synthetic demo PII with `redact: false`; `verify-safe` reports source risk |
 
 Inbound scripts `pnpm start` / `pnpm run fixed` still work: start is the regression, fixed is the good path.
+
+## Same output, wrong path
+
+Both good and regression return:
+
+```text
+Per policy P-204: refunds are available within 30 days of purchase.
+```
+
+Prove divergence with shipped TraceContract APIs (`generate_answer` is an LLM step — it is not placed in `tools.requiredOrder`):
+
+```bash
+node prove-same-output-wrong-path.mjs
+```
+
+Expect:
+
+```text
+Final output equal: yes
+demo-good: PASS
+demo-regression: FAIL
+Failed invariants:
+- ...
+```
 
 ## Run
 
