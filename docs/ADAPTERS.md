@@ -18,7 +18,7 @@ Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public package
 
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
-**Full guide:** [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md)
+**Full guide:** [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) · **Capture path:** [CHOOSE-YOUR-CAPTURE-PATH.md](./CHOOSE-YOUR-CAPTURE-PATH.md)
 
 **Status:** experimental adapter — optional package published in the aligned v2.2.0 package set and hardened in the v2.3 adapter train.
 
