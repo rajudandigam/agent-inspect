@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   MCP_MAX_REQUEST_BYTES,
   MCP_PROTOCOL_VERSION,
+  MCP_SERVER_INSTRUCTIONS,
   handleMcpProtocolLine,
   type ProtocolSession,
 } from "../src/protocol.js";
@@ -36,6 +37,7 @@ describe("mcp protocol hardening", () => {
     const body = JSON.parse(out[0]!);
     expect(body.result.protocolVersion).toBe(MCP_PROTOCOL_VERSION);
     expect(body.result.capabilities.tools).toEqual({ listChanged: false });
+    expect(body.result.instructions).toBe(MCP_SERVER_INSTRUCTIONS);
   });
 
   it("answers ping", async () => {

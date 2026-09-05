@@ -51,6 +51,12 @@ export async function runReadOnlyMcpServer(
 export {
   MCP_MAX_REQUEST_BYTES,
   MCP_PROTOCOL_VERSION,
+  MCP_SERVER_INSTRUCTIONS,
   handleMcpProtocolLine,
 } from "./protocol.js";
-export { READ_ONLY_TOOLS, callReadOnlyTool, createMcpServerContext } from "./tools.js";
+export {
+  READ_ONLY_TOOLS,
+  TRACE_DATA_UNTRUSTED_WARNING,
+  callReadOnlyTool,
+  createMcpServerContext,
+} from "./tools.js";
