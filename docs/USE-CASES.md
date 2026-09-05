@@ -24,7 +24,7 @@ npx agent-inspect redact <run-id> --dir .agent-inspect --profile share -o safe.j
 npx agent-inspect verify-safe <run-id> --dir .agent-inspect
 ```
 
-**Starter:** [broken-agent-debugging](../examples/starters/broken-agent-debugging/README.md) (intentional failure) or [custom-observe](../examples/starters/custom-observe/README.md)
+**Starter:** [broken-agent-debugging](../examples/starters/broken-agent-debugging/README.md) (same final answer, wrong trajectory — `node prove-same-output-wrong-path.mjs`) or [custom-observe](../examples/starters/custom-observe/README.md)
 
 **Not:** Live model replay or hosted trace UI.
 

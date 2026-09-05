@@ -3,6 +3,7 @@
  * Canonical keyless Debug / Prevent / Share showcase.
  * Variants: good | regression | pii
  *
+ * Good and regression return the same FINAL_ANSWER; trajectory checks diverge.
  * Stable run ids (createInspector) so walkthrough commands are copyable.
  * No API keys. No network.
  */
@@ -13,6 +14,8 @@ import { fileURLToPath } from "node:url";
 import { createInspector } from "agent-inspect";
 import { resolveTraceSafetyOptions } from "agent-inspect/advanced";
 import { fileWriter } from "agent-inspect/writers";
+
+import { FINAL_ANSWER } from "./final-answer.mjs";
 
 const starterDir = path.dirname(fileURLToPath(import.meta.url));
 const variant = (process.argv[2] ?? "regression").trim().toLowerCase();
@@ -66,14 +69,14 @@ async function runGood() {
       });
       await inspector.llm("generate_answer", async () => {
         await pause(20);
-        return "Per policy P-204: Refunds are available within 30 days of purchase.";
+        return FINAL_ANSWER;
       });
       await inspector.observeOutcome("policyShown", {
         expectation: "Refund policy visible to the customer",
         status: "passed",
         method: "custom",
       });
-      return "ok";
+      return FINAL_ANSWER;
     },
     { runId },
   );
@@ -83,9 +86,11 @@ async function runRegression() {
   return inspector.run(
     "demo-support-agent",
     async () => {
+      // Same customer-visible answer, unacceptable trajectory:
+      // generate before retrieve, duplicate retrieve, forbidden search_docs, failed outcome.
       await inspector.llm("generate_answer", async () => {
         await pause(20);
-        return "Guessing a refund policy without retrieval.";
+        return FINAL_ANSWER;
       });
       await inspector.tool("retrieve_policy", async () => {
         await pause(10);
@@ -107,7 +112,7 @@ async function runRegression() {
         status: "failed",
         method: "custom",
       });
-      return "regression";
+      return FINAL_ANSWER;
     },
     { runId },
   );
@@ -129,21 +134,22 @@ async function runPii() {
         },
       );
       await inspector.tool("retrieve_policy", async () => ({ policy: "P-204" }));
-      await inspector.llm("generate_answer", async () => "Policy P-204 applies.");
+      await inspector.llm("generate_answer", async () => FINAL_ANSWER);
       await inspector.observeOutcome("policyShown", {
         expectation: "Refund policy visible to the customer",
         status: "passed",
         method: "custom",
       });
-      return "pii";
+      return FINAL_ANSWER;
     },
     { runId },
   );
 }
 
-if (variant === "good") await runGood();
-else if (variant === "pii") await runPii();
-else await runRegression();
+let answer;
+if (variant === "good") answer = await runGood();
+else if (variant === "pii") answer = await runPii();
+else answer = await runRegression();
 
 await inspector.flush();
 await inspector.close();
@@ -151,6 +157,7 @@ await inspector.close();
 const relDir = path.relative(process.cwd(), traceDir) || ".";
 console.log(`Variant: ${variant}`);
 console.log(`Run ID: ${runId}`);
+console.log(`Final answer: ${answer}`);
 console.log(`Trace directory: ${relDir}`);
 console.log("");
 console.log("Copy the run id, then:");
