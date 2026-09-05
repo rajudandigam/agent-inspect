@@ -1,6 +1,6 @@
 # AgentInspect — llms-full
 
-Curated public guides. Version 6.17.7.
+Curated public guides. Version 6.17.8.
 
 
 
