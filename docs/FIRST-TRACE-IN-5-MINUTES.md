@@ -31,6 +31,8 @@ npx agent-inspect init --yes
 Creates `agent-inspect.config.ts`, `.agent-inspect/`, and `examples/agent-inspect-demo.mjs`.  
 `init` scaffolds files; it does **not** write a trace by itself.
 
+Framework users: pick the correct capture path first — [CHOOSE-YOUR-CAPTURE-PATH.md](./CHOOSE-YOUR-CAPTURE-PATH.md).
+
 ## Minutes 1–2: Run
 
 ```bash
