@@ -1,3 +1,4 @@
+import type { AdapterDiagnosticListener, RedactionProfile } from "agent-inspect/advanced";
 import type { RedactionRule } from "agent-inspect/logs";
 
 export type CaptureMode = "none" | "metadata-only" | "preview";
@@ -23,6 +24,20 @@ export interface AgentInspectCallbackOptions extends LangChainStreamingOptions {
   capture?: CaptureMode;
   redact?: RedactionRule[];
   maxPreviewChars?: number;
+  /**
+   * Redaction profile applied to preview attributes before persistence.
+   * `share` and `strict` also cap `maxPreviewChars`.
+   *
+   * @experimental Effective only when `capture: "preview"`.
+   */
+  redactionProfile?: RedactionProfile;
+  /**
+   * Receives bounded capture diagnostics such as
+   * `AI_CAPTURE_FIELD_UNAVAILABLE`. Listener failures are isolated.
+   *
+   * @experimental
+   */
+  onDiagnostic?: AdapterDiagnosticListener;
   /**
    * Persist callback lifecycle as schemaVersion "0.1" JSONL.
    * When omitted: enabled if `traceDir` is set, otherwise in-memory only.

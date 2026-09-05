@@ -8,7 +8,11 @@ import type {
   OnToolCallStartEvent,
   TelemetryIntegration,
 } from "ai";
+import { createAdapterPreviewCapture } from "agent-inspect/advanced";
 import type {
+  AdapterCaptureDiagnostics,
+  AdapterDiagnosticListener,
+  AdapterPreviewCapture,
   RedactionProfile,
 } from "agent-inspect/advanced";
 import type {
@@ -21,6 +25,9 @@ import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
 
 /**
  * Experimental capture mode for the AI SDK adapter.
+ *
+ * `metadata-only` is the default. `preview` persists bounded, redacted preview
+ * attributes through the shared adapter capture helper.
  *
  * @experimental This package is part of the framework adapter train.
  */
@@ -51,26 +58,33 @@ export interface AgentInspectAiSdkOptions {
   /**
    * Capture policy. Defaults to metadata-only.
    *
-   * @experimental `preview` is currently rejected with diagnostics and falls
-   * back to metadata-only until bounded free-text preview capture is implemented.
+   * @experimental `preview` persists bounded, redacted prompt/message/output
+   * previews. It never persists full content.
    */
   capture?: AgentInspectAiSdkCaptureMode;
 
   /**
-   * Redaction profile for future preview capture.
+   * Redaction profile applied to preview attributes before persistence.
+   * `share` and `strict` also cap `maxPreviewChars`.
    *
-   * @experimental Currently diagnostic-only because the adapter persists
-   * metadata summaries and does not write raw preview content.
+   * @experimental Effective only when `capture: "preview"`.
    */
   redactionProfile?: RedactionProfile;
 
   /**
-   * Bounds future preview capture.
+   * Upper bound for each serialized preview attribute. Defaults to 200.
    *
-   * @experimental Currently diagnostic-only because `preview` falls back to
-   * metadata-only capture.
+   * @experimental Effective only when `capture: "preview"`.
    */
   maxPreviewChars?: number;
+
+  /**
+   * Receives bounded capture diagnostics such as
+   * `AI_CAPTURE_FIELD_UNAVAILABLE`. Listener failures are isolated.
+   *
+   * @experimental
+   */
+  onDiagnostic?: AdapterDiagnosticListener;
 }
 
 export interface AgentInspectAiSdkDiagnostics {
@@ -80,6 +94,8 @@ export interface AgentInspectAiSdkDiagnostics {
   closeFailures: number;
   lastError?: string;
   lastWarning?: string;
+  /** Shared preview-capture counters (`@experimental`). */
+  capture: AdapterCaptureDiagnostics;
 }
 
 export interface AgentInspectAiSdkIntegration extends TelemetryIntegration {
@@ -246,8 +262,9 @@ function summarizeFinishReason(
 class AgentInspectAiSdkTelemetryIntegration {
   private readonly writer: TraceWriter | undefined;
   private readonly requestedCapture: AgentInspectAiSdkCaptureMode;
-  private readonly effectiveCapture: "metadata-only" = "metadata-only";
-  private readonly diagnostics: AgentInspectAiSdkDiagnostics = {
+  private readonly preview: AdapterPreviewCapture;
+  private readonly effectiveCapture: AgentInspectAiSdkCaptureMode;
+  private readonly diagnostics: Omit<AgentInspectAiSdkDiagnostics, "capture"> = {
     writeFailures: 0,
     lifecycleWarnings: 0,
     flushFailures: 0,
@@ -258,12 +275,26 @@ class AgentInspectAiSdkTelemetryIntegration {
 
   constructor(private readonly options: AgentInspectAiSdkOptions) {
     this.requestedCapture = options.capture ?? "metadata-only";
+    this.preview = createAdapterPreviewCapture({
+      capture: this.requestedCapture,
+      redactionProfile: options.redactionProfile,
+      maxPreviewChars: options.maxPreviewChars,
+      onDiagnostic: options.onDiagnostic,
+    });
+    this.effectiveCapture = this.preview.capture;
     this.writer = options.writer ?? (options.traceDir ? fileWriter({ dir: options.traceDir }) : undefined);
     this.recordCaptureOptionWarnings();
   }
 
   getDiagnostics(): AgentInspectAiSdkDiagnostics {
-    return { ...this.diagnostics };
+    return { ...this.diagnostics, capture: this.preview.getDiagnostics() };
+  }
+
+  /** Bounded preview attributes for one lifecycle event (empty unless enabled). */
+  private previewAttributes(
+    fields: Record<string, unknown>,
+  ): Record<string, unknown> {
+    return this.preview.applyPreviewFields({}, fields);
   }
 
   async onStart(event: OnStartEvent): Promise<void> {
@@ -315,16 +346,24 @@ class AgentInspectAiSdkTelemetryIntegration {
             this.requestedCapture === this.effectiveCapture
               ? undefined
               : this.requestedCapture,
-          previewCaptureSupported:
-            this.requestedCapture === "preview" ? false : undefined,
-          redactionProfile: this.options.redactionProfile,
-          maxPreviewChars: normalizeMaxPreviewChars(this.options.maxPreviewChars),
+          previewCaptureSupported: true,
+          // Preview rows report the effective bound/profile, which the
+          // `share` and `strict` profiles can lower below the request.
+          redactionProfile: this.preview.previewEnabled
+            ? this.preview.redactionProfile
+            : this.options.redactionProfile,
+          maxPreviewChars: this.preview.previewEnabled
+            ? this.preview.maxPreviewChars
+            : normalizeMaxPreviewChars(this.options.maxPreviewChars),
           recordInputsRequired: false,
           recordOutputsRequired: false,
           toolCount: countRecordKeys(event.tools),
           hasPrompt: event.prompt !== undefined,
           hasMessages: event.messages !== undefined,
           metadataKeyCount: countRecordKeys(event.metadata),
+          ...this.previewAttributes({
+            input: event.prompt ?? event.messages,
+          }),
         },
       });
     });
@@ -365,6 +404,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           toolCount: countRecordKeys(event.tools),
           messageCount: event.messages.length,
           metadataKeyCount: countRecordKeys(event.metadata),
+          ...this.previewAttributes({ input: event.messages }),
         },
       });
     });
@@ -412,6 +452,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           responseModelId: event.response.modelId,
           responseTimestamp: event.response.timestamp?.toISOString(),
           metadataKeyCount: countRecordKeys(event.metadata),
+          ...this.previewAttributes({ output: event.text }),
         },
         tokenUsage: summarizeUsage(event.usage),
         outputSummary: {
@@ -473,6 +514,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           metadataKeyCount: countRecordKeys(event.metadata),
           providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
           toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+          ...this.previewAttributes({ input: toolCall.input }),
         },
         inputSummary: summarizeUnknown(toolCall.input),
         error: toolCall.invalid ? summarizeError(toolCall.error) : undefined,
@@ -523,6 +565,10 @@ class AgentInspectAiSdkTelemetryIntegration {
           metadataKeyCount: countRecordKeys(event.metadata),
           providerMetadataKeyCount: countRecordKeys(toolCall.providerMetadata),
           toolMetadataKeyCount: countRecordKeys(toolCall.toolMetadata),
+          ...this.previewAttributes({
+            input: toolCall.input,
+            ...(event.success ? { output: event.output } : {}),
+          }),
         },
         outputSummary: event.success ? summarizeUnknown(event.output) : undefined,
         error: event.success ? undefined : summarizeError(event.error),
@@ -563,6 +609,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           toolCallCount: event.toolCalls.length,
           toolResultCount: event.toolResults.length,
           metadataKeyCount: countRecordKeys(event.metadata),
+          ...this.previewAttributes({ output: event.text }),
         },
         tokenUsage: summarizeUsage(event.totalUsage),
         outputSummary: {
@@ -634,26 +681,12 @@ class AgentInspectAiSdkTelemetryIntegration {
     this.diagnostics.lastWarning = message;
   }
 
-  private previewCapabilityWarned = false;
-
   private recordCaptureOptionWarnings(): void {
+    if (this.effectiveCapture === "preview") return;
+
     const previewOnlyOptions: string[] = [];
-    if (this.requestedCapture === "preview") previewOnlyOptions.push("capture");
     if (this.options.redactionProfile !== undefined) previewOnlyOptions.push("redactionProfile");
     if (this.options.maxPreviewChars !== undefined) previewOnlyOptions.push("maxPreviewChars");
-
-    if (this.requestedCapture === "preview") {
-      const message =
-        `AI_ADAPTER_PREVIEW_NOT_AVAILABLE: capture:"preview" was requested, but this adapter currently persists metadata-only. Effective capture: metadata-only. No preview content was written. See docs/ADAPTERS.md.`;
-      this.recordLifecycleWarning(
-        `AI SDK preview capture is not supported yet; falling back to metadata-only capture. Unsupported options: ${previewOnlyOptions.join(", ")}.`,
-      );
-      if (!this.previewCapabilityWarned) {
-        this.previewCapabilityWarned = true;
-        console.warn(`[agent-inspect:ai-sdk] ${message}`);
-      }
-      return;
-    }
 
     if (previewOnlyOptions.length > 0) {
       this.recordLifecycleWarning(
@@ -677,8 +710,9 @@ class AgentInspectAiSdkTelemetryIntegration {
 /**
  * Create an AgentInspect telemetry integration for the Vercel AI SDK.
  *
- * @experimental The adapter maps metadata-only generation, LLM step, and tool
- * lifecycle events. Keep AI SDK telemetry configured with
+ * @experimental The adapter maps generation, LLM step, and tool lifecycle
+ * events. Capture is metadata-only by default; `capture: "preview"` adds
+ * bounded, redacted preview attributes. Keep AI SDK telemetry configured with
  * `recordInputs: false` and `recordOutputs: false`.
  */
 export function agentInspect(

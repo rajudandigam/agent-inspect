@@ -35,6 +35,7 @@ This document states what AgentInspect **does not** provide today. It complement
 - **OpenAI Agents JS support is experimental.** `@agent-inspect/openai-agents` maps metadata-only runtime spans through the safe `setTraceProcessors()` boundary and does not capture raw payloads by default. The v1.9 package publication retry is a separate maintainer npm automation task, not part of the v2 contract work.
 - **LangGraph support is a boundary decision, not a separate package.** Initial support is expected through `@agent-inspect/langchain` callbacks unless no-network fixtures prove a separate package is needed.
 - **No root/core adapter dependencies.** AI SDK, OpenAI Agents, LangGraph, OpenTelemetry, and LangChain remain outside the root/core runtime dependency graph.
+- **Preview capture is bounded, not sanitized.** `capture: "preview"` persists truncated, key-redacted previews of framework-provided input/output fields. Key-based redaction cannot detect a secret embedded in free text, and there is no full-content capture mode. Fields the framework never exposes are reported as `AI_CAPTURE_FIELD_UNAVAILABLE` rather than reconstructed.
 
 ## LangChain streaming (v1.3.0)
 

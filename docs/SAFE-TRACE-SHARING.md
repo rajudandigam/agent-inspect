@@ -6,7 +6,7 @@ AgentInspect traces, log-ingest outputs, and exports are local files. They may s
 
 This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **best-effort transformation**, not compliance-grade DLP or a safety certification. Always finish with `verify-safe` before sharing.
 
-Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and require human review. Org-specific patterns need programmatic custom detectors today; a bounded local CLI policy is proposed separately and is not yet supported.
+Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and as residual status after `redact`. Org-specific patterns can use a local CLI `--policy` JSON file (`extraKeys` plus bounded literal/prefix/typed patterns) or programmatic custom detectors.
 
 `strict` is a stricter **rule set** (more keys), not a promise that every input produces bytes different from `share`.
 
@@ -63,7 +63,7 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 - Redacted copies from `agent-inspect redact`: review the output file itself; findings show detector/path/action evidence but do not certify full safety.
 - OpenInference / OTLP JSON exports: check attributes, span names, events, and resource metadata.
 - Structured log ingest configs: confirm mapped keys do not pull in full request bodies, headers, raw prompts, or unbounded output fields.
-- LangChain adapter traces: keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments.
+- Framework adapter traces (ai-sdk, openai-agents, langchain): keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments. Preview redaction is key-based and bounded, not a sanitization guarantee.
 - Third-party adapter packages: follow the [Adapter SDK privacy checklist](./ADAPTER-SDK-PRIVACY.md) before sharing adapter traces, examples, or registry submissions.
 
 ## When to use each profile

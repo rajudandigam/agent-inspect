@@ -1,3 +1,5 @@
+import { serializeAdapterPreview } from "agent-inspect/advanced";
+
 export interface TokenUsage {
   input?: number;
   output?: number;
@@ -114,32 +116,14 @@ export function extractModelName(serializedOrOutput: unknown): string | undefine
   }
 }
 
-/** Safe truncated string preview for logging-style fields. */
+/**
+ * Safe truncated string preview for logging-style fields.
+ *
+ * Delegates to the shared adapter preview serializer so every official adapter
+ * bounds and escapes preview values identically.
+ */
 export function safePreview(value: unknown, maxChars: number): string | undefined {
-  try {
-    if (maxChars <= 0) return undefined;
-    const seen = new WeakSet<object>();
-    const json = JSON.stringify(value, (_k, v) => {
-      if (typeof v === "bigint") return v.toString();
-      if (typeof v === "function" || typeof v === "symbol") return undefined;
-      if (typeof v === "object" && v !== null) {
-        if (seen.has(v)) return "[Circular]";
-        seen.add(v);
-      }
-      return v;
-    });
-    if (json === undefined) return undefined;
-    if (json.length <= maxChars) return json;
-    return `${json.slice(0, maxChars)}…`;
-  } catch {
-    try {
-      const s = String(value);
-      if (s.length <= maxChars) return s;
-      return `${s.slice(0, maxChars)}…`;
-    } catch {
-      return undefined;
-    }
-  }
+  return serializeAdapterPreview(value, maxChars);
 }
 
 const MAX_METADATA_KEYS = 40;

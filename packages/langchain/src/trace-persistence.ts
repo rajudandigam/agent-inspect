@@ -10,6 +10,7 @@ import {
   resolveTraceSafetyOptions,
   writeTraceEvent,
   type InspectKind,
+  type RedactionProfile,
   type StepMetadata,
   type StepType,
   type TraceEvent,
@@ -43,6 +44,8 @@ export interface LangChainTracePersistenceOptions {
   redact?: RedactionRule[];
   silent?: boolean;
   maxPreviewChars?: number;
+  /** Named redaction profile applied to persisted metadata and previews. */
+  redactionProfile?: RedactionProfile;
 }
 
 /** Options for explicit envelope finalization (serverless / unusual callback shapes). */
@@ -133,6 +136,9 @@ export class LangChainTracePersistence {
     this.#safety = resolveTraceSafetyOptions({
       redact: options.redact ? { rules: options.redact } : true,
       maxPreviewLength: options.maxPreviewChars,
+      ...(options.redactionProfile
+        ? { redactionProfile: options.redactionProfile }
+        : {}),
     });
     this.#lifecycle = createInvocationState(this.#runId);
   }

@@ -6,6 +6,7 @@ import {
   type AgentInspectOpenAiAgentsOptions,
   type AgentInspectOpenAiAgentsProcessor,
 } from "@agent-inspect/openai-agents";
+import type { AdapterCaptureDiagnostic } from "agent-inspect/advanced";
 import {
   persistedInspectEventsToRunTrees,
   persistedInspectEventsToTraceEvents,
@@ -93,6 +94,15 @@ describe("@agent-inspect/openai-agents processor", () => {
       flushFailures: 0,
       shutdownFailures: 0,
       runtimeMappingImplemented: true,
+      capture: {
+        capture: "metadata-only",
+        redactionProfile: "local",
+        maxPreviewChars: 200,
+        previewFieldsCaptured: 0,
+        previewFieldsUnavailable: 0,
+        previewFieldsTruncated: 0,
+        previewFieldsRedacted: 0,
+      },
     });
   });
 
@@ -288,7 +298,7 @@ describe("@agent-inspect/openai-agents processor", () => {
     expectNoRawText(events, "raw speech output");
   });
 
-  it("diagnoses preview-only options and out-of-order callbacks without throwing", async () => {
+  it("diagnoses out-of-order callbacks in preview mode without throwing", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const writer = memoryWriter();
     const processor = agentInspectProcessor({
@@ -298,25 +308,154 @@ describe("@agent-inspect/openai-agents processor", () => {
       maxPreviewChars: 8,
     });
 
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(String(warnSpy.mock.calls[0]?.[0])).toContain("AI_ADAPTER_PREVIEW_NOT_AVAILABLE");
-    expect(String(warnSpy.mock.calls[0]?.[0])).toContain("[agent-inspect:openai-agents]");
+    // Preview is implemented, so the removed capability warning must not fire.
+    expect(warnSpy).not.toHaveBeenCalled();
 
     await processor.onSpanEnd(
       spanFixture({ type: "generation", model: "gpt-fixture" }),
     );
     await processor.onTraceEnd(traceFixture({ traceId: "missing-trace" }));
 
-    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
 
     expect(writer.getEvents()).toEqual([]);
     expect(processor.getDiagnostics()).toMatchObject({
-      lifecycleWarnings: 3,
+      lifecycleWarnings: 2,
       writeFailures: 0,
       runtimeMappingImplemented: true,
+      capture: {
+        capture: "preview",
+        redactionProfile: "strict",
+        maxPreviewChars: 8,
+      },
     });
     expect(processor.getDiagnostics().lastWarning).toContain("matching start");
+  });
+
+  it("persists bounded, redacted span previews when capture is preview (#311)", async () => {
+    const diagnostics: AdapterCaptureDiagnostic[] = [];
+    const writer = memoryWriter();
+    const processor = agentInspectProcessor({
+      writer,
+      capture: "preview",
+      maxPreviewChars: 64,
+      onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
+    });
+    const trace = traceFixture();
+    const generationSpan = spanFixture(
+      {
+        type: "generation",
+        model: "gpt-fixture",
+        input: [{ role: "user", content: "raw prompt secret" }],
+        output: [{ role: "assistant", content: "raw output secret" }],
+        model_config: { temperature: 0 },
+      },
+      { spanId: "span_generation" },
+    );
+    const functionSpan = spanFixture(
+      {
+        type: "function",
+        name: "lookupTool",
+        input: "refund policy",
+        output: "z".repeat(400),
+      },
+      { spanId: "span_function" },
+    );
+    const customSpan = spanFixture(
+      {
+        type: "custom",
+        name: "credentialCarrier",
+        data: { apiKey: "sk-must-not-persist" },
+      },
+      { spanId: "span_custom" },
+    );
+
+    await processor.onTraceStart(trace);
+    await processor.onSpanStart(generationSpan);
+    await processor.onSpanEnd(generationSpan);
+    await processor.onSpanStart(functionSpan);
+    await processor.onSpanEnd(functionSpan);
+    await processor.onSpanStart(customSpan);
+    await processor.onSpanEnd(customSpan);
+    await processor.onTraceEnd(trace);
+
+    const events = writer.getEvents();
+    const runStart = events[0];
+    expect(runStart?.attributes).toMatchObject({
+      capture: "preview",
+      previewCaptureSupported: true,
+      maxPreviewChars: 64,
+    });
+
+    const generationEnd = events.find(
+      (event) => event.name === "generation:gpt-fixture" && event.status === "ok",
+    );
+    expect(String(generationEnd?.attributes?.inputPreview)).toContain(
+      "raw prompt secret",
+    );
+    expect(String(generationEnd?.attributes?.outputPreview)).toContain(
+      "raw output secret",
+    );
+
+    const functionEnd = events.find(
+      (event) => event.name === "lookupTool" && event.status === "ok",
+    );
+    const credentialPreviews = events
+      .flatMap((event) => Object.entries(event.attributes ?? {}))
+      .filter(([key]) => key.endsWith("Preview"))
+      .map(([, value]) => String(value));
+    expect(credentialPreviews.join("\n")).toContain("[REDACTED]");
+    expectNoRawText(events, "sk-must-not-persist");
+    expect(String(functionEnd?.attributes?.outputPreview)).toHaveLength(65);
+    expect(String(functionEnd?.attributes?.outputPreview).endsWith("…")).toBe(true);
+
+    // Span types without a payload concept must not report unavailable fields.
+    const handoffSpan = spanFixture(
+      { type: "handoff", from_agent: "A", to_agent: "B" },
+      { spanId: "span_handoff" },
+    );
+    await processor.onSpanStart(handoffSpan);
+    expect(
+      diagnostics.filter((entry) => entry.code === "AI_CAPTURE_FIELD_UNAVAILABLE"),
+    ).toEqual([]);
+    expect(
+      diagnostics.some((entry) => entry.code === "AI_CAPTURE_PREVIEW_TRUNCATED"),
+    ).toBe(true);
+    expect(
+      diagnostics.some((entry) => entry.code === "AI_CAPTURE_PREVIEW_REDACTED"),
+    ).toBe(true);
+    expect(processor.getDiagnostics().capture.previewFieldsCaptured).toBeGreaterThan(0);
+  });
+
+  it("reports AI_CAPTURE_FIELD_UNAVAILABLE for spans missing payload fields (#311)", async () => {
+    const diagnostics: AdapterCaptureDiagnostic[] = [];
+    const writer = memoryWriter();
+    const processor = agentInspectProcessor({
+      writer,
+      capture: "preview",
+      onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
+    });
+    const trace = traceFixture();
+    const bareGeneration = spanFixture(
+      { type: "generation", model: "gpt-fixture" },
+      { spanId: "span_bare_generation" },
+    );
+
+    await processor.onTraceStart(trace);
+    await processor.onSpanStart(bareGeneration);
+    await processor.onSpanEnd(bareGeneration);
+
+    expect(
+      diagnostics
+        .filter((entry) => entry.code === "AI_CAPTURE_FIELD_UNAVAILABLE")
+        .map((entry) => entry.field),
+    ).toEqual(["inputPreview", "inputPreview", "outputPreview"]);
+    expect(processor.getDiagnostics().capture).toMatchObject({
+      previewFieldsCaptured: 0,
+      previewFieldsUnavailable: 3,
+      lastDiagnosticCode: "AI_CAPTURE_FIELD_UNAVAILABLE",
+    });
   });
 
   it("isolates writer, flush, and shutdown failures", async () => {

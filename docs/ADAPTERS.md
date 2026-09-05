@@ -16,13 +16,43 @@ v2.3 hardens existing official adapters before adding new ones. Priority is base
 
 Reporters (`@agent-inspect/vitest` and `@agent-inspect/jest`) are public packages as of v2.2, but they are CI/test artifact reporters rather than framework trace adapters. They stay outside the v2.3 adapter-hardening priority order.
 
+## Shared adapter capture contract (preview)
+
+All three official framework adapters — `@agent-inspect/ai-sdk`, `@agent-inspect/openai-agents`, and `@agent-inspect/langchain` — resolve capture through one shared helper, so the same options mean the same thing everywhere. A cross-adapter conformance matrix asserts this contract.
+
+| Option | Type | Default | Behavior |
+| ------ | ---- | ------- | -------- |
+| `capture` | `"metadata-only" \| "preview"` | `"metadata-only"` | `metadata-only` persists no preview attributes at all. `preview` adds bounded `*Preview` attributes. There is no full-content mode. |
+| `redactionProfile` | `"local" \| "share" \| "strict"` | `"local"` | Key-based redaction applied **before** a preview string is persisted. `share` and `strict` also lower the effective `maxPreviewChars` ceiling; `strict` replaces preview values entirely. |
+| `maxPreviewChars` | `number` | adapter default, profile-capped | Hard upper bound on each persisted preview string, including the truncation marker. |
+| `onDiagnostic` | `(diagnostic) => void` | — | Local callback for capture diagnostics. Listener failures are isolated and never reach the traced application. |
+
+Capture diagnostic codes are stable:
+
+| Code | Meaning |
+| ---- | ------- |
+| `AI_CAPTURE_FIELD_UNAVAILABLE` | `capture: "preview"` was requested but the framework did not provide the field, or the value could not be safely serialized. Nothing is persisted for that field. |
+| `AI_CAPTURE_PREVIEW_TRUNCATED` | The preview string hit the `maxPreviewChars` bound and was truncated. |
+| `AI_CAPTURE_PREVIEW_REDACTED` | Redaction replaced at least one value inside the preview before persistence. |
+
+Counters for the same events are available without a listener via each adapter's `getDiagnostics().capture`.
+
+What the contract guarantees:
+
+- **Metadata-only stays the default and stays silent** — no preview attributes, no capture diagnostics.
+- **Redaction runs before persistence** — key-based redaction is applied to the structured value, not to an already-serialized string.
+- **Bounds are hard** — cycles, bigints, and getters that throw are handled without throwing into the traced application, and every persisted preview respects the resolved bound.
+- **No network, no new root/core dependencies** — the helper lives in core and is exported from `agent-inspect/advanced`.
+
+This is bounded preview capture, **not sanitization**: redaction is key-based, so a secret embedded in free text (for example inside a prompt string) can still appear in a preview. Treat preview traces as sensitive and run `agent-inspect redact` before sharing — see [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md).
+
 ## Vercel AI SDK (`@agent-inspect/ai-sdk`)
 
 **Full guide:** [AI-SDK-ADOPTION.md](./AI-SDK-ADOPTION.md) · **Capture path:** [CHOOSE-YOUR-CAPTURE-PATH.md](./CHOOSE-YOUR-CAPTURE-PATH.md)
 
 **Status:** experimental adapter — optional package published in the aligned v2.2.0 package set and hardened in the v2.3 adapter train.
 
-The adapter has hardened lifecycle identity and parallel integration isolation. It remains metadata-only: `capture: "preview"` and preview-only redaction options emit diagnostics **and one visible** `AI_ADAPTER_PREVIEW_NOT_AVAILABLE` warning per adapter instance, then fall back to metadata-only capture. Bounded free-text preview capture is planned for a later train; it is not implemented here.
+The adapter has hardened lifecycle identity and parallel integration isolation. Capture is **metadata-only by default**. Opting into `capture: "preview"` persists bounded, redacted preview fields through the [shared adapter capture contract](#shared-adapter-capture-contract-preview); there is no full-content mode.
 
 ### Install
 
@@ -59,7 +89,7 @@ const result = await generateText({
 - **Metadata-only by default** — records model, finish reason, token usage, timing, and safe counts/summaries.
 - **Required safe telemetry settings** — set `recordInputs: false` and `recordOutputs: false` on every AI SDK call using this adapter.
 - **No raw payload capture by default** — prompts, messages, generated text, stream chunks, tool inputs/outputs, headers, request bodies, and response bodies are not persisted.
-- **Preview capture is not enabled yet** — requesting `capture: "preview"` emits one console warning with code `AI_ADAPTER_PREVIEW_NOT_AVAILABLE`, records diagnostics via `getDiagnostics()`, and does not persist raw previews. Effective capture remains metadata-only.
+- **Opt-in bounded previews** — `capture: "preview"` adds `*Preview` attributes for prompt, message, text, tool input, and tool output fields, redacted and truncated by the [shared capture contract](#shared-adapter-capture-contract-preview). Headers, request bodies, response bodies, and `experimental_context` are never previewed.
 
 ### Local no-network recipe
 
@@ -375,7 +405,7 @@ Integration modes:
 - **No upload behavior** — the processor writes only to an explicit local writer or `traceDir`.
 - **Metadata-only by default** — records trace/span IDs, parentage, names, timing, status, errors, safe model/tool names, token counts, and bounded summaries.
 - **No raw payload capture by default** — prompts, messages, generated text, function inputs/outputs, arbitrary custom data, trace exporter credentials, headers, request bodies, response bodies, and hosted tool payloads are not persisted.
-- **Preview capture is not enabled yet** — requesting `capture: "preview"` emits one console warning with code `AI_ADAPTER_PREVIEW_NOT_AVAILABLE`, records diagnostics via `getDiagnostics()`, and does not persist raw previews. Effective capture remains metadata-only.
+- **Opt-in bounded previews** — `capture: "preview"` adds `inputPreview` / `outputPreview` attributes for generation, function, response, custom, transcription, speech, and speech-group spans through the [shared capture contract](#shared-adapter-capture-contract-preview). Span types without a payload concept (handoff, guardrail, agent) stay metadata-only and report no unavailable fields.
 - **Fixture-backed lifecycle coverage** — local tests and the recipe cover agent, generation, function tool, handoff, guardrail, response, MCP tools, custom, transcription, and speech span shapes without provider calls.
 
 Full API: [API.md](./API.md) §14.

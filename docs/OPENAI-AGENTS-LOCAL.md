@@ -36,6 +36,7 @@ setTraceProcessors([
 - Default `metadata-only` capture
 - No automatic upload from AgentInspect
 - Replacing processors does not by itself redact OpenAI SDK network traffic — review OpenAI SDK settings separately
+- `capture: "preview"` is opt-in and persists bounded, redacted `inputPreview` / `outputPreview` span attributes; tune with `maxPreviewChars` and `redactionProfile`, and watch `onDiagnostic` / `getDiagnostics().capture` for `AI_CAPTURE_FIELD_UNAVAILABLE`. There is no full-content mode. See [ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview).
 
 ## Recipes
 

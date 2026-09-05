@@ -84,6 +84,15 @@ See [examples/recipes/ai-sdk-next-route](../../examples/recipes/ai-sdk-next-rout
 | `recordOutputs: false` | yes | Prevents model output capture in telemetry |
 | `capture: "metadata-only"` | yes (adapter) | AgentInspect adapter redacts/bounds persisted fields |
 
+Opting into `capture: "preview"` persists bounded, redacted `*Preview` attributes
+for prompt, message, text, and tool payload fields. Tune it with
+`maxPreviewChars`, raise `redactionProfile` to `share` or `strict` for stricter
+bounds, and observe `AI_CAPTURE_FIELD_UNAVAILABLE` /
+`AI_CAPTURE_PREVIEW_TRUNCATED` / `AI_CAPTURE_PREVIEW_REDACTED` through
+`onDiagnostic` or `getDiagnostics().capture`. Preview traces can still contain
+sensitive free text; redact before sharing. Full contract:
+[ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview).
+
 ## Inspect locally
 
 ```bash

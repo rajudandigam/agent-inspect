@@ -26,7 +26,7 @@ githubIssues:
   "222": "candidate close — TraceFacts parity (verify vs #294/#337)"
   "308": "6.20 requiredOrderMode — stay open; PR #315"
   "309": "6.20 alternatives.anyOf — stay open"
-  "311": "6.18 preview parity — stay open"
+  "311": "6.18 preview parity — implemented on feat/618-preview-parity; close after 6.18.0 publish"
   "328": "6.18 residual safety after redact"
   "329": "6.18 bounded CLI redaction policy"
   "330": "6.18 view --errors-only pruned tree"

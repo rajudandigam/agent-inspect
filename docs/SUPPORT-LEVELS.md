@@ -75,6 +75,7 @@ See [INSTALL-KITS.md](./INSTALL-KITS.md).
 - Persisted schema **1.0**; v0.1 / v0.2 / 1.0 traces remain readable
 - Optional packages do not add root/core runtime dependencies
 - Network behavior is explicit (see [NETWORK-BEHAVIOR.md](./NETWORK-BEHAVIOR.md))
+- Every Supported official adapter honors the same capture contract — `metadata-only` default, opt-in bounded `preview`, redaction before persistence, shared diagnostic codes — enforced by a cross-adapter conformance matrix (see [ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview))
 
 ## Promotion criteria
 

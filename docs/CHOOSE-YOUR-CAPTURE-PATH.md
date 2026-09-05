@@ -21,6 +21,20 @@ Canonical guide for picking how AgentInspect records TypeScript agent evidence. 
 
 There is **no** official Mastra adapter. Do not invent one from interest alone.
 
+## How much each adapter records
+
+Every official framework adapter resolves `capture` the same way:
+
+| Mode | What lands in the trace |
+| --- | --- |
+| `metadata-only` (**default**) | Names, IDs, parentage, timing, status, model/tool identifiers, token counts, and bounded summaries. No payload text, no capture diagnostics. |
+| `preview` (opt-in) | Everything above plus bounded `*Preview` attributes for the framework's input/output fields, redacted before persistence and truncated at `maxPreviewChars`. |
+
+There is no full-content capture mode. `redactionProfile` is key-based, so it is
+**not** sanitization of free text — run `agent-inspect redact` before sharing a
+preview trace. Contract details and diagnostic codes:
+[ADAPTERS.md](./ADAPTERS.md#shared-adapter-capture-contract-preview).
+
 ## Boundary rule for `observe()`
 
 ```text
