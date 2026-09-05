@@ -3,27 +3,33 @@
 ```yaml
 executionMode: maintainer-reviewed
 namedTrain: agentinspect-feedback-integrity-v6.17.5-to-v6.22
-currentTrain: v6.17.8-queue-health
+currentTrain: v6.17.8-closeout-trust
 trainStatus: in-progress
-currentChunk: 6178-await-consolidate
-nextAction: "Wait #297/#306 consolidate; #307 rebase for 6.18; VS Code scope on #295; Patrick reply on #331"
+currentChunk: phase0-roadmap-truth
+nextAction: "Land #340 clean --keep; then MCP untrusted-trace boundary; publish 6.17.8"
 canonicalRoadmap: docs/implementation/ROADMAP.md
-activePlan: docs/implementation/active/6178-622-QUEUE.md
+activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: ""
 ```
 
 ## Published baseline
 
-**6.17.7**. Persisted schema **1.0**.
+**6.17.7** (eighteen linked public packages). Persisted schema **1.0**. `origin/main` at `1b5351c`.
 
-## External gates
+## Active train — v6.17.8 closeout + trust-boundary
 
-- Jan retest email: **sent** (maintainer)
-- Patrick refusal-evidence model ask: **sent** (maintainer); recipe #331 still blocked on reply
+1. Land #340 strict `clean --keep` validation
+2. Untrusted-trace MCP `instructions` + tool warnings + adversarial tests
+3. Close completed issues (#67/#164/#165/#222) when acceptance confirmed
+4. Attempt #297/#306; defer to 6.18 preflight if not clean
+5. Trusted Publish 6.17.8 via Changesets
 
-## Active — v6.17.8 queue health
+## Later (authorized after 6.17.8)
 
-1. Landed #314 demo:verify fail-closed tests
-2. Landed #296/#305/#294/#302/#303 + dependency-review + SECURITY.md via #337
-3. #297+#306 remain contributor-consolidate
-4. #307 → 6.18; #315 → 6.20; #142 → Menno/#115 hold; #295 → VS Code scope triage
+- **6.18.0** — differentiation starter, #307/#213, #311 preview, #328/#329, #330, capture-path docs, #295 scope
+- **6.19.0** — TraceReader authoring, derived failure roles, architectural-intent interop, prior-context refs
+- **6.20–6.22** — roadmap/labels only in this run
+
+## Issue design state (no email gates)
+
+- **#331** — design confirmed; existing APIs only; scheduled conditional **6.22**; not implemented
