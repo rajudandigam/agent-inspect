@@ -214,6 +214,18 @@ function filterErrorEvents(events: TraceEvent[]): TraceEvent[] {
   });
 }
 
+/** Keep failed nodes and ancestors needed to situate them; drop successful siblings. */
+function pruneErrorTree(nodes: StepNode[]): StepNode[] {
+  const pruned: StepNode[] = [];
+  for (const node of nodes) {
+    const children = pruneErrorTree(node.children);
+    if (node.status === "error" || children.length > 0) {
+      pruned.push({ ...node, children });
+    }
+  }
+  return pruned;
+}
+
 /**
  * Prints a single run as a tree (or JSON). Missing runs and invalid traces set `process.exitCode`
  * without throwing from normal paths.
@@ -306,12 +318,57 @@ export async function view(
     if (mode === "errors-only") {
       const errEvents = filterErrorEvents(events);
       if (options.json) {
+        // Machine-readable representation stays the filtered event list.
         console.log(JSON.stringify(errEvents, null, 2));
-      } else if (errEvents.length === 0) {
+        return;
+      }
+      if (errEvents.length === 0) {
         console.log("No errors found in trace");
+        return;
+      }
+
+      const started = events.find(
+        (e): e is RunStartedEvent => e.event === "run_started",
+      );
+      const completed = events.filter(
+        (e): e is RunCompletedEvent => e.event === "run_completed",
+      );
+      const last = completed[completed.length - 1];
+      const status: RunStatus = last ? last.status : "running";
+      const durationLine =
+        last !== undefined && Number.isFinite(last.durationMs)
+          ? formatDuration(last.durationMs)
+          : "-";
+      const startedTs =
+        started !== undefined && Number.isFinite(started.startTime)
+          ? started.startTime
+          : started?.timestamp;
+      const startedLabel =
+        startedTs !== undefined ? formatTimestamp(startedTs) : "-";
+
+      console.log(`AgentInspect Run: ${started?.name ?? id}`);
+      console.log(`ID: ${id}`);
+      console.log(`Status: ${status}`);
+      console.log(`Duration: ${durationLine}`);
+      console.log(`Started: ${startedLabel}`);
+      console.log("");
+      console.log("Error Tree:");
+
+      const pruned = pruneErrorTree(buildStepTree(events));
+      if (pruned.length === 0) {
+        // Run-level failure without step nodes (or unmatched lifecycle).
+        if (last?.status === "error") {
+          console.log(
+            renderErrorLine(
+              last.error ?? { message: "Run completed with error status" },
+              0,
+            ),
+          );
+        } else {
+          console.log("No error steps recorded");
+        }
       } else {
-        console.log("Error events");
-        console.log(JSON.stringify(errEvents, null, 2));
+        printStepTree(pruned, 0, options.verbose === true);
       }
       return;
     }

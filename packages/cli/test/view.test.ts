@@ -256,8 +256,32 @@ describe("view", () => {
     logSpy.mockRestore();
   });
 
-  it("--errors-only shows only error events", async () => {
+  it("--errors-only shows a pruned human error tree", async () => {
     const runId = "run_errors_only";
+    const body = jsonl(
+      runStarted(runId, "e", 1, 1),
+      stepStarted(runId, "step_ok", "ok", 10),
+      stepCompleted(runId, "step_ok", "success", 20, 10),
+      stepStarted(runId, "step_parent", "parent", 25),
+      stepStarted(runId, "step_bad", "bad", 30, "step_parent"),
+      stepCompleted(runId, "step_bad", "error", 40, 10, { message: "oops" }),
+      stepCompleted(runId, "step_parent", "error", 41, 16),
+      runCompleted(runId, "error", 50, 49, { message: "run failed" }),
+    );
+    await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await view(runId, { dir: traceDir, errorsOnly: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("Error Tree:");
+    expect(out).toContain("parent");
+    expect(out).toContain("bad");
+    expect(out).toContain("oops");
+    expect(out).not.toContain("ok");
+    logSpy.mockRestore();
+  });
+
+  it("--errors-only --json keeps filtered event list compatibility", async () => {
+    const runId = "run_errors_only_json";
     const body = jsonl(
       runStarted(runId, "e", 1, 1),
       stepStarted(runId, "step_ok", "ok", 10),
@@ -268,10 +292,10 @@ describe("view", () => {
     );
     await writeFile(path.join(traceDir, `${runId}.jsonl`), body, "utf-8");
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    await view(runId, { dir: traceDir, errorsOnly: true });
+    await view(runId, { dir: traceDir, errorsOnly: true, json: true });
     const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
-    expect(out).toContain("Error events");
-    expect(out).toContain("step_completed");
+    const parsed = JSON.parse(out) as Array<{ event: string; name?: string }>;
+    expect(parsed.some((e) => e.event === "step_completed")).toBe(true);
     expect(out).not.toContain("step_ok");
     logSpy.mockRestore();
   });
