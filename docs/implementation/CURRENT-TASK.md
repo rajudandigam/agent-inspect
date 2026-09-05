@@ -3,10 +3,10 @@
 ```yaml
 executionMode: maintainer-reviewed
 namedTrain: agentinspect-feedback-integrity-v6.17.5-to-v6.22
-currentTrain: v6.17.8-closeout-trust
+currentTrain: v6.18.0-safe-adoption
 trainStatus: in-progress
-currentChunk: phase0-roadmap-truth
-nextAction: "Land #340 clean --keep; then MCP untrusted-trace boundary; publish 6.17.8"
+currentChunk: phase2-publish-618
+nextAction: "Fix pack:smoke preview assertion; run 6.18 release gate; merge Version Packages #350; Trusted Publish 6.18.0; then land #354 (6.19)"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: ""
@@ -14,21 +14,27 @@ pendingManualGate: ""
 
 ## Published baseline
 
-**6.17.7** (eighteen linked public packages). Persisted schema **1.0**. `origin/main` at `1b5351c`.
+**6.17.8** (eighteen linked public packages). Persisted schema **1.0**. `origin/main` at `4a1cd87`.
 
-## Active train — v6.17.8 closeout + trust-boundary
+## Active train — v6.18.0 safe adoption
 
-1. Land #340 strict `clean --keep` validation
-2. Untrusted-trace MCP `instructions` + tool warnings + adversarial tests
-3. Close completed issues (#67/#164/#165/#222) when acceptance confirmed
-4. Attempt #297/#306; defer to 6.18 preflight if not clean
-5. Trusted Publish 6.17.8 via Changesets
+Chunks on `main` (pending Version Packages):
 
-## Later (authorized after 6.17.8)
+| Chunk | Status |
+| --- | --- |
+| A same-output/wrong-path | done `#346` |
+| B #307 / #213 packed E2E | done `#347` |
+| C #311 preview parity | done `#353` |
+| D+E #328/#329 residual + policy | done `#351` |
+| F #330 errors-only tree | done `#348` |
+| G capture-path docs | done `#349` |
+| H #295 VS Code | deferred (Option A in `docs/VSCODE.md`) |
 
-- **6.18.0** — differentiation starter, #307/#213, #328/#329, #330, capture-path docs, #295 scope
-  - #311 shared adapter preview capture: implemented (changeset `618-adapter-preview-parity`); close the issue after 6.18.0 publishes
-- **6.19.0** — TraceReader authoring, derived failure roles, architectural-intent interop, prior-context refs
+Blocker cleared by this branch: `pack:smoke` must assert preview is enabled (not `AI_ADAPTER_PREVIEW_NOT_AVAILABLE`).
+
+## Later
+
+- **6.19.0** — PR `#354` held until 6.18.0 publishes
 - **6.20–6.22** — roadmap/labels only in this run
 
 ## Issue design state (no email gates)
