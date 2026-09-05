@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.17.7"
-publishedVersion: "6.17.7"
+baselineVersion: "6.17.8"
+publishedVersion: "6.17.8"
 currentTrain: "v6.17.8-closeout-trust"
 trainStatus: "in-progress"
 executionMode: "maintainer-reviewed"

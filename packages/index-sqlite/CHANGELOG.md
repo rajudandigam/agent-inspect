@@ -1,5 +1,17 @@
 # @agent-inspect/index-sqlite
 
+## 6.17.8
+
+### Patch Changes
+
+- ddea9ea: Strictly validate `clean --keep` as a complete positive decimal integer token before planning deletions, so malformed values like `1.5`, `1e2`, or `10oops` fail closed instead of partial-parsing (#339, #340).
+- b855436: Clarify `doctor` remediations with doc links for packed-consumer install mistakes, and land contributor regression coverage for packed-adapter golden paths, TraceFacts schema parity, and MCP protocol-state fixtures (#296, #305, #294, #302).
+- 18941d0: Treat trace-derived MCP content as untrusted application data: advertise `instructions` on initialize, warn on trace-bearing tool descriptions, and add adversarial no-execution coverage (#344).
+- Updated dependencies [ddea9ea]
+- Updated dependencies [b855436]
+- Updated dependencies [18941d0]
+  - agent-inspect@6.17.8
+
 ## 6.17.7
 
 ### Patch Changes

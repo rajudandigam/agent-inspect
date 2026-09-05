@@ -1,12 +1,12 @@
 {
   "name": "agent-inspect",
-  "version": "6.17.7",
+  "version": "6.17.8",
   "schemaVersion": "1.0",
   "category": "Local-first evidence for TypeScript AI agents",
   "headline": "See what your agent did. Catch the wrong path in CI. Keep the evidence local.",
   "supportingSentence": "AgentInspect turns TypeScript agent runs into readable execution trees, deterministic trajectory checks, and portable Evidence v2—without requiring an account, collector, or default upload.",
   "outcome": "Capture once. Debug, prevent, and share from the same local trace.",
-  "statusLine": "Current release: 6.17.7 · schema 1.0 · Node.js 20+ · MIT · actively maintained",
+  "statusLine": "Current release: 6.17.8 · schema 1.0 · Node.js 20+ · MIT · actively maintained",
   "pillars": [
     {
       "id": "debug",
