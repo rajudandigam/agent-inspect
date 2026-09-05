@@ -394,13 +394,13 @@ function classifyRedactionDetector(detector: string): {
 }
 
 function redactionOptionsFromPolicy(policy: CompiledRedactionPolicy | undefined): {
-  extraKeys?: readonly string[];
-  detectors?: readonly RedactionDetector[];
+  extraKeys?: string[];
+  detectors?: RedactionDetector[];
 } {
   if (policy === undefined) return {};
   return {
-    ...(policy.extraKeys.length > 0 ? { extraKeys: policy.extraKeys } : {}),
-    ...(policy.detectors.length > 0 ? { detectors: policy.detectors } : {}),
+    ...(policy.extraKeys.length > 0 ? { extraKeys: [...policy.extraKeys] } : {}),
+    ...(policy.detectors.length > 0 ? { detectors: [...policy.detectors] } : {}),
   };
 }
 

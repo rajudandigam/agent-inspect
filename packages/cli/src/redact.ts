@@ -101,8 +101,8 @@ function applyRedact(
 ): { value: unknown; findings: RedactionFinding[] } {
   const result = createRedactor({
     profile,
-    ...(policy?.extraKeys.length ? { extraKeys: policy.extraKeys } : {}),
-    ...(policy?.detectors.length ? { detectors: policy.detectors } : {}),
+    ...(policy?.extraKeys.length ? { extraKeys: [...policy.extraKeys] } : {}),
+    ...(policy?.detectors.length ? { detectors: [...policy.detectors] } : {}),
   }).redact(value);
   return { value: result.value, findings: result.findings };
 }
