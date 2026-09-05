@@ -129,6 +129,20 @@ describe("clean", () => {
     logSpy.mockRestore();
   });
 
+  it("--keep accepts trimmed decimal counts with leading zeros", async () => {
+    const now = Date.now();
+    await writeTrace(traceDir, "run_leading_zero_old", "old", now - 20_000);
+    await writeTrace(traceDir, "run_leading_zero_new", "new", now - 10_000);
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await clean({ dir: traceDir, keep: " 001 ", dryRun: true });
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(process.exitCode).not.toBe(1);
+    expect(out).toContain("run_leading_zero_old.jsonl");
+    expect(out).not.toContain("run_leading_zero_new.jsonl");
+    logSpy.mockRestore();
+  });
+
   it("dry-run deletes nothing", async () => {
     const now = Date.now();
     await writeTrace(traceDir, "run_a", "a", now - 3_600_000);
@@ -176,11 +190,40 @@ describe("clean", () => {
     errSpy.mockRestore();
   });
 
-  it("invalid --keep fails clearly", async () => {
+  it("invalid --keep fails clearly without deleting traces", async () => {
+    const now = Date.now();
+    await writeTrace(traceDir, "run_invalid_keep_old", "old", now - 20_000);
+    await writeTrace(traceDir, "run_invalid_keep_new", "new", now - 10_000);
+
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    await clean({ dir: traceDir, keep: "0", dryRun: true });
-    expect(process.exitCode).toBe(1);
-    expect(errSpy.mock.calls.some((c) => String(c[0]).includes("Invalid --keep"))).toBe(true);
+    const invalidValues = [
+      "0",
+      "000",
+      "-1",
+      "+1",
+      "1.0",
+      "1.5",
+      "10oops",
+      "1e2",
+      "0x10",
+      "Infinity",
+      "NaN",
+      String(Number.MAX_SAFE_INTEGER + 1),
+    ];
+
+    for (const keep of invalidValues) {
+      process.exitCode = 0;
+      errSpy.mockClear();
+
+      await clean({ dir: traceDir, keep, yes: true });
+
+      expect(process.exitCode).toBe(1);
+      expect(errSpy.mock.calls.some((c) => String(c[0]).includes("Invalid --keep"))).toBe(true);
+      expect(await readdir(traceDir)).toEqual(
+        expect.arrayContaining(["run_invalid_keep_old.jsonl", "run_invalid_keep_new.jsonl"]),
+      );
+    }
+
     errSpy.mockRestore();
   });
 
