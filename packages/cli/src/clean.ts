@@ -18,13 +18,15 @@ export interface CleanOptions {
   yes?: boolean;
 }
 
+const DECIMAL_INTEGER_PATTERN = /^\d+$/;
+
 function parseKeep(raw?: string): number {
   const trimmed = typeof raw === "string" ? raw.trim() : "";
-  if (trimmed === "") {
+  if (!DECIMAL_INTEGER_PATTERN.test(trimmed)) {
     throw new Error(`Invalid --keep value: ${raw}. Provide a positive integer.`);
   }
-  const n = Number.parseInt(trimmed, 10);
-  if (!Number.isFinite(n) || n <= 0) {
+  const n = Number(trimmed);
+  if (!Number.isSafeInteger(n) || n <= 0) {
     throw new Error(`Invalid --keep value: ${raw}. Provide a positive integer.`);
   }
   return n;
