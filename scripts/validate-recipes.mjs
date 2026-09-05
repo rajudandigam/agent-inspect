@@ -52,6 +52,8 @@ const RECIPES = [
   "cohort-baseline-candidate",
   "github-actions-gate",
   "langgraph-gate-evidence",
+  "external-persisted-session-reader",
+  "architectural-intent-trace",
 ];
 
 const LOG_RECIPE_FILES = {

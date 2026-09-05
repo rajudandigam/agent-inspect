@@ -1,0 +1,6 @@
+format: synthetic-session-json
+events: 2
+warnings: synthetic_session_unsupported_event_type
+unsupportedFields: events[2].type
+finishedTools: lookup_policy
+ok

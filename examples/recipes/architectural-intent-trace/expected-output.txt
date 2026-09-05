@@ -1,0 +1,4 @@
+architecturalIntent schemaVersion: 0.2
+decisionIds: adr-014
+verdict: fail
+Intent recorded beside execution evidence (no producer validation in core).

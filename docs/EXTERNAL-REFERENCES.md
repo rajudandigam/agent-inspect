@@ -33,6 +33,36 @@ The external policy system owns `decision_123`; AgentInspect retains only the id
 
 AgentInspect does not define an `externalReferences` schema field or public API. Do not add that shape to persisted events unless a future published schema explicitly supports it.
 
+## Bounded prior-context references
+
+When a run consulted prior session or event evidence owned by another local tool (for example a context store), retain **references only**:
+
+```json
+{
+  "priorContextReferences": [
+    {
+      "source": "ctx",
+      "sessionId": "session-123",
+      "eventIds": ["event-7", "event-9"],
+      "digest": {
+        "algorithm": "sha256",
+        "value": "…"
+      }
+    }
+  ]
+}
+```
+
+Rules:
+
+- Reference ids and digests only — do not copy raw transcripts by default.
+- Do not add a second SQLite / history index inside AgentInspect for these pointers.
+- No `ctx` (or other store) dependency in core and no network lookup of the referenced bytes.
+- Prior-context references are **not** workflow-causality edges (`retryOf`, `handoffFrom`, …).
+- A digest binds to bytes supplied elsewhere; it is not proof of identity or truth.
+
+Attach under ordinary run/step `metadata` when needed. Omit the field when the producer cannot populate it honestly.
+
 ## Safe to retain
 
 Subject to your own data-handling policy, suitable pointer-style values include:

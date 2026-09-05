@@ -514,6 +514,7 @@ import type { TraceReader } from "agent-inspect/readers";
 - **`openInferenceJsonReader`**: local OpenInference JSON compatibility reader. Prompt/output-like attributes are summarized and bounded rather than stored as raw content.
 - **`otlpJsonReader`**: local OTLP/HTTP JSON trace payload reader. Resource, scope, span, status, event, and parent metadata are preserved where possible with warnings for unsupported fields.
 - **`DEFAULT_TRACE_READERS`**: ordered built-in reader registry used when no custom `readers` array is supplied.
+- **Custom readers**: implement `TraceReader` and pass `{ readers: [myReader, ...DEFAULT_TRACE_READERS] }` — see [CUSTOM-TRACE-READER.md](./CUSTOM-TRACE-READER.md).
 
 The reader contract does not silently accept arbitrary JSON and does not add OTel SDK, database, hosted ingestion, or network upload dependencies. See also [PROGRAMMATIC-TRACE-ANALYSIS.md](./PROGRAMMATIC-TRACE-ANALYSIS.md).
 
@@ -536,7 +537,7 @@ import type { TraceCheckRule, TraceCheckResult, TraceFacts } from "agent-inspect
 ```
 
 - **`runTraceChecks({ read }, { rules?, select?, runId? })`**: executes provided rules against a `TraceReadResult` from `agent-inspect/readers`.
-- **`buildTraceFacts(read | events)`**: experimental TraceFacts over logical projection; accepts `TraceReadResult` or normalized `PersistedInspectEvent[]`.
+- **`buildTraceFacts(read | events)`**: experimental TraceFacts over logical projection; accepts `TraceReadResult` or normalized `PersistedInspectEvent[]`. Additive 6.19 fields: `failureFacts`, `failuresByRole`, `summary.failureRoleCounts`.
 - **`defineTraceContract` / `evaluateTraceContract` / `evaluateTraceContractRead`**: experimental contract helpers; `evaluateTraceContractRead(read, contract)` wraps `{ read }`.
 - **`formatProgrammaticDiagnostic` / `PROGRAMMATIC_DIAGNOSTIC_SPECS`**: stable `AI_*` codes with remediation hints.
 - **Built-in rule factories**: run, tool, LLM, structure, retrieval, guardrail, decision, safety, and baseline helpers including `createRunStatusRule`, `createToolUsageRule`, `createLlmUsageRule`, `createStructureOrphanRule`, `createStructureCycleRule`, `createStructureRelationshipRule`, `createRetrievalRule`, `createGuardrailRule`, `createDecisionRule`, `createSafetyRawContentRule`, `createSafetySecretPatternRule`, and `createBaselineRegressionRule`.

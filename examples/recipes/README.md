@@ -38,7 +38,7 @@ Pick by the job you are doing. Every cell below is derived from the recipe's own
 [NETWORK-BEHAVIOR.md](../../docs/NETWORK-BEHAVIOR.md) — nothing here is asserted
 independently of those sources.
 
-**All 42 recipes need no API key and make no network calls.** They are mocks-only and
+**All 44 recipes need no API key and make no network calls.** They are mocks-only and
 local by construction; the two MCP rows note where network enters once a recipe is
 pointed at something real, per NETWORK-BEHAVIOR.md.
 
@@ -52,6 +52,8 @@ pointed at something real, per NETWORK-BEHAVIOR.md.
 | [deterministic-ci-checks](deterministic-ci-checks) | CI trajectory regression | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-deterministic-ci-checks start` |
 | [eval-ci-artifacts](eval-ci-artifacts) | Gate CI on an eval | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-eval-ci-artifacts start` |
 | [eval-local-checks](eval-local-checks) | Run a local eval | `@agent-inspect/eval`<br>`agent-inspect` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-eval-local-checks start` |
+| [external-persisted-session-reader](external-persisted-session-reader) | Author a custom TraceReader | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-external-persisted-session-reader start` |
+| [architectural-intent-trace](architectural-intent-trace) | Attach architectural-intent metadata | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-architectural-intent-trace start` |
 | [github-actions-artifact](github-actions-artifact) | Keep a CI trace artifact | `agent-inspect` | No | No network | Stable | `pnpm --filter agent-inspect-recipe-github-actions-artifact start` |
 | [github-actions-gate](github-actions-gate) | Gate CI on a contract | `agent-inspect` | No | No network | Beta <sup>Suites / cohorts / gates; TraceContract API</sup> | `pnpm --filter agent-inspect-recipe-github-actions-gate start` |
 | [guardrails-basic](guardrails-basic) | Apply guardrails | `@agent-inspect/guardrails` | No | No network | Supported | `pnpm --filter agent-inspect-recipe-guardrails-basic start` |

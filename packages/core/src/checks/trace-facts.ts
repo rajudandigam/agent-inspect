@@ -8,11 +8,25 @@ import type { TraceReadResult } from "../readers/index.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
 import { formatProgrammaticDiagnostic } from "../diagnostics/programmatic.js";
 import {
+  deriveFailureFacts,
+  type DerivedFailureFact,
+  type DerivedFailureRole,
+  type FailureRoleCounts,
+} from "./derived-failure.js";
+import {
   projectLogicalEvents,
   resolveCanonicalToolName,
   type LogicalProjectionDiagnostic,
   type LogicalTraceEvent,
 } from "./logical-events.js";
+
+export type {
+  DerivedFailureConfidence,
+  DerivedFailureFact,
+  DerivedFailureRole,
+  FailureRoleCounts,
+} from "./derived-failure.js";
+export { deriveFailureFacts } from "./derived-failure.js";
 
 /**
  * Bounded semantic counts shared by check / contract / MCP / Evidence consumers.
@@ -28,6 +42,12 @@ export interface SemanticParitySummary {
   readonly pairedCount: number;
   readonly parentRemapCount: number;
   readonly diagnostics: readonly LogicalProjectionDiagnostic[];
+  /**
+   * Bounded derived failure role counts (6.19+). Additive; older readers ignore.
+   *
+   * @experimental
+   */
+  readonly failureRoleCounts?: FailureRoleCounts;
 }
 
 /**
@@ -46,6 +66,7 @@ export function summarizeSemanticParity(
   const finishedToolNames = Object.freeze(
     finishedTools.map((event) => resolveCanonicalToolName(event)).sort((a, b) => a.localeCompare(b)),
   );
+  const derived = deriveFailureFacts(logical);
   return {
     rawEventCount: events.length,
     logicalEventCount: logical.length,
@@ -57,6 +78,7 @@ export function summarizeSemanticParity(
       (item) => item.code === "AI_LOGICAL_PARENT_REMAPPED",
     ).length,
     diagnostics: projection.diagnostics,
+    failureRoleCounts: derived.failureRoleCounts,
   };
 }
 
@@ -75,6 +97,21 @@ export interface TraceFacts {
   readonly llmEvents: readonly LogicalTraceEvent[];
   readonly outcomeEvents: readonly LogicalTraceEvent[];
   readonly summary: SemanticParitySummary;
+  /**
+   * Read-time derived failure classifications. Does not rewrite persisted status.
+   *
+   * @experimental Additive in 6.19.
+   */
+  readonly failureFacts: readonly DerivedFailureFact[];
+  /**
+   * Derived failure facts grouped by role.
+   *
+   * @experimental Additive in 6.19.
+   */
+  readonly failuresByRole: ReadonlyMap<
+    DerivedFailureRole,
+    readonly DerivedFailureFact[]
+  >;
 }
 
 const TRACE_FACTS_INPUT_NOT_NORMALIZED = formatProgrammaticDiagnostic(
@@ -179,6 +216,9 @@ export function buildTraceFacts(
     toolsByName.set(name, Object.freeze([...list]) as LogicalTraceEvent[]);
   }
 
+  const derived = deriveFailureFacts(projection.logicalEvents);
+  const summary = summarizeSemanticParity(events);
+
   return {
     rawEvents: Object.freeze([...events]),
     logicalEvents: projection.logicalEvents,
@@ -186,6 +226,11 @@ export function buildTraceFacts(
     toolsByName,
     llmEvents: Object.freeze(llmEvents),
     outcomeEvents: Object.freeze(outcomeEvents),
-    summary: summarizeSemanticParity(events),
+    summary: {
+      ...summary,
+      failureRoleCounts: derived.failureRoleCounts,
+    },
+    failureFacts: derived.failureFacts,
+    failuresByRole: derived.failuresByRole,
   };
 }

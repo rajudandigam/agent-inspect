@@ -1,0 +1,24 @@
+{
+  "sessionId": "session-001",
+  "events": [
+    {
+      "id": "event-1",
+      "type": "model.message",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "name": "planner"
+    },
+    {
+      "id": "event-2",
+      "type": "tool.response",
+      "parentId": "event-1",
+      "createdAt": "2026-01-01T00:00:01.000Z",
+      "toolName": "lookup_policy",
+      "status": "ok"
+    },
+    {
+      "id": "event-3",
+      "type": "unsupported.vendor.signal",
+      "createdAt": "2026-01-01T00:00:02.000Z"
+    }
+  ]
+}

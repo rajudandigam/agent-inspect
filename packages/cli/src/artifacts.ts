@@ -446,6 +446,9 @@ export async function artifactsCommand(
           pairedCount: parity.pairedCount,
           parentRemapCount: parity.parentRemapCount,
           contractStatus: check.status === "pass" ? "pass" : check.status === "fail" ? "fail" : "error",
+          ...(parity.failureRoleCounts !== undefined
+            ? { failureRoleCounts: { ...parity.failureRoleCounts } }
+            : {}),
         },
       });
       await writeArtifact(outputDir, "evidence.html", evidencePackage["evidence.html"], files);
