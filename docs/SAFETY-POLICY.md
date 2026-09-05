@@ -115,9 +115,22 @@ redact(
 );
 ```
 
-CLI custom policy files are **not** supported yet. Do not put secrets on the command line.
-3. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
-4. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
+3. **CLI local policy file** (`--policy <path>` on `redact` / `verify-safe` / `scan`): JSON only, no remote fetch, no secrets on argv. Supports `extraKeys` plus bounded `literal` / `prefix` / `typed` patterns with max count/length and ReDoS protections. The same compiled policy drives redaction and residual/verify-safe detection.
+
+```json
+{
+  "version": 1,
+  "extraKeys": ["houseToken"],
+  "patterns": [
+    { "id": "houseLiteral", "type": "literal", "value": "HOUSE_MARK" },
+    { "id": "housePrefix", "type": "prefix", "value": "hsec_" },
+    { "id": "houseTyped", "type": "typed", "pattern": "hsec_[A-Za-z0-9]{8,24}" }
+  ]
+}
+```
+
+4. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
+5. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
 
 High-confidence built-in credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in redaction profiles. Context-sensitive findings such as private filesystem paths may remain verification-only when automatic erasure would create excessive false positives or destroy legitimate debugging context. `redact` remains best-effort; `verify-safe` remains the final automated local assessment before sharing.
 

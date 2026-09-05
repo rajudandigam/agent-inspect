@@ -5,7 +5,7 @@ import {
   resolveTraceDir,
 } from "@agent-inspect/core/advanced";
 import {
-  redact,
+  createRedactor,
   type RedactionFinding,
   type RedactionProfile,
 } from "@agent-inspect/redact";
@@ -14,6 +14,12 @@ import {
   resolveOutputOption,
   resolveRedactionProfileOption,
 } from "./cli-option-aliases.js";
+import type { CompiledRedactionPolicy } from "./redaction-policy.js";
+import { loadRedactionPolicy } from "./redaction-policy.js";
+import {
+  assessResidualFromContent,
+  type ResidualSafetyAssessment,
+} from "./safety.js";
 import { readStdin } from "./trace-input.js";
 
 export interface RedactCommandOptions {
@@ -23,6 +29,10 @@ export interface RedactCommandOptions {
   output?: string;
   out?: string;
   json?: boolean;
+  /** Local JSON path for bounded custom redaction policy (#329). */
+  policy?: string;
+  /** Opt-in: non-zero exit when residual assessment is UNSAFE or UNKNOWN (#328). */
+  failOnResidual?: boolean;
 }
 
 interface RedactedDocument {
@@ -84,16 +94,37 @@ async function contentFromTarget(
   return { content: await readFile(runPath, "utf-8"), source: runPath };
 }
 
-function redactJsonText(content: string, profile: RedactionProfile): RedactedDocument {
+function applyRedact(
+  value: unknown,
+  profile: RedactionProfile,
+  policy: CompiledRedactionPolicy | undefined,
+): { value: unknown; findings: RedactionFinding[] } {
+  const result = createRedactor({
+    profile,
+    ...(policy?.extraKeys.length ? { extraKeys: policy.extraKeys } : {}),
+    ...(policy?.detectors.length ? { detectors: policy.detectors } : {}),
+  }).redact(value);
+  return { value: result.value, findings: result.findings };
+}
+
+function redactJsonText(
+  content: string,
+  profile: RedactionProfile,
+  policy: CompiledRedactionPolicy | undefined,
+): RedactedDocument {
   const parsed = JSON.parse(content) as unknown;
-  const result = redact(parsed, { profile });
+  const result = applyRedact(parsed, profile, policy);
   return {
     content: `${JSON.stringify(result.value, null, 2)}\n`,
     findings: result.findings,
   };
 }
 
-function redactJsonlText(content: string, profile: RedactionProfile): RedactedDocument {
+function redactJsonlText(
+  content: string,
+  profile: RedactionProfile,
+  policy: CompiledRedactionPolicy | undefined,
+): RedactedDocument {
   const lines = content.split(/\r?\n/);
   const out: string[] = [];
   const findings: RedactionFinding[] = [];
@@ -109,7 +140,7 @@ function redactJsonlText(content: string, profile: RedactionProfile): RedactedDo
       throw new Error(`Input is not valid JSON or JSONL at line ${index + 1}.`);
     }
 
-    const result = redact(parsed, { profile });
+    const result = applyRedact(parsed, profile, policy);
     out.push(JSON.stringify(result.value));
     findings.push(
       ...result.findings.map((finding) => ({
@@ -125,7 +156,11 @@ function redactJsonlText(content: string, profile: RedactionProfile): RedactedDo
   };
 }
 
-function redactDocument(content: string, profile: RedactionProfile): RedactedDocument {
+function redactDocument(
+  content: string,
+  profile: RedactionProfile,
+  policy?: CompiledRedactionPolicy,
+): RedactedDocument {
   const trimmed = content.trim();
   // Single-line AgentInspect events parse as JSON but must stay JSONL for re-read.
   if (trimmed.startsWith("{")) {
@@ -137,16 +172,16 @@ function redactDocument(content: string, profile: RedactionProfile): RedactedDoc
         !Array.isArray(parsed) &&
         ("schemaVersion" in parsed || "eventId" in parsed || "runId" in parsed)
       ) {
-        return redactJsonlText(content, profile);
+        return redactJsonlText(content, profile, policy);
       }
     } catch {
       // fall through
     }
   }
   try {
-    return redactJsonText(content, profile);
+    return redactJsonText(content, profile, policy);
   } catch {
-    return redactJsonlText(content, profile);
+    return redactJsonlText(content, profile, policy);
   }
 }
 
@@ -154,8 +189,46 @@ function redactDocument(content: string, profile: RedactionProfile): RedactedDoc
 export function redactTraceContent(
   content: string,
   profile: RedactionProfile,
+  policy?: CompiledRedactionPolicy,
 ): RedactedDocument {
-  return redactDocument(content, profile);
+  return redactDocument(content, profile, policy);
+}
+
+function looksLikeAgentInspectTrace(content: string): boolean {
+  const trimmed = content.trim();
+  if (!trimmed.startsWith("{")) return false;
+  try {
+    const firstLine = trimmed.split(/\r?\n/).find((line) => line.trim() !== "") ?? trimmed;
+    const parsed = JSON.parse(firstLine) as unknown;
+    return (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed) &&
+      ("schemaVersion" in parsed || "eventId" in parsed || "runId" in parsed)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function printResidualWarning(
+  assessment: ResidualSafetyAssessment,
+  sourceLooksLikeTrace: boolean,
+): void {
+  if (assessment.status === "SAFE") return;
+  // Arbitrary JSON that is not a supported trace yields UNKNOWN; keep human stdout quiet.
+  if (assessment.status === "UNKNOWN" && !sourceLooksLikeTrace) return;
+  const codes =
+    assessment.codes.length > 0 ? ` codes=${assessment.codes.join(",")}` : "";
+  console.error(
+    `Residual safety: ${assessment.status} (findings=${assessment.findings}, warnings=${assessment.warnings}, errors=${assessment.errors})${codes}. Redact does not certify safe sharing; run verify-safe before publishing.`,
+  );
+}
+
+function residualExitCode(assessment: ResidualSafetyAssessment): number {
+  if (assessment.status === "UNSAFE") return 1;
+  if (assessment.status === "UNKNOWN") return 2;
+  return 0;
 }
 
 export async function redactCommand(
@@ -164,12 +237,21 @@ export async function redactCommand(
   stdin: NodeJS.ReadableStream = process.stdin,
 ): Promise<void> {
   const profile = parseRedactionProfile(resolveRedactionProfileOption(options));
+  const policy =
+    options.policy !== undefined ? await loadRedactionPolicy(options.policy) : undefined;
   const source = await contentFromTarget(target, options, stdin);
-  const redacted = redactDocument(source.content, profile);
+  const redacted = redactDocument(source.content, profile, policy);
   const outputPath = resolveOutputOption(options);
+  const residualAssessment = await assessResidualFromContent(redacted.content, {
+    compiledPolicy: policy,
+  });
 
   if (outputPath !== undefined) {
     await writeFile(outputPath, redacted.content, "utf-8");
+  }
+
+  if (options.failOnResidual === true) {
+    process.exitCode = residualExitCode(residualAssessment);
   }
 
   if (options.json) {
@@ -181,6 +263,17 @@ export async function redactCommand(
           source: source.source,
           output: outputPath,
           findings: redacted.findings,
+          residualAssessment,
+          ...(policy !== undefined
+            ? {
+                policy: {
+                  path: policy.path,
+                  extraKeys: policy.extraKeys.length,
+                  patterns: policy.detectors.length,
+                  diagnostics: policy.diagnostics,
+                },
+              }
+            : {}),
           content: outputPath === undefined ? redacted.content : undefined,
         }),
         null,
@@ -189,6 +282,8 @@ export async function redactCommand(
     );
     return;
   }
+
+  printResidualWarning(residualAssessment, looksLikeAgentInspectTrace(redacted.content));
 
   if (outputPath === undefined) {
     process.stdout.write(redacted.content);

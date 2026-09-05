@@ -26,6 +26,7 @@ describe("redact command", () => {
   beforeEach(async () => {
     tmp = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-redact-cli-"));
     process.exitCode = 0;
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(async () => {

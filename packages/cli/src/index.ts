@@ -612,6 +612,7 @@ export function createCliProgram(): Command {
     .option("--max-array-length <number>", "unsafe threshold for array values")
     .option("--max-object-keys <number>", "unsafe threshold for object key counts")
     .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
+    .option("--policy <path>", "local JSON redaction policy (extraKeys + bounded patterns)")
     .action((target: string, opts: SafetyCommandOptions) => {
       runCommand(() => scanCommand(target, opts));
     });
@@ -635,6 +636,7 @@ export function createCliProgram(): Command {
     .option("--max-array-length <number>", "unsafe threshold for array values")
     .option("--max-object-keys <number>", "unsafe threshold for object key counts")
     .option("--max-serialized-bytes <number>", "unsafe threshold for serialized values")
+    .option("--policy <path>", "local JSON redaction policy (extraKeys + bounded patterns)")
     .action((target: string, opts: SafetyCommandOptions) => {
       runCommand(() => verifySafeCommand(target, opts));
     });
@@ -1002,6 +1004,11 @@ export function createCliProgram(): Command {
     .option("-o, --output <path>", "write redacted content to a file")
     .option("--out <path>", "alias for --output")
     .option("--json", "print deterministic JSON wrapper with findings")
+    .option("--policy <path>", "local JSON redaction policy (extraKeys + bounded patterns)")
+    .option(
+      "--fail-on-residual",
+      "exit non-zero when residual safety is UNSAFE or UNKNOWN (opt-in)",
+    )
     .action((target: string, opts: RedactCommandOptions) => {
       runCommand(() => redactCommand(target, opts));
     });

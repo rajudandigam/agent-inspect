@@ -445,12 +445,17 @@ Options:
 - `--profile <local|share|strict>`: redaction profile (default `share`)
 - `-o, --output <path>`: write redacted content to a file
 - `--json`: print deterministic JSON wrapper with findings
+- `--policy <path>`: local JSON redaction policy (`extraKeys` + bounded `literal` / `prefix` / `typed` patterns). No remote fetch; no secrets on argv. See [SAFETY-POLICY.md](SAFETY-POLICY.md).
+- `--fail-on-residual`: opt-in non-zero exit when residual safety is `UNSAFE` or `UNKNOWN` (default exit codes unchanged)
+
+After redaction, the command surfaces a **residual safety assessment** using the same local detector pipeline as `verify-safe`. Human mode prints a concise stderr warning when residual status is not `SAFE`. JSON mode adds an additive `residualAssessment` field (`status`, finding counts, codes only — never matched secret values). Residual status uses `SAFE` | `SAFE_WITH_WARNINGS` | `UNSAFE` | `UNKNOWN`. Supported AgentInspect traces get a full assessment; arbitrary JSON that is not a supported trace yields `UNKNOWN`. Redact never certifies safe sharing — finish with `verify-safe` before publishing.
 
 Examples:
 
 ```bash
 npx agent-inspect redact trace.jsonl --profile share --json
 npx agent-inspect redact trace.jsonl --profile strict -o trace.share.jsonl
+npx agent-inspect redact trace.jsonl --policy ./redact-policy.json --fail-on-residual
 ```
 
 Recipe: [redact-share-safe-file](../examples/recipes/redact-share-safe-file/README.md).
@@ -486,6 +491,7 @@ Options:
 - `--max-array-length <number>`: unsafe threshold for array values
 - `--max-object-keys <number>`: unsafe threshold for object key counts
 - `--max-serialized-bytes <number>`: unsafe threshold for serialized values
+- `--policy <path>`: local JSON redaction policy shared with `redact` (`extraKeys` + bounded patterns)
 
 The scan looks for raw prompt/output-like capture paths, unredacted sensitive-looking keys, secret-like string patterns, and oversized values. It reports evidence paths rather than raw prompt, output, request/response, header, API key, secret, or full tool payload values. Secret detection is best-effort and should not be treated as exhaustive.
 
