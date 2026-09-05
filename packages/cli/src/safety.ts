@@ -15,9 +15,16 @@ import {
   type TraceCheckFinding,
   type TraceCheckRule,
 } from "@agent-inspect/core/checks";
-import { redact, type RedactionFinding, type RedactionProfile } from "@agent-inspect/redact";
+import {
+  createRedactor,
+  type RedactionDetector,
+  type RedactionFinding,
+  type RedactionProfile,
+} from "@agent-inspect/redact";
 
 import { redactTraceContent } from "./redact.js";
+import type { CompiledRedactionPolicy } from "./redaction-policy.js";
+import { loadRedactionPolicy } from "./redaction-policy.js";
 import { inputFromTarget } from "./trace-input.js";
 
 export interface SafetyCommandOptions {
@@ -32,10 +39,31 @@ export interface SafetyCommandOptions {
   maxSerializedBytes?: string;
   /** Redaction profile used when deriving the artifact assessment (verify-safe). */
   redactionProfile?: RedactionProfile;
+  /** Local JSON path for bounded custom redaction policy (#329). */
+  policy?: string;
+  /** Pre-compiled policy (tests / shared redact+verify path). */
+  compiledPolicy?: CompiledRedactionPolicy;
 }
 
 type SafetyStatus = "SAFE" | "SAFE WITH WARNINGS" | "UNSAFE" | "UNKNOWN";
 type SafetyCommandName = "scan" | "verify-safe";
+
+/** Residual assessment status after redact (#328); underscore form for JSON stability. */
+export type ResidualSafetyStatus =
+  | "SAFE"
+  | "SAFE_WITH_WARNINGS"
+  | "UNSAFE"
+  | "UNKNOWN";
+
+/** Compact residual assessment: counts and codes only — never secret values. */
+export interface ResidualSafetyAssessment {
+  status: ResidualSafetyStatus;
+  findings: number;
+  warnings: number;
+  errors: number;
+  codes: string[];
+  note: string;
+}
 
 interface SafetyDiagnostic {
   code: string;
@@ -365,21 +393,37 @@ function classifyRedactionDetector(detector: string): {
   return { category: "credential", confidence: "medium" };
 }
 
+function redactionOptionsFromPolicy(policy: CompiledRedactionPolicy | undefined): {
+  extraKeys?: string[];
+  detectors?: RedactionDetector[];
+} {
+  if (policy === undefined) return {};
+  return {
+    ...(policy.extraKeys.length > 0 ? { extraKeys: [...policy.extraKeys] } : {}),
+    ...(policy.detectors.length > 0 ? { detectors: [...policy.detectors] } : {}),
+  };
+}
+
 function redactionDetectorFindings(
   read: Awaited<ReturnType<typeof openTrace>>,
   runId: string | undefined,
+  policy?: CompiledRedactionPolicy,
 ): TraceCheckFinding[] {
   const runs = runId === undefined
     ? read.runs
     : read.runs.filter((run) => run.runId === runId);
   const out: TraceCheckFinding[] = [];
+  const policyOptions = redactionOptionsFromPolicy(policy);
 
   for (const run of runs) {
     for (const node of flattenNodes(run.children)) {
       const attrs = node.event.attributes;
       if (attrs === undefined) continue;
 
-      const result = redact(attrs, { profile: "share" });
+      const result = createRedactor({
+        profile: "share",
+        ...policyOptions,
+      }).redact(attrs);
       for (const finding of result.findings) {
         if (finding.action === "keep") continue;
         const taxonomy = classifyRedactionDetector(finding.detector);
@@ -426,6 +470,72 @@ function exitCodeFor(result: SafetyResult): number {
   if (result.status === "SAFE" || result.status === "SAFE WITH WARNINGS") return 0;
   if (result.status === "UNSAFE") return 1;
   return 2;
+}
+
+function toResidualStatus(status: SafetyStatus): ResidualSafetyStatus {
+  if (status === "SAFE WITH WARNINGS") return "SAFE_WITH_WARNINGS";
+  return status;
+}
+
+/** Map a full safety result into a residual assessment (no secret values). */
+export function toResidualSafetyAssessment(result: {
+  status: SafetyStatus;
+  summary: SafetySummary;
+  diagnostics: readonly SafetyDiagnostic[];
+  findings: readonly TraceCheckFinding[];
+}): ResidualSafetyAssessment {
+  const codes = [
+    ...new Set([
+      ...result.diagnostics.map((item) => item.code),
+      ...result.findings.map((item) => item.ruleId),
+    ]),
+  ].sort((a, b) => a.localeCompare(b));
+  return {
+    status: toResidualStatus(result.status),
+    findings: result.summary.findings,
+    warnings: result.summary.warnings,
+    errors: result.summary.errors,
+    codes,
+    note: BEST_EFFORT_NOTE,
+  };
+}
+
+/**
+ * Assess residual safety on already-redacted content using the canonical
+ * verify-safe detector pipeline. Supported AgentInspect traces get full
+ * assessment; arbitrary JSON that cannot be opened as a trace yields UNKNOWN.
+ */
+export async function assessResidualFromContent(
+  content: string,
+  options: SafetyCommandOptions = {},
+): Promise<ResidualSafetyAssessment> {
+  try {
+    const policy =
+      options.compiledPolicy ??
+      (options.policy !== undefined ? await loadRedactionPolicy(options.policy) : undefined);
+    const read = await openTrace(
+      { type: "string", content },
+      { format: options.format ?? "agent-inspect-jsonl" },
+    );
+    const result = assessOpenedTrace(read, {
+      ...options,
+      ...(policy !== undefined ? { compiledPolicy: policy } : {}),
+    });
+    return toResidualSafetyAssessment(result);
+  } catch (error) {
+    if (error instanceof TraceReadError) {
+      return toResidualSafetyAssessment(readErrorResult("verify-safe", error));
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      status: "UNKNOWN",
+      findings: 0,
+      warnings: 0,
+      errors: 1,
+      codes: ["AI_SAFETY_TRACE_UNREADABLE"],
+      note: `${BEST_EFFORT_NOTE} Residual assessment requires a supported AgentInspect trace; ${message}`,
+    };
+  }
 }
 
 function explainFinding(finding: TraceCheckFinding, blocksBundle: boolean): string[] {
@@ -519,12 +629,19 @@ async function safetyCommand(
   let result: SafetyResult;
 
   try {
-    const input = await inputFromTarget(target, options, stdin);
+    const policy =
+      options.compiledPolicy ??
+      (options.policy !== undefined ? await loadRedactionPolicy(options.policy) : undefined);
+    const optionsWithPolicy: SafetyCommandOptions = {
+      ...options,
+      ...(policy !== undefined ? { compiledPolicy: policy } : {}),
+    };
+    const input = await inputFromTarget(target, optionsWithPolicy, stdin);
     const read = await openTrace(input, {
       ...(options.format !== undefined ? { format: options.format } : {}),
     });
     const source = assessOpenedTrace(read, {
-      ...options,
+      ...optionsWithPolicy,
       ...(options.run !== undefined ? { runId: options.run } : {}),
     });
     if (command === "scan") {
@@ -546,7 +663,7 @@ async function safetyCommand(
           sourceAssessment: layerFromResult(source),
         };
       } else {
-        const redacted = redactTraceContent(rawContent, profile);
+        const redacted = redactTraceContent(rawContent, profile, policy);
         // Reader labels (e.g. agent-inspect-v0.2-jsonl) are not registered format ids;
         // re-open redacted content with the canonical JSONL reader id.
         const artifactRead = await openTrace(
@@ -554,7 +671,7 @@ async function safetyCommand(
           { format: options.format ?? "agent-inspect-jsonl" },
         );
         const artifact = assessOpenedTrace(artifactRead, {
-          ...options,
+          ...optionsWithPolicy,
           ...(options.run !== undefined ? { runId: options.run } : {}),
         });
         const detectors = [
@@ -581,7 +698,7 @@ async function safetyCommand(
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    result = message.startsWith("--")
+    result = message.startsWith("--") || message.includes("--policy")
       ? invalidArgumentResult(command, error)
       : readErrorResult(command, error);
   }
@@ -624,7 +741,7 @@ export function assessOpenedTrace(
     );
     const detectorFindings =
       checkResult.diagnostics.length === 0
-        ? redactionDetectorFindings(read, checkResult.runId)
+        ? redactionDetectorFindings(read, checkResult.runId, options.compiledPolicy)
         : [];
     return resultFromParts({
       command: "verify-safe",
