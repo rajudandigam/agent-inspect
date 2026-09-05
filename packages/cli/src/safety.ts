@@ -15,9 +15,14 @@ import {
   type TraceCheckFinding,
   type TraceCheckRule,
 } from "@agent-inspect/core/checks";
-import { redact, type RedactionFinding, type RedactionProfile } from "@agent-inspect/redact";
+import type { RedactionFinding, RedactionProfile } from "@agent-inspect/redact";
 
-import { redactTraceContent } from "./redact.js";
+import { redactTraceContent, redactValueWithPolicy } from "./redact-content.js";
+import {
+  loadRedactionPolicy,
+  summarizeRedactionPolicy,
+  type CompiledRedactionPolicy,
+} from "./redaction-policy.js";
 import { inputFromTarget } from "./trace-input.js";
 
 export interface SafetyCommandOptions {
@@ -32,6 +37,10 @@ export interface SafetyCommandOptions {
   maxSerializedBytes?: string;
   /** Redaction profile used when deriving the artifact assessment (verify-safe). */
   redactionProfile?: RedactionProfile;
+  /** Local bounded redaction policy file path (parsed by the command entry point). */
+  policyPath?: string;
+  /** Already-compiled local redaction policy (additive; never disables built-ins). */
+  policy?: CompiledRedactionPolicy;
 }
 
 type SafetyStatus = "SAFE" | "SAFE WITH WARNINGS" | "UNSAFE" | "UNKNOWN";
@@ -78,6 +87,8 @@ interface SafetyResult {
   sourceAssessment?: SafetyLayerAssessment;
   artifactAssessment?: SafetyLayerAssessment;
   redactionSummary?: SafetyRedactionSummary;
+  /** Present when a local bounded redaction policy was supplied with `--policy`. */
+  policy?: ReturnType<typeof summarizeRedactionPolicy>;
 }
 
 const BEST_EFFORT_NOTE =
@@ -368,6 +379,7 @@ function classifyRedactionDetector(detector: string): {
 function redactionDetectorFindings(
   read: Awaited<ReturnType<typeof openTrace>>,
   runId: string | undefined,
+  policy: CompiledRedactionPolicy | undefined,
 ): TraceCheckFinding[] {
   const runs = runId === undefined
     ? read.runs
@@ -379,7 +391,7 @@ function redactionDetectorFindings(
       const attrs = node.event.attributes;
       if (attrs === undefined) continue;
 
-      const result = redact(attrs, { profile: "share" });
+      const result = redactValueWithPolicy(attrs, "share", policy);
       for (const finding of result.findings) {
         if (finding.action === "keep") continue;
         const taxonomy = classifyRedactionDetector(finding.detector);
@@ -479,6 +491,11 @@ function printHuman(result: SafetyResult, explain = false): void {
       );
     }
   }
+  if (result.policy !== undefined) {
+    console.log(
+      `Policy: ${result.policy.source} (sensitiveKeys=${result.policy.sensitiveKeys}, valuePatterns=${result.policy.valuePatterns})`,
+    );
+  }
   console.log(
     `Summary: ${result.summary.findings} finding(s), ${result.summary.warnings} warning(s), ${result.summary.errors} error(s)`,
   );
@@ -517,14 +534,20 @@ async function safetyCommand(
   stdin: NodeJS.ReadableStream,
 ): Promise<void> {
   let result: SafetyResult;
+  let policy: CompiledRedactionPolicy | undefined;
 
   try {
+    policy =
+      options.policyPath === undefined
+        ? undefined
+        : await loadRedactionPolicy(options.policyPath);
     const input = await inputFromTarget(target, options, stdin);
     const read = await openTrace(input, {
       ...(options.format !== undefined ? { format: options.format } : {}),
     });
     const source = assessOpenedTrace(read, {
       ...options,
+      ...(policy !== undefined ? { policy } : {}),
       ...(options.run !== undefined ? { runId: options.run } : {}),
     });
     if (command === "scan") {
@@ -546,7 +569,7 @@ async function safetyCommand(
           sourceAssessment: layerFromResult(source),
         };
       } else {
-        const redacted = redactTraceContent(rawContent, profile);
+        const redacted = redactTraceContent(rawContent, profile, policy);
         // Reader labels (e.g. agent-inspect-v0.2-jsonl) are not registered format ids;
         // re-open redacted content with the canonical JSONL reader id.
         const artifactRead = await openTrace(
@@ -555,6 +578,7 @@ async function safetyCommand(
         );
         const artifact = assessOpenedTrace(artifactRead, {
           ...options,
+          ...(policy !== undefined ? { policy } : {}),
           ...(options.run !== undefined ? { runId: options.run } : {}),
         });
         const detectors = [
@@ -584,6 +608,10 @@ async function safetyCommand(
     result = message.startsWith("--")
       ? invalidArgumentResult(command, error)
       : readErrorResult(command, error);
+  }
+
+  if (policy !== undefined) {
+    result = { ...result, policy: summarizeRedactionPolicy(policy) };
   }
 
   process.exitCode = exitCodeFor(result);
@@ -624,7 +652,7 @@ export function assessOpenedTrace(
     );
     const detectorFindings =
       checkResult.diagnostics.length === 0
-        ? redactionDetectorFindings(read, checkResult.runId)
+        ? redactionDetectorFindings(read, checkResult.runId, options.policy)
         : [];
     return resultFromParts({
       command: "verify-safe",

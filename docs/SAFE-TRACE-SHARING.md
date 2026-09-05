@@ -6,7 +6,7 @@ AgentInspect traces, log-ingest outputs, and exports are local files. They may s
 
 This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **best-effort transformation**, not compliance-grade DLP or a safety certification. Always finish with `verify-safe` before sharing.
 
-Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and require human review. Org-specific patterns need programmatic custom detectors today; a bounded local CLI policy is proposed separately and is not yet supported.
+Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and require human review. Org-specific patterns can be added programmatically with custom detectors, or from the CLI with a bounded local policy file (`--policy`, 6.18+); see [SAFETY-POLICY.md](./SAFETY-POLICY.md#bounded-local-cli-policy-618).
 
 `strict` is a stricter **rule set** (more keys), not a promise that every input produces bytes different from `share`.
 
@@ -60,7 +60,7 @@ Replace sensitive data with clear placeholders such as `example.test`, `user@exa
 
 - Markdown / HTML exports: review rendered text and copied snippets, not only the source trace.
 - Eval JSON / Markdown: review failed-rule messages, expected/actual summaries, source IDs, and evidence paths before attaching them to PRs or issues.
-- Redacted copies from `agent-inspect redact`: review the output file itself; findings show detector/path/action evidence but do not certify full safety.
+- Redacted copies from `agent-inspect redact`: review the output file itself; findings show detector/path/action evidence but do not certify full safety. The `residualAssessment` field (6.18+) reports what `verify-safe` would still flag in the redacted copy; `--fail-on-residual` turns that into a non-zero exit in CI.
 - OpenInference / OTLP JSON exports: check attributes, span names, events, and resource metadata.
 - Structured log ingest configs: confirm mapped keys do not pull in full request bodies, headers, raw prompts, or unbounded output fields.
 - LangChain adapter traces: keep `capture: "metadata-only"` for shareable examples; review `capture: "preview"` traces carefully because previews can include prompt or output fragments.

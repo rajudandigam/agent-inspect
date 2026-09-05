@@ -58,7 +58,7 @@ import {
   resolveOutputOption,
   resolveRedactionProfileOption,
 } from "./cli-option-aliases.js";
-import { redactTraceContent } from "./redact.js";
+import { redactTraceContent } from "./redact-content.js";
 import { assessOpenedTrace } from "./safety.js";
 import { loadSessionRuns } from "./sessions-load.js";
 
