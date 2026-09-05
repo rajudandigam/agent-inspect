@@ -62,25 +62,34 @@ export interface TraceContractToolRules {
   allowed?: string[];
   maxCalls?: number;
   /**
-   * Required tool order as adjacent first-occurrence pairs (start/encounter order).
+   * Required tool order expanded into adjacent pairs.
    *
    * `[A, B, C]` expands to “A before B” and “B before C”, each comparing the
-   * first occurrence of the named tool. Unlisted intermediate tools are
-   * allowed. Later repetitions do not invalidate an earlier valid order.
+   * selected `requiredOrderMode` to every pair. Unlisted intermediate tools
+   * are allowed.
    *
    * TraceContract `requiredOrder` **implies presence**: every listed name is
    * added to the effective required-tool set. Low-level `createToolOrderingRule`
    * alone may still pass vacuously when an endpoint is missing.
    *
-   * This is **not** causal happens-before. Overlapping intervals emit a
-   * non-failing overlap warning. Planned modes (6.20.0, GitHub #308):
-   * `happens-before`, `all-occurrences`.
+   * The default `first-occurrence` mode preserves first-occurrence encounter
+   * ordering; overlapping intervals emit a non-failing warning. `happens-before`
+   * requires the first before event to finish before the first after event starts.
+   * `all-occurrences` applies that causal boundary to every occurrence.
    *
    * @see docs/TRACE-CONTRACTS.md
    * @beta Available through `agent-inspect/checks`. Additive changes may ship
    * in minor releases; breaking changes require a future major.
    */
   requiredOrder?: string[];
+  /**
+   * Ordering semantics applied to every adjacent pair in `requiredOrder`.
+   * Causal modes fail closed when a required interval boundary is unavailable.
+   *
+   * @defaultValue `"first-occurrence"`
+   * @beta Available through `agent-inspect/checks`.
+   */
+  requiredOrderMode?: "first-occurrence" | "happens-before" | "all-occurrences";
 }
 
 export interface TraceContractLlmRules {
@@ -195,6 +204,7 @@ function contractToRules(contract: TraceContract): TraceCheckRule[] {
 
   if (contract.tools) {
     const order = contract.tools.requiredOrder ?? [];
+    const requiredOrderMode = contract.tools.requiredOrderMode ?? "first-occurrence";
     const required = [
       ...new Set([
         ...(contract.tools.required ?? []),
@@ -220,6 +230,7 @@ function contractToRules(contract: TraceContract): TraceCheckRule[] {
           before: order[i]!,
           after: order[i + 1]!,
           id: `contract.tool.order.${i}`,
+          mode: requiredOrderMode,
         }),
       );
     }

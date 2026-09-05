@@ -26,6 +26,22 @@ function persisted(
   };
 }
 
+function tool(
+  eventId: string,
+  name: string,
+  startedAt: string,
+  endedAt: string,
+): PersistedInspectEvent {
+  return persisted(eventId, {
+    kind: "TOOL",
+    name: `tool:${name}`,
+    attributes: { toolName: name },
+    timestamp: startedAt,
+    startedAt,
+    endedAt,
+  });
+}
+
 function node(event: PersistedInspectEvent): InspectNode {
   return {
     event: {
@@ -174,6 +190,177 @@ describe("trace contract", () => {
       const failed = failFindings(result);
       expect(failed).toHaveLength(1);
       expect(failed[0]?.message).toContain("incomplete running events");
+    });
+  });
+
+  describe("tools.requiredOrder modes", () => {
+    const retrieve1 = tool(
+      "retrieve-1",
+      "retrieve",
+      "2026-07-11T00:00:00.000Z",
+      "2026-07-11T00:00:01.000Z",
+    );
+    const generate = tool(
+      "generate-1",
+      "generate",
+      "2026-07-11T00:00:02.000Z",
+      "2026-07-11T00:00:03.000Z",
+    );
+    const retrieve2 = tool(
+      "retrieve-2",
+      "retrieve",
+      "2026-07-11T00:00:04.000Z",
+      "2026-07-11T00:00:05.000Z",
+    );
+
+    it("preserves omitted-mode and explicit first-occurrence semantics for repeated calls", () => {
+      const read = readResult("ok", [retrieve1, generate, retrieve2]);
+      const omitted = evaluateTraceContract(
+        { read },
+        defineTraceContract({ tools: { requiredOrder: ["retrieve", "generate"] } }),
+      );
+      const explicit = evaluateTraceContract(
+        { read },
+        defineTraceContract({
+          tools: {
+            requiredOrder: ["retrieve", "generate"],
+            requiredOrderMode: "first-occurrence",
+          },
+        }),
+      );
+
+      expect(omitted.status).toBe("pass");
+      expect(explicit.findings).toEqual(omitted.findings);
+      expect(explicit.ruleExecutions).toEqual(omitted.ruleExecutions);
+    });
+
+    it("propagates causal modes to the generated adjacent rule", () => {
+      const overlapGenerate = {
+        ...generate,
+        startedAt: "2026-07-11T00:00:00.500Z",
+        timestamp: "2026-07-11T00:00:00.500Z",
+      };
+      const happensBefore = evaluateTraceContract(
+        { read: readResult("ok", [retrieve1, overlapGenerate]) },
+        defineTraceContract({
+          tools: {
+            requiredOrder: ["retrieve", "generate"],
+            requiredOrderMode: "happens-before",
+          },
+        }),
+      );
+      const allOccurrences = evaluateTraceContract(
+        { read: readResult("ok", [retrieve1, generate, retrieve2]) },
+        defineTraceContract({
+          tools: {
+            requiredOrder: ["retrieve", "generate"],
+            requiredOrderMode: "all-occurrences",
+          },
+        }),
+      );
+
+      expect(failFindings(happensBefore)).toEqual([
+        expect.objectContaining({
+          ruleId: "contract.tool.order.0",
+          expected: expect.objectContaining({ mode: "happens-before" }),
+        }),
+      ]);
+      expect(failFindings(allOccurrences)).toEqual([
+        expect.objectContaining({
+          ruleId: "contract.tool.order.0",
+          expected: expect.objectContaining({ mode: "all-occurrences" }),
+        }),
+      ]);
+    });
+
+    it("keeps requiredOrder implied presence in every mode", () => {
+      for (const mode of [
+        "first-occurrence",
+        "happens-before",
+        "all-occurrences",
+      ] as const) {
+        const result = evaluateTraceContract(
+          { read: readResult("ok", [generate]) },
+          defineTraceContract({
+            tools: { requiredOrder: ["retrieve", "generate"], requiredOrderMode: mode },
+          }),
+        );
+        expect(result.status).toBe("fail");
+        expect(failFindings(result).map((finding) => finding.ruleId)).toContain("tool.usage");
+        expect(failFindings(result).map((finding) => finding.ruleId)).not.toContain(
+          "contract.tool.order.0",
+        );
+      }
+    });
+
+    it("applies all-occurrences mode independently to every adjacent pair", () => {
+      const a1 = tool(
+        "a-1",
+        "a",
+        "2026-07-11T00:00:00.000Z",
+        "2026-07-11T00:00:01.000Z",
+      );
+      const b1 = tool(
+        "b-1",
+        "b",
+        "2026-07-11T00:00:02.000Z",
+        "2026-07-11T00:00:03.000Z",
+      );
+      const c1 = tool(
+        "c-1",
+        "c",
+        "2026-07-11T00:00:04.000Z",
+        "2026-07-11T00:00:05.000Z",
+      );
+      const contract = defineTraceContract({
+        tools: {
+          requiredOrder: ["a", "b", "c"],
+          requiredOrderMode: "all-occurrences",
+        },
+      });
+
+      const firstPairFails = evaluateTraceContract(
+        {
+          read: readResult("ok", [
+            a1,
+            b1,
+            tool(
+              "a-2",
+              "a",
+              "2026-07-11T00:00:06.000Z",
+              "2026-07-11T00:00:07.000Z",
+            ),
+            c1,
+          ]),
+        },
+        contract,
+      );
+      const secondPairFails = evaluateTraceContract(
+        {
+          read: readResult("ok", [
+            a1,
+            b1,
+            c1,
+            tool(
+              "b-2",
+              "b",
+              "2026-07-11T00:00:06.000Z",
+              "2026-07-11T00:00:07.000Z",
+            ),
+          ]),
+        },
+        contract,
+      );
+
+      expect(failFindings(firstPairFails).map((finding) => finding.ruleId)).toEqual([
+        "contract.tool.order.0",
+      ]);
+      expect(failFindings(secondPairFails).map((finding) => finding.ruleId)).toEqual([
+        "contract.tool.order.1",
+      ]);
+      expect(firstPairFails.ruleExecutions.map((execution) => execution.ruleId)).toEqual(
+        expect.arrayContaining(["contract.tool.order.0", "contract.tool.order.1"]),
+      );
     });
   });
 });

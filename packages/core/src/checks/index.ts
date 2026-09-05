@@ -355,6 +355,16 @@ export interface ToolOrderingRuleOptions {
    * adjacent pairs use unique ids such as `contract.tool.order.0`.
    */
   id?: string;
+  /**
+   * Ordering semantics. `first-occurrence` preserves first-occurrence encounter
+   * ordering, `happens-before` requires the first before event to finish before
+   * the first after event starts, and `all-occurrences` applies that causal
+   * boundary to every matching occurrence.
+   *
+   * @defaultValue `"first-occurrence"`
+   * @experimental Available through `agent-inspect/checks`.
+   */
+  mode?: "first-occurrence" | "happens-before" | "all-occurrences";
 }
 
 /**
@@ -1759,6 +1769,7 @@ export function createToolUsageRule(options: ToolUsageRuleOptions): TraceCheckRu
  */
 export function createToolOrderingRule(options: ToolOrderingRuleOptions): TraceCheckRule {
   const ruleId = options.id ?? "tool.order";
+  const mode = options.mode ?? "first-occurrence";
   return {
     id: ruleId,
     category: "tool",
@@ -1771,7 +1782,8 @@ export function createToolOrderingRule(options: ToolOrderingRuleOptions): TraceC
       if (beforeIndex === undefined || afterIndex === undefined) {
         return [];
       }
-      if (beforeIndex >= afterIndex) {
+
+      if (mode === "first-occurrence" && beforeIndex >= afterIndex) {
         return [
           failFinding(
             ruleId,
@@ -1787,6 +1799,143 @@ export function createToolOrderingRule(options: ToolOrderingRuleOptions): TraceC
       const afterEvent = tools[afterIndex]!;
       const beforeEnd = eventEndMs(beforeEvent);
       const afterStart = eventStartMs(afterEvent);
+
+      if (mode === "happens-before") {
+        const expected = {
+          before: options.before,
+          after: options.after,
+          mode,
+          relation: "before.end <= after.start",
+        };
+        if (options.before === options.after) {
+          return [
+            failFinding(
+              ruleId,
+              `Tool ${options.before} cannot causally happen before itself.`,
+              [eventEvidence(beforeEvent)],
+              expected,
+              { code: "tool.order.same-tool" },
+            ),
+          ];
+        }
+        if (beforeEnd === undefined || afterStart === undefined) {
+          return [
+            failFinding(
+              ruleId,
+              `Tool order ${options.before} before ${options.after} could not establish causal timing.`,
+              [eventEvidence(beforeEvent), eventEvidence(afterEvent)],
+              expected,
+              {
+                code: "tool.order.interval-unresolved",
+                beforeEndResolved: beforeEnd !== undefined,
+                afterStartResolved: afterStart !== undefined,
+              },
+            ),
+          ];
+        }
+        if (beforeEnd > afterStart) {
+          return [
+            failFinding(
+              ruleId,
+              `Tool ${options.before} must finish before ${options.after} starts.`,
+              [eventEvidence(beforeEvent), eventEvidence(afterEvent)],
+              expected,
+              {
+                beforeEndedAt: new Date(beforeEnd).toISOString(),
+                afterStartedAt: new Date(afterStart).toISOString(),
+              },
+            ),
+          ];
+        }
+        return [];
+      }
+
+      if (mode === "all-occurrences") {
+        const beforeEvents = tools.filter((event) => toolName(event) === options.before);
+        const afterEvents = tools.filter((event) => toolName(event) === options.after);
+        const expected = {
+          before: options.before,
+          after: options.after,
+          mode,
+          relation: "max(before.end) <= min(after.start)",
+        };
+        if (options.before === options.after) {
+          return [
+            failFinding(
+              ruleId,
+              `Tool ${options.before} cannot causally happen before itself.`,
+              [eventEvidence(beforeEvent)],
+              expected,
+              { code: "tool.order.same-tool" },
+            ),
+          ];
+        }
+
+        let latestBefore: { event: PersistedInspectEvent; end: number } | undefined;
+        let earliestAfter: { event: PersistedInspectEvent; start: number } | undefined;
+        let missingBeforeEnds = 0;
+        let missingAfterStarts = 0;
+        let firstMissingBefore: PersistedInspectEvent | undefined;
+        let firstMissingAfter: PersistedInspectEvent | undefined;
+
+        for (const event of beforeEvents) {
+          const end = eventEndMs(event);
+          if (end === undefined) {
+            missingBeforeEnds += 1;
+            firstMissingBefore ??= event;
+          } else if (latestBefore === undefined || end > latestBefore.end) {
+            latestBefore = { event, end };
+          }
+        }
+        for (const event of afterEvents) {
+          const start = eventStartMs(event);
+          if (start === undefined) {
+            missingAfterStarts += 1;
+            firstMissingAfter ??= event;
+          } else if (earliestAfter === undefined || start < earliestAfter.start) {
+            earliestAfter = { event, start };
+          }
+        }
+
+        if (
+          missingBeforeEnds > 0 ||
+          missingAfterStarts > 0 ||
+          latestBefore === undefined ||
+          earliestAfter === undefined
+        ) {
+          return [
+            failFinding(
+              ruleId,
+              `Tool order ${options.before} before ${options.after} could not establish all causal intervals.`,
+              [firstMissingBefore, firstMissingAfter]
+                .filter((event): event is PersistedInspectEvent => event !== undefined)
+                .map((event) => eventEvidence(event)),
+              expected,
+              {
+                code: "tool.order.interval-unresolved",
+                missingBeforeEnds,
+                missingAfterStarts,
+              },
+            ),
+          ];
+        }
+        if (latestBefore.end > earliestAfter.start) {
+          return [
+            failFinding(
+              ruleId,
+              `Every ${options.before} tool call must finish before any ${options.after} tool call starts.`,
+              [eventEvidence(latestBefore.event), eventEvidence(earliestAfter.event)],
+              expected,
+              {
+                latestBeforeEndedAt: new Date(latestBefore.end).toISOString(),
+                earliestAfterStartedAt: new Date(earliestAfter.start).toISOString(),
+              },
+            ),
+          ];
+        }
+        return [];
+      }
+
       if (
         beforeEnd !== undefined &&
         afterStart !== undefined &&
