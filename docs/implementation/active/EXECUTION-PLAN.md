@@ -1,48 +1,30 @@
-# Active execution plan — v6.17.7 redaction / DX / evidence
+# Active execution plan — next releases (6.17.8 → 6.19.0)
 
-**Train:** `v6.17.7-redaction-dx-evidence`  
+**Train:** `v6.17.8-closeout-trust`  
 **Named:** `agentinspect-feedback-integrity-v6.17.5-to-v6.22`  
-**Target:** patch `6.17.7` via Version Packages #326 Trusted Publishing  
-**Baseline:** published `6.17.6` + main `0f4ada3` (#323/#324 search fix changeset pending in #326)  
-**Authority:** [../ROADMAP.md](../ROADMAP.md) · integrated 6.17.7–6.22 maintainer plan
+**Target:** patch `6.17.8`, then minors `6.18.0` and `6.19.0` via Changesets Trusted Publishing  
+**Baseline:** published `6.17.7` + main after contributor batch `#338`  
+**Authority:** [../ROADMAP.md](../ROADMAP.md) · [NEXT-RELEASES.md](./NEXT-RELEASES.md)
 
 ## Scope
 
-1. P0 high-confidence credential redactor/verifier alignment (`key-value-secret` parity)
-2. DX truth — correct `observe()` docs; `check --forbid-tool` alias for `--forbidden-tool`
-3. Land Evidence recipe #325 (Maulana authorship); #322 reference-only
-4. Publish 6.17.7 through Changesets / `publish.yml` (no local `npm publish`)
+1. Closeout 6.17.8: `#340` clean `--keep`; MCP untrusted-trace boundary; tracker truth
+2. Publish 6.17.8 (Trusted Publishing only)
+3. Implement and publish 6.18.0 and 6.19.0 per NEXT-RELEASES chunks
+4. Roadmap/label hygiene for 6.20–6.22 only (no implementation in this train)
 
 ## Explicit non-goals / deferrals
 
-- **Remote Studio / website / skill safety** — deferred from this 6.17.7 content (named later train in RELEASE-TRAIN-STATE)
-- CLI custom redaction policy (proposal issue only)
-- Residual safety CLI surface (proposal issue only)
-- `view --errors-only` pruned tree (issue only)
-- Guardrail refusal recipe (after design-partner confirm)
-- `requiredOrderMode` / #308/#315 (6.20)
-- Preview capture / #311 (6.18)
-- `alternatives.anyOf` / #309 (6.20)
-- Actor scope / outcome provenance #320/#321 (6.21)
-- Merging #326 before P0 + DX + #325 land
-
-## Binding refinements
-
-1. High-confidence credentials → safe auto-redact; context-sensitive findings may stay verifier-only
-2. No unrestricted CLI regex policy in 6.17.7
-3. Refusal evidence starts as recipe/proposal, not new schema/preset
-4. Older PRs triaged, not auto-closed; Vercel auth ≠ code failure
+- Email-send / outreach gates (removed from repo state)
+- `6.17.7b` / vague Studio deferral naming (retired; optional-surface assessment in 6.17.8 closeout)
+- `6.17.9` unless a verified post-ship security/compat defect appears
+- Implementing 6.20–6.22 content in this run
+- Local `npm publish`; Mastra-from-interest; schema 1.1; full-content capture; ADPA `#142` before external gate
 
 ## Chunks
 
-| Chunk | Status |
-| --- | --- |
-| `6.17.7-0-authorize` | done (#332) |
-| `6.17.7-1-p0-key-value-redact` | done (#333) |
-| `6.17.7-2-observe-forbid-tool-dx` | done (#334) |
-| `6.17.7-3-land-325` | done (#335) |
-| `6.17.7-4-publish` | done (#326 Version Packages; Trusted Publish in flight / verify npm) |
+See [NEXT-RELEASES.md](./NEXT-RELEASES.md). Historical 6.17.7 chunks are complete (Version Packages `#326`; npm `6.17.7`).
 
 ## Stop rule
 
-Version Packages #326 merged. Confirm npm tags/releases for `6.17.7`, then hand off to 6.17.8 queue health (`6178-622-QUEUE.md`).
+Trusted Publish each train when Changesets/npm/tags agree. Continue through 6.19.0. Stop only on CI/publication gates or material plan conflict.
