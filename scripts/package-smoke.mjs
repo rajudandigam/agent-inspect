@@ -30,12 +30,16 @@ const optionalPackageChecks = [
     esm: `
       import { agentInspect } from "@agent-inspect/ai-sdk";
       const integration = agentInspect({ capture: "preview" });
-      if (integration.getDiagnostics().lifecycleWarnings !== 1) throw new Error("missing preview diagnostic");
+      const diagnostics = integration.getDiagnostics();
+      if (diagnostics.lifecycleWarnings !== 0) throw new Error("unexpected preview lifecycle warning");
+      if (diagnostics.capture.capture !== "preview") throw new Error("preview capture not enabled");
     `,
     cjs: `
       const { agentInspect } = require("@agent-inspect/ai-sdk");
       const integration = agentInspect({ capture: "preview" });
-      if (integration.getDiagnostics().lifecycleWarnings !== 1) throw new Error("missing preview diagnostic");
+      const diagnostics = integration.getDiagnostics();
+      if (diagnostics.lifecycleWarnings !== 0) throw new Error("unexpected preview lifecycle warning");
+      if (diagnostics.capture.capture !== "preview") throw new Error("preview capture not enabled");
     `,
     ts: `
       import { agentInspect, type AgentInspectAiSdkOptions } from "@agent-inspect/ai-sdk";
