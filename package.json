@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "6.18.0",
+  "version": "6.19.0",
   "license": "MIT",
   "type": "module",
   "description": "Local evidence debugger and trajectory-test toolkit for TypeScript AI agents — execution trees, TraceContract checks, Evidence v2, and read-only MCP",

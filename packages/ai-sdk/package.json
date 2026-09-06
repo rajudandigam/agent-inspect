@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/ai-sdk",
-  "version": "6.18.0",
+  "version": "6.19.0",
   "license": "MIT",
   "type": "module",
   "description": "Vercel AI SDK telemetry integration for AgentInspect local traces and trajectory tests",

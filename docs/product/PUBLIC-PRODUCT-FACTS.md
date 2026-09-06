@@ -12,13 +12,13 @@ Single source of public product truth for README, website, npm descriptions, AI 
 | Category | Local-first evidence for TypeScript AI agents |
 | Headline | See what your agent did. Catch the wrong path in CI. Keep the evidence local. |
 | Outcome | Capture once. Debug, prevent, and share from the same local trace. |
-| Version | 6.18.0 |
+| Version | 6.19.0 |
 | Schema | 1.0 |
 | Node | >=20 |
 | License | MIT |
 | Public packages | 18 (Changesets fixed group) |
-| Status line | Current release: 6.18.0 · schema 1.0 · Node.js 20+ · MIT · actively maintained |
-| Maintenance | The 6.18 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution. |
+| Status line | Current release: 6.19.0 · schema 1.0 · Node.js 20+ · MIT · actively maintained |
+| Maintenance | The 6.19 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution. |
 
 ## Supporting sentence
 

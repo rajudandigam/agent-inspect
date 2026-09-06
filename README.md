@@ -210,7 +210,7 @@ The root package is enough for custom capture, the CLI, checks, and Evidence wor
 
 ## Status and documentation
 
-**Current published baseline:** **6.18.0** · persisted schema `1.0` · Node.js `>=20` · MIT.
+**Current published baseline:** **6.19.0** · persisted schema `1.0` · Node.js `>=20` · MIT.
 
 Legacy v0.1 and v0.2 traces remain readable. Check the npm badge and [changelog](CHANGELOG.md) for the current published version.
 

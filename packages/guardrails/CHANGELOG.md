@@ -1,5 +1,16 @@
 # @agent-inspect/guardrails
 
+## 6.19.0
+
+### Minor Changes
+
+- 07358f2: Add custom TraceReader authoring guidance with a synthetic foreign-session recipe, additive derived failure roles on TraceFacts (MCP/Evidence counts), architectural-intent interop docs/recipe, and bounded priorContextReferences convention.
+
+### Patch Changes
+
+- Updated dependencies [07358f2]
+  - @agent-inspect/redact@6.19.0
+
 ## 6.18.0
 
 ### Minor Changes
