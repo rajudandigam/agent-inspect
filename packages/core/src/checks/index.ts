@@ -24,8 +24,19 @@ import {
 
 export type { LogicalProjectionDiagnostic, LogicalTraceEvent } from "./logical-events.js";
 export { projectLogicalEvents, resolveCanonicalToolName } from "./logical-events.js";
-export type { SemanticParitySummary, TraceFacts } from "./trace-facts.js";
-export { buildTraceFacts, summarizeSemanticParity } from "./trace-facts.js";
+export type {
+  DerivedFailureConfidence,
+  DerivedFailureFact,
+  DerivedFailureRole,
+  FailureRoleCounts,
+  SemanticParitySummary,
+  TraceFacts,
+} from "./trace-facts.js";
+export {
+  buildTraceFacts,
+  deriveFailureFacts,
+  summarizeSemanticParity,
+} from "./trace-facts.js";
 export type {
   ProgrammaticDiagnosticCode,
   ProgrammaticDiagnosticSpec,

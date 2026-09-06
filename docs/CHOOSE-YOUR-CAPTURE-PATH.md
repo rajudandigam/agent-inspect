@@ -16,7 +16,7 @@ Canonical guide for picking how AgentInspect records TypeScript agent evidence. 
 | MCP **server** internals | Ordinary manual/framework tracing inside the server (no special package) |
 | Existing JSON logs | Log-to-tree ingest ([LOGGING-PLAYBOOK.md](./LOGGING-PLAYBOOK.md)) |
 | OTLP / OpenInference | Reader / `open` path ([STANDARDS.md](./STANDARDS.md)) |
-| Foreign persisted session JSON | Custom `TraceReader` (scheduled 6.19) |
+| Foreign persisted session JSON | Custom `TraceReader` — [CUSTOM-TRACE-READER.md](./CUSTOM-TRACE-READER.md) |
 | Unsupported framework | Manual tracing or `@agent-inspect/adapter-sdk`; **no automatic-support claim** |
 
 There is **no** official Mastra adapter. Do not invent one from interest alone.

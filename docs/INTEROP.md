@@ -12,6 +12,8 @@ AgentInspect stays local-first. When you need production backends, export delibe
 - Framework adapters (LangChain/LangGraph, AI SDK, OpenAI Agents)
 - Structured log ingest
 - Standards files (OpenInference / OTLP JSON readers)
+- Custom `TraceReader` for foreign session JSON — [CUSTOM-TRACE-READER.md](./CUSTOM-TRACE-READER.md)
+- Architectural-intent metadata convention — [INTEROP-ARCHITECTURAL-INTENT.md](./INTEROP-ARCHITECTURAL-INTENT.md)
 
 ## MCP
 

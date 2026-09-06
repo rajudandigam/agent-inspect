@@ -190,6 +190,15 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
 
+  examples/recipes/architectural-intent-trace:
+    dependencies:
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   examples/recipes/browser-mcp-observed-outcomes:
     dependencies:
       agent-inspect:
@@ -246,6 +255,15 @@ importers:
       '@agent-inspect/eval':
         specifier: workspace:*
         version: link:../../../packages/eval
+      agent-inspect:
+        specifier: workspace:*
+        version: link:../../..
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
+  examples/recipes/external-persisted-session-reader:
+    dependencies:
       agent-inspect:
         specifier: workspace:*
         version: link:../../..

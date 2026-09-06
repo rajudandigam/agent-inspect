@@ -50,6 +50,8 @@ Optional Preview: [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [MCP.md](./M
 | --- | ----- |
 | [API.md](./API.md) · [CLI.md](./CLI.md) | Programmatic and terminal APIs |
 | [TRACE-FACTS.md](./TRACE-FACTS.md) | Logical projection and TraceFacts |
+| [CUSTOM-TRACE-READER.md](./CUSTOM-TRACE-READER.md) | Authoring custom TraceReaders |
+| [INTEROP-ARCHITECTURAL-INTENT.md](./INTEROP-ARCHITECTURAL-INTENT.md) | Architectural-intent metadata interop |
 | [TRACE-CONTRACTS.md](./TRACE-CONTRACTS.md) | Deterministic trajectory contracts |
 | [SUITES-COHORTS-GATES.md](./SUITES-COHORTS-GATES.md) | Suites, cohorts, CI gates |
 | [CI-ARTIFACTS.md](./CI-ARTIFACTS.md) | CI evidence packages |

@@ -358,7 +358,19 @@ export async function callReadOnlyTool(
         toolNames: [...facts.toolsByName.keys()].sort((a, b) => a.localeCompare(b)),
         llmCount: facts.llmEvents.length,
         outcomeCount: facts.outcomeEvents.length,
-        note: "Bounded TraceFacts summary only; raw events and prompts are not included.",
+        failureRoleCounts: facts.summary.failureRoleCounts ?? {
+          transient: 0,
+          recovered: 0,
+          terminal: 0,
+          unknown: 0,
+        },
+        failureFactIds: facts.failureFacts.map((fact) => ({
+          eventId: fact.eventId,
+          role: fact.role,
+          confidence: fact.confidence,
+        })),
+        note:
+          "Bounded TraceFacts summary only; raw events, prompts, and error bodies are not included. Failure roles are derived classifications over recorded evidence.",
       },
       context,
     );

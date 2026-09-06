@@ -71,6 +71,17 @@ export interface EvidenceSemantics {
   pairedCount?: number;
   parentRemapCount?: number;
   contractStatus?: "pass" | "fail" | "error";
+  /**
+   * Bounded derived failure role counts (6.19+). IDs and error bodies omitted.
+   *
+   * @experimental
+   */
+  failureRoleCounts?: {
+    transient: number;
+    recovered: number;
+    terminal: number;
+    unknown: number;
+  };
 }
 
 export interface EvidencePackagedFile {
