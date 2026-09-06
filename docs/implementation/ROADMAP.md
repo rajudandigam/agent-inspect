@@ -1,7 +1,7 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.17.7`
-**Roadmap horizon:** `6.17.7 → 6.17.8 → conditional 6.17.9 → 6.18.0 → 6.19.0 → 6.20.0 → 6.21.0 → conditional 6.22.0`
+**Baseline:** `agent-inspect@6.19.0` (Version Packages `#357` on `main`)
+**Roadmap horizon:** `6.19.0 → conditional 6.19.1 → 6.20.0 → 6.21.0 → conditional 6.22.0`
 **Status:** Active canonical roadmap (permanent path; supersedes version-named roadmap seeds)
 **Primary objective:** Close capability-truth gaps, eliminate fail-open deterministic check behavior, keep release integrity green, align high-confidence redaction with verify-safe, make framework preview capture useful without weakening local-first safety, support arbitrary persisted agent-event sources through the existing reader architecture, and make deterministic contracts flexible enough for legitimate alternate agent paths
 **Persisted trace schema:** remains `1.0`
@@ -23,22 +23,22 @@ The canonical release sequence is:
 6.17.5  Release integrity, capability truth, and adversarial check-engine integrity  (published)
 6.17.6  Security containment + dependency remediation  (published)
 6.17.7  High-confidence redaction/verify-safe parity + DX truth + Evidence recipe  (published)
-6.17.8  Closeout + trust-boundary: #340 clean --keep; MCP untrusted-trace; tracker truth  (active)
+6.17.8  Closeout + trust-boundary: #340 clean --keep; MCP untrusted-trace; tracker truth  (published)
 6.17.9  Conditional: verified security or compatibility corrections only
 
-6.18.0  Safe adoption and differentiation (same-output/wrong-path; no-key adapters; preview; redact UX)
+6.18.0  Safe adoption and differentiation (same-output/wrong-path; no-key adapters; preview; redact UX)  (published)
 6.18.1  Reserved 6.18 corrections only
 
-6.19.0  External evidence + derived failure semantics (TraceReader authoring; failure roles; interop)
+6.19.0  External evidence + derived failure semantics (TraceReader authoring; failure roles; interop)  (Version Packages #357 on main; confirm npm)
 6.19.1  Reserved 6.19 corrections only
 
-6.20.0  Alternative valid paths and causal / strict ordering modes
+6.20.0  Alternative valid paths and causal / strict ordering modes  (next — #308/#315/#309)
 6.20.1  Reserved contract compatibility patch only
 
-6.21.0  Actor-scoped contracts and outcome provenance requirements
+6.21.0  Actor-scoped contracts and outcome provenance requirements  (#320/#321)
 6.21.1  Reserved multi-agent contract patch only
 
-6.22.0  Conditional design-partner recipes (#331 design confirmed; not yet implemented)
+6.22.0  Conditional design-partner recipes (#331 design confirmed; existing APIs only; not yet implemented)
 6.22.x  Stability, external verification, and adoption
 ```
 
@@ -106,9 +106,13 @@ Fail-closed deterministic gate hardening:
 
 ```text
 #310 → 6.17.5 (closed — visible warning)
-#308 → 6.17.5 docs/tests + 6.20.0 requiredOrderMode (stay open until modes ship)
-#311 → 6.18.0 (stay open)
-#309 → 6.20.0 (stay open)
+#308 → 6.17.5 docs/tests + 6.20.0 requiredOrderMode (roadmap-now; stay open until modes ship)
+#311 → 6.18.0 (adapter preview — shipped with 6.18.0)
+#309 → 6.20.0 alternatives.anyOf (roadmap-now; stay open)
+#315 → 6.20.0 PR for causal requiredOrder modes (keep open)
+#320 → 6.21.0 actor-scoped TraceContracts (roadmap-next; stay open)
+#321 → 6.21.0 outcome provenance (roadmap-next; stay open)
+#331 → conditional 6.22.0 (design confirmed; existing APIs only; not implemented; roadmap-future)
 ```
 
 ---
@@ -118,13 +122,13 @@ Fail-closed deterministic gate hardening:
 | Release | Theme | GitHub | Notes |
 | --- | --- | --- | --- |
 | **6.17.7** | Redaction/verify-safe parity + DX truth + Evidence recipe | #327/#333; #316/#335 | Published |
-| **6.17.8** | Closeout + trust-boundary | #340; MCP untrusted-trace; #297 if green | Active; optional-surface security assessment in closeout |
+| **6.17.8** | Closeout + trust-boundary | #340; MCP untrusted-trace; #297 if green | Published |
 | **6.17.9** | Conditional corrective patch | — | Only verified security/compat defects |
-| **6.18.0** | Safe adoption and differentiation | #311, #213, #307, #328, #329, #330 | Same-output/wrong-path; preview; redact UX |
-| **6.19.0** | External evidence + derived failure semantics | — | TraceReader authoring; failure roles; architectural-intent interop |
-| **6.20.0** | `alternatives.anyOf` + ordering modes | #309, #308/#315 | Deterministic alternate paths; causal ordering modes |
-| **6.21.0** | Actor-scoped contracts + outcome provenance | #320, #321 | Explicit metadata selectors; method/evidence requirements |
-| **6.22.0** | Conditional design-partner recipes | #331 | Design confirmed; existing APIs only; not yet implemented |
+| **6.18.0** | Safe adoption and differentiation | #311, #213, #307, #328, #329, #330 | Published |
+| **6.19.0** | External evidence + derived failure semantics | #354/#355 | Version Packages `#357` on main; confirm npm |
+| **6.20.0** | `alternatives.anyOf` + ordering modes | #309, #308/#315 | Next train (`roadmap-now`) |
+| **6.21.0** | Actor-scoped contracts + outcome provenance | #320, #321 | Scheduled (`roadmap-next`) |
+| **6.22.0** | Conditional design-partner recipes | #331 | Design confirmed; existing APIs only; not yet implemented (`roadmap-future`) |
 
 ### 3.1 v6.18.0 — adapter capture parity (#311)
 

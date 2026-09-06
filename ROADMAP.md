@@ -10,11 +10,11 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 ---
 
-## Current — feedback integrity (`6.17.5`) then adapter parity (`6.18.x`)
+## Current — post-6.19 external evidence; next contracts (`6.20.x`)
 
-**Current release on npm:** **6.19.0** (eighteen fixed-group public packages). Persisted schema **1.0**. Node.js **≥ 20**. **MIT**. Actively maintained.
+**Current release line:** **6.19.0** (eighteen fixed-group public packages; Version Packages `#357` on `main`). Persisted schema **1.0**. Node.js **≥ 20**. **MIT**. Actively maintained.
 
-Active maintainer program: release integrity and capability truth (`6.17.5`), then bounded preview parity and later reader/contract trains — before any conditional v7 assessment.
+Active maintainer program: flexible deterministic contracts (`6.20.0`), then multi-agent precision (`6.21.0`) and conditional design-partner recipes (`6.22.0`) — before any conditional v7 assessment.
 
 | Release | Theme | Status |
 | ------- | ----- | ------ |
@@ -33,8 +33,12 @@ Active maintainer program: release integrity and capability truth (`6.17.5`), th
 | **6.17.1** | Public technical proof and demos | Published |
 | **6.17.3** / **6.17.4** | Package line maintenance | Published |
 | **6.17.5** | Release integrity + visible capability truth | Published |
-| **6.18.0** | Adapter bounded preview parity | Planned |
-| **6.19.0**–**6.21.0** | Readers, alternate contract paths, conditional enforcement | Planned / conditional |
+| **6.17.8** | Closeout + trust-boundary | Published |
+| **6.18.0** | Adapter bounded preview parity | Published |
+| **6.19.0** | External evidence + derived failure semantics | Version Packages `#357` (confirm npm) |
+| **6.20.0** | Alternate contract paths + ordering modes | Next (`#308`/`#315`/`#309`) |
+| **6.21.0** | Actor-scoped contracts + outcome provenance | Planned (`#320`/`#321`) |
+| **6.22.0** | Conditional design-partner recipes | Conditional (`#331`) |
 
 Train state: [docs/implementation/RELEASE-TRAIN-STATE.md](docs/implementation/RELEASE-TRAIN-STATE.md).
 Canonical maintainer roadmap: [docs/implementation/ROADMAP.md](docs/implementation/ROADMAP.md).
