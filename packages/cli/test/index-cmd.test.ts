@@ -18,6 +18,8 @@ describe("index CLI", () => {
     if (tmpDir) {
       await indexCleanCommand({ dir: tmpDir, json: true });
     }
+    process.exitCode = 0;
+    vi.restoreAllMocks();
   });
 
   it("builds and reports index status", async () => {
@@ -60,6 +62,33 @@ describe("index CLI", () => {
 
     await indexCleanCommand({ dir: tmpDir });
     expect(traceIndexPath(tmpDir)).toContain(".agent-inspect-index.json");
-    logSpy.mockRestore();
+  });
+
+  it("reports a missing index as an available rebuild", async () => {
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), "ai-index-"));
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await indexStatusCommand({ dir: tmpDir, json: true });
+
+    const statusPayload = JSON.parse(String(logSpy.mock.calls.at(-1)?.[0]));
+    expect(statusPayload).toMatchObject({ ok: true, exists: false, stale: true });
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(process.exitCode ?? 0).toBe(0);
+  });
+
+  it("fails closed when the index snapshot contains malformed JSON", async () => {
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), "ai-index-"));
+    await writeFile(traceIndexPath(tmpDir), "{broken", "utf8");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await indexStatusCommand({ dir: tmpDir, json: true });
+
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[AgentInspect] index status failed:"),
+    );
+    expect(process.exitCode).toBe(1);
   });
 });
