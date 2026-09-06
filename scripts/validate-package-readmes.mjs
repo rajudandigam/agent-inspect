@@ -11,6 +11,11 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  buildSupportMatrixLevels,
+  supportLevelDisagreement,
+} from "./lib/package-readme-support-rule.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
 
@@ -27,17 +32,7 @@ if (canonicalLevels.size === 0) {
   failures.push(`${supportLevelsRel}: could not parse the Definitions table`);
 }
 
-/**
- * Package-matrix rows, keyed by every package name the row mentions. A row may
- * name several ("Official adapters (ai-sdk, openai-agents, langchain ...)"), so
- * a package is governed by any row that names it.
- */
-const matrixLevels = new Map();
-for (const [, label, level] of supportLevels.matchAll(/^\|\s*([^|]*`[^|]*)\|\s*(\w+)\s*\|$/gm)) {
-  for (const [, name] of label.matchAll(/`(@?[a-z0-9/@-]+)`/g)) {
-    if (!matrixLevels.has(name)) matrixLevels.set(name, { level, label: label.trim() });
-  }
-}
+const matrixLevels = buildSupportMatrixLevels(supportLevels);
 
 /**
  * Surfaces NETWORK-BEHAVIOR.md records as making network calls.
@@ -113,11 +108,11 @@ for (const { name, rel, text } of readmes) {
       );
     }
 
-    const governing = matrixLevels.get(name);
-    if (governing && governing.level !== level) {
+    const disagreement = supportLevelDisagreement(matrixLevels, name, level);
+    if (disagreement) {
       failures.push(
-        `${rel}: declares "${level}" but ${supportLevelsRel} rates it "${governing.level}" ` +
-          `via the row "${governing.label}". Change the README, or promote the package in ` +
+        `${rel}: declares "${level}" but ${supportLevelsRel} rates it "${disagreement.level}" ` +
+          `via the row "${disagreement.label}". Change the README, or promote the package in ` +
           `${supportLevelsRel} — they must not disagree.`,
       );
     }
