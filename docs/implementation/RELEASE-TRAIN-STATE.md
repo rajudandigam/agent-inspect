@@ -6,16 +6,16 @@
 
 ```yaml
 baselineVersion: "6.19.0"
-publishedVersion: "6.18.0"  # 6.19.0 Version Packages merged; confirm npm
+publishedVersion: "6.19.0"
 currentTrain: "v6.20.0-flexible-contracts"
 trainStatus: "ready"
 executionMode: "maintainer-reviewed"
 namedTrain: "agentinspect-feedback-integrity-v6.17.5-to-v6.22"
 branch: "main"
-currentChunk: "phase4-620-622-roadmap-label-hygiene"
-lastConfirmedCommit: "4e0d794"
-lastValidationLevel: "version-packages-357-merged-publish-pending"
-nextAction: "Merge Phase 4 docs/labels PR; then authorize 6.20.0 implementation (#308/#315/#309)"
+currentChunk: "authorize-620-implementation"
+lastConfirmedCommit: "5a4dd5b"
+lastValidationLevel: "npm-6.19.0-trusted-publish-34013658849"
+nextAction: "Authorize 6.20.0 implementation (#308/#315/#309)"
 pendingManualGate: ""
 githubIssues:
   "209": "keep open — cross-platform packed-consumer matrix"
@@ -29,13 +29,14 @@ githubIssues:
   "321": "6.21 outcome provenance — roadmap-next; stay open"
   "331": "6.22 — design confirmed; existing APIs only; not implemented; roadmap-future"
   "354": "6.19 PR — merged"
-  "355": "6.19 derived failure design note — close after npm confirms 6.19.0"
+  "355": "closed — 6.19.0 published on npm"
 canonicalRoadmap: "docs/implementation/ROADMAP.md"
 activePlan: "docs/implementation/active/NEXT-RELEASES.md"
 completedChunks:
   - "6.17.8 published (Version Packages #343)"
   - "6.18.0 A–H code + Version Packages #350 + Trusted Publish"
-  - "6.19.0 A–D (#354) + Version Packages #357"
+  - "6.19.0 A–D (#354) + Version Packages #357 + Trusted Publish"
+  - "Phase 4 roadmap/label hygiene (#358)"
 remainingTrains:
   - "v6.19.1 reserved patch"
   - "v6.20.0 flexible deterministic contracts"
