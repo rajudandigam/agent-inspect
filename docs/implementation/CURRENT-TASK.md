@@ -3,10 +3,10 @@
 ```yaml
 executionMode: maintainer-reviewed
 namedTrain: agentinspect-feedback-integrity-v6.17.5-to-v6.22
-currentTrain: v6.18.0-safe-adoption
+currentTrain: v6.19.0-external-evidence
 trainStatus: in-progress
-currentChunk: phase2-publish-618
-nextAction: "Fix pack:smoke preview assertion; run 6.18 release gate; merge Version Packages #350; Trusted Publish 6.18.0; then land #354 (6.19)"
+currentChunk: 6.19.0-A-D-land-and-publish
+nextAction: "Land #354 on main; Version Packages + Trusted Publish 6.19.0; close #355"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: ""
@@ -14,29 +14,24 @@ pendingManualGate: ""
 
 ## Published baseline
 
-**6.17.8** (eighteen linked public packages). Persisted schema **1.0**. `origin/main` at `4a1cd87`.
+**6.18.0** (linked public packages). Persisted schema **1.0**. `origin/main` at `ea4eecb` (Version Packages `#350`).
 
-## Active train — v6.18.0 safe adoption
-
-Chunks on `main` (pending Version Packages):
+## Active train — v6.19.0 external evidence and failure semantics
 
 | Chunk | Status |
 | --- | --- |
-| A same-output/wrong-path | done `#346` |
-| B #307 / #213 packed E2E | done `#347` |
-| C #311 preview parity | done `#353` |
-| D+E #328/#329 residual + policy | done `#351` |
-| F #330 errors-only tree | done `#348` |
-| G capture-path docs | done `#349` |
-| H #295 VS Code | deferred (Option A in `docs/VSCODE.md`) |
-
-Blocker cleared by this branch: `pack:smoke` must assert preview is enabled (not `AI_ADAPTER_PREVIEW_NOT_AVAILABLE`).
+| A custom TraceReader authoring | in `#354` |
+| B DerivedFailureFact on TraceFacts | in `#354` |
+| C architectural-intent interop | in `#354` |
+| D priorContextReferences | in `#354` (docs) |
+| Version Packages + Trusted Publish | pending after `#354` merges |
 
 ## Later
 
-- **6.19.0** — PR `#354` held until 6.18.0 publishes
-- **6.20–6.22** — roadmap/labels only in this run
+- **6.19.1** — reserved corrections only
+- **6.20–6.22** — roadmap/labels only until 6.19 publishes
 
 ## Issue design state (no email gates)
 
 - **#331** — design confirmed; existing APIs only; scheduled conditional **6.22**; not implemented
+- **#355** — derived failure roles design note; close when `#354` ships and 6.19.0 publishes

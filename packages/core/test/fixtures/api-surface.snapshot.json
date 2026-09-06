@@ -447,6 +447,7 @@
       "createToolOrderingRule",
       "createToolUsageRule",
       "defineTraceContract",
+      "deriveFailureFacts",
       "evaluateTraceContract",
       "evaluateTraceContractRead",
       "formatProgrammaticDiagnostic",
