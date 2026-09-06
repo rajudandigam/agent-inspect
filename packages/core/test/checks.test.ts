@@ -399,6 +399,209 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(missingBefore.status).toBe("pass");
   });
 
+  it("supports causal first-occurrence ordering without changing default overlap warnings", () => {
+    const retrieve = persisted("causal-retrieve", {
+      kind: "TOOL",
+      name: "tool:retrieve",
+      attributes: { toolName: "retrieve" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:03.000Z",
+    });
+    const generate = persisted("causal-generate", {
+      kind: "TOOL",
+      name: "tool:generate",
+      attributes: { toolName: "generate" },
+      timestamp: "2026-06-26T00:00:02.000Z",
+      startedAt: "2026-06-26T00:00:02.000Z",
+      endedAt: "2026-06-26T00:00:04.000Z",
+    });
+    const read = readResult([retrieve, generate]);
+
+    const defaultResult = runTraceChecks(
+      { read },
+      { rules: [createToolOrderingRule({ before: "retrieve", after: "generate" })] },
+    );
+    const explicitFirstOccurrence = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "retrieve",
+            after: "generate",
+            mode: "first-occurrence",
+          }),
+        ],
+      },
+    );
+    const happensBefore = runTraceChecks(
+      { read },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "retrieve",
+            after: "generate",
+            mode: "happens-before",
+          }),
+        ],
+      },
+    );
+
+    expect(defaultResult.status).toBe("pass");
+    expect(defaultResult.findings[0]?.actual).toMatchObject({ code: "tool.order.overlap" });
+    expect(explicitFirstOccurrence.findings).toEqual(defaultResult.findings);
+    expect(happensBefore.status).toBe("fail");
+    expect(happensBefore.findings[0]).toMatchObject({
+      ruleId: "tool.order",
+      status: "fail",
+      expected: { mode: "happens-before", relation: "before.end <= after.start" },
+      actual: {
+        beforeEndedAt: "2026-06-26T00:00:03.000Z",
+        afterStartedAt: "2026-06-26T00:00:02.000Z",
+      },
+    });
+
+    const exactBoundary = runTraceChecks(
+      {
+        read: readResult([
+          { ...retrieve, endedAt: "2026-06-26T00:00:02.000Z" },
+          generate,
+        ]),
+      },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "retrieve",
+            after: "generate",
+            mode: "happens-before",
+          }),
+        ],
+      },
+    );
+    expect(exactBoundary.status).toBe("pass");
+  });
+
+  it("enforces all-occurrences ordering and fails closed on missing causal intervals", () => {
+    const retrieve1 = persisted("all-retrieve-1", {
+      kind: "TOOL",
+      name: "tool:retrieve",
+      attributes: { toolName: "retrieve" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:01.000Z",
+    });
+    const generate = persisted("all-generate", {
+      kind: "TOOL",
+      name: "tool:generate",
+      attributes: { toolName: "generate" },
+      timestamp: "2026-06-26T00:00:02.000Z",
+      startedAt: "2026-06-26T00:00:02.000Z",
+      endedAt: "2026-06-26T00:00:03.000Z",
+    });
+    const retrieve2 = persisted("all-retrieve-2", {
+      kind: "TOOL",
+      name: "tool:retrieve",
+      attributes: { toolName: "retrieve" },
+      timestamp: "2026-06-26T00:00:04.000Z",
+      startedAt: "2026-06-26T00:00:04.000Z",
+      endedAt: "2026-06-26T00:00:05.000Z",
+    });
+    const repeated = runTraceChecks(
+      { read: readResult([retrieve1, generate, retrieve2]) },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "retrieve",
+            after: "generate",
+            mode: "all-occurrences",
+          }),
+        ],
+      },
+    );
+    expect(repeated.status).toBe("fail");
+    expect(repeated.findings[0]).toMatchObject({
+      expected: { mode: "all-occurrences", relation: "max(before.end) <= min(after.start)" },
+      actual: {
+        latestBeforeEndedAt: "2026-06-26T00:00:05.000Z",
+        earliestAfterStartedAt: "2026-06-26T00:00:02.000Z",
+      },
+      evidence: [{ eventId: "all-retrieve-2" }, { eventId: "all-generate" }],
+    });
+
+    const valid = runTraceChecks(
+      {
+        read: readResult([
+          retrieve1,
+          {
+            ...retrieve2,
+            timestamp: "2026-06-26T00:00:01.000Z",
+            startedAt: "2026-06-26T00:00:01.000Z",
+            endedAt: "2026-06-26T00:00:02.000Z",
+          },
+          {
+            ...generate,
+            timestamp: "2026-06-26T00:00:02.000Z",
+            startedAt: "2026-06-26T00:00:02.000Z",
+          },
+        ]),
+      },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "retrieve",
+            after: "generate",
+            mode: "all-occurrences",
+          }),
+        ],
+      },
+    );
+    expect(valid.status).toBe("pass");
+
+    const unresolvedRetrieve = persisted("unresolved-retrieve", {
+      kind: "TOOL",
+      name: "tool:retrieve",
+      attributes: { toolName: "retrieve" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+    });
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const unresolved = runTraceChecks(
+        { read: readResult([unresolvedRetrieve, generate]) },
+        { rules: [createToolOrderingRule({ before: "retrieve", after: "generate", mode })] },
+      );
+      expect(unresolved.status).toBe("fail");
+      expect(unresolved.findings[0]?.actual).toMatchObject({
+        code: "tool.order.interval-unresolved",
+      });
+
+      const missingEndpoint = runTraceChecks(
+        { read: readResult([generate]) },
+        { rules: [createToolOrderingRule({ before: "retrieve", after: "generate", mode })] },
+      );
+      expect(missingEndpoint.status).toBe("pass");
+      expect(missingEndpoint.findings).toEqual([]);
+    }
+  });
+
+  it("fails causal same-tool ordering deterministically", () => {
+    const retrieve = persisted("same-retrieve", {
+      kind: "TOOL",
+      name: "tool:retrieve",
+      attributes: { toolName: "retrieve" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:00.000Z",
+    });
+
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const result = runTraceChecks(
+        { read: readResult([retrieve]) },
+        { rules: [createToolOrderingRule({ before: "retrieve", after: "retrieve", mode })] },
+      );
+      expect(result.status).toBe("fail");
+      expect(result.findings[0]?.actual).toMatchObject({ code: "tool.order.same-tool" });
+    }
+  });
+
   it("reports required, forbidden, allowed, ordered, failed, and retried tool violations", () => {
     const forbidden = persisted("event-a", {
       kind: "TOOL",
