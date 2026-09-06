@@ -30,8 +30,17 @@ async function readSnapshot(indexPath: string): Promise<TraceIndexSnapshot | und
   try {
     const raw = await readFile(indexPath, "utf8");
     return JSON.parse(raw) as TraceIndexSnapshot;
-  } catch {
-    return undefined;
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return undefined;
+    }
+
+    throw error;
   }
 }
 
