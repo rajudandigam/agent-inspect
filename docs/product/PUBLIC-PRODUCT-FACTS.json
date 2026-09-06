@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "6.17.8",
+  "version": "6.18.0",
   "schemaVersion": "1.0",
   "node": ">=20",
   "license": "MIT",
@@ -9,9 +9,9 @@
   "headline": "See what your agent did. Catch the wrong path in CI. Keep the evidence local.",
   "supportingSentence": "AgentInspect turns TypeScript agent runs into readable execution trees, deterministic trajectory checks, and portable Evidence v2—without requiring an account, collector, or default upload.",
   "outcome": "Capture once. Debug, prevent, and share from the same local trace.",
-  "statusLine": "Current release: 6.17.8 · schema 1.0 · Node.js 20+ · MIT · actively maintained",
+  "statusLine": "Current release: 6.18.0 · schema 1.0 · Node.js 20+ · MIT · actively maintained",
   "releaseStatus": "Actively maintained · schema 1.0 · Node.js 20+ · MIT",
-  "maintenanceLine": "The 6.17 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution.",
+  "maintenanceLine": "The 6.18 line is actively maintained for correctness, compatibility, documentation, security, and framework evolution.",
   "trustLine": "No account · no collector · no default upload · metadata-only by default",
   "proof": [
     "Zero open pilot findings at the 6.16.0 moderate + deep-swarm gates.",
