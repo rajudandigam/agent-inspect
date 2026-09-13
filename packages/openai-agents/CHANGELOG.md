@@ -1,5 +1,16 @@
 # @agent-inspect/openai-agents
 
+## 6.28.0
+
+### Minor Changes
+
+- 228b4df: Package resolved TraceContract / check-preset snapshots into Evidence v2 (`contract.resolved.json`) with digest binding to check results, honest partial/unavailable status for custom rules, and verify support — no signing or trusted-time claims (schema stays 1.0).
+
+### Patch Changes
+
+- Updated dependencies [228b4df]
+  - agent-inspect@6.28.0
+
 ## 6.27.0
 
 ### Minor Changes
