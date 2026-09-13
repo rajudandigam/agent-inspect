@@ -74,6 +74,11 @@
       {
         "command": "agentInspect.openTraceFromEditor",
         "title": "AgentInspect: Open Trace From Editor"
+      },
+      {
+        "command": "agentInspect.openSampleTrace",
+        "title": "AgentInspect: Open Sample Trace",
+        "icon": "$(beaker)"
       }
     ],
     "menus": {
@@ -90,6 +95,11 @@
         },
         {
           "command": "agentInspect.runDoctor",
+          "when": "view == agentInspect.traces",
+          "group": "navigation"
+        },
+        {
+          "command": "agentInspect.openSampleTrace",
           "when": "view == agentInspect.traces",
           "group": "navigation"
         }
