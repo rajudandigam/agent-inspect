@@ -21,7 +21,7 @@ pendingManualGate: "main branch protection; Dependabot #372/#373 close-or-split;
 githubIssues:
   "209": "keep open — cross-platform packed-consumer matrix PARTIAL"
   "295": "park — VS Code Marketplace unpublished (Option A)"
-  "362": "shipped in 6.26.0 (synthetic); external gist still BLOCKED_ON_EXTERNAL_FIXTURE for closure claims"
+  "362": "closed — 6.26.0 behavioral-session preset + sanitized external fixture in recipe"
   "115": "park/close unless active ADPA partner"
 canonicalRoadmap: "docs/implementation/ROADMAP.md"
 activePlan: "docs/implementation/active/NEXT-RELEASES.md"
