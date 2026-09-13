@@ -28,7 +28,12 @@ export interface PersistedTokenUsage {
   input?: number;
   output?: number;
   total?: number;
+  /** Cache-read tokens (informational; never added to total). */
   cached?: number;
+  /** Cache-write / cache-creation tokens (informational; never added to total). */
+  cacheWrite?: number;
+  /** Reasoning / thinking tokens when providers report them separately. */
+  reasoning?: number;
 }
 
 export interface PersistedTraceContext {
@@ -185,6 +190,8 @@ function isPersistedTokenUsage(value: unknown): value is PersistedTokenUsage {
   if (!isOptionalNonNegativeNumber(value.output)) return false;
   if (!isOptionalNonNegativeNumber(value.total)) return false;
   if (!isOptionalNonNegativeNumber(value.cached)) return false;
+  if (!isOptionalNonNegativeNumber(value.cacheWrite)) return false;
+  if (!isOptionalNonNegativeNumber(value.reasoning)) return false;
   return true;
 }
 

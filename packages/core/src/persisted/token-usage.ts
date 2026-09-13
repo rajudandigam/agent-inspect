@@ -12,7 +12,7 @@ function nonNegativeFinite(value: unknown): number | undefined {
 
 /**
  * Keeps the approved token vocabulary and derives total only when it is absent.
- * Cached tokens are informational and are never added to total.
+ * Cached / cache-write / reasoning tokens are informational and are never added to total.
  */
 export function normalizeTokenUsage(
   value: unknown,
@@ -23,18 +23,21 @@ export function normalizeTokenUsage(
   const output = nonNegativeFinite(value.output);
   const suppliedTotal = nonNegativeFinite(value.total);
   const cached = nonNegativeFinite(value.cached);
+  const cacheWrite = nonNegativeFinite(value.cacheWrite);
+  const reasoning = nonNegativeFinite(value.reasoning);
   const derivedTotal =
     input !== undefined && output !== undefined && Number.isFinite(input + output)
       ? input + output
       : undefined;
-  const total =
-    suppliedTotal ?? derivedTotal;
+  const total = suppliedTotal ?? derivedTotal;
 
   if (
     input === undefined &&
     output === undefined &&
     total === undefined &&
-    cached === undefined
+    cached === undefined &&
+    cacheWrite === undefined &&
+    reasoning === undefined
   ) {
     return undefined;
   }
@@ -44,5 +47,7 @@ export function normalizeTokenUsage(
     ...(output !== undefined ? { output } : {}),
     ...(total !== undefined ? { total } : {}),
     ...(cached !== undefined ? { cached } : {}),
+    ...(cacheWrite !== undefined ? { cacheWrite } : {}),
+    ...(reasoning !== undefined ? { reasoning } : {}),
   };
 }

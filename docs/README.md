@@ -73,5 +73,6 @@ Optional Preview: [CODING-AGENT-LOOP.md](./CODING-AGENT-LOOP.md) · [MCP.md](./M
 | --- | ----- |
 | [COMPARE.md](./COMPARE.md) · [POSITIONING-AND-PORTFOLIO.md](./POSITIONING-AND-PORTFOLIO.md) | Positioning |
 | [LIMITATIONS.md](./LIMITATIONS.md) · [KNOWN-ISSUES.md](./KNOWN-ISSUES.md) | Honest boundaries |
+| [COMPATIBILITY-AI-SDK-MATRIX.md](./COMPATIBILITY-AI-SDK-MATRIX.md) | Isolated AI SDK 6/7 peer smoke |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributing |
 | [../ROADMAP.md](../ROADMAP.md) · [../CHANGELOG.md](../CHANGELOG.md) | Public roadmap and changelog |

@@ -243,6 +243,7 @@
     "demo:generate": "node scripts/demo-generate.mjs",
     "demo:verify": "node scripts/demo-verify.mjs",
     "compat:smoke": "node scripts/compat-smoke.mjs",
+    "compat:ai-sdk-matrix": "node scripts/ai-sdk-peer-matrix.mjs",
     "fixtures:check": "node scripts/validate-fixtures.mjs",
     "recipes:check": "node scripts/validate-recipes.mjs",
     "perf:baseline": "node scripts/performance-baseline.mjs",

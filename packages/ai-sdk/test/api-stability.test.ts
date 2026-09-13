@@ -328,7 +328,7 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       responseId: "response-1",
       responseModelId: "fixture-model",
     });
-    expect(events[2]?.tokenUsage).toEqual({
+    expect(events[2]?.tokenUsage).toMatchObject({
       input: 4,
       output: 2,
       total: 6,
@@ -723,7 +723,7 @@ describe("@agent-inspect/ai-sdk scaffold", () => {
       provider: "fixture-provider",
       modelId: "stream-model",
     });
-    expect(events[2]?.tokenUsage).toEqual({
+    expect(events[2]?.tokenUsage).toMatchObject({
       input: 4,
       output: 2,
       total: 6,

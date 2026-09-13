@@ -221,8 +221,50 @@ function summarizeUsage(usage: unknown): PersistedTokenUsage | undefined {
   if (typeof details === "object" && details !== null && !Array.isArray(details)) {
     const detailRecord = details as Record<string, unknown>;
     const cached = detailRecord.cached_tokens ?? detailRecord.cached_input_tokens;
-    if (typeof cached === "number" && Number.isFinite(cached)) {
+    if (typeof cached === "number" && Number.isFinite(cached) && cached >= 0) {
       tokenUsage.cached = cached;
+    }
+    const cacheWrite =
+      detailRecord.cache_creation_tokens ??
+      detailRecord.cached_creation_tokens ??
+      detailRecord.cache_write_tokens;
+    if (
+      typeof cacheWrite === "number" &&
+      Number.isFinite(cacheWrite) &&
+      cacheWrite >= 0
+    ) {
+      tokenUsage.cacheWrite = cacheWrite;
+    }
+    const reasoning =
+      detailRecord.reasoning_tokens ?? detailRecord.output_tokens_details;
+    if (typeof reasoning === "number" && Number.isFinite(reasoning) && reasoning >= 0) {
+      tokenUsage.reasoning = reasoning;
+    } else if (
+      typeof reasoning === "object" &&
+      reasoning !== null &&
+      !Array.isArray(reasoning)
+    ) {
+      const nested = (reasoning as Record<string, unknown>).reasoning_tokens;
+      if (typeof nested === "number" && Number.isFinite(nested) && nested >= 0) {
+        tokenUsage.reasoning = nested;
+      }
+    }
+  }
+
+  const outputDetails = record.output_tokens_details;
+  if (
+    typeof outputDetails === "object" &&
+    outputDetails !== null &&
+    !Array.isArray(outputDetails)
+  ) {
+    const nested = (outputDetails as Record<string, unknown>).reasoning_tokens;
+    if (
+      typeof nested === "number" &&
+      Number.isFinite(nested) &&
+      nested >= 0 &&
+      tokenUsage.reasoning === undefined
+    ) {
+      tokenUsage.reasoning = nested;
     }
   }
 

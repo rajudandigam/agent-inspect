@@ -264,7 +264,7 @@ Canonical samples: `fixtures/traces-v0.2/*.jsonl` (validated by `pnpm fixtures:c
 | `attributes` | no | Shallow metadata bag (redaction-ready) |
 | `inputSummary` / `outputSummary` | no | Truncated previews when explicitly captured |
 | `error` | no | `{ name?, message, code? }` when `status: "error"` |
-| `tokenUsage` | no | `{ input?, output?, total?, cached? }` when supplied/known |
+| `tokenUsage` | no | `{ input?, output?, total?, cached?, cacheWrite?, reasoning? }` when supplied/known. `cached` is cache-read; `cacheWrite` / `reasoning` are informational and are never added to `total`. No pricing fields. |
 | `trace` | no | Optional `{ traceId?, spanId?, parentSpanId? }` for future OTel alignment |
 
 Programmatic helpers: see [API.md](./API.md) §13 (experimental persisted-event foundation).

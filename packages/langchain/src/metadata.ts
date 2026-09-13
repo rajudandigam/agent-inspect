@@ -4,6 +4,9 @@ export interface TokenUsage {
   input?: number;
   output?: number;
   total?: number;
+  cached?: number;
+  cacheWrite?: number;
+  reasoning?: number;
 }
 
 type LangGraphAlias = {
@@ -41,7 +44,48 @@ function normalizeTokenShape(raw: Record<string, unknown>): TokenUsage | undefin
     total = input + output;
   }
 
-  if (input === undefined && output === undefined && total === undefined) {
+  const inputDetails = isRecord(raw.input_token_details)
+    ? raw.input_token_details
+    : isRecord(raw.inputTokenDetails)
+      ? raw.inputTokenDetails
+      : undefined;
+  const outputDetails = isRecord(raw.output_token_details)
+    ? raw.output_token_details
+    : isRecord(raw.outputTokenDetails)
+      ? raw.outputTokenDetails
+      : undefined;
+
+  const cached =
+    num(raw.cached) ??
+    num(raw.cache_read) ??
+    num(raw.cacheRead) ??
+    (inputDetails
+      ? num(inputDetails.cache_read) ?? num(inputDetails.cacheRead)
+      : undefined);
+  const cacheWrite =
+    num(raw.cacheWrite) ??
+    num(raw.cache_write) ??
+    num(raw.cache_creation) ??
+    (inputDetails
+      ? num(inputDetails.cache_creation) ??
+        num(inputDetails.cache_write) ??
+        num(inputDetails.cacheWrite)
+      : undefined);
+  const reasoning =
+    num(raw.reasoning) ??
+    num(raw.reasoning_tokens) ??
+    (outputDetails
+      ? num(outputDetails.reasoning) ?? num(outputDetails.reasoning_tokens)
+      : undefined);
+
+  if (
+    input === undefined &&
+    output === undefined &&
+    total === undefined &&
+    cached === undefined &&
+    cacheWrite === undefined &&
+    reasoning === undefined
+  ) {
     return undefined;
   }
 
@@ -49,6 +93,9 @@ function normalizeTokenShape(raw: Record<string, unknown>): TokenUsage | undefin
   if (input !== undefined) out.input = input;
   if (output !== undefined) out.output = output;
   if (total !== undefined) out.total = total;
+  if (cached !== undefined) out.cached = cached;
+  if (cacheWrite !== undefined) out.cacheWrite = cacheWrite;
+  if (reasoning !== undefined) out.reasoning = reasoning;
   return out;
 }
 

@@ -33,7 +33,12 @@ export interface TokenMetadata {
   input?: number;
   output?: number;
   total?: number;
+  /** Cache-read tokens (informational; never added to total). */
   cached?: number;
+  /** Cache-write / cache-creation tokens (informational). */
+  cacheWrite?: number;
+  /** Reasoning / thinking tokens when reported separately. */
+  reasoning?: number;
 }
 
 /** Arbitrary structured fields for a step; safe extensions use string keys. */
@@ -123,6 +128,10 @@ export interface RunSummary {
     total?: number;
     /** Sum of supplied cached counts; cached is not added to total. */
     cached?: number;
+    /** Sum of cache-write / cache-creation counts; not added to total. */
+    cacheWrite?: number;
+    /** Sum of reasoning token counts; not added to total. */
+    reasoning?: number;
   };
 }
 

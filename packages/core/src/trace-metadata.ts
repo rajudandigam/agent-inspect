@@ -171,6 +171,8 @@ type StepAgg = {
   tokensOutput?: number;
   tokensTotal?: number;
   tokensCached?: number;
+  tokensCacheWrite?: number;
+  tokensReasoning?: number;
 };
 
 const ROOT_STEP_DEPTH = 0;
@@ -310,6 +312,16 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
         tokensCached: isNonNegativeFiniteNumber(s.metadata?.tokens?.cached)
           ? s.metadata.tokens.cached
           : undefined,
+        tokensCacheWrite: isNonNegativeFiniteNumber(
+          s.metadata?.tokens?.cacheWrite,
+        )
+          ? s.metadata.tokens.cacheWrite
+          : undefined,
+        tokensReasoning: isNonNegativeFiniteNumber(
+          s.metadata?.tokens?.reasoning,
+        )
+          ? s.metadata.tokens.reasoning
+          : undefined,
       });
     }
   }
@@ -336,9 +348,13 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
   let totalTokensOutput = 0;
   let totalTokensTotal = 0;
   let totalTokensCached = 0;
+  let totalTokensCacheWrite = 0;
+  let totalTokensReasoning = 0;
   let tokenBearingSteps = 0;
   let stepsWithKnownTotal = 0;
   let hasCachedTokens = false;
+  let hasCacheWriteTokens = false;
+  let hasReasoningTokens = false;
 
   const depthCache = new Map<string, number>();
 
@@ -362,7 +378,9 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
       s.tokensInput !== undefined ||
       s.tokensOutput !== undefined ||
       s.tokensTotal !== undefined ||
-      s.tokensCached !== undefined
+      s.tokensCached !== undefined ||
+      s.tokensCacheWrite !== undefined ||
+      s.tokensReasoning !== undefined
     ) {
       tokenBearingSteps += 1;
       if (s.tokensInput !== undefined) totalTokensInput += s.tokensInput;
@@ -379,6 +397,14 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
       if (s.tokensCached !== undefined) {
         totalTokensCached += s.tokensCached;
         hasCachedTokens = true;
+      }
+      if (s.tokensCacheWrite !== undefined) {
+        totalTokensCacheWrite += s.tokensCacheWrite;
+        hasCacheWriteTokens = true;
+      }
+      if (s.tokensReasoning !== undefined) {
+        totalTokensReasoning += s.tokensReasoning;
+        hasReasoningTokens = true;
       }
     }
   }
@@ -404,6 +430,12 @@ export function buildRunSummary(events: TraceEvent[]): RunSummary {
               ? { total: totalTokensTotal }
               : {}),
             ...(hasCachedTokens ? { cached: totalTokensCached } : {}),
+            ...(hasCacheWriteTokens
+              ? { cacheWrite: totalTokensCacheWrite }
+              : {}),
+            ...(hasReasoningTokens
+              ? { reasoning: totalTokensReasoning }
+              : {}),
           },
         }
       : {}),

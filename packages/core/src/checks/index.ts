@@ -684,6 +684,9 @@ const SAFE_USAGE_LEAF_KEYS = new Set([
   "output",
   "total",
   "cached",
+  "cachewrite",
+  "cache_write",
+  "reasoning",
   "input_tokens",
   "inputtokens",
   "output_tokens",
@@ -694,6 +697,12 @@ const SAFE_USAGE_LEAF_KEYS = new Set([
   "prompttokens",
   "completion_tokens",
   "completiontokens",
+  "cache_read",
+  "cacheread",
+  "cache_creation",
+  "cachecreation",
+  "reasoning_tokens",
+  "reasoningtokens",
 ]);
 
 const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [

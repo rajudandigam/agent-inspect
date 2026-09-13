@@ -65,6 +65,26 @@ describe("extractTokenUsage", () => {
     ).toEqual({ input: 4, output: 6, total: 10 });
   });
 
+  it("preserves cache-read, cache-write, and reasoning from usage_metadata details", () => {
+    expect(
+      extractTokenUsage({
+        usage_metadata: {
+          input_tokens: 10,
+          output_tokens: 20,
+          input_token_details: { cache_read: 3, cache_creation: 2 },
+          output_token_details: { reasoning: 5 },
+        },
+      }),
+    ).toEqual({
+      input: 10,
+      output: 20,
+      total: 30,
+      cached: 3,
+      cacheWrite: 2,
+      reasoning: 5,
+    });
+  });
+
   it("returns undefined when absent", () => {
     expect(extractTokenUsage({ llmOutput: {} })).toBeUndefined();
     expect(extractTokenUsage(null)).toBeUndefined();

@@ -549,7 +549,14 @@ function preparePersistedErrorForDisk(
 function prepareTokenUsage(value: unknown): PersistedTokenUsage | undefined {
   if (!isRecord(value)) return undefined;
   const out: PersistedTokenUsage = {};
-  for (const key of ["input", "output", "total", "cached"] as const) {
+  for (const key of [
+    "input",
+    "output",
+    "total",
+    "cached",
+    "cacheWrite",
+    "reasoning",
+  ] as const) {
     const item = safeGet(value, key);
     if (typeof item === "number" && Number.isFinite(item) && item >= 0) {
       out[key] = item;

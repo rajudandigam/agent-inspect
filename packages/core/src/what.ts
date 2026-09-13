@@ -31,6 +31,8 @@ export interface RunWhatSummary {
     output: number;
     total?: number;
     cached?: number;
+    cacheWrite?: number;
+    reasoning?: number;
   };
   correlation?: TraceCorrelationMetadata;
   failedStepNames: string[];
@@ -173,6 +175,12 @@ export function renderRunWhat(
     }
     if (summary.totalTokens.cached !== undefined) {
       tokenParts.push(`${summary.totalTokens.cached} cached`);
+    }
+    if (summary.totalTokens.cacheWrite !== undefined) {
+      tokenParts.push(`${summary.totalTokens.cacheWrite} cache-write`);
+    }
+    if (summary.totalTokens.reasoning !== undefined) {
+      tokenParts.push(`${summary.totalTokens.reasoning} reasoning`);
     }
     lines.push(`Tokens: ${tokenParts.join(" / ")}`);
   }

@@ -18,10 +18,11 @@ import type {
 import type {
   PersistedInspectEvent,
   PersistedInspectError,
-  PersistedTokenUsage,
 } from "agent-inspect/persisted";
 import { fileWriter } from "agent-inspect/writers";
 import type { TraceWriter, TraceWriterStats } from "agent-inspect/writers";
+
+import { summarizeAiSdkUsage } from "./usage.js";
 
 /**
  * Experimental capture mode for the AI SDK adapter.
@@ -108,13 +109,6 @@ export interface AgentInspectAiSdkIntegration extends TelemetryIntegration {
 type AiSdkModelInfo = {
   provider?: string;
   modelId?: string;
-};
-
-type AiSdkUsage = {
-  inputTokens?: number;
-  outputTokens?: number;
-  totalTokens?: number;
-  cachedInputTokens?: number;
 };
 
 interface ActiveStep {
@@ -228,18 +222,6 @@ function summarizeModel(model: AiSdkModelInfo | undefined): Record<string, unkno
     provider: model?.provider,
     modelId: model?.modelId,
   };
-}
-
-function summarizeUsage(usage: AiSdkUsage | undefined): PersistedTokenUsage | undefined {
-  if (!usage) return undefined;
-
-  const tokenUsage: PersistedTokenUsage = {};
-  if (typeof usage.inputTokens === "number") tokenUsage.input = usage.inputTokens;
-  if (typeof usage.outputTokens === "number") tokenUsage.output = usage.outputTokens;
-  if (typeof usage.totalTokens === "number") tokenUsage.total = usage.totalTokens;
-  if (typeof usage.cachedInputTokens === "number") tokenUsage.cached = usage.cachedInputTokens;
-
-  return Object.keys(tokenUsage).length > 0 ? tokenUsage : undefined;
 }
 
 function summarizeFinishReason(
@@ -454,7 +436,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           metadataKeyCount: countRecordKeys(event.metadata),
           ...this.previewAttributes({ output: event.text }),
         },
-        tokenUsage: summarizeUsage(event.usage),
+        tokenUsage: summarizeAiSdkUsage(event.usage),
         outputSummary: {
           contentPartCount: event.content.length,
           textLength: event.text.length,
@@ -611,7 +593,7 @@ class AgentInspectAiSdkTelemetryIntegration {
           metadataKeyCount: countRecordKeys(event.metadata),
           ...this.previewAttributes({ output: event.text }),
         },
-        tokenUsage: summarizeUsage(event.totalUsage),
+        tokenUsage: summarizeAiSdkUsage(event.totalUsage),
         outputSummary: {
           contentPartCount: event.content.length,
           textLength: event.text.length,

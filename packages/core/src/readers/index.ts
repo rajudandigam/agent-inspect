@@ -892,6 +892,12 @@ function readOpenInferenceTokenUsage(
   const completion = attributes["llm.token_count.completion"];
   const total = attributes["llm.token_count.total"];
   const cached = attributes["llm.token_count.prompt_details.cache_read"];
+  const cacheWrite =
+    attributes["llm.token_count.prompt_details.cache_write"] ??
+    attributes["llm.token_count.prompt_details.cache_creation"];
+  const reasoning =
+    attributes["llm.token_count.completion_details.reasoning"] ??
+    attributes["llm.token_count.completion_details.reasoning_tokens"];
   const usage: PersistedTokenUsage = {};
 
   if (typeof prompt === "number" && Number.isFinite(prompt) && prompt >= 0) {
@@ -909,6 +915,20 @@ function readOpenInferenceTokenUsage(
   }
   if (typeof cached === "number" && Number.isFinite(cached) && cached >= 0) {
     usage.cached = cached;
+  }
+  if (
+    typeof cacheWrite === "number" &&
+    Number.isFinite(cacheWrite) &&
+    cacheWrite >= 0
+  ) {
+    usage.cacheWrite = cacheWrite;
+  }
+  if (
+    typeof reasoning === "number" &&
+    Number.isFinite(reasoning) &&
+    reasoning >= 0
+  ) {
+    usage.reasoning = reasoning;
   }
   if (usage.total === undefined && usage.input !== undefined && usage.output !== undefined) {
     usage.total = usage.input + usage.output;

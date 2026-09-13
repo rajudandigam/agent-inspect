@@ -81,7 +81,7 @@ This document states what AgentInspect **does not** provide today. It complement
 
 ## Economics
 
-- **No cost engine**: no pricing tables, invoice-grade usage, or provider billing reconciliation.
+- **No cost engine**: no pricing tables, invoice-grade usage, or provider billing reconciliation. Usage fidelity may preserve cache-read (`cached`), cache-write (`cacheWrite`), and reasoning token counts when providers report them; those fields are observational only.
 - **Token usage is supplied metadata only**: AgentInspect may display `input`, `output`, `total`, and `cached` counts when callers/adapters provide them; core does not count tokens or infer provider billing.
 
 ## Local observability commands (v1.4.0)
