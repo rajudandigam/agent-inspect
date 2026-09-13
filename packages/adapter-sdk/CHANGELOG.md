@@ -1,5 +1,12 @@
 # @agent-inspect/adapter-sdk
 
+## 6.29.0
+
+### Patch Changes
+
+- Updated dependencies [0e5732e]
+  - agent-inspect@6.29.0
+
 ## 6.28.0
 
 ### Minor Changes
