@@ -7,35 +7,40 @@
 ```yaml
 baselineVersion: "6.29.0"
 publishedVersion: "6.29.0"
-pendingPublishVersion: "6.25.1"
-currentTrain: "repository-and-release-truth-gate"
-trainStatus: "in-progress"
+pendingPublishVersion: null
+currentTrain: "post-6.25-reliability-complete"
+trainStatus: "stopped"
 executionMode: "maintainer-reviewed"
 namedTrain: "agentinspect-reliability-evidence-v6.25.1-to-v6.30"
 branch: "main"
-currentChunk: "immediate-gate"
+currentChunk: "none"
 lastConfirmedCommit: "origin/main"
-lastValidationLevel: "npm-6.25.0-published; post-6.25 program planned"
-nextAction: "Complete release-truth gate → implement and publish 6.25.1"
+lastValidationLevel: "npm-6.29.0-published"
+nextAction: "No further release in this train without external evidence"
 pendingManualGate: "main branch protection; Dependabot #372/#373 close-or-split; #368 defer; Actions PRs #367/#369/#370/#371 rebase independently"
 githubIssues:
   "209": "keep open — cross-platform packed-consumer matrix PARTIAL"
   "295": "park — VS Code Marketplace unpublished (Option A)"
-  "362": "scheduled — 6.26.0 outcome-aware behavioral sessions"
+  "362": "shipped in 6.26.0 (synthetic); external gist still BLOCKED_ON_EXTERNAL_FIXTURE for closure claims"
   "115": "park/close unless active ADPA partner"
 canonicalRoadmap: "docs/implementation/ROADMAP.md"
 activePlan: "docs/implementation/active/NEXT-RELEASES.md"
 completedChunks:
-  - "adoption-first 6.19→6.25 published"
-remainingTrains:
-  - "v6.25.1 critical correctness"
-  - "v6.26.0 behavioral sessions"
-  - "v6.27.0 bounded recovery"
-  - "v6.28.0 Evidence binding"
-  - "v6.29.0 usage/adapters"
-  - "v6.30.0 conditional external conformance"
+  - "immediate release-truth gate"
+  - "6.25.1 critical correctness"
+  - "6.25.2 skipped (clean)"
+  - "6.26.0 behavioral sessions"
+  - "6.27.0 bounded recovery"
+  - "6.28.0 Evidence contract binding"
+  - "6.29.0 usage fidelity + AI SDK peer matrix"
+remainingTrains: []
 blockedTrains:
+  - "6.30.0 external conformance (BLOCKED_ON_EXTERNAL_EVIDENCE)"
   - "retained-use adoption claim (BLOCKED_ON_EXTERNAL_EVIDENCE)"
-  - "v7.0.0 (assessment only — docs/implementation/active/V7-READINESS-ASSESSMENT.md)"
-updatedAt: "2026-09-12"
+  - "v7.0.0 (assessment only — docs/implementation/active/V7-READINESS-ASSESSMENT.md) — V7_DECISION: NO-GO"
+stopMarker: |
+  BLOCKED_ON_EXTERNAL_EVIDENCE
+  LAST_IMPLEMENTED_RELEASE: 6.29.0
+  V7_DECISION: NO-GO
+updatedAt: "2026-09-13"
 ```

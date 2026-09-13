@@ -1,8 +1,8 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.25.0`
-**Roadmap horizon:** `6.25.1 → 6.26.0 → 6.27.0 → 6.28.0 → 6.29.0 → conditional 6.30.0` (adoption-first `6.19→6.25` complete)
-**Status:** Post-6.25 reliability / evidence / compatibility program active; core boundary frozen; v7 assessment only (**NO-GO**)
+**Baseline:** `agent-inspect@6.29.0`
+**Roadmap horizon:** post-6.25 reliability train complete through `6.29.0`; `6.30.0` blocked on external evidence (adoption-first `6.19→6.25` complete)
+**Status:** Train stopped — `BLOCKED_ON_EXTERNAL_EVIDENCE`; `LAST_IMPLEMENTED_RELEASE: 6.29.0`; **V7_DECISION: NO-GO**
 **Primary objective:** Eliminate fail-open retry/recovery chronology defects, bound omitted-payload allocation, separate execution status from behavioral outcomes, ship bounded safe recovery contracts, make Evidence reviewer-reproducible, and improve provider usage fidelity—without schema 1.1, hosted SaaS, or fabricated external evidence
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
@@ -159,12 +159,12 @@ Fail-closed deterministic gate hardening:
 | **6.23.0** | Structured control contracts | bounded tool-input checks | Published |
 | **6.24.0** | Production adoption / distribution | #295 VS Code decision; external retained-use gate | Published |
 | **6.25.0** | Stability baseline | maintenance cut; #386/#387 | Published |
-| **6.25.1** | Critical correctness | retry identity + omitted-payload preflight | Next |
-| **6.26.0** | Outcome-aware behavioral sessions | #362 dual-axis summaries | Planned |
-| **6.27.0** | Bounded safe recovery | read-recovery oracle first | Planned |
-| **6.28.0** | Reviewer-reproducible Evidence | resolved contract binding | Planned |
-| **6.29.0** | Provider usage / adapters | cache/reasoning usage; isolated matrices | Planned |
-| **6.30.0** | External conformance | conditional | Conditional |
+| **6.25.1** | Critical correctness | retry identity + omitted-payload preflight | Published |
+| **6.26.0** | Outcome-aware behavioral sessions | #362 dual-axis summaries | Published |
+| **6.27.0** | Bounded safe recovery | read-recovery oracle first | Published |
+| **6.28.0** | Reviewer-reproducible Evidence | resolved contract binding | Published |
+| **6.29.0** | Provider usage / adapters | cache/reasoning usage; isolated matrices | Published |
+| **6.30.0** | External conformance | conditional | **BLOCKED_ON_EXTERNAL_EVIDENCE** |
 
 ### 3.1 v6.18.0 — adapter capture parity (#311)
 
