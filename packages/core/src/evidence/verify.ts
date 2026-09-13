@@ -7,7 +7,12 @@ import path from "node:path";
 import { sha256Equals, sha256Hex } from "./hash.js";
 import { parseEvidenceManifestJson } from "./manifest.js";
 import { assertEvidenceRelativePath } from "./paths.js";
-import { EVIDENCE_MANIFEST_FILENAME, type EvidenceManifest } from "./types.js";
+import {
+  EVIDENCE_MANIFEST_FILENAME,
+  EVIDENCE_RESOLVED_CONTRACT_FILENAME,
+  type EvidenceManifest,
+} from "./types.js";
+import { verifyEvidenceContractBinding } from "./contract-binding.js";
 
 export type EvidenceVerifyStatus = "pass" | "fail";
 
@@ -21,7 +26,11 @@ export interface EvidenceVerifyIssue {
     | "assessment_missing"
     | "provenance_missing"
     | "path_unsafe"
-    | "io_error";
+    | "io_error"
+    | "contract_file_missing"
+    | "contract_hash_mismatch"
+    | "contract_digest_mismatch"
+    | "contract_binding_invalid";
   severity: "error" | "warning";
   message: string;
   path?: string;
@@ -231,6 +240,30 @@ export async function verifyEvidenceDirectory(
       message: `Unexpected file not listed in manifest: ${rel}`,
       path: rel,
     });
+  }
+
+  if (manifest.contract !== undefined) {
+    const contractRel =
+      manifest.contract.path ?? EVIDENCE_RESOLVED_CONTRACT_FILENAME;
+    let resolvedBytes: string | undefined;
+    try {
+      resolvedBytes = await readFile(path.join(root, ...contractRel.split("/")), "utf-8");
+    } catch {
+      resolvedBytes = undefined;
+    }
+    let checkResultsJson: string | undefined;
+    try {
+      checkResultsJson = await readFile(path.join(root, "check-results.json"), "utf-8");
+    } catch {
+      checkResultsJson = undefined;
+    }
+    for (const issue of verifyEvidenceContractBinding({
+      binding: manifest.contract,
+      ...(resolvedBytes !== undefined ? { resolvedContractBytes: resolvedBytes } : {}),
+      ...(checkResultsJson !== undefined ? { checkResultsJson } : {}),
+    })) {
+      issues.push(issue);
+    }
   }
 
   const hasError = issues.some((issue) => issue.severity === "error");

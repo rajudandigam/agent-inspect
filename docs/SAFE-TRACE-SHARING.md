@@ -34,6 +34,8 @@ Manual traces redact common sensitive keys **before disk** by default. Pass `red
 
 When a maintainer or support responder needs reproducible evidence, follow the [safe support reproduction workflow](./SUPPORT-REPRODUCTION.md) to create and review a minimized Evidence bundle. Do not attach a raw trace directory.
 
+For reviewer-reproducible trajectory checks (6.28+), prefer Evidence that includes `contract.resolved.json` and a matching `contract` digest in `evidence.json` / `check-results.json`. That lets a reviewer see the resolved TraceContract or check preset that was evaluated. Custom/programmatic rules remain `partial` — JSON cannot replay executable rule functions. Contract binding verifies packaged digests only; it does **not** prove producer identity, trusted time, or that the artifact is safe to publish. See [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md#contract-binding-628).
+
 - Use **`--redaction-profile share`** for PR/issue attachments; use **`strict`** when sharing outside your team.
 - **Review** the exported file — profiles do not detect all sensitive data.
 - Treat traces written with `redact: false` as sensitive. Review every event before sharing them outside your team.

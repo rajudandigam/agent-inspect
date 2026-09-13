@@ -1,6 +1,6 @@
 # Evidence format (Portable Evidence v2)
 
-**Status:** Supported workflow for AgentInspect **6.17.x** (not a compliance certification)
+**Status:** Supported workflow for AgentInspect **6.28+** (not a compliance certification; additive contract binding in 6.28)
 
 **Authority:** [implementation/ROADMAP.md](./implementation/ROADMAP.md) · [history/RELEASE-HISTORY.md](./history/RELEASE-HISTORY.md)
 
@@ -90,7 +90,8 @@ Canonical shape (fields may grow additively; unknown fields must be preserved by
 - **`assessment.sourceStatus`:** optional informational source assessment.
 - **`semantics` (optional, 6.14+):** bounded TraceFacts / logical-projection summary (`rawEventCount`, `logicalEventCount`, `finishedToolNames`, `contractStatus`, …). Does not embed prompts or raw events. Older readers ignore unknown fields.
 - **`files[]`:** every packaged file with `sha256` of exact bytes written; paths are relative, no `..`, no absolute paths.
-- **`role`:** optional classifier (`report`, `redacted-trace`, `checks`, `redaction-report`, `summary`, `other`).
+- **`role`:** optional classifier (`report`, `redacted-trace`, `checks`, `contract`, `redaction-report`, `summary`, `other`).
+- **`contract` (optional, 6.28+):** resolved TraceContract / check-preset binding. See [Contract binding (6.28)](#contract-binding-628).
 
 The manifest is **not** a certification.
 
@@ -121,8 +122,43 @@ Must check:
 | Assessment presence | fail if missing |
 | Provenance (`source`, `generator`, `sourceHashes` array) | fail if missing required fields |
 | External digital signatures / key material | **not supported** — AgentInspect does not emit, require, or cryptographically verify detached signatures. Unknown signature-like fields are ignored as forward-compatible extras; there is no signature-shape validation path today |
+| Contract binding (when `contract` present) | fail if packaged `contract.resolved.json` is missing, hash mismatches, or `check-results.json` `contract.contractDigest` disagrees |
 
-No signing / key infrastructure in this train. Do not treat Evidence packages as signed attestations.
+No signing / key infrastructure in this train. Do not treat Evidence packages as signed attestations. Contract binding does **not** prove producer identity, trusted time, source completeness, or semantic truth.
+
+## Contract binding (6.28)
+
+Evidence can package what was actually evaluated so an offline reviewer is not limited to pass/fail alone.
+
+| Artifact | Role |
+|----------|------|
+| `contract.resolved.json` | Deterministic resolved TraceContract or check-preset snapshot (aliases normalized, defaults made explicit) |
+| `evidence.json` → `contract` | Binding status, engine/canonicalization versions, file path + SHA-256, rule IDs |
+| `check-results.json` → `contract` | Same digest + evaluated rule IDs (binds results to the snapshot) |
+
+TypeScript: `buildEvidenceContractPackage` / `buildEvidenceCiPackage({ contractPackage })` under `agent-inspect/advanced` (see [ADR-0012](./decisions/ADR-0012-evidence-contract-binding.md)).
+
+### Status honesty
+
+| Status | Meaning |
+|--------|---------|
+| `complete` | Fully serializable declarative contract/preset |
+| `partial` | Custom/programmatic rules present — IDs recorded; **not** complete replay |
+| `unavailable` | No contract/preset was packaged |
+
+Custom `TraceCheckRule.evaluate` functions cannot be made reviewer-reproducible through JSON. Evidence records stable rule IDs in `unsupportedRuleIds` and sets `partial`. Do **not** hash function source and call it proof.
+
+### Assurance boundaries
+
+Even with contract binding, Evidence does **not** prove:
+
+- producer identity
+- trusted time / notarization
+- source completeness
+- semantic truth of observations
+- external acceptance
+
+`bundle verify` checks file presence and digest agreement. It does **not** re-run the contract by default.
 
 ## Self-contained HTML (6.10-2+)
 

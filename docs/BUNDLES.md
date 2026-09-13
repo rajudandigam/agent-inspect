@@ -37,7 +37,8 @@ trace.html                 # offline HTML (index for multi-run)
 trace.jsonl                # redacted JSONL copy
 summary.md                 # human overview
 metadata.json              # legacy manifest (version, profile, safe status)
-check-results.json         # verify-safe results per run
+check-results.json         # verify-safe / check results per run (may include contract digest binding)
+contract.resolved.json     # optional resolved TraceContract / preset snapshot (6.28+)
 redaction-report.json      # detector summary (no secret values)
 eval-results.json          # placeholder unless eval artifacts are added later
 performance-summary.json   # placeholder unless perf artifacts are added later
@@ -72,6 +73,8 @@ Profiles:
 ## Review before sharing
 
 Bundles are **derived copies**, not compliance certification. Always review `evidence.html` / `summary.md`, `check-results.json`, and run `bundle verify` before attaching to tickets or PRs.
+
+When `contract.resolved.json` is present (6.28+), reviewers can inspect the resolved TraceContract or check preset that was evaluated and confirm digests via `bundle verify`. Custom/programmatic rules are marked `partial` and are not fully replayable from JSON. Contract binding is **not** a signature or trusted-time claim — see [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md#contract-binding-628).
 
 See also [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md) and [CLI.md §6.24](./CLI.md#624-bundle).
 

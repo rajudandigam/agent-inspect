@@ -46,6 +46,9 @@ export function inferEvidenceFileRole(relativePath: string): EvidenceFileRole {
   if (base === "check-results.json") {
     return "checks";
   }
+  if (base === "contract.resolved.json") {
+    return "contract";
+  }
   if (base === "redaction-report.json") {
     return "redaction-report";
   }
@@ -96,6 +99,7 @@ export function buildEvidenceManifest(parts: {
   createdAt?: string;
   note?: string;
   semantics?: EvidenceManifest["semantics"];
+  contract?: EvidenceManifest["contract"];
 }): EvidenceManifest {
   const runIds = [...parts.runIds];
   if (runIds.length === 0) {
@@ -136,6 +140,7 @@ export function buildEvidenceManifest(parts: {
     },
     assessment,
     ...(parts.semantics !== undefined ? { semantics: { ...parts.semantics } } : {}),
+    ...(parts.contract !== undefined ? { contract: { ...parts.contract } } : {}),
     files: buildEvidenceFileEntries(parts.files),
   };
 }

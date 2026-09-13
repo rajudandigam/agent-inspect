@@ -1,4 +1,8 @@
 export type {
+  EvidenceCheckContractBinding,
+  EvidenceContractBinding,
+  EvidenceContractBindingSource,
+  EvidenceContractBindingStatus,
   EvidenceFileEntry,
   EvidenceFileRole,
   EvidenceFormatVersion,
@@ -15,6 +19,7 @@ export {
   EVIDENCE_ASSESSMENT_NOTE,
   EVIDENCE_FORMAT_VERSION,
   EVIDENCE_MANIFEST_FILENAME,
+  EVIDENCE_RESOLVED_CONTRACT_FILENAME,
 } from "./types.js";
 
 export { isSha256Hex, sha256Equals, sha256Hex } from "./hash.js";
@@ -28,6 +33,24 @@ export {
   serializeEvidenceManifest,
   validateEvidenceManifest,
 } from "./manifest.js";
+export {
+  EVIDENCE_CONTRACT_ASSURANCE_NOTE,
+  EVIDENCE_CONTRACT_CANONICALIZATION_VERSION,
+  EVIDENCE_CONTRACT_PARTIAL_NOTE,
+  EVIDENCE_CONTRACT_UNAVAILABLE_NOTE,
+  bindCheckResultsToContract,
+  buildEvidenceContractPackage,
+  collectResolvedContractRuleIds,
+  readCheckResultsContractBinding,
+  resolveSerializableTraceContract,
+  serializeCanonicalJson,
+  serializeCheckResultsJson,
+  verifyEvidenceContractBinding,
+  type BuildEvidenceContractPackageInput,
+  type EvidenceContractPackage,
+  type EvidenceContractVerifyIssue,
+  type ResolvedContractDocument,
+} from "./contract-binding.js";
 export {
   EVIDENCE_HTML_FILENAME,
   EVIDENCE_VIEW_IDS,

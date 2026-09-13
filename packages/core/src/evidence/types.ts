@@ -12,9 +12,60 @@ export type EvidenceFileRole =
   | "report"
   | "redacted-trace"
   | "checks"
+  | "contract"
   | "redaction-report"
   | "summary"
   | "other";
+
+/** How a packaged contract/preset was supplied (6.28+). */
+export type EvidenceContractBindingSource =
+  | "file"
+  | "inline"
+  | "preset"
+  | "cli-shorthand"
+  | "programmatic";
+
+/** Reproducibility honesty for contract binding (6.28+). */
+export type EvidenceContractBindingStatus = "complete" | "partial" | "unavailable";
+
+/**
+ * Optional Evidence v2 contract binding (6.28+).
+ * Additive; older readers ignore unknown fields. Not a signature or trusted-time claim.
+ */
+export interface EvidenceContractBinding {
+  status: EvidenceContractBindingStatus;
+  source: EvidenceContractBindingSource;
+  contractId?: string;
+  contractVersion?: string;
+  canonicalizationVersion: "1";
+  engineVersion: string;
+  /** Relative packaged path (typically `contract.resolved.json`). */
+  path?: string;
+  /** SHA-256 of the packaged resolved-contract bytes. */
+  sha256?: string;
+  ruleIds: string[];
+  unsupportedRuleIds?: string[];
+  note?: string;
+}
+
+/**
+ * Optional fields embedded in `check-results.json` to bind results to a contract digest.
+ */
+export interface EvidenceCheckContractBinding {
+  contractDigest?: string;
+  canonicalizationVersion?: "1";
+  engineVersion?: string;
+  evaluatedRuleIds?: string[];
+  bindingStatus?: EvidenceContractBindingStatus;
+  unsupportedRuleIds?: string[];
+  origin?: {
+    source: EvidenceContractBindingSource;
+    preset?: string;
+    path?: string;
+  };
+  selectedScope?: Record<string, unknown>;
+  selectedAlternativeBranch?: string;
+}
 
 export interface EvidenceSourceHash {
   runId: string;
@@ -54,6 +105,11 @@ export interface EvidenceManifest {
    * Additive; older readers ignore unknown fields.
    */
   semantics?: EvidenceSemantics;
+  /**
+   * Optional resolved-contract binding (6.28+).
+   * Additive; older readers ignore unknown fields.
+   */
+  contract?: EvidenceContractBinding;
   files: EvidenceFileEntry[];
 }
 
@@ -98,3 +154,6 @@ export const EVIDENCE_ASSESSMENT_NOTE =
   "Best-effort local safety verification only; not a compliance certification.";
 
 export const EVIDENCE_MANIFEST_FILENAME = "evidence.json";
+
+/** Packaged resolved TraceContract / check-preset snapshot (6.28+). */
+export const EVIDENCE_RESOLVED_CONTRACT_FILENAME = "contract.resolved.json";

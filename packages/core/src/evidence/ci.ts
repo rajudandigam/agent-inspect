@@ -12,10 +12,18 @@ import {
   EVIDENCE_ASSESSMENT_NOTE,
   EVIDENCE_FORMAT_VERSION,
   EVIDENCE_MANIFEST_FILENAME,
+  EVIDENCE_RESOLVED_CONTRACT_FILENAME,
+  type EvidenceContractBinding,
   type EvidenceManifest,
   type EvidenceSafeStatus,
 } from "./types.js";
 import { EVIDENCE_HTML_FILENAME } from "./html-shell.js";
+import {
+  bindCheckResultsToContract,
+  buildEvidenceContractPackage,
+  serializeCheckResultsJson,
+  type BuildEvidenceContractPackageInput,
+} from "./contract-binding.js";
 
 export interface EvidenceCiPackageInput {
   generatorVersion: string;
@@ -32,6 +40,12 @@ export interface EvidenceCiPackageInput {
   summaryText?: string;
   /** Optional TraceFacts/parity summary embedded in evidence.json (6.14+). */
   semantics?: EvidenceManifest["semantics"];
+  /**
+   * Optional TraceContract / preset binding (6.28+).
+   * When omitted, no contract section is written (older Evidence shape).
+   * Pass `{ engineVersion, source }` with neither contract nor preset to record `unavailable`.
+   */
+  contractPackage?: BuildEvidenceContractPackageInput;
 }
 
 export interface EvidenceCiPackageFiles {
@@ -39,6 +53,7 @@ export interface EvidenceCiPackageFiles {
   "evidence.json": string;
   "check-results.json": string;
   "trace.jsonl": string;
+  "contract.resolved.json"?: string;
   manifest: EvidenceManifest;
 }
 
@@ -50,7 +65,8 @@ function asMap(
 }
 
 /**
- * Build the four standard CI evidence files (in memory) using Evidence v2 helpers.
+ * Build the standard CI evidence files (in memory) using Evidence v2 helpers.
+ * Optionally packages `contract.resolved.json` and binds digests (6.28+).
  */
 export function buildEvidenceCiPackage(input: EvidenceCiPackageInput): EvidenceCiPackageFiles {
   const sources = asMap(input.sourceContents);
@@ -94,10 +110,37 @@ export function buildEvidenceCiPackage(input: EvidenceCiPackageInput): EvidenceC
     },
   });
 
+  let checkResultsJson = input.checkResultsJson;
+  let contractBinding: EvidenceContractBinding | undefined;
+  let contractFileContent: string | undefined;
+
+  if (input.contractPackage !== undefined) {
+    const packaged = buildEvidenceContractPackage({
+      ...input.contractPackage,
+      engineVersion: input.contractPackage.engineVersion || input.generatorVersion,
+    });
+    contractBinding = packaged.binding;
+    if (packaged.resolvedJson !== undefined) {
+      contractFileContent = packaged.resolvedJson;
+    }
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(checkResultsJson) as Record<string, unknown>;
+    } catch {
+      parsed = { raw: checkResultsJson };
+    }
+    checkResultsJson = serializeCheckResultsJson(
+      bindCheckResultsToContract(parsed, packaged.checkBinding),
+    );
+  }
+
   const packaged = [
     { path: EVIDENCE_HTML_FILENAME, content: evidenceHtml },
-    { path: "check-results.json", content: input.checkResultsJson },
+    { path: "check-results.json", content: checkResultsJson },
     { path: "trace.jsonl", content: input.redactedTraceJsonl },
+    ...(contractFileContent !== undefined
+      ? [{ path: EVIDENCE_RESOLVED_CONTRACT_FILENAME, content: contractFileContent }]
+      : []),
   ];
 
   const manifest = buildEvidenceManifest({
@@ -113,13 +156,17 @@ export function buildEvidenceCiPackage(input: EvidenceCiPackageInput): EvidenceC
     createdAt,
     note: EVIDENCE_ASSESSMENT_NOTE,
     ...(input.semantics !== undefined ? { semantics: input.semantics } : {}),
+    ...(contractBinding !== undefined ? { contract: contractBinding } : {}),
   });
 
   return {
     "evidence.html": evidenceHtml,
     "evidence.json": serializeEvidenceManifest(manifest),
-    "check-results.json": input.checkResultsJson,
+    "check-results.json": checkResultsJson,
     "trace.jsonl": input.redactedTraceJsonl,
+    ...(contractFileContent !== undefined
+      ? { [EVIDENCE_RESOLVED_CONTRACT_FILENAME]: contractFileContent }
+      : {}),
     manifest,
   };
 }
