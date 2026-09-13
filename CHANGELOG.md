@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 0e5732e: Provider usage fidelity: preserve cache-read (`cached`), cache-write (`cacheWrite`), and reasoning token fields across core normalization and adapters. Add isolated AI SDK 6/7 peer matrix. No pricing engine; root Node remains `>=20`.
+- 0e5732e: Provider usage fidelity: preserve cache-read (`cached`), cache-write (`cacheWrite`), and reasoning token fields across core normalization and adapters. Add isolated AI SDK peer matrix (`ai@^6` required; AI SDK 7 soft-blocked pending telemetry API migration). No pricing engine; root Node remains `>=20`.
 
 ## 6.28.0
 
