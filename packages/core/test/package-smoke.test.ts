@@ -145,7 +145,7 @@ describe("package manifest (experimental AI SDK adapter)", () => {
     expect(rootExport?.require?.default).toContain("index.cjs");
 
     const peerDependencies = pkg.peerDependencies as Record<string, string> | undefined;
-    expect(peerDependencies?.ai).toBe("^6.0.0 || ^7.0.0");
+    expect(peerDependencies?.ai).toBe("^6.0.0");
 
     const dependencies = pkg.dependencies as Record<string, string> | undefined;
     expect(dependencies?.["agent-inspect"]).toBe("workspace:*");

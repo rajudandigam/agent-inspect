@@ -18,8 +18,14 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PEERS = [
-  { id: "ai-6", range: "ai@^6.0.0" },
-  { id: "ai-7", range: "ai@^7.0.0" },
+  { id: "ai-6", range: "ai@^6.0.0", required: true },
+  {
+    id: "ai-7",
+    range: "ai@^7.0.0",
+    required: false,
+    // AI SDK 7 removed bindTelemetryIntegration; keep as soft probe only.
+    softBlockMarker: "BLOCKED_ON_AI_SDK7_TELEMETRY_API",
+  },
 ];
 
 function fail(message, detail = "") {
@@ -195,13 +201,24 @@ function main() {
     for (const peer of PEERS) {
       try {
         runPeer(peer, coreTgz, adapterTgz);
-        rows.push({ peer: peer.id, status: "pass" });
+        rows.push({ peer: peer.id, status: "pass", required: peer.required !== false });
       } catch (error) {
-        rows.push({
-          peer: peer.id,
-          status: "fail",
-          error: error instanceof Error ? error.message : String(error),
-        });
+        const message = error instanceof Error ? error.message : String(error);
+        if (peer.required === false) {
+          rows.push({
+            peer: peer.id,
+            status: "blocked",
+            marker: peer.softBlockMarker ?? "BLOCKED",
+            error: message,
+          });
+          console.warn(`[ai-sdk-peer-matrix] ${peer.id} soft-blocked: ${message}`);
+        } else {
+          rows.push({
+            peer: peer.id,
+            status: "fail",
+            error: message,
+          });
+        }
       }
     }
 

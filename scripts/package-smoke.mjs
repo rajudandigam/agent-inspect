@@ -25,7 +25,7 @@ const optionalPackageChecks = [
   {
     dir: "packages/ai-sdk",
     name: "@agent-inspect/ai-sdk",
-    peerDependencies: { ai: "^6.0.0 || ^7.0.0" },
+    peerDependencies: { ai: "^6.0.0" },
     installPeers: ["ai@6.0.210"],
     esm: `
       import { agentInspect } from "@agent-inspect/ai-sdk";

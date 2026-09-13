@@ -38,7 +38,7 @@
     "test": "vitest run -c ../../vitest.config.ts"
   },
   "peerDependencies": {
-    "ai": "^6.0.0 || ^7.0.0"
+    "ai": "^6.0.0"
   },
   "dependencies": {
     "agent-inspect": "workspace:*"

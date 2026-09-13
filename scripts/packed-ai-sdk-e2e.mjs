@@ -269,6 +269,15 @@ if (
 }
 
 const peerRange = readAiSdkPeerRange();
+// Pack smoke always exercises AI SDK 6. Wide peer ranges (if reintroduced) must not
+// let npm resolve AI SDK 7 here — v7 removed `bindTelemetryIntegration`.
+const packedAiInstallSpec = "ai@6.0.210";
+if (!peerRange.includes("6")) {
+  fail(
+    "@agent-inspect/ai-sdk peerDependencies.ai must include major 6 for packed smoke",
+    peerRange,
+  );
+}
 const tarballDir = mkdtempSync(path.join(os.tmpdir(), "agent-inspect-ai-sdk-pack-"));
 const consumerDir = mkdtempSync(
   path.join(os.tmpdir(), "agent-inspect-ai-sdk-consumer-"),
@@ -294,7 +303,7 @@ try {
   installPackedConsumer(consumerDir, [
     rootTarball,
     adapterTarball,
-    `ai@${peerRange}`,
+    packedAiInstallSpec,
   ]);
 
   const consumerScript = writeAiSdkConsumerFixture(consumerDir);
