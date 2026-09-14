@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -31,6 +31,7 @@ export interface SuiteReportCommandOptions {
 }
 
 const DEFAULT_CONFIG_FILENAME = "agent-inspect.suite.json";
+const CONFIG_EXISTS_ERROR = `${DEFAULT_CONFIG_FILENAME} already exists; refusing to overwrite it.`;
 
 function printJson(value: unknown): void {
   console.log(JSON.stringify(value, null, 2));
@@ -38,6 +39,36 @@ function printJson(value: unknown): void {
 
 function resolveCwd(options: { cwd?: string }): string {
   return path.resolve(options.cwd ?? process.cwd());
+}
+
+function getErrorCode(error: unknown): string | undefined {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return undefined;
+  }
+  return typeof error.code === "string" ? error.code : undefined;
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function failInit(options: SuiteCommandOptions, message: string): void {
+  if (options.json) {
+    printJson({ ok: false, error: message });
+  } else {
+    console.error(`[AgentInspect] suite init failed: ${message}`);
+  }
+  process.exitCode = 1;
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await lstat(filePath);
+    return true;
+  } catch (error) {
+    if (getErrorCode(error) === "ENOENT") return false;
+    throw error;
+  }
 }
 
 export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promise<void> {
@@ -48,8 +79,19 @@ export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promi
     template !== undefined && template !== ""
       ? resolveSuiteTemplate(template)
       : defaultSuiteConfigTemplate();
+  const content = `${JSON.stringify(suiteConfig, null, 2)}\n`;
 
   if (options.dryRun) {
+    try {
+      if (await pathExists(configPath)) {
+        failInit(options, CONFIG_EXISTS_ERROR);
+        return;
+      }
+    } catch (error) {
+      failInit(options, getErrorMessage(error));
+      return;
+    }
+
     if (options.json) {
       printJson({
         ok: true,
@@ -67,7 +109,10 @@ export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promi
   }
 
   try {
-    await writeFile(configPath, `${JSON.stringify(suiteConfig, null, 2)}\n`, "utf-8");
+    await writeFile(configPath, content, {
+      encoding: "utf-8",
+      flag: "wx",
+    });
     if (options.json) {
       printJson({
         ok: true,
@@ -84,13 +129,11 @@ export async function suiteInitCommand(options: SuiteCommandOptions = {}): Promi
     console.log("  npx agent-inspect suite validate");
     console.log("  npx agent-inspect suite run --json");
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (options.json) {
-      printJson({ ok: false, error: message });
-    } else {
-      console.error(`[AgentInspect] suite init failed: ${message}`);
-    }
-    process.exitCode = 1;
+    const message =
+      getErrorCode(error) === "EEXIST"
+        ? CONFIG_EXISTS_ERROR
+        : getErrorMessage(error);
+    failInit(options, message);
   }
 }
 
