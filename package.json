@@ -256,14 +256,14 @@
     "website:typecheck": "pnpm --filter @agent-inspect/website typecheck"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.10",
-    "@size-limit/preset-small-lib": "^11.1.6",
-    "@types/node": "^22.10.2",
-    "@vitest/coverage-v8": "^3.2.7",
-    "size-limit": "^11.1.6",
+    "@changesets/cli": "^3.0.2",
+    "@size-limit/preset-small-lib": "^13.0.3",
+    "@types/node": "^26.5.1",
+    "@vitest/coverage-v8": "^5.0.0",
+    "size-limit": "^13.0.3",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.2",
-    "vitest": "^3.2.7"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
   },
   "pnpm": {
     "overrides": {
