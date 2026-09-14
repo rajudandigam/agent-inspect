@@ -44,7 +44,7 @@
     "agent-inspect": "workspace:*"
   },
   "devDependencies": {
-    "ai": "^6.0.210"
+    "ai": "^7.0.98"
   },
   "publishConfig": {
     "access": "public"
