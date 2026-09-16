@@ -1,7 +1,16 @@
+import { mkdtemp, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import * as vscode from "vscode";
 
 import type { CliRunner } from "./cli.js";
 import { createCliRunner } from "./cli.js";
+import {
+  SAMPLE_TRACE_FILENAME,
+  SAMPLE_TRACE_RUN_ID,
+  buildSampleTrace,
+} from "./sampleTrace.js";
 import { findTraceHints, pickPrimaryTraceDir, discoverTraceDirs } from "./traceDirs.js";
 import {
   TraceTreeProvider,
@@ -130,6 +139,21 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       await showCliOutput("Verify safe", runner, ["verify-safe", "--dir", dir], root);
+    }),
+    vscode.commands.registerCommand("agentInspect.openSampleTrace", async () => {
+      // Onboarding: write a synthetic sample trace to a temp dir, open it in an
+      // editor so the user sees the JSONL format, and render its tree via the CLI.
+      const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-sample-"));
+      const file = path.join(dir, SAMPLE_TRACE_FILENAME);
+      await writeFile(file, buildSampleTrace(), "utf-8");
+      const document = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
+      await vscode.window.showTextDocument(document, { preview: false });
+      await showCliOutput(
+        "View sample tree",
+        runner,
+        ["view", SAMPLE_TRACE_RUN_ID, "--dir", dir],
+        dir,
+      );
     }),
     vscode.commands.registerCommand("agentInspect.openTraceFromEditor", async () => {
       const editor = vscode.window.activeTextEditor;
