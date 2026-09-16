@@ -19,6 +19,7 @@ local evidence and inner-loop debugging → AgentInspect
 production observability → LangSmith / Langfuse / MLflow / Phoenix / APM
 prompt/output and red-team eval → Promptfoo / Evalite / other eval tools
 generic OTel trace access via MCP → OTel MCP servers
+offline replay of a recorded run → OrcaReplay
 ```
 
 Proof: `examples/starters/broken-agent-debugging` — good and regression variants return the **same** final answer; trajectory checks PASS vs FAIL (`node prove-same-output-wrong-path.mjs`).
@@ -71,6 +72,17 @@ AgentInspect focuses on local execution trees and CLI workflows:
 
 - Complementary: use AgentInspect for quick local run understanding and PR/debug artifacts; use Langfuse for dashboards and longer-lived observability workflows.
 - Not a replacement.
+
+## AgentInspect vs OrcaReplay
+
+[OrcaReplay](https://github.com/Continuum-AI-Corp/OrcaReplay) records an agent run at the model-provider boundary and replays it later with no provider contacted.
+
+AgentInspect states it is not a replay engine; this is the tool on the other side of that boundary:
+
+- Different capture layer: AgentInspect instruments inside the process and produces an execution tree; OrcaReplay proxies the provider connection and records the bytes on the wire, so the agent is unmodified. A run can be captured both ways at once.
+- Complementary: use AgentInspect to inspect and gate a run's trajectory; use OrcaReplay when the question is "run that again" — replay serves the recorded turns offline, and `--from N --model M` replays a prefix then diverges onto another model.
+- Limits worth stating: a matching replay is not a determinism result, and replay blocks model-provider egress only — it is not a sandbox, so recorded tool calls still execute for real.
+- OrcaReplay has no execution tree, no CI trajectory gate, and no redaction or `verify-safe` workflow.
 
 ## AgentInspect vs Braintrust
 
