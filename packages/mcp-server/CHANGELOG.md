@@ -1,5 +1,20 @@
 # @agent-inspect/mcp-server
 
+## 6.29.4
+
+### Patch Changes
+
+- d7a3801: Trust and package integrity for 6.29.4:
+
+  - Advertise honest MCP `tools/list` annotations (readOnlyHint / openWorldHint / destructiveHint) without treating hints as authorization.
+  - Ship an exact LICENSE copy in every public fixed-group tarball and enforce it in pack-smoke / docs gates.
+  - Keep Evidence demo generator versions synced through `version:packages` (`demo:generate` + verify).
+  - Document run comparability and transport retry (429) evaluation guidance; AgentInspect evaluates retries, it does not execute them.
+
+- Updated dependencies [d7a3801]
+  - agent-inspect@6.29.4
+  - @agent-inspect/redact@6.29.4
+
 ## 6.29.3
 
 ### Patch Changes
