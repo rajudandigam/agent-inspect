@@ -12,6 +12,11 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 const sampleJson = path.join(repoRoot, "examples/06-log-to-tree/sample-json.log");
 const sampleLog4 = path.join(repoRoot, "examples/06-log-to-tree/sample-log4js.log");
 const sampleConfig = path.join(repoRoot, "examples/06-log-to-tree/agent-inspect.logs.json");
+const followRefreshMs = 20;
+
+function waitForFollowPolls(count: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, followRefreshMs * count));
+}
 
 describe("tail", () => {
   let tmpDir: string;
@@ -177,6 +182,97 @@ describe("tail", () => {
     logSpy.mockRestore();
   });
 
+  it.each([
+    { label: "3-byte character split after its first byte", character: "你", splitAt: 1 },
+    { label: "3-byte character split after its second byte", character: "你", splitAt: 2 },
+    { label: "4-byte character split in the middle", character: "🙂", splitAt: 2 },
+  ])("preserves valid UTF-8 for $label across follow reads", async ({ character, splitAt }) => {
+    const { appendFile } = await import("node:fs/promises");
+    const { followFile } = await import("../src/tail.js");
+    const file = path.join(tmpDir, `utf8-follow-${splitAt}-${character.codePointAt(0)}.log`);
+    await writeFile(file, "", "utf-8");
+
+    const lines: string[] = [];
+    let stop = false;
+    const follower = followFile(
+      file,
+      { refreshMs: followRefreshMs, once: false },
+      (line) => {
+        lines.push(line);
+      },
+      () => stop,
+    );
+
+    try {
+      await waitForFollowPolls(2);
+
+      const prefix = '{"message":"';
+      const suffix = '"}';
+      const encoded = Buffer.from(character, "utf-8");
+      await appendFile(
+        file,
+        Buffer.concat([Buffer.from(prefix, "utf-8"), encoded.subarray(0, splitAt)]),
+      );
+      await waitForFollowPolls(3);
+      expect(lines).toEqual([]);
+
+      await appendFile(
+        file,
+        Buffer.concat([
+          encoded.subarray(splitAt),
+          Buffer.from(`${suffix}\n`, "utf-8"),
+        ]),
+      );
+      await waitForFollowPolls(4);
+
+      expect(lines).toEqual([`${prefix}${character}${suffix}`]);
+      expect(lines[0]).not.toContain("\uFFFD");
+    } finally {
+      stop = true;
+      await follower;
+    }
+  });
+
+  it("preserves valid UTF-8 after truncation drops pending decoder bytes", async () => {
+    const { appendFile, truncate } = await import("node:fs/promises");
+    const { followFile } = await import("../src/tail.js");
+    const file = path.join(tmpDir, "utf8-truncate-follow.log");
+    await writeFile(file, "", "utf-8");
+
+    const lines: string[] = [];
+    let stop = false;
+    const follower = followFile(
+      file,
+      { refreshMs: followRefreshMs, once: false },
+      (line) => {
+        lines.push(line);
+      },
+      () => stop,
+    );
+
+    try {
+      await waitForFollowPolls(2);
+
+      const encoded = Buffer.from("🙂", "utf-8");
+      await appendFile(file, encoded.subarray(0, 2));
+      await waitForFollowPolls(3);
+      expect(lines).toEqual([]);
+
+      await truncate(file, 0);
+      await waitForFollowPolls(3);
+
+      const replacementLine = '{"message":"truncate recovery ✅"}';
+      await appendFile(file, `${replacementLine}\n`, "utf-8");
+      await waitForFollowPolls(4);
+
+      expect(lines).toEqual([replacementLine]);
+      expect(lines[0]).not.toContain("\uFFFD");
+    } finally {
+      stop = true;
+      await follower;
+    }
+  });
+
   it("recovers after file truncation without emitting stale partial lines", async () => {
     const { appendFile, truncate } = await import("node:fs/promises");
     const { followFile } = await import("../src/tail.js");
@@ -226,4 +322,3 @@ describe("tail", () => {
     await follower;
   });
 });
-

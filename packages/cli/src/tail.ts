@@ -1,5 +1,6 @@
 import { open, stat } from "node:fs/promises";
 import { stdin as input } from "node:process";
+import { StringDecoder } from "node:string_decoder";
 
 import {
   LiveLogAccumulator,
@@ -124,6 +125,7 @@ export async function followFile(
     return;
   }
 
+  let decoder = new StringDecoder("utf-8");
   pos = st.size;
 
   while (!shouldStop()) {
@@ -142,6 +144,7 @@ export async function followFile(
       pos = 0;
       carry = "";
       lineNumber = 0;
+      decoder = new StringDecoder("utf-8");
     }
 
     if (next.size > pos) {
@@ -152,7 +155,7 @@ export async function followFile(
         const { bytesRead } = await fh.read(buf, 0, buf.length, pos);
         pos += bytesRead;
 
-        const chunk = carry + buf.toString("utf-8", 0, bytesRead);
+        const chunk = carry + decoder.write(buf.subarray(0, bytesRead));
         const parts = chunk.split(/\r?\n/);
         carry = parts.pop() ?? "";
 
