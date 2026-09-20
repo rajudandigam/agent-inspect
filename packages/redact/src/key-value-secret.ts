@@ -8,10 +8,11 @@
  *   api_key=<credential>
  *
  * Intentionally does **not** match metric/config lookalikes such as
- * maxTokens=, tokenCount=, secret=false, or short placeholders.
+ * maxTokens=, tokenCount=, secret=false, short placeholders, or values already
+ * replaced by a redaction placeholder (`[REDACTED]`, `[HASH:xxxxxxxx]`).
  */
 export const KEY_VALUE_SECRET_PATTERN_SOURCE =
-  String.raw`\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=([^\s"'\\]{8,})`;
+  String.raw`\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED[^\]\s]*|HASH:[0-9a-f]{8})\])([^\s"'\\]{8,})`;
 
 export const KEY_VALUE_SECRET_PATTERN = new RegExp(
   KEY_VALUE_SECRET_PATTERN_SOURCE,

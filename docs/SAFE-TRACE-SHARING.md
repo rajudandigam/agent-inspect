@@ -43,6 +43,7 @@ For reviewer-reproducible trajectory checks (6.28+), prefer Evidence that includ
 - Inspect log-derived fields from `logs` / `tail` ingest configs, including custom `run-id`, `event`, `parent`, timestamp, and attribute mappings.
 - Avoid posting raw prompts, completions, tool inputs, or tool outputs in public threads unless the content is approved for public disclosure.
 - For cross-system correlation, retain a bounded identifier instead of copying the external record or payload. Follow [External reference metadata](./EXTERNAL-REFERENCES.md), and expect `share` / `strict` profiles to redact the named correlation fields.
+- `share` and `strict` rewrite http(s) URLs rather than dropping them: userinfo and credential-looking query or fragment params are replaced, identifier-like path segments become `[id]`, and scheme, host and path stay, so a retry on the same page is still recognizable.
 - Prefer Markdown export for issue or PR sharing when a summarized tree is enough.
 
 ## Remove or replace sensitive values

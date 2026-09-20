@@ -1,5 +1,7 @@
 import type { InspectNode, InspectRunTree } from "../types/inspect-event.js";
-import { Redactor } from "../logs/redactor.js";
+import { Redactor, DEFAULT_REDACT_KEYS } from "../logs/redactor.js";
+import { stringContainsHighConfidenceCredential } from "../safety/credential-value-patterns.js";
+import { redactUrlString } from "../safety/url-redaction.js";
 import {
   applyProfileMetadataCaps,
   resolveRedactionProfile,
@@ -31,6 +33,7 @@ function deepClone<T>(value: T): T {
 
 function boundAttributeValues(
   record: Record<string, unknown>,
+  sensitiveKeys: readonly string[],
   maxMetadataValueLength: number,
   maxPreviewLength: number,
   seen: WeakSet<object>,
@@ -42,7 +45,15 @@ function boundAttributeValues(
 
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(record)) {
-    out[key] = boundValue(value, key, maxMetadataValueLength, maxPreviewLength, seen, depth);
+    out[key] = boundValue(
+      value,
+      key,
+      sensitiveKeys,
+      maxMetadataValueLength,
+      maxPreviewLength,
+      seen,
+      depth,
+    );
   }
   return out;
 }
@@ -50,6 +61,7 @@ function boundAttributeValues(
 function boundValue(
   value: unknown,
   key: string,
+  sensitiveKeys: readonly string[],
   maxMetadataValueLength: number,
   maxPreviewLength: number,
   seen: WeakSet<object>,
@@ -58,7 +70,11 @@ function boundValue(
   if (value === null || typeof value !== "object") {
     if (typeof value === "string") {
       return truncateStringForProfile(
-        value,
+        redactUrlString(value, {
+          sensitiveKeys,
+          isSensitiveValue: stringContainsHighConfidenceCredential,
+          maskPathIds: true,
+        }).value,
         key,
         maxMetadataValueLength,
         maxPreviewLength,
@@ -77,6 +93,7 @@ function boundValue(
         boundValue(
           item,
           String(index),
+          sensitiveKeys,
           maxMetadataValueLength,
           maxPreviewLength,
           seen,
@@ -87,6 +104,7 @@ function boundValue(
 
   return boundAttributeValues(
     value as Record<string, unknown>,
+    sensitiveKeys,
     maxMetadataValueLength,
     maxPreviewLength,
     seen,
@@ -108,6 +126,7 @@ function redactEventAttributes(
   const seen = new WeakSet<object>();
   const bounded = boundAttributeValues(
     redacted,
+    [...DEFAULT_REDACT_KEYS, ...redactor.sensitiveKeys],
     maxMetadataValueLength,
     maxPreviewLength,
     seen,

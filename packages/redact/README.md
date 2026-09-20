@@ -39,6 +39,7 @@ console.log(result.value, result.findings);
 - Profiles: `local` · `share` · `strict`
 - Redaction is best-effort, not a safety certification — run `verify-safe` before sharing
 - High-confidence credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in profiles
+- http(s) URLs keep scheme, host and path; userinfo and credential-looking query or fragment params are replaced, and identifier-like path segments become `[id]` under `share` and `strict`
 - Context-sensitive findings may still require review; CLI custom policies are not yet supported (use programmatic `detectors`)
 - `strict` adds more key rules; it does not guarantee different bytes from `share` on every input
 

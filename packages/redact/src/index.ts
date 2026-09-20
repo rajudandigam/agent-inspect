@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { isCredentialSensitiveKey } from "./sensitive-key.js";
 import { valueContainsKeyValueSecret } from "./key-value-secret.js";
+import { looksLikeHttpUrl, redactUrlString } from "./url-redaction.js";
 
 export type RedactionProfile = "local" | "share" | "strict";
 
@@ -516,6 +517,7 @@ export function createRedactionProfile(profile: RedactionProfile = "local"): Res
 
 export class Redactor {
   readonly #rules: CompiledRule[];
+  readonly #sensitiveKeys: readonly string[];
   readonly #detectors: readonly RedactionDetector[];
   readonly #profile: RedactionProfile;
   readonly #replacement: string;
@@ -529,6 +531,7 @@ export class Redactor {
       ...resolved.extraKeys,
       ...(options?.extraKeys ?? []),
     ]);
+    this.#sensitiveKeys = this.#rules.map((rule) => rule.key);
     this.#detectors = [
       ...builtInDetectorsForProfile(this.#profile),
       ...(options?.detectors ?? []),
@@ -567,6 +570,19 @@ export class Redactor {
     if (this.#collectFindings) state.findings.push(finding);
   }
 
+  #detect(
+    value: string,
+    key: string | undefined,
+    path: string,
+  ): { detector: RedactionDetector; detection: RedactionDetection } | undefined {
+    for (const detector of this.#detectors) {
+      for (const detection of detector.detect({ path, key, value })) {
+        if ((detection.action ?? "replace") !== "keep") return { detector, detection };
+      }
+    }
+    return undefined;
+  }
+
   #redactValue(
     value: unknown,
     key: string | undefined,
@@ -590,6 +606,44 @@ export class Redactor {
           makeFinding(path, `key.${rule.key}`, actionForRule(rule), "key", "warning"),
         );
         return applyRule(rule, value, this.#replacement);
+      }
+    }
+
+    if (typeof value === "string" && looksLikeHttpUrl(value)) {
+      const url = redactUrlString(value, {
+        sensitiveKeys: this.#sensitiveKeys,
+        isSensitiveValue: (candidate) => this.#detect(candidate, key, path) !== undefined,
+        replacement: this.#replacement,
+        maskPathIds: this.#profile !== "local",
+      });
+      if (url.value !== value) {
+        this.#recordFinding(
+          state,
+          makeFinding(
+            path,
+            url.credentialRedacted ? "value.urlCredential" : "value.urlIdentifier",
+            "replace",
+            "value",
+            url.credentialRedacted ? "error" : "warning",
+          ),
+        );
+        const residual = this.#detect(
+          url.value.split(this.#replacement).join(""),
+          key,
+          path,
+        );
+        if (residual === undefined) return url.value;
+        this.#recordFinding(
+          state,
+          makeFinding(
+            path,
+            residual.detector.id,
+            "replace",
+            residual.detection.matchKind ?? residual.detector.matchKind ?? "custom",
+            residual.detection.severity ?? residual.detector.severity ?? "warning",
+          ),
+        );
+        return this.#replacement;
       }
     }
 

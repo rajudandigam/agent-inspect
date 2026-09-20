@@ -83,6 +83,11 @@ export class Redactor {
     this.#rules = compileRules(options?.rules, options?.extraKeys);
   }
 
+  /** Field names this redactor treats as sensitive, for value-level helpers. */
+  get sensitiveKeys(): readonly string[] {
+    return this.#rules.map((rule) => rule.key);
+  }
+
   redactValue(key: string, value: unknown): unknown {
     const k = toKey(key);
     const rule =

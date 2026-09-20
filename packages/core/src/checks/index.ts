@@ -764,7 +764,7 @@ const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [
   {
     id: "key-value-secret",
     pattern:
-      /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=([^\s"'\\]{8,})/i,
+      /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED[^\]\s]*|HASH:[0-9a-f]{8})\])([^\s"'\\]{8,})/i,
   },
 ];
 
