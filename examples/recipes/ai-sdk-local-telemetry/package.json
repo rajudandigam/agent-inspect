@@ -9,7 +9,7 @@
   "dependencies": {
     "@agent-inspect/ai-sdk": "workspace:*",
     "agent-inspect": "workspace:*",
-    "ai": "^6.0.210",
+    "ai": "^7.0.105",
     "tsx": "^4.19.0"
   }
 }
