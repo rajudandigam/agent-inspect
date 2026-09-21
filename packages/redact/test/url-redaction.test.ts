@@ -112,6 +112,17 @@ describe("url-aware redaction", () => {
     expect(result.value).toEqual({ authorization: "[REDACTED]" });
   });
 
+  it("redacts a credential param by name even when the value is short", () => {
+    const result = redact(
+      { url: "https://app.example.com/a?api_key=abc&step=2" },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      url: "https://app.example.com/a?api_key=[REDACTED]&step=2",
+    });
+  });
+
   it("leaves non-url strings untouched", () => {
     const result = redact(
       { note: "retry on the checkout page", count: 3 },

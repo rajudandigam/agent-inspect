@@ -69,12 +69,13 @@ function boundValue(
 ): unknown {
   if (value === null || typeof value !== "object") {
     if (typeof value === "string") {
+      const rewritten = redactUrlString(value, {
+        sensitiveKeys,
+        isSensitiveValue: stringContainsHighConfidenceCredential,
+        maskPathIds: true,
+      }).value;
       return truncateStringForProfile(
-        redactUrlString(value, {
-          sensitiveKeys,
-          isSensitiveValue: stringContainsHighConfidenceCredential,
-          maskPathIds: true,
-        }).value,
+        stringContainsHighConfidenceCredential(rewritten) ? "[REDACTED]" : rewritten,
         key,
         maxMetadataValueLength,
         maxPreviewLength,

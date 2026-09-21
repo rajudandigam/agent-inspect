@@ -54,6 +54,36 @@ describe("redactTraceEventsForReport url handling", () => {
     });
   });
 
+  it("replaces a url whose credential survives the rewrite", () => {
+    const jwt =
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+    const [event] = redactTraceEventsForReport(
+      [
+        stepWithMetadata({
+          bareFragment: `https://app.example.com/cb#${jwt}`,
+          pathSegment: `https://app.example.com/t/${jwt}/x`,
+        }),
+      ],
+      { redactionProfile: "share" },
+    );
+
+    expect(metadataOf(event)).toEqual({
+      bareFragment: "[REDACTED]",
+      pathSegment: "[REDACTED]",
+    });
+  });
+
+  it("redacts a credential param by name even when the value is short", () => {
+    const [event] = redactTraceEventsForReport(
+      [stepWithMetadata({ url: "https://app.example.com/a?api_key=abc&step=2" })],
+      { redactionProfile: "share" },
+    );
+
+    expect(metadataOf(event)).toEqual({
+      url: "https://app.example.com/a?api_key=[REDACTED]&step=2",
+    });
+  });
+
   it("keeps the local profile untouched", () => {
     const original =
       "https://app.example.com/orders/5f2b9a1c-0d3e-4d1a-9b7e-2c1f4a6b8d90/checkout?token=abcdef1234567890";

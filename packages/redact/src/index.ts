@@ -531,7 +531,7 @@ export class Redactor {
       ...resolved.extraKeys,
       ...(options?.extraKeys ?? []),
     ]);
-    this.#sensitiveKeys = this.#rules.map((rule) => rule.key);
+    this.#sensitiveKeys = this.#rules.map((rule) => rule.raw ?? rule.key);
     this.#detectors = [
       ...builtInDetectorsForProfile(this.#profile),
       ...(options?.detectors ?? []),
