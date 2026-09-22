@@ -7,42 +7,40 @@
 ```yaml
 baselineVersion: "6.31.6"
 publishedVersion: "6.31.6"
-pendingPublishVersion: "6.31.6"
-currentTrain: "security-false-safe-6316"
+pendingPublishVersion: null
+currentTrain: "correctness-after-6316"
 trainStatus: "active"
 executionMode: "maintainer-reviewed"
-namedTrain: "security-false-safe-6316"
+namedTrain: "correctness-after-6316"
 branch: "main"
-currentChunk: "P02A/B — marker-slash free-text residual + multihost MongoDB authority"
-lastConfirmedCommit: "906de28b229f433928ba43a0456cd1c1e2c5b8c8"
-lastValidationLevel: "audit Sep 22: test:all 2308 pass; two share residuals reproduced on published 6.31.5"
-nextAction: "Land P02 security patch Changeset; compose Version Packages → Trusted Publish 6.31.6"
-pendingManualGate: "EVIDENCE_GATE not approved; FreshCtx #450 partner reruns parallel only"
+currentChunk: "6.31.7 — timeline #454 + P03 false-pass checks"
+lastConfirmedCommit: "f95e1122"
+lastValidationLevel: "publish 35746970241 success; packed redact@6.31.6 canary retest PASS"
+nextAction: "P27 review #454 + Changeset; P03A/B/C; do not merge Dependabot #444/#445/#446"
+pendingManualGate: "EVIDENCE_GATE not approved; FreshCtx #450 partner reruns parallel"
 githubIssues:
-  "450": "open — FreshCtx permission granted; qualify private v3 (P11); does not block 6.31.6"
-  "453": "open — timeline crash; review #454 for 6.31.7"
+  "450": "open — permission granted; private v3 qualified; partner Revera pending"
+  "453": "open — timeline; with #454 for 6.31.7"
   "437": "open — receipt/idempotency; later evidence train"
   "209": "open — packed OS/Node matrix"
 canonicalRoadmap: "docs/implementation/ROADMAP.md"
 activePlan: "docs/implementation/active/NEXT-RELEASES.md"
 completedChunks:
-  - "6.31.4 URL-aware http(s) redaction + complete-placeholder residual (#449)"
-  - "6.31.4 restrictive FS permissions (#436)"
-  - "6.31.5 connection URI userinfo strip (#451)"
+  - "6.31.6 false-SAFE marker-slash + multihost MongoDB (#455/#456)"
+  - "6.31.5 connection URI userinfo (#451)"
+  - "6.31.4 URL-aware http(s) + FS permissions"
 blockedTrains:
   - "v7.0.0 (assessment only — V7_DECISION: NO-GO)"
 amendments:
-  - "Sep 22 audit supersedes website-first queue for next patches"
-  - "Adoption freeze excluded; not a release prerequisite"
-  - "Do not merge Dependabot #444/#445/#446 until P28 split/retest"
-  - "Do not delay 6.31.6 for timeline/OTLP/FreshCtx partner work"
+  - "Adoption freeze excluded"
+  - "P01 deferred past 6.31.6"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.5
-  ACTIVE: P02 → proposed 6.31.6
-  NEXT: 6.31.7 correctness (timeline + false-pass checks)
+  LAST_PUBLISHED_RELEASE: 6.31.6
+  ACTIVE: 6.31.7 correctness
+  NEXT: 6.31.8 OTLP
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
