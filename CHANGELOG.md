@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.6
+
+### Patch Changes
+
+- 416869f: Close two false-SAFE share residuals: treat incomplete placeholders like `token=[REDACTED]/…` as secrets in free text, and strip or withhold connection-string userinfo when multihost authorities fail WHATWG URL parsing.
+
 ## 6.31.5
 
 ### Patch Changes

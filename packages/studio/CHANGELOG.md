@@ -1,5 +1,12 @@
 # @agent-inspect/studio
 
+## 6.31.6
+
+### Patch Changes
+
+- Updated dependencies [416869f]
+  - agent-inspect@6.31.6
+
 ## 6.31.5
 
 ### Patch Changes
