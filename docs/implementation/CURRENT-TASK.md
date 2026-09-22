@@ -2,14 +2,14 @@
 
 ```yaml
 executionMode: maintainer-reviewed
-namedTrain: website-correctness-post-6310
-currentTrain: maintenance-after-6313
-trainStatus: open-pr-pending-review
-currentChunk: "codex/trace-filesystem-permissions — restrictive create modes + UTF-8 release note"
-nextAction: "Review/merge permissions PR; do not publish until Changeset Version Packages; do not consume 6.32.0"
+namedTrain: security-false-safe-6316
+currentTrain: security-false-safe-6316
+trainStatus: active
+currentChunk: "P02 — close two false-SAFE sharing residuals (marker-slash + multihost MongoDB)"
+nextAction: "Implement P02A/P02B on main; optional P01 if ready; Changeset → Version Packages → Trusted Publish as 6.31.6"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
-pendingManualGate: "6.32.0 partner evidence; PR #422 factual review"
+pendingManualGate: "EVIDENCE_GATE not approved; #450 FreshCtx partner Revera reruns do not block 6.31.6"
 worktreeIgnoreOnly:
   - .redstamp/
   - redstamp-proposal-issue-body.md
@@ -17,28 +17,33 @@ worktreeIgnoreOnly:
 
 ## Published baseline
 
-**6.31.3** on npm (Trusted Publish). Main includes UTF-8 `tail --file` fix (#434). Open PR hardens new-path POSIX modes for the next **6.31.x** patch Changeset (not 6.32.0).
+**6.31.5** on npm (Trusted Publish) at main `906de28b229f433928ba43a0456cd1c1e2c5b8c8` (all 18 fixed-group packages). History: #436/#449 → 6.31.4; #451 connection URI userinfo → 6.31.5. #443 closed unmerged (superseded by #449).
 
 ## Sequenced status
 
 | Item | Status |
 | --- | --- |
-| P04 website | done |
-| 6.31.1 P01–P03 | published |
-| 6.31.2 P05 docs | published |
-| 6.31.3 OTLP BigInt timestamps | published (Collector automated suite still deferred) |
-| #434 UTF-8 tail | merged on main |
-| Trace FS permissions | open PR (closes #435); stop after open — no merge/publish in that chunk |
-| P06 private apps | evidence only — not claimed |
-| 6.32.0 | BLOCKED_ON_EXTERNAL_EVIDENCE |
+| 6.31.4 URL-aware http(s) + complete-marker residual | published |
+| 6.31.5 connection URI userinfo strip | published |
+| P00 state reconcile | this train |
+| P02A/B false-SAFE residuals | **active → 6.31.6** |
+| P01 exact custom-rule matching | optional same patch if ready; else next patch |
+| #454 / #453 timeline cycle-safe | open; target 6.31.7 (P27) |
+| P03A/B/C false-pass checks | 6.31.7 |
+| P07/P20 OTLP | 6.31.8 |
+| #450 FreshCtx (permission granted) | parallel P11; does not block 6.31.6 |
+| #444/#445/#446 Dependabot | do not merge until P28 split/retest |
+| Adoption freeze | excluded (optional; not a release prerequisite) |
+| 6.32.0 additive evidence | after security/correctness patches; EVIDENCE_GATE still not approved |
 | V7 | NO-GO |
 
 ## Stop marker
 
 ```text
-LAST_PUBLISHED_RELEASE: 6.31.3
-ACTIVE: maintenance PR open — next published version is a 6.31.x patch if merged
-RESERVED: 6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE
+LAST_PUBLISHED_RELEASE: 6.31.5
+ACTIVE: P02 false-SAFE sharing → proposed 6.31.6
+RESERVED: 6.32.0 evidence capability (not an empty minor)
 V7_DECISION: NO-GO
 EVIDENCE_GATE: not approved
+ADOPTION_FREEZE: excluded
 ```

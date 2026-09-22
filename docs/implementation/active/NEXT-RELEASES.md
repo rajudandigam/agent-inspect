@@ -1,42 +1,47 @@
-# Active execution plan — website-first after 6.31.0
+# Active execution plan — security-first after 6.31.5
 
-**Authority:** [../ROADMAP.md](../ROADMAP.md)
-**Baseline:** **published** `agent-inspect@6.31.0` · commit `988b747` · schema `1.0`
-**Named train:** `website-correctness-post-6310`
-**Program status:** Published through **6.31.3**; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
+**Authority:** [../ROADMAP.md](../ROADMAP.md) · Sep 22 maintainer audit (P00–P32 prompts)
+**Baseline:** **published** `agent-inspect@6.31.5` · commit `906de28b229f433928ba43a0456cd1c1e2c5b8c8` · schema `1.0`
+**Named train:** `security-false-safe-6316`
+**Program status:** Active security patch; adoption freeze **excluded**; **EVIDENCE_GATE not approved**; **V7_DECISION: NO-GO**
 
 ## Freeze language
 
-Core boundary frozen; evidence-backed security, correctness, compatibility, interoperability, and adoption patches remain active.
+Core schema boundary frozen; evidence-backed security, correctness, compatibility, and interoperability patches remain active. Do not publish empty releases to preserve the table.
 
 ## Sequence
 
-1. **Website hotfix** — Links, quickstart, TOC anchors, raw MD sync, badges, website CI — **done**
-2. **6.31.1** — Strict `allowedStatuses` (P01); Trusted Publish skip runner (P02); LangChain callback parentage (P03) — **published**
-3. **6.31.2** — README / AI SDK / Jest / observation-flag docs (P05) — **published**; private-app reruns (P06) remain unclaimed
-4. **6.31.3** — OTLP BigInt timestamps — **published** (automated Collector suite still deferred)
-5. **6.32.0** — Conditional external conformance + compact failure review — **BLOCKED_ON_EXTERNAL_EVIDENCE**
-6. **6.33.0** — Runnable Promptfoo (+ backends after OTLP) only for genuine additive public capability
-7. **v7** — assessment only; **V7_DECISION: NO-GO**
+1. **P00** — Reconcile state to 6.31.5 / Sep 22 queue — **this plan**
+2. **6.31.6** — P02A marker-slash free-text residual; P02B multihost MongoDB authority; P01 exact custom rules **only if ready** — **active**
+3. **6.31.7** — P27 timeline (#454); P03A/B/C false-pass checks; ready package-doc corrections (P06)
+4. **6.31.8** — P07 default OTLP identity; P20 encoding/validator
+5. **6.32.0** — Additive evidence/identity capabilities (P08+); not an empty minor; partner evidence does not auto-approve gate
+6. **6.33.0** — Runnable Promptfoo / MCP / backend integrations when additive packaged capability exists
+7. **Parallel** — P05 website headers/crawler; P11 FreshCtx #450 qualify private v3 (permission granted); P28 split Dependabot groups (do not merge #444/#445/#446 as-is)
+8. **v7** — assessment only; **V7_DECISION: NO-GO**
 
 ## Current chunk
 
-**Stopped.** Do not invent **6.32.0** or mark `EVIDENCE GATE APPROVED`.
+**P02** false-SAFE sharing residuals on published 6.31.5:
+
+- A: `token=[REDACTED]/<canary>` survives share/verify-safe
+- B: `mongodb://user:canary@[::1]:27017,[::2]:27017/db` unchanged when `URL` parse fails
 
 ## Stop rules
 
 - No schema 1.1; no root OTel dependency; no default network; no pricing engine; no replay; no retry execution
 - Do not invent partner conformance success or mark `EVIDENCE GATE APPROVED` from private reports alone
-- Do not invent or consume **6.32.0** for website/routine patches
+- Do not delay 6.31.6 for adoption, website, FreshCtx partner reruns, OTLP, or unfinished P01
 - Trusted Publish only via `publish.yml` (no local `npm publish`)
 - Ignore-only: `.redstamp/`, `redstamp-proposal-issue-body.md`
 
 ## External stop marker
 
 ```text
-LAST_PUBLISHED_RELEASE: 6.31.3
-ACTIVE: stopped
-RESERVED: 6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE
+LAST_PUBLISHED_RELEASE: 6.31.5
+ACTIVE: P02 → proposed 6.31.6
+NEXT: 6.31.7 correctness
 V7_DECISION: NO-GO
 EVIDENCE_GATE: not approved
+ADOPTION_FREEZE: excluded
 ```

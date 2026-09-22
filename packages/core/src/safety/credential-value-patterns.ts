@@ -8,7 +8,7 @@
 
 /** Keep in sync with packages/redact/src/key-value-secret.ts. */
 const KEY_VALUE_SECRET_PATTERN =
-  /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED(?::[^\]]*)?|HASH:[0-9a-f]{8})\](?![^\s"'\\&#?;/]))([^\s"'\\]{8,})/i;
+  /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED(?::[^\]]*)?|HASH:[0-9a-f]{8})\](?![^\s"'\\&#?]))([^\s"'\\]{8,})/i;
 
 /**
  * Ordered high-confidence value patterns. A match replaces the whole string

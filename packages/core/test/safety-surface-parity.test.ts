@@ -144,4 +144,28 @@ describe("safety surface parity (6.14.2-6)", () => {
     expect(paths.some((p) => p.includes("clientSecret"))).toBe(true);
     expect(paths.some((p) => p.includes("maxTokens"))).toBe(false);
   });
+
+  it("requires a complete redaction placeholder on sensitive fields", () => {
+    const complete = runTraceChecks(
+      {
+        read: readResult([
+          persisted("complete", { attributes: { apiKey: "[REDACTED]" } }),
+        ]),
+      },
+      { rules: [createSafetyRedactionRule()] },
+    );
+    expect(complete.findings.filter((f) => f.ruleId === "safety.redaction")).toHaveLength(0);
+
+    const residual = runTraceChecks(
+      {
+        read: readResult([
+          persisted("residual", {
+            attributes: { apiKey: "[REDACTED]/synthetic_ZX936_Secret_Only" },
+          }),
+        ]),
+      },
+      { rules: [createSafetyRedactionRule()] },
+    );
+    expect(residual.findings.some((f) => f.ruleId === "safety.redaction")).toBe(true);
+  });
 });

@@ -764,7 +764,7 @@ const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [
   {
     id: "key-value-secret",
     pattern:
-      /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED(?::[^\]]*)?|HASH:[0-9a-f]{8})\](?![^\s"'\\&#?;/]))([^\s"'\\]{8,})/i,
+      /\b(?:api[_-]?key|internal[_-]?token|access[_-]?token|auth[_-]?token|password|secret|token)=(?!\[(?:REDACTED(?::[^\]]*)?|HASH:[0-9a-f]{8})\](?![^\s"'\\&#?]))([^\s"'\\]{8,})/i,
   },
 ];
 
@@ -1362,10 +1362,6 @@ function limitFindings(
 ): TraceCheckFinding[] {
   if (maxFindings === undefined || findings.length <= maxFindings) return findings;
   return findings.slice(0, Math.max(0, maxFindings));
-}
-
-function hasRedactionMarker(value: string, markers: readonly string[]): boolean {
-  return markers.some((marker) => value.includes(marker)) || /^\[HASH:[A-Za-z0-9_-]+\]$/.test(value);
 }
 
 /**
@@ -2878,7 +2874,9 @@ export function createSafetyRedactionRule(
       for (const event of context.events) {
         for (const entry of eventValueEntries(event, { includeSummaries: true, includeError: true })) {
           if (!isSensitiveKey(entry.key ?? lastPathSegment(entry.path), sensitiveKeys)) continue;
-          if (typeof entry.value === "string" && hasRedactionMarker(entry.value, markers)) continue;
+          // Require a complete placeholder — substring markers beside residual
+          // secret text (e.g. `[REDACTED]canary` or `[REDACTED]/canary`) fail.
+          if (isFullyRedactedValue(entry.value, markers)) continue;
           findings.push(
             failFinding(
               "safety.redaction",

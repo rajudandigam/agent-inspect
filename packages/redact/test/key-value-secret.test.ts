@@ -64,11 +64,22 @@ describe("value.keyValueSecret (#327)", () => {
     "token=[REDACTED]canary_ZX936_UserSecret",
     "api_key=[HASH:abcdef12]canary_ZX936_UserSecret",
     "detail token=[REDACTED]canary_ZX936_UserSecret trailing",
-  ])("still redacts marker-prefix residual %s", (value) => {
+    "token=[REDACTED]/synthetic_ZX936_Secret_Only",
+    "detail=\"token=[REDACTED]/synthetic_ZX936_Secret_Only\"",
+    "token=[REDACTED];synthetic_ZX936_Secret_Only",
+  ])("still redacts incomplete-marker residual %s", (value) => {
     expect(valueContainsKeyValueSecret(value)).toBe(true);
     const result = redact({ value }, { profile: "share" });
     expect(result.value).toEqual({ value: "[REDACTED]" });
+    expect(JSON.stringify(result)).not.toContain("synthetic_ZX936_Secret_Only");
     expect(JSON.stringify(result)).not.toContain("canary_ZX936_UserSecret");
+  });
+
+  it("keeps complete placeholders before URL query separators", () => {
+    expect(valueContainsKeyValueSecret("token=[REDACTED]&step=2")).toBe(false);
+    expect(valueContainsKeyValueSecret("https://app.example.com/x?token=[REDACTED]&step=2")).toBe(
+      false,
+    );
   });
 
   it("covers share and strict profiles for high-confidence credentials", () => {

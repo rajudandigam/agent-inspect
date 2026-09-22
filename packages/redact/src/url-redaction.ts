@@ -48,6 +48,19 @@ const CONNECTION_PROTOCOLS = new Set([
 const CONNECTION_URI =
   /^(?:postgres|postgresql|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?):\/\/[^\s]+$/i;
 
+/**
+ * Connection strings are not always WHATWG URLs (multihost + IP-literal
+ * authorities). When `new URL` fails, strip a clear userinfo@ authority
+ * prefix so credentials never survive as unchanged SAFE text.
+ * @see https://github.com/mongodb/specifications/blob/master/source/connection-string/connection-string-spec.md#host-information
+ */
+const CONNECTION_USERINFO =
+  /^(postgres|postgresql|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?):\/\/([^@/?#]+)@(.+)$/i;
+
+const CONNECTION_HAS_USERINFO =
+  /^(?:postgres|postgresql|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?):\/\/[^@/?#]+@/i;
+
+
 const UUID_SEGMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HEX_SEGMENT = /^[0-9a-f]{12,}$/i;
 const NUMERIC_SEGMENT = /^\d{5,}$/;
@@ -77,6 +90,38 @@ function parseRedactableUrl(value: string): URL | undefined {
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Strip userinfo when the generic URL parser cannot handle a recognized
+ * connection authority (e.g. comma-separated multihost lists).
+ */
+function redactConnectionUserinfoFallback(
+  value: string,
+  replacement: string,
+): UrlRedactionResult | undefined {
+  const trimmed = value.trim();
+  const match = CONNECTION_USERINFO.exec(trimmed);
+  if (match) {
+    const [, scheme, , rest] = match;
+    if (scheme && rest && rest.length > 0) {
+      return {
+        value: `${scheme}://${rest}`,
+        credentialRedacted: true,
+        identifiersMasked: false,
+      };
+    }
+  }
+  // Recognized scheme with userinfo that still cannot be rewritten safely:
+  // withhold the whole value rather than leave credentials unchanged.
+  if (looksLikeConnectionUri(trimmed) && CONNECTION_HAS_USERINFO.test(trimmed)) {
+    return {
+      value: replacement,
+      credentialRedacted: true,
+      identifiersMasked: false,
+    };
+  }
+  return undefined;
 }
 
 function isHttpProtocol(protocol: string): boolean {
@@ -139,10 +184,12 @@ export function redactUrlString(
   };
   if (!looksLikeUrlForRedaction(value)) return unchanged;
 
-  const url = parseRedactableUrl(value);
-  if (!url) return unchanged;
-
   const replacement = options.replacement ?? "[REDACTED]";
+  const url = parseRedactableUrl(value);
+  if (!url) {
+    return redactConnectionUserinfoFallback(value, replacement) ?? unchanged;
+  }
+
   const idPlaceholder = options.idPlaceholder ?? "[id]";
   const http = isHttpProtocol(url.protocol);
 

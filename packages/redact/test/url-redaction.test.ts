@@ -199,4 +199,36 @@ describe("url-aware redaction", () => {
     });
     expect(result.redacted).toBe(false);
   });
+
+  it("strips userinfo from multihost MongoDB IP-literal authorities", () => {
+    const result = redact(
+      {
+        detail:
+          "mongodb://demo:synthetic_ZX936_Secret_Only@[::1]:27017,[::2]:27017/db",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      detail: "mongodb://[::1]:27017,[::2]:27017/db",
+    });
+    expect(JSON.stringify(result)).not.toContain("synthetic_ZX936_Secret_Only");
+    expect(result.findings.map((finding) => finding.detector)).toContain(
+      "value.urlCredential",
+    );
+  });
+
+  it("strips userinfo from multihost hostname connection strings", () => {
+    const result = redact(
+      {
+        mongoUri: "mongodb://demo:synthetic_ZX936_Secret_Only@host-a.example.com:27017,host-b.example.com:27017/db",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      mongoUri: "mongodb://host-a.example.com:27017,host-b.example.com:27017/db",
+    });
+    expect(JSON.stringify(result)).not.toContain("synthetic_ZX936_Secret_Only");
+  });
 });

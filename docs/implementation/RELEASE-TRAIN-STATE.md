@@ -7,44 +7,44 @@
 ```yaml
 baselineVersion: "6.31.5"
 publishedVersion: "6.31.5"
-pendingPublishVersion: null
-currentTrain: "maintenance-after-6313"
-trainStatus: "open-pr-pending-review"
+pendingPublishVersion: "6.31.6"
+currentTrain: "security-false-safe-6316"
+trainStatus: "active"
 executionMode: "maintainer-reviewed"
-namedTrain: "website-correctness-post-6310"
-branch: "codex/trace-filesystem-permissions"
-currentChunk: "restrictive POSIX create modes + combined UTF-8/permissions patch Changeset"
-lastConfirmedCommit: "4d23972c"
-lastValidationLevel: "pending focused + full gate on permissions PR"
-nextAction: "Maintainer review of permissions PR; no npm publish; do not consume 6.32.0"
-pendingManualGate: "6.32.0 partner evidence; #422 factual review"
+namedTrain: "security-false-safe-6316"
+branch: "main"
+currentChunk: "P02A/B — marker-slash free-text residual + multihost MongoDB authority"
+lastConfirmedCommit: "906de28b229f433928ba43a0456cd1c1e2c5b8c8"
+lastValidationLevel: "audit Sep 22: test:all 2308 pass; two share residuals reproduced on published 6.31.5"
+nextAction: "Land P02 security patch Changeset; compose Version Packages → Trusted Publish 6.31.6"
+pendingManualGate: "EVIDENCE_GATE not approved; FreshCtx #450 partner reruns parallel only"
 githubIssues:
-  "209": "keep open — cross-platform packed-consumer matrix PARTIAL"
-  "435": "open — restrictive trace filesystem permissions (this PR)"
+  "450": "open — FreshCtx permission granted; qualify private v3 (P11); does not block 6.31.6"
+  "453": "open — timeline crash; review #454 for 6.31.7"
+  "437": "open — receipt/idempotency; later evidence train"
+  "209": "open — packed OS/Node matrix"
 canonicalRoadmap: "docs/implementation/ROADMAP.md"
 activePlan: "docs/implementation/active/NEXT-RELEASES.md"
 completedChunks:
-  - "6.31.0 typed cross-kind step ordering + Trusted Publish"
-  - "P04 website repair (A–F)"
-  - "6.31.1 status validation + prepublish skip + LangChain parentage"
-  - "6.31.2 README / AI SDK / Jest observation-flag docs"
-  - "6.31.3 OTLP BigInt unixNano timestamps"
-  - "Merge #434 UTF-8 tail --file"
+  - "6.31.4 URL-aware http(s) redaction + complete-placeholder residual (#449)"
+  - "6.31.4 restrictive FS permissions (#436)"
+  - "6.31.5 connection URI userinfo strip (#451)"
 blockedTrains:
-  - "6.32.0 external conformance (BLOCKED_ON_EXTERNAL_EVIDENCE)"
   - "v7.0.0 (assessment only — V7_DECISION: NO-GO)"
 amendments:
-  - "Post-6.31.0 website-first train executed through 6.31.3"
-  - "Do not invent or consume reserved 6.32.0"
-  - "Next maintenance Changeset is 6.31.x patch only"
+  - "Sep 22 audit supersedes website-first queue for next patches"
+  - "Adoption freeze excluded; not a release prerequisite"
+  - "Do not merge Dependabot #444/#445/#446 until P28 split/retest"
+  - "Do not delay 6.31.6 for timeline/OTLP/FreshCtx partner work"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.3
-  ACTIVE: maintenance PR open
-  RESERVED: 6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE
+  LAST_PUBLISHED_RELEASE: 6.31.5
+  ACTIVE: P02 → proposed 6.31.6
+  NEXT: 6.31.7 correctness (timeline + false-pass checks)
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
-updatedAt: "2026-09-19"
+  ADOPTION_FREEZE: excluded
+updatedAt: "2026-09-22"
 ```
