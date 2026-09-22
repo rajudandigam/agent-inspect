@@ -132,4 +132,71 @@ describe("url-aware redaction", () => {
     expect(result.value).toEqual({ note: "retry on the checkout page", count: 3 });
     expect(result.redacted).toBe(false);
   });
+
+  it("strips userinfo from postgres connection URIs while keeping host and db path", () => {
+    const result = redact(
+      {
+        dsn: "postgres://app_user:secret_pass_example@db.internal.example.com:5432/app_db",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      dsn: "postgres://db.internal.example.com:5432/app_db",
+    });
+    expect(result.findings.map((finding) => finding.detector)).toContain(
+      "value.urlCredential",
+    );
+  });
+
+  it("strips password-only redis userinfo", () => {
+    const result = redact(
+      {
+        cacheUrl: "redis://:cache_token_example@cache.internal.example.com:6379/0",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      cacheUrl: "redis://cache.internal.example.com:6379/0",
+    });
+  });
+
+  it("strips mongodb+srv userinfo without rewriting the database path", () => {
+    const result = redact(
+      {
+        mongoUri: "mongodb+srv://db_user:db_pass_example@cluster.example.net/main",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      mongoUri: "mongodb+srv://cluster.example.net/main",
+    });
+  });
+
+  it("strips amqp userinfo while keeping the vhost path", () => {
+    const result = redact(
+      {
+        queue: "amqp://app:rabbit_pass_example@queue.local.example.com:5672/vhost",
+      },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      queue: "amqp://queue.local.example.com:5672/vhost",
+    });
+  });
+
+  it("leaves connection URIs without userinfo unchanged", () => {
+    const result = redact(
+      { dsn: "postgresql://db.internal.example.com:5432/app_db" },
+      { profile: "share" },
+    );
+
+    expect(result.value).toEqual({
+      dsn: "postgresql://db.internal.example.com:5432/app_db",
+    });
+    expect(result.redacted).toBe(false);
+  });
 });

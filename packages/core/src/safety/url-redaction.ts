@@ -1,10 +1,11 @@
 /**
- * URL-aware redaction for http(s) values.
+ * URL-aware redaction for http(s) and common connection-string schemes.
  *
  * Keeps scheme, host and path so two attempts of the same step stay
  * comparable, and removes credentials carried in userinfo, query params and
- * fragment params. Identifier-looking path segments are masked when the
- * profile redacts identifiers.
+ * fragment params. Identifier-looking path segments are masked on http(s)
+ * when the profile redacts identifiers. Connection URIs only strip userinfo
+ * and sensitive params so database/queue paths stay intact.
  *
  * Mirrors `packages/redact/src/url-redaction.ts`. Keep both copies in sync.
  */
@@ -17,7 +18,7 @@ export interface UrlRedactionOptions {
   /** Value-level credential check, usually the profile's detectors. */
   isSensitiveValue: (value: string) => boolean;
   replacement?: string;
-  /** Mask identifier-looking path segments (share and strict profiles). */
+  /** Mask identifier-looking path segments (share and strict profiles, http(s) only). */
   maskPathIds?: boolean;
   idPlaceholder?: string;
 }
@@ -30,6 +31,23 @@ export interface UrlRedactionResult {
 
 const HTTP_URL = /^https?:\/\/[^\s]+$/i;
 
+/** Connection schemes common in agent tool attributes (DB, cache, queue). */
+const CONNECTION_PROTOCOLS = new Set([
+  "postgres:",
+  "postgresql:",
+  "mysql:",
+  "mariadb:",
+  "mongodb:",
+  "mongodb+srv:",
+  "redis:",
+  "rediss:",
+  "amqp:",
+  "amqps:",
+]);
+
+const CONNECTION_URI =
+  /^(?:postgres|postgresql|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?):\/\/[^\s]+$/i;
+
 const UUID_SEGMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HEX_SEGMENT = /^[0-9a-f]{12,}$/i;
 const NUMERIC_SEGMENT = /^\d{5,}$/;
@@ -40,13 +58,29 @@ export function looksLikeHttpUrl(value: string): boolean {
   return HTTP_URL.test(value.trim());
 }
 
-function parseHttpUrl(value: string): URL | undefined {
+/** True when the whole string is a known connection URI with a scheme:// authority. */
+export function looksLikeConnectionUri(value: string): boolean {
+  return CONNECTION_URI.test(value.trim());
+}
+
+/** True when the value is eligible for URL-aware rewrite (http(s) or connection URI). */
+export function looksLikeUrlForRedaction(value: string): boolean {
+  return looksLikeHttpUrl(value) || looksLikeConnectionUri(value);
+}
+
+function parseRedactableUrl(value: string): URL | undefined {
   try {
     const url = new URL(value.trim());
-    return url.protocol === "http:" || url.protocol === "https:" ? url : undefined;
+    if (url.protocol === "http:" || url.protocol === "https:") return url;
+    if (CONNECTION_PROTOCOLS.has(url.protocol)) return url;
+    return undefined;
   } catch {
     return undefined;
   }
+}
+
+function isHttpProtocol(protocol: string): boolean {
+  return protocol === "http:" || protocol === "https:";
 }
 
 function isIdentifierSegment(segment: string): boolean {
@@ -91,8 +125,8 @@ function redactParams(
 }
 
 /**
- * Redacts the sensitive parts of an http(s) URL. Returns the value unchanged
- * when it is not a URL or has nothing to remove.
+ * Redacts the sensitive parts of an http(s) or connection URI. Returns the
+ * value unchanged when it is not a supported URL or has nothing to remove.
  */
 export function redactUrlString(
   value: string,
@@ -103,19 +137,20 @@ export function redactUrlString(
     credentialRedacted: false,
     identifiersMasked: false,
   };
-  if (!looksLikeHttpUrl(value)) return unchanged;
+  if (!looksLikeUrlForRedaction(value)) return unchanged;
 
-  const url = parseHttpUrl(value);
+  const url = parseRedactableUrl(value);
   if (!url) return unchanged;
 
   const replacement = options.replacement ?? "[REDACTED]";
   const idPlaceholder = options.idPlaceholder ?? "[id]";
+  const http = isHttpProtocol(url.protocol);
 
   let credentialRedacted = url.username.length > 0 || url.password.length > 0;
   let identifiersMasked = false;
 
   let pathname = url.pathname;
-  if (options.maskPathIds === true) {
+  if (http && options.maskPathIds === true) {
     pathname = url.pathname
       .split("/")
       .map((segment) => {

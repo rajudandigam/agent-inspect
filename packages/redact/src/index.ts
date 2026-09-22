@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { isCredentialSensitiveKey } from "./sensitive-key.js";
 import { valueContainsKeyValueSecret } from "./key-value-secret.js";
-import { looksLikeHttpUrl, redactUrlString } from "./url-redaction.js";
+import { looksLikeUrlForRedaction, redactUrlString } from "./url-redaction.js";
 
 export type RedactionProfile = "local" | "share" | "strict";
 
@@ -609,7 +609,7 @@ export class Redactor {
       }
     }
 
-    if (typeof value === "string" && looksLikeHttpUrl(value)) {
+    if (typeof value === "string" && looksLikeUrlForRedaction(value)) {
       const url = redactUrlString(value, {
         sensitiveKeys: this.#sensitiveKeys,
         isSensitiveValue: (candidate) => this.#detect(candidate, key, path) !== undefined,
