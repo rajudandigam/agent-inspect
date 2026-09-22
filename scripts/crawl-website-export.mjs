@@ -36,9 +36,17 @@ function collectIds(html) {
 }
 
 function resolveLocal(fromHtmlFile, href) {
+  const pageUrl = (() => {
+    const relFromOut = path.relative(outDir, fromHtmlFile).replace(/\\/g, "/");
+    return new URL(relFromOut.split("/").map(encodeURIComponent).join("/"), "https://example.local/");
+  })();
+
   const { pathname, hash } = (() => {
     try {
-      const u = new URL(href, "https://example.local/");
+      // Resolve relative hrefs against the exporting page, not the site root.
+      // Using only https://example.local/ as the base made `../missing` and
+      // nested-relative targets incorrectly fall back to root files.
+      const u = new URL(href, pageUrl);
       return {
         pathname: decodeURIComponent(u.pathname),
         hash: decodeURIComponent(u.hash.replace(/^#/, "")),
@@ -63,6 +71,11 @@ function resolveLocal(fromHtmlFile, href) {
   } else {
     const fromDir = path.dirname(path.relative(outDir, fromHtmlFile));
     rel = path.posix.normalize(path.posix.join(fromDir.replace(/\\/g, "/"), rel));
+  }
+
+  // Reject path escape above the export root (e.g. excessive ../).
+  if (rel.startsWith("..")) {
+    return { skip: false, found: undefined, hash, candidates: [] };
   }
 
   // Trailing-slash export: /docs/foo/ → docs/foo/index.html
