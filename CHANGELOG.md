@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.5
+
+### Patch Changes
+
+- 909ea70: Strip userinfo credentials from common connection URIs (postgres, mysql, mongodb, redis, amqp, and TLS variants) under share/strict while keeping scheme, host, port, and database/queue path.
+
 ## 6.31.4
 
 ### Patch Changes
