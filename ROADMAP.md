@@ -10,7 +10,7 @@ This public roadmap describes direction — not a delivery guarantee. See [docs/
 
 ---
 
-## Current — published `6.31.6`
+## Current — published `6.31.7`
 
 **Current release line:** **6.31.6** (eighteen fixed-group public packages). Persisted schema **1.0**. Node.js **≥ 20**. **MIT**. Actively maintained.
 
@@ -26,7 +26,7 @@ Core boundary frozen; evidence-backed **security, correctness, compatibility, in
 | **7.0.0** | Major | Assessment only / **NO-GO** |
 
 ```text
-LAST_PUBLISHED_RELEASE: 6.31.6
+LAST_PUBLISHED_RELEASE: 6.31.7
 V7_DECISION: NO-GO
 ```
 

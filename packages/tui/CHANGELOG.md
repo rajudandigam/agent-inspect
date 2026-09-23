@@ -1,5 +1,13 @@
 # @agent-inspect/tui
 
+## 6.31.7
+
+### Patch Changes
+
+- Updated dependencies [3f7abb5]
+- Updated dependencies [3f7abb5]
+  - agent-inspect@6.31.7
+
 ## 6.31.6
 
 ### Patch Changes

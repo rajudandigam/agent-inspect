@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.31.7
+
+### Patch Changes
+
+- 3f7abb5: Make timeline depth resolution cycle-safe and stack-safe for cyclic or very deep parent chains (GitHub #453 / #454).
+- 3f7abb5: Preserve framework source attribution on CLI export via the persisted tree bridge, emit numeric OTLP StatusCode/SpanKind enums, map numeric status 0/1/2 on import, and harden OTLP nested validation with field-path diagnostics.
+
 ## 6.31.6
 
 ### Patch Changes

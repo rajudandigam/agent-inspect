@@ -1,5 +1,7 @@
 # @agent-inspect/redact
 
+## 6.31.7
+
 ## 6.31.6
 
 ### Patch Changes
