@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/langchain",
-  "version": "6.31.8",
+  "version": "6.31.9",
   "license": "MIT",
   "type": "module",
   "private": false,

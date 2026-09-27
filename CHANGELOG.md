@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.9
+
+### Patch Changes
+
+- f71ec7e: Fail closed when suite cases declare no effective assertions or unknown selectors, wire eval.requireSuccess and related eval controls into real check rules, and share AsyncLocalStorage across packed CJS root and /advanced entrypoints so guarded wrappers see the active run context.
+
 ## 6.31.8
 
 ### Patch Changes
