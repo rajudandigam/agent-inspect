@@ -1,5 +1,13 @@
 # @agent-inspect/tui
 
+## 6.31.10
+
+### Patch Changes
+
+- 1327356: Return actionable diagnostics for reversed evaluateTraceContract arguments and warn (without throwing) when inspectRun is passed an unsupported writer option, pointing callers at createInspector({ writer }).
+- Updated dependencies [1327356]
+  - agent-inspect@6.31.10
+
 ## 6.31.9
 
 ### Patch Changes
