@@ -212,9 +212,9 @@
     "node": ">=20"
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "nanoid": "^5.1.16",
-    "commander": "^12.1.0"
+    "chalk": "^6.0.0",
+    "nanoid": "^6.0.1",
+    "commander": "^15.0.0"
   },
   "scripts": {
     "clean": "pnpm -r exec -- node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
