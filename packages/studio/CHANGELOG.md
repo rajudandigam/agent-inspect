@@ -1,5 +1,13 @@
 # @agent-inspect/studio
 
+## 6.31.8
+
+### Patch Changes
+
+- 5bbe8c0: Restore CLI export lifecycle coalescing for schema 0.1 nested tools, map adapter modelId/source/fractional duration on OTLP export, keep OTLP parent lookup trace-scoped, strengthen producer validation, and make Promptfoo/Collector/Elastic recipe verifiers honest.
+- Updated dependencies [5bbe8c0]
+  - agent-inspect@6.31.8
+
 ## 6.31.7
 
 ### Patch Changes
