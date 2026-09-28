@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "agent-inspect": "workspace:*",
-    "promptfoo": "0.118.17"
+    "promptfoo": "0.123.1"
   },
   "engines": {
     "node": ">=20"
