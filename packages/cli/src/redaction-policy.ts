@@ -52,6 +52,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function rejectRemotePolicyPath(policyPath: string): void {
   const trimmed = policyPath.trim();
+  // Windows absolute drive path (e.g. C:\path or C:/path) is a local file path, not a URL.
+  if (/^[a-z]:[\\/]/i.test(trimmed)) {
+    return;
+  }
   if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
     throw new Error(
       `--policy must be a local JSON file path (got a URL-like value). Remote policy fetch is not supported.`,

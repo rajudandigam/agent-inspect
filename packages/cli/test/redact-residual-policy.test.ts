@@ -191,6 +191,12 @@ describe("bounded redaction policy (#329)", () => {
     await expect(loadRedactionPolicy("https://example.test/policy.json")).rejects.toThrow(
       /local JSON file path/,
     );
+    await expect(loadRedactionPolicy("C:\\nonexistent\\policy.json")).rejects.toThrow(
+      /Failed to read --policy file/,
+    );
+    await expect(loadRedactionPolicy("c:/nonexistent/policy.json")).rejects.toThrow(
+      /Failed to read --policy file/,
+    );
 
     expect(() =>
       compileRedactionPolicy(
