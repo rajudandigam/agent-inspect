@@ -100,6 +100,16 @@ AgentInspect avoids SDK/collector setup for local debugging:
 - Use OpenTelemetry when you need organization-wide production telemetry pipelines.
 - Local OTLP JSON export can help bridge later, but AgentInspect is not an OpenTelemetry SDK replacement.
 
+## AgentInspect vs OrcaReplay
+
+OrcaReplay is a local CLI that records an agent run at the model-provider boundary and serves the recorded turns back later without contacting the provider.
+
+AgentInspect is local-first CLI debugging:
+
+- Use AgentInspect to inspect and gate a run's trajectory; the two capture at different layers, so a run can be captured by both at once — AgentInspect instruments inside the process and produces an execution tree, while OrcaReplay proxies the provider connection and records the bytes on the wire.
+- If you reach for OrcaReplay, two limits are worth knowing: a matching replay is not a determinism result, and replay blocks model-provider egress only — it is not a sandbox, so recorded tool calls still execute and a tool that opens its own connection still reaches the network.
+- AgentInspect does not replay a recorded run; the README lists "a replay engine" among the things it is not.
+
 ## Quick decision table
 
 | Need | AgentInspect fit |
@@ -112,6 +122,7 @@ AgentInspect avoids SDK/collector setup for local debugging:
 | Share-safe local redaction copy | Good fit |
 | Existing structured logs to trees | Good fit |
 | VS Code trace review (in-repo extension) | Good fit; Marketplace listing separate |
+| Offline replay of a recorded run | Not the goal |
 | Production dashboards | Not the goal |
 | Hosted eval datasets | Not the goal |
 | Prompt management | Not the goal |
