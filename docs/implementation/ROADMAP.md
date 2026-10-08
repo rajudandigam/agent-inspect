@@ -1,8 +1,8 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.31.15` (published)
-**Roadmap horizon:** **6.31.16** published; Oct 7 next public **6.31.17** = W26 marker fix + merged Windows `#473`; residual W01+ repo work; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
-**Status:** **6.31.15 published**; named train `stability-after-63111`; next = C01 Promptfoo exact assertions; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
+**Baseline:** `agent-inspect@6.31.17` (published; all 18)
+**Roadmap horizon:** **6.31.17** published (W26 marker + Windows `#473`); residual W04+ repo/recipe work; skip empty **6.31.18+**; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
+**Status:** **6.31.17 published**; named train `stability-after-63111`; W01/W02/W03/W26 closed; next = W04+ artifact packages; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
 **Primary objective:** Finish verifier/SDK/timing/transport correctness and consumer evidence milestones—without schema 1.1, hosted SaaS, or fabricated external evidence
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
@@ -91,8 +91,8 @@ The canonical release sequence is:
 6.31.14 Collector/Elastic structured identity verifiers  (published; selected fields / live path reopened; actual Elastic = C10)
 6.31.15 Executable/packed matrix + docs consolidation  (published; CI wiring / kit provenance reopened)
 6.31.16 C01 + C07–C09 + C11 verifier acceptance reopen  (published)
-6.31.17 W26 sensitive-key complete-marker + merged Windows --policy (#473)  (next public)
-6.31.18+ Conditional only if a public recovery defect reproduces (omit empty slots)
+6.31.17 W26 sensitive-key complete-marker + merged Windows --policy (#473)  (published)
+6.31.18+ Conditional only if a public recovery defect reproduces (omit empty slots; W11 replay green → skip)
 
 recipes   Collector roundtrip; executable Promptfoo; Elastic indexed readback (no root vendor deps)
 
@@ -113,6 +113,8 @@ website  Headers/crawler (#458) done; links/quickstart/TOC/badges retained
 **Amendment (2026-09-28):** After **6.31.11**, named train is `stability-after-63111`. Slots **6.31.12–6.31.15** published. Closure audit same day **reopens C01, C07–C09, C11** for **6.31.16+**. Stability package chunk IDs (C00–C12) are a new numbering; prior suite-trust C01–C13 are historical closures.
 
 **Amendment (2026-10-07):** **6.31.16** published. Stale “6.31.17 = C07–C08…” slot labels retired (that work shipped in 6.31.16). Next public patch is **6.31.17** = W26 complete-marker hardening + already-merged Windows `#473`. Residual Promptfoo/OTLP/kit controls are W01 (repo-first). **6.32.0** remains blocked.
+
+**Amendment (2026-10-07 later):** **6.31.17** published (all 18). W01 (#481–#483), W02 (proactive-ai-demo #6–#8), W03 matrix honesty, and W26 are done. W11 bounded-read-recovery replay remains green — no empty **6.31.18**. Next repo work is W04+ artifact packages; **EVIDENCE_GATE** still not approved.
 
 No major version is required. No new trace schema. No TrueForge-specific package. No full-content capture mode. No general temporal/workflow DSL.
 
@@ -212,8 +214,8 @@ Fail-closed deterministic gate hardening:
 | **6.30.0** | Rich CLI TraceContracts | amends prior comparable-Evidence plan | Published |
 | **6.31.0**–**6.31.15** | Typed ordering through matrix/docs consolidation | published line | Published (partial acceptance; C01/C07–C09/C11 reopened) |
 | **6.31.16** | Verifier acceptance reopen | published | Done |
-| **6.31.17** | W26 marker + Windows `#473` | next public | Queued |
-| **6.31.18+** | Conditional public recovery only | omit if empty | Queued |
+| **6.31.17** | W26 marker + Windows `#473` | published | Done |
+| **6.31.18+** | Conditional public recovery only | omit if empty (W11 green) | Skipped unless defect reproduces |
 | **6.32.0** | External conformance + compact review | conditional | **BLOCKED_ON_EXTERNAL_EVIDENCE** |
 | **6.33.0** | Additive usability when justified | recipes / APIs | Conditional minor |
 

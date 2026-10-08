@@ -106,7 +106,7 @@ OrcaReplay is a local CLI that records an agent run at the model-provider bounda
 
 AgentInspect is local-first CLI debugging:
 
-- Use AgentInspect to inspect and gate a run's trajectory; the two capture at different layers, so a run can be captured by both at once — AgentInspect instruments inside the process and produces an execution tree, while OrcaReplay proxies the provider connection and records the bytes on the wire.
+- Use AgentInspect to inspect and gate a run's trajectory; the two capture at different layers. AgentInspect builds a local execution tree from in-process instrumentation and from existing log/trace readers; OrcaReplay proxies the provider connection and records the bytes on the wire. Simultaneous AgentInspect + OrcaReplay capture on one run is possible in principle but **untested** here until a retained joint experiment exists.
 - If you reach for OrcaReplay, two limits are worth knowing: a matching replay is not a determinism result, and replay blocks model-provider egress only — it is not a sandbox, so recorded tool calls still execute and a tool that opens its own connection still reaches the network.
 - AgentInspect does not replay a recorded run; the README lists "a replay engine" among the things it is not.
 
