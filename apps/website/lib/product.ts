@@ -3,7 +3,7 @@
  * Keep in sync with docs/product/PUBLIC-PRODUCT-FACTS.json and root package.json.
  */
 export const product = {
-  version: "6.31.17",
+  version: "6.31.18",
   publicPackageCount: 18,
   releaseStatus: "Actively maintained · schema 1.0 · Node.js 20+ · MIT",
   v7Scheduled: false,

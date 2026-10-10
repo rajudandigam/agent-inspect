@@ -1,5 +1,13 @@
 # @agent-inspect/studio
 
+## 6.31.18
+
+### Patch Changes
+
+- c65817e: Fix recovery result-availability ordering and mixed attemptId counting; emit bounded OTLP operation/attempt identity without broad attribute dump; add real MCP SDK packed e2e and Fix-Owes recipe corpus (variable paths, timeout ledger, access disclosure, browser observed outcomes, NestJS tenant, causal failure, headsign, Keniel B8).
+- Updated dependencies [c65817e]
+  - agent-inspect@6.31.18
+
 ## 6.31.17
 
 ### Patch Changes
