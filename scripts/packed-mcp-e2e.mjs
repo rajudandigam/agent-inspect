@@ -100,28 +100,37 @@ function consumerScript(kind) {
   const isEsm = kind === "esm";
   const runName = isEsm ? RUN_NAME : `${RUN_NAME}-cjs`;
   const serverName = isEsm ? "packed-fixture" : "packed-fixture-cjs";
+  const sdkRunName = isEsm ? `${RUN_NAME}-sdk` : `${RUN_NAME}-sdk-cjs`;
+  const sdkServerName = isEsm ? "packed-sdk-fixture" : "packed-sdk-fixture-cjs";
+
   const importBlock = isEsm
     ? `import { inspectRun } from "agent-inspect";
 import { wrapMcpClient } from "@agent-inspect/mcp";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";`
     : `const { inspectRun } = require("agent-inspect");
 const { wrapMcpClient } = require("@agent-inspect/mcp");
+const { Client } = require("@modelcontextprotocol/sdk/client/index.js");
+const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
+const { InMemoryTransport } = require("@modelcontextprotocol/sdk/inMemory.js");
+const {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+} = require("@modelcontextprotocol/sdk/types.js");
 const { readdirSync, readFileSync } = require("node:fs");
 const path = require("node:path");`;
 
   const body = `
 ${importBlock}
 
-async function main() {
-  process.env.AGENT_INSPECT_TRACE_DIR = ${JSON.stringify(traceDirName)};
-  const warnings = [];
-  const originalWarn = console.warn;
-  console.warn = (...args) => {
-    warnings.push(args.map(String).join(" "));
-    originalWarn(...args);
-  };
-
+async function runMockClientTest({ warnings, originalWarn }) {
   const client = {
     async listTools() {
       return { tools: [{ name: "echo" }] };
@@ -151,10 +160,10 @@ async function main() {
   }, { traceDir: ${JSON.stringify(traceDirName)}, silent: true });
 
   if (!result.listed?.tools?.some((t) => t.name === "echo")) {
-    throw new Error("listTools return value not preserved");
+    throw new Error("mock listTools return value not preserved");
   }
   if (!JSON.stringify(result.called).includes("ok:echo")) {
-    throw new Error("callTool return value not preserved");
+    throw new Error("mock callTool return value not preserved");
   }
 
   let thrown;
@@ -166,18 +175,12 @@ async function main() {
     thrown = error;
   }
   if (!(thrown instanceof Error) || thrown.message !== "mcp boom") {
-    throw new Error("thrown application error was not preserved");
-  }
-
-  console.warn = originalWarn;
-  const outside = warnings.filter((w) => /outside inspectRun/i.test(w));
-  if (outside.length > 0) {
-    throw new Error("outside-context warning emitted: " + outside.join(" | "));
+    throw new Error("mock thrown application error was not preserved");
   }
 
   const files = readdirSync(${JSON.stringify(traceDirName)}).filter((f) => f.endsWith(".jsonl"));
   if (files.length === 0) {
-    throw new Error("no JSONL traces written under the application inspectRun");
+    throw new Error("no JSONL traces written under mock inspectRun");
   }
   const lines = files.flatMap((f) =>
     readFileSync(path.join(${JSON.stringify(traceDirName)}, f), "utf8")
@@ -203,10 +206,200 @@ async function main() {
   );
   if (mcpUnderRun.length < 2) {
     throw new Error(
-      "MCP steps were not persisted under the application inspectRun (shared runtime failed)",
+      "MCP mock steps were not persisted under the application inspectRun (shared runtime failed)",
     );
   }
-  console.log(${JSON.stringify(`[packed-mcp-e2e] ${kind.toUpperCase()} OK`)});
+}
+
+async function runRealSdkClientTest() {
+  const server = new Server(
+    { name: "packed-sdk-test-server", version: "1.0.0" },
+    { capabilities: { tools: {} } },
+  );
+
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    tools: [
+      {
+        name: "echo",
+        description: "Echoes input text",
+        inputSchema: {
+          type: "object",
+          properties: { text: { type: "string" } },
+        },
+      },
+      {
+        name: "fail-tool",
+        description: "Returns an application tool failure",
+        inputSchema: { type: "object" },
+      },
+      {
+        name: "throw-tool",
+        description: "Throws an unhandled server error",
+        inputSchema: { type: "object" },
+      },
+    ],
+  }));
+
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    if (name === "echo") {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "real-sdk-echo:" + JSON.stringify(args ?? {}),
+          },
+        ],
+      };
+    }
+    if (name === "fail-tool") {
+      return {
+        content: [{ type: "text", text: "tool returned error" }],
+        isError: true,
+      };
+    }
+    if (name === "throw-tool") {
+      throw new Error("unhandled server tool crash");
+    }
+    throw new Error("unknown tool: " + name);
+  });
+
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await server.connect(serverTransport);
+
+  const rawClient = new Client(
+    { name: "packed-real-sdk-client", version: "1.0.0" },
+    { capabilities: {} },
+  );
+
+  const wrapped = wrapMcpClient(rawClient, {
+    serverName: ${JSON.stringify(sdkServerName)},
+    metadata: {
+      operationId: "op-sdk-packed",
+      attemptId: "att-sdk-1",
+    },
+  });
+
+  if (!(wrapped instanceof Client)) {
+    throw new Error("wrapped client is not an instance of SDK Client");
+  }
+
+  await wrapped.connect(clientTransport);
+  await wrapped.ping();
+
+  const sdkResult = await inspectRun(${JSON.stringify(sdkRunName)}, async () => {
+    const listed = await wrapped.listTools();
+    const echoed = await wrapped.callTool({
+      name: "echo",
+      arguments: { greeting: "hello from sdk" },
+    });
+    const failed = await wrapped.callTool({
+      name: "fail-tool",
+      arguments: {},
+    });
+    return { listed, echoed, failed };
+  }, { traceDir: ${JSON.stringify(traceDirName)}, silent: true });
+
+  if (!sdkResult.listed?.tools?.some((t) => t.name === "echo")) {
+    throw new Error("real SDK listTools did not return echo tool");
+  }
+  if (!JSON.stringify(sdkResult.echoed).includes("hello from sdk")) {
+    throw new Error("real SDK callTool echo content mismatch");
+  }
+  if (sdkResult.failed?.isError !== true) {
+    throw new Error("real SDK callTool fail-tool isError flag was not preserved");
+  }
+
+  let sdkThrown;
+  try {
+    await inspectRun(${JSON.stringify(`${sdkRunName}-throw`)}, async () => {
+      await wrapped.callTool({ name: "throw-tool", arguments: {} });
+    }, { traceDir: ${JSON.stringify(traceDirName)}, silent: true });
+  } catch (error) {
+    sdkThrown = error;
+  }
+  if (!(sdkThrown instanceof Error) || !/unhandled server tool crash/.test(sdkThrown.message)) {
+    throw new Error("real SDK unhandled server crash was not propagated");
+  }
+
+  await wrapped.close();
+  await server.close();
+
+  const files = readdirSync(${JSON.stringify(traceDirName)}).filter((f) => f.endsWith(".jsonl"));
+  const lines = files.flatMap((f) =>
+    readFileSync(path.join(${JSON.stringify(traceDirName)}, f), "utf8")
+      .split("\\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line)),
+  );
+
+  const sdkRunEvent = lines.find(
+    (event) =>
+      event &&
+      event.name === ${JSON.stringify(sdkRunName)} &&
+      typeof event.runId === "string",
+  );
+  if (!sdkRunEvent?.runId) {
+    throw new Error("real SDK inspectRun event missing from persisted trace");
+  }
+
+  const sdkToolEvents = lines.filter(
+    (event) =>
+      event &&
+      event.runId === sdkRunEvent.runId &&
+      typeof event.name === "string" &&
+      (event.name === "mcp:tools/list" ||
+        event.name === "mcp:echo" ||
+        event.name === "mcp:fail-tool"),
+  );
+  if (sdkToolEvents.length < 3) {
+    throw new Error(
+      "real SDK MCP steps were not persisted under the application inspectRun (expected at least 3 steps, found " +
+        sdkToolEvents.length +
+        ")",
+    );
+  }
+
+  const echoStep = sdkToolEvents.find(
+    (event) => event.event === "step_started" && event.name === "mcp:echo",
+  );
+  if (
+    !echoStep?.metadata ||
+    echoStep.metadata.operationId !== "op-sdk-packed" ||
+    echoStep.metadata.attemptId !== "att-sdk-1"
+  ) {
+    throw new Error(
+      "real SDK step metadata (operationId/attemptId) not properly linked in trace: " +
+        JSON.stringify(echoStep),
+    );
+  }
+  if (echoStep.metadata.mcpServerName !== ${JSON.stringify(sdkServerName)}) {
+    throw new Error("real SDK step mcpServerName metadata mismatch");
+  }
+}
+
+async function main() {
+  process.env.AGENT_INSPECT_TRACE_DIR = ${JSON.stringify(traceDirName)};
+  const warnings = [];
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    warnings.push(args.map(String).join(" "));
+    originalWarn(...args);
+  };
+
+  try {
+    await runMockClientTest({ warnings, originalWarn });
+    await runRealSdkClientTest();
+  } finally {
+    console.warn = originalWarn;
+  }
+
+  const outside = warnings.filter((w) => /outside inspectRun/i.test(w));
+  if (outside.length > 0) {
+    throw new Error("outside-context warning emitted: " + outside.join(" | "));
+  }
+
+  console.log(${JSON.stringify(`[packed-mcp-e2e] ${kind.toUpperCase()} OK (mock + real SDK Client)`)});
 }
 
 main().catch((error) => {
@@ -234,7 +427,7 @@ try {
   run(
     "packed consumer install",
     "npm",
-    ["install", "--ignore-scripts", rootTarball, mcpTarball],
+    ["install", "--ignore-scripts", rootTarball, mcpTarball, "@modelcontextprotocol/sdk@^1.29.0"],
     { cwd: consumerDir },
   );
 
@@ -251,7 +444,7 @@ try {
   });
 
   console.log(
-    "[packed-mcp-e2e] OK: external agent-inspect + packed ESM/CJS share inspectRun context",
+    "[packed-mcp-e2e] OK: external agent-inspect + packed ESM/CJS share inspectRun context with real SDK Client",
   );
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
@@ -260,3 +453,4 @@ try {
   rmSync(tarballDir, { recursive: true, force: true });
   rmSync(consumerDir, { recursive: true, force: true });
 }
+
