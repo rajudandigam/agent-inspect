@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.17"
 publishedVersion: "6.31.17"
-pendingPublishVersion: null
+pendingPublishVersion: "6.31.18"
 currentTrain: "stability-after-63111"
-trainStatus: "6.31.17 published; W01/W02/W03/W11/W26 done; W23A docs; halted before 6.32"
+trainStatus: "6.31.18 Fix-Owes Changeset on main; awaiting Version Packages + Trusted Publish; 6.32 blocked"
 executionMode: "maintainer-reviewed"
 namedTrain: "stability-after-63111"
 branch: "main"
-currentChunk: "W23A #490 docs sync"
-lastConfirmedCommit: "65e80cbe"
-lastValidationLevel: "6.31.17 npm; W01 CI; demo #6–#8 merged; W11 recovery green"
-nextAction: "W04/#484 or W15/#491; artifact-first drafts; skip empty 6.31.18+; no 6.32 without EVIDENCE_GATE"
+currentChunk: "6.31.18 publish"
+lastConfirmedCommit: "pending-after-push"
+lastValidationLevel: "test:all + fixtures + recipes + pack:smoke green locally for Fix-Owes"
+nextAction: "Merge Version Packages PR; confirm npm 6.31.18; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Elastic --live (C10); Collector Docker"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"

@@ -575,4 +575,268 @@ describe("bounded safe recovery operations (6.27)", () => {
     const lines = explainTraceContract(recoveryContract);
     expect(lines.some((line) => line.includes("recovery operation oracle"))).toBe(true);
   });
+
+  describe("F01 Veera false-pass regressions (R01–R07)", () => {
+    const at = (n: number) =>
+      `2026-09-12T10:00:${String(n).padStart(2, "0")}.000Z`;
+
+    const dependencyContract = defineTraceContract({
+      retry: {
+        operations: [
+          {
+            tool: "retrieve_policy",
+            sideEffectClass: "read",
+            maxAttempts: 2,
+            requireTerminalSuccess: true,
+            successfulResultDependency: {
+              consumerKind: "LLM",
+              requireExplicitReference: true,
+            },
+          },
+        ],
+      },
+    });
+
+    it("R01: result available before answer with explicit same-run ref passes", () => {
+      const events = [
+        runEvent("run-1"),
+        tool("policy", "run-1", "retrieve_policy", at(1), at(2), {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          arguments: { policyId: "policy-42" },
+        }),
+        llm("llm", "run-1", at(3), { referencedEventIds: ["policy"] }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, dependencyContract);
+      expect(result.status).toBe("pass");
+    });
+
+    it("R02: missing explicit result reference fails successful-result-dependency", () => {
+      const events = [
+        runEvent("run-1"),
+        tool("policy", "run-1", "retrieve_policy", at(1), at(2), {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          arguments: { policyId: "policy-42" },
+        }),
+        llm("llm", "run-1", at(3), {}),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, dependencyContract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) =>
+            f.ruleId === "contract.retry.operations.successful-result-dependency" &&
+            f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("R03: answer starts before result (future reference) fails", () => {
+      const events = [
+        runEvent("run-1"),
+        tool("policy", "run-1", "retrieve_policy", at(1), at(2), {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          arguments: { policyId: "policy-42" },
+        }),
+        llm("llm", "run-1", at(0), { referencedEventIds: ["policy"] }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, dependencyContract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) =>
+            f.ruleId === "contract.retry.operations.successful-result-dependency" &&
+            f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("R04: overlapping answer vs incomplete tool fails", () => {
+      const events = [
+        runEvent("run-1"),
+        tool("policy", "run-1", "retrieve_policy", at(1), at(6), {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          arguments: { policyId: "policy-42" },
+        }),
+        llm("llm", "run-1", at(3), { referencedEventIds: ["policy"] }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, dependencyContract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) =>
+            f.ruleId === "contract.retry.operations.successful-result-dependency" &&
+            f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("R05: partial attemptId must not hide second call under maxAttempts", () => {
+      const contract = defineTraceContract({
+        retry: {
+          operations: [
+            {
+              tool: "retrieve_policy",
+              sideEffectClass: "read",
+              maxAttempts: 1,
+              requireTerminalSuccess: true,
+            },
+          ],
+        },
+      });
+      const events = [
+        runEvent("run-1"),
+        tool("one", "run-1", "retrieve_policy", at(1), at(2), {
+          operationId: "op-policy",
+          attemptId: "a1",
+        }),
+        tool("two", "run-1", "retrieve_policy", at(3), at(4), {
+          operationId: "op-policy",
+        }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, contract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) => f.ruleId === "contract.retry.operations.max-attempts" && f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("R06: TIMEOUT write without reconciliation fails write-completion-unevaluable", () => {
+      const contract = defineTraceContract({
+        retry: {
+          operations: [
+            {
+              tool: "retrieve_policy",
+              sideEffectClass: "write",
+              maxAttempts: 2,
+              requireTerminalSuccess: true,
+            },
+          ],
+        },
+      });
+      const first = tool(
+        "first",
+        "run-1",
+        "retrieve_policy",
+        at(1),
+        at(2),
+        {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          noSideEffect: false,
+          sideEffect: true,
+        },
+        "error",
+      );
+      first.error = { code: "TIMEOUT", message: "synthetic" };
+      const events = [
+        runEvent("run-1"),
+        first,
+        tool("second", "run-1", "retrieve_policy", at(3), at(4), {
+          operationId: "op-policy",
+          attemptId: "a2",
+          attemptNumber: 2,
+          retryOf: "a1",
+          noSideEffect: false,
+          sideEffect: true,
+        }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, contract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) =>
+            f.ruleId === "contract.retry.operations.write-completion-unevaluable" &&
+            f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("R07: ETIMEDOUT receives the same write-completion-unevaluable finding", () => {
+      const contract = defineTraceContract({
+        retry: {
+          operations: [
+            {
+              tool: "retrieve_policy",
+              sideEffectClass: "write",
+              maxAttempts: 2,
+              requireTerminalSuccess: true,
+            },
+          ],
+        },
+      });
+      const first = tool(
+        "first",
+        "run-1",
+        "retrieve_policy",
+        at(1),
+        at(2),
+        {
+          operationId: "op-policy",
+          attemptId: "a1",
+          attemptNumber: 1,
+          noSideEffect: false,
+          sideEffect: true,
+        },
+        "error",
+      );
+      first.error = { code: "ETIMEDOUT", message: "synthetic" };
+      const events = [
+        runEvent("run-1"),
+        first,
+        tool("second", "run-1", "retrieve_policy", at(3), at(4), {
+          operationId: "op-policy",
+          attemptId: "a2",
+          attemptNumber: 2,
+          retryOf: "a1",
+          noSideEffect: false,
+          sideEffect: true,
+        }),
+      ];
+      const result = evaluateTraceContract({ read: readOf(events) }, contract);
+      expect(result.status).toBe("fail");
+      expect(
+        result.findings.some(
+          (f) =>
+            f.ruleId === "contract.retry.operations.write-completion-unevaluable" &&
+            f.status === "fail",
+        ),
+      ).toBe(true);
+    });
+
+    it("treats equivalent ISO offsets as the same availability boundary", () => {
+      const events = [
+        runEvent("run-1"),
+        tool(
+          "policy",
+          "run-1",
+          "retrieve_policy",
+          "2026-09-12T10:00:02.000+00:00",
+          "2026-09-12T10:00:02.000+00:00",
+          {
+            operationId: "op-policy",
+            attemptId: "a1",
+            attemptNumber: 1,
+            arguments: { policyId: "policy-42" },
+          },
+        ),
+        llm("llm", "run-1", "2026-09-12T10:00:02.000Z", {
+          referencedEventIds: ["policy"],
+        }),
+      ];
+      expect(evaluateTraceContract({ read: readOf(events) }, dependencyContract).status).toBe(
+        "pass",
+      );
+    });
+  });
 });

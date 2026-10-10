@@ -1,0 +1,10 @@
+keniel-finding-b8:
+  K01-3finder-1receipt: expected=pass observed=pass
+  K02-singular-null: expected=pass observed=pass
+  K03-wrong-article: expected=fail observed=fail
+  K04-missing-receipt: expected=unknown observed=unknown
+  K05-nonmatching-ref: expected=fail observed=fail
+  K06-source-unavailable: expected=unknown observed=unknown
+  K07-unknown-fields-retained: expected=pass observed=pass
+classes: K01:pass,K02:pass,K03:fail,K04:unknown,K05:fail,K06:unknown,K07:pass
+receipts: found=1 unknownSearch=2

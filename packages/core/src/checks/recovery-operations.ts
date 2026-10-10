@@ -109,8 +109,44 @@ function eventTime(event: PersistedInspectEvent): string {
   return event.startedAt ?? event.timestamp ?? "";
 }
 
+function parseComparableMs(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+/** Consumer start/input boundary (numeric; not lexical ISO compare). */
+function consumerStartMs(event: PersistedInspectEvent): number | undefined {
+  return parseComparableMs(event.startedAt) ?? parseComparableMs(event.timestamp);
+}
+
+/**
+ * Result/terminal availability boundary for a tool attempt.
+ * Prefer endedAt; else startedAt+durationMs; else (legacy) timestamp only when
+ * endedAt/duration are absent — treated as the recorded result instant.
+ */
+function resultAvailableMs(event: PersistedInspectEvent): number | undefined {
+  const ended = parseComparableMs(event.endedAt);
+  if (ended !== undefined) return ended;
+  const started = parseComparableMs(event.startedAt) ?? parseComparableMs(event.timestamp);
+  if (
+    started !== undefined &&
+    event.durationMs !== undefined &&
+    Number.isFinite(event.durationMs)
+  ) {
+    return started + event.durationMs;
+  }
+  // Legacy instant events: timestamp is the only recorded availability boundary.
+  return parseComparableMs(event.timestamp);
+}
+
 function sortByTime(events: readonly PersistedInspectEvent[]): PersistedInspectEvent[] {
-  return [...events].sort((a, b) => eventTime(a).localeCompare(eventTime(b)));
+  return [...events].sort((a, b) => {
+    const aMs = consumerStartMs(a) ?? 0;
+    const bMs = consumerStartMs(b) ?? 0;
+    if (aMs !== bMs) return aMs - bMs;
+    return eventTime(a).localeCompare(eventTime(b));
+  });
 }
 
 function errorCodeOf(event: PersistedInspectEvent): string | undefined {
@@ -191,13 +227,22 @@ function sameArguments(
   return { ok: true };
 }
 
+/** Explicit write-completion unevaluable codes (bounded map; not free-text). */
+const UNEVALUABLE_WRITE_ERROR_CODES = new Set([
+  "TIMEOUT",
+  "ETIMEDOUT",
+  "UNKNOWN_COMPLETION",
+  "DEADLINE_EXCEEDED",
+]);
+
 function isUnevaluableWriteCompletion(event: PersistedInspectEvent): boolean {
   if (event.status === "running" || event.status === "unknown") return true;
   const attrs = event.attributes ?? {};
   if (attrs.timeout === true) return true;
+  if (attrs.unknownCompletion === true) return true;
   if (attrs.completionState === "unknown" || attrs.completionState === "timeout") return true;
   const code = errorCodeOf(event)?.toUpperCase();
-  if (code === "TIMEOUT" || code === "UNKNOWN_COMPLETION" || code === "DEADLINE_EXCEEDED") {
+  if (code && UNEVALUABLE_WRITE_ERROR_CODES.has(code)) {
     return true;
   }
   return false;
@@ -246,19 +291,33 @@ function collectExplicitReferences(event: PersistedInspectEvent): Set<string> {
   return refs;
 }
 
+/**
+ * True when the LLM both references the successful tool result (when required)
+ * and the result was available at or before the consumer's start boundary.
+ * Missing/invalid comparable times fail closed (unavailable evidence).
+ * Same-run is required; equal result/consumer boundaries are allowed.
+ */
 function llmReferencesTool(
   llm: PersistedInspectEvent,
   toolEvent: PersistedInspectEvent,
   requireExplicit: boolean,
 ): boolean {
-  if (!requireExplicit) {
-    return eventTime(llm) >= eventTime(toolEvent);
+  if (llm.runId !== toolEvent.runId) return false;
+
+  if (requireExplicit) {
+    const refs = collectExplicitReferences(llm);
+    const toolCallId = workflowFor(toolEvent).toolCallId;
+    const hasRef =
+      refs.has(toolEvent.eventId) || (toolCallId !== undefined && refs.has(toolCallId));
+    if (!hasRef) return false;
   }
-  const refs = collectExplicitReferences(llm);
-  if (refs.has(toolEvent.eventId)) return true;
-  const toolCallId = workflowFor(toolEvent).toolCallId;
-  if (toolCallId && refs.has(toolCallId)) return true;
-  return false;
+
+  const resultMs = resultAvailableMs(toolEvent);
+  const consumerMs = consumerStartMs(llm);
+  // Conservative missing/invalid-time policy: do not invent availability.
+  if (resultMs === undefined || consumerMs === undefined) return false;
+  // Result must be available before (or at) consumer start; reject future/overlap.
+  return resultMs <= consumerMs;
 }
 
 function attemptIdOf(event: PersistedInspectEvent): string | undefined {

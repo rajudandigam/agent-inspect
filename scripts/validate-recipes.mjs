@@ -65,6 +65,13 @@ const RECIPES = [
   "external-persisted-session-reader",
   "architectural-intent-trace",
   "comparable-cohort-runs",
+  "valid-variable-paths",
+  "timeout-ledger-effects",
+  "access-disclosure-controls",
+  "keniel-finding-b8",
+  "headsign-review-fixture",
+  "causal-failure-summary",
+  "nestjs-tenant-incident",
   "mcp-transport-retry-429",
 ];
 
@@ -115,6 +122,9 @@ function checkBannedImports(rel, text) {
   const allowOpenAiAgentsFixture =
     rel.startsWith(path.join("examples", "recipes", "openai-agents-local-tracing")) ||
     rel.startsWith("examples/recipes/openai-agents-local-tracing/");
+  const allowNestjsFixture =
+    rel.startsWith(path.join("examples", "recipes", "nestjs-tenant-incident")) ||
+    rel.startsWith("examples/recipes/nestjs-tenant-incident/");
   FORBIDDEN_IMPORT_RE.lastIndex = 0;
   let m;
   while ((m = FORBIDDEN_IMPORT_RE.exec(text)) !== null) {
@@ -123,6 +133,16 @@ function checkBannedImports(rel, text) {
       continue;
     }
     if (allowOpenAiAgentsFixture && spec === "@openai/agents") {
+      continue;
+    }
+    if (
+      allowNestjsFixture &&
+      (spec === "@nestjs/common" ||
+        spec === "@nestjs/core" ||
+        spec === "@nestjs/testing" ||
+        spec === "reflect-metadata" ||
+        spec === "rxjs")
+    ) {
       continue;
     }
     for (const p of BANNED_IMPORT_PREFIXES) {

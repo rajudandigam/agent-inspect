@@ -1,0 +1,13 @@
+{
+  "name": "agent-inspect-recipe-access-disclosure-controls",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "agent-inspect": "workspace:*",
+    "@agent-inspect/redact": "workspace:*",
+    "tsx": "^4.19.0"
+  }
+}

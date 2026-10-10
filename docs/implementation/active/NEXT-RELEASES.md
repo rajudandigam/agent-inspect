@@ -10,12 +10,13 @@
 1. **6.31.12**–**6.31.17** — **published**
 2. **W01** — Promptfoo / OTLP AnyValues / kit pin (#481–#483) — **done**
 3. **W02** — demo #3–#5 (`proactive-ai-demo` #6–#8) — **done**
-4. **W11** — recovery counterexample replay — **green; skip empty 6.31.18**
-5. **W23A / #490** — ROADMAP + COMPARE wording — **in progress**
-6. **W04+** — identity, browser controls, paired captures, #491/#492 recipes (repo-only unless a public contract defect needs a patch)
-7. **W22** — C10 Elastic / Collector Docker — credential/environment gated
-8. **6.32.0** — **BLOCKED_ON_EXTERNAL_EVIDENCE** ([EXTERNAL-ACCEPTANCE-GATE.md](./EXTERNAL-ACCEPTANCE-GATE.md))
-9. **v7** — NO-GO
+4. **W11** — recovery counterexample replay — **landed in 6.31.18** (not empty)
+5. **6.31.18** — Fix-Owes patch (recovery/OTLP identity/recipes/MCP SDK packed e2e) — **Changeset pending publish**
+6. **W23A / #490** — ROADMAP + COMPARE wording — **partial**
+7. **W04+ residual** — partner packets / email still artifact-first; remaining external acceptance separate
+8. **W22** — C10 Elastic / Collector Docker — credential/environment gated
+9. **6.32.0** — **BLOCKED_ON_EXTERNAL_EVIDENCE** ([EXTERNAL-ACCEPTANCE-GATE.md](./EXTERNAL-ACCEPTANCE-GATE.md))
+10. **v7** — NO-GO
 
 ## Claim discipline
 
@@ -33,8 +34,9 @@
 
 ```text
 LAST_PUBLISHED_RELEASE: 6.31.17
-ACTIVE: stability-after-63111 (Oct 7; post-W02)
-NEXT: W04+ artifacts; no 6.32 without EVIDENCE_GATE
+PENDING_PUBLISH: 6.31.18
+ACTIVE: stability-after-63111 (Oct 10 Fix-Owes)
+NEXT: Version Packages → publish.yml; no 6.32 without EVIDENCE_GATE
 V7_DECISION: NO-GO
 EVIDENCE_GATE: not approved
 ADOPTION_FREEZE: excluded

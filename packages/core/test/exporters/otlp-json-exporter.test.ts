@@ -51,7 +51,84 @@ function treeWithTokens(): TraceEvent[] {
   ];
 }
 
+function attrsOf(content: string): Array<{ key: string; value: Record<string, unknown> }> {
+  const parsed = JSON.parse(content) as {
+    resourceSpans: {
+      scopeSpans: { spans: { attributes: Array<{ key: string; value: Record<string, unknown> }> }[] }[];
+    }[];
+  };
+  return parsed.resourceSpans[0]!.scopeSpans[0]!.spans[0]!.attributes;
+}
+
 describe("exportOtlpJson", () => {
+  it("emits bounded operation/attempt/retry identity without includeAttributes", () => {
+    const events: TraceEvent[] = [
+      {
+        schemaVersion: "0.1",
+        event: "run_started",
+        timestamp: 1,
+        runId: "run_id_map",
+        name: "id-map",
+        startTime: 1,
+      },
+      {
+        schemaVersion: "0.1",
+        event: "step_started",
+        timestamp: 10,
+        runId: "run_id_map",
+        stepId: "a2",
+        parentId: "op1",
+        name: "retrieve_policy",
+        type: "tool",
+        startTime: 10,
+        metadata: {
+          operationId: "op1",
+          attemptId: "a2",
+          retryOf: "a1",
+          attemptNumber: 2,
+          secretPreview: "should-not-appear-without-includeAttributes",
+        },
+      },
+      {
+        schemaVersion: "0.1",
+        event: "step_completed",
+        timestamp: 20,
+        runId: "run_id_map",
+        stepId: "a2",
+        status: "success",
+        endTime: 20,
+        durationMs: 10,
+      },
+      {
+        schemaVersion: "0.1",
+        event: "run_completed",
+        timestamp: 30,
+        runId: "run_id_map",
+        status: "success",
+        endTime: 30,
+        durationMs: 29,
+      },
+    ];
+    const tree = manualTraceEventsToRunTree(events);
+    const r = exportOtlpJson(tree);
+    const attrs = attrsOf(r.content);
+    const byKey = Object.fromEntries(attrs.map((a) => [a.key, a.value]));
+    expect(byKey["agent_inspect.operation_id"]).toEqual({ stringValue: "op1" });
+    expect(byKey["agent_inspect.attempt_id"]).toEqual({ stringValue: "a2" });
+    expect(byKey["agent_inspect.retry_of"]).toEqual({ stringValue: "a1" });
+    expect(byKey["agent_inspect.attempt_number"]).toEqual({ intValue: "2" });
+    expect(attrs.some((a) => a.key.includes("secretPreview"))).toBe(false);
+    expect(r.warnings.some((w) => w.includes("operationId/attemptId/retryOf"))).toBe(true);
+  });
+
+  it("omits identity attributes when source did not record them", () => {
+    const tree = manualTraceEventsToRunTree(treeWithTokens());
+    const attrs = attrsOf(exportOtlpJson(tree).content);
+    expect(attrs.some((a) => a.key === "agent_inspect.operation_id")).toBe(false);
+    expect(attrs.some((a) => a.key === "agent_inspect.attempt_id")).toBe(false);
+    expect(attrs.some((a) => a.key === "agent_inspect.retry_of")).toBe(false);
+  });
+
   it("has resourceSpans with spans", () => {
     const tree = manualTraceEventsToRunTree(treeWithTokens());
     const r = exportOtlpJson(tree);

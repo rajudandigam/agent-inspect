@@ -2,45 +2,32 @@
 
 ## What this demonstrates
 
-**Pairwise / stagewise** run-comparability for cohort-style checks. Commitments are
-full SHA-256 digests of the synthetic stage bytes actually used in the fixture
-(tool output and next-model input). Shared cohort labels alone never imply
-equivalent inputs.
+Two **separately executed** deterministic stub workflows measure tool-output and
+next-model-input bytes. Commitments are SHA-256 digests of those measured bytes.
 
-## Why this matters
+A predefined `StageCommitments` object is not evidence of a second invocation.
+An `orderId` tool response cannot substantiate a commitment to policy text that
+was never returned.
 
-A deterministic checker can still read evidence from a nondeterministic agent.
-Changed retrieval/tool output that feeds the next model stage is a different
-boundary than a declared treatment variable.
-
-| Class | Meaning |
+| Case | Expected class |
 | --- | --- |
-| `equivalent_stage_inputs` | Same cohort/case and matching measured stage commitments |
-| `changed_retrieval_boundary` | Same identity labels but tool or next-model input digest differs |
-| `partial_unknown` | Missing identity or stage commitments |
-| `incompatible_scope` | Different cohort/case |
-| `sampling_or_model_changed` | Resolved model or sampling evidence differs |
-| `declared_treatment_diff` | Stage inputs match; declared treatment differs (still comparable for that claim) |
+| G01 same policy bytes enter both model inputs | `equivalent_stage_inputs` |
+| G02 policyVersion 1→2 enters next model input | `changed_retrieval_boundary` (`tool_output`) |
+| G03 missing right capture | `partial_unknown` |
+| G04 sampling differs | `sampling_or_model_changed` |
+| G05 incompatible cohort | `incompatible_scope` |
+| G06 missing grader provenance | `grader_unproven` |
+| G07 declared commitment ≠ measured bytes | `commitment_mismatch` |
 
-See [RUN-COMPARABILITY.md](../../../docs/RUN-COMPARABILITY.md). Matching hashes do
-**not** prove complete capture, anonymity, or deterministic model execution.
-Adapters do not automatically emit these fields.
+This is **not** a proof of stochastic model-output determinism.
 
 ## How to run
 
 ```bash
 pnpm build
-cd examples/recipes/comparable-cohort-runs
-pnpm install
-pnpm start
+pnpm --filter agent-inspect-recipe-comparable-cohort-runs start
 ```
 
 ## Expected output
 
-See `expected-output.txt`.
-
-## Notes and limitations
-
-- Keyless and local only — fixture-supplied model/finish facts are synthetic.
-- Ordinary `check` without this recipe is unchanged.
-- Temperature zero is **not** treated as proof of determinism.
+See `expected-output.txt` (class line).

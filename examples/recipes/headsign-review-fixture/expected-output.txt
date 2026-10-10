@@ -1,0 +1,11 @@
+headsign-review-fixture:
+  pin: meganemura/headsign docs contract (synthetic transcripts)
+  H01-success-final: expected=pass observed=pass
+  H02-fail-retry: expected=pass observed=pass
+  H03-fail-escalate: expected=pass observed=pass
+  H04-requested-not-run: expected=fail observed=fail
+  H05-unjustified-final: expected=fail observed=fail
+  H06-missing-result: expected=fail observed=fail
+  H07-irrelevant-prose: expected=pass observed=pass
+  H08-exit-change: expected=fail observed=fail
+classes: H01:pass,H02:pass,H03:pass,H04:fail,H05:fail,H06:fail,H07:pass,H08:fail

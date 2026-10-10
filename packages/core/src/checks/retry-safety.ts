@@ -134,15 +134,29 @@ function attemptIdOf(event: PersistedInspectEvent): string | undefined {
 /**
  * Count attempts with identity preference (6.25.1).
  * Does not use Math.max(attemptNumber) without validating contiguous identity.
+ *
+ * Partial attempt annotations must not hide unidentified members: when some
+ * events carry attemptId and others do not, unidentified finished tool/LLM
+ * events still count. Multiple lifecycle records sharing one stable attemptId
+ * collapse to a single attempt.
  */
 export function countOperationAttempts(members: readonly PersistedInspectEvent[]): number {
-  const attemptIds = new Set(
-    members
-      .map((event) => attemptIdOf(event))
-      .filter((value): value is string => value !== undefined),
-  );
-  if (attemptIds.size > 0) {
-    return attemptIds.size;
+  const identified = new Set<string>();
+  let unidentified = 0;
+  for (const event of members) {
+    if (event.kind !== "TOOL" && event.kind !== "LLM") continue;
+    const id = attemptIdOf(event);
+    if (id !== undefined) {
+      identified.add(id);
+      continue;
+    }
+    unidentified += 1;
+  }
+
+  if (identified.size > 0) {
+    // Mixed identity: identified attemptIds + each unidentified member.
+    // Pure identified: lifecycle pairs with the same attemptId already collapsed.
+    return identified.size + unidentified;
   }
 
   const numbers = members
@@ -151,17 +165,10 @@ export function countOperationAttempts(members: readonly PersistedInspectEvent[]
     .sort((a, b) => a - b);
   if (numbers.length > 0) {
     const unique = [...new Set(numbers)];
-    const min = unique[0]!;
-    const max = unique[unique.length - 1]!;
-    const contiguous =
-      unique.length === max - min + 1 && unique.every((value, index) => value === min + index);
-    if (contiguous) {
-      return unique.length;
-    }
     return unique.length;
   }
 
-  return members.filter((event) => event.kind === "TOOL" || event.kind === "LLM").length;
+  return unidentified;
 }
 
 type RetryClassification =

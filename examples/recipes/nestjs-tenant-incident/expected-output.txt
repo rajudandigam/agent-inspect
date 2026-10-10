@@ -1,0 +1,10 @@
+nestjs-tenant-incident:
+  note: real NestJS TestingModule; stubbed tools/model; keyless
+  N01-good-tenant-a: expected=pass observed=pass
+  N02-wrong-tenant-bind: expected=fail observed=fail
+  N03-absent-capture: expected=fail observed=fail
+  N04-overlap-isolated: expected=pass observed=pass
+  N05-app-error-preserved: expected=pass observed=pass
+  N06-close-no-handles: expected=pass observed=pass
+classes: N01:pass,N02:fail,N03:fail,N04:pass,N05:pass,N06:pass
+claim: answer must consume policy for the requested tenant (explicit join)

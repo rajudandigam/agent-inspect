@@ -1,0 +1,11 @@
+valid-variable-paths:
+  V01-lookup-answer: pass
+  V02-optional-format: pass
+  V03-prohibited-refund: fail
+  V04-missing-lookup: fail
+  V05-future-result-ref: fail
+  V06-retry-ok: pass
+  V06-retry-excess: fail
+  anitesh-seven-safe: pass
+  anitesh-seven-broken: fail
+classes: V01:pass,V02:pass,V03:fail,V04:fail,V05:fail,V06ok:pass,V06excess:fail,A7safe:pass,A7broken:fail

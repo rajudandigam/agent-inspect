@@ -1,0 +1,6 @@
+causal-failure-summary:
+  C01-linked-failure: expected=supported observed=supported
+  C02-adjacent-unlinked: expected=none observed=none
+  C03-wrong-run-link: expected=none observed=none
+  C04-remove-link: expected=none observed=none
+classes: C01:supported,C02:none,C03:none,C04:none

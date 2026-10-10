@@ -1,4 +1,11 @@
-normal PASS
-valid-recovery PASS
-unsafe-same-output FAIL
-missing-evidence FAIL
+valid-single-read expected=pass observed=pass OK
+valid-recovery expected=pass observed=pass OK
+two-successes-no-permitted-cause expected=fail observed=fail OK
+nonretryable-error expected=fail observed=fail OK
+changed-arguments expected=fail observed=fail OK
+too-many-attempts expected=fail observed=fail OK
+future-overlapping-answer expected=fail observed=fail OK
+both-fail-answer-claims-success expected=fail observed=fail OK
+missing-result-link expected=fail observed=fail OK
+failed-safety-observation expected=fail observed=fail OK
+bounded-read-recovery matrix: 10/10 classifications match

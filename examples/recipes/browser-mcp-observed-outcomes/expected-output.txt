@@ -1,13 +1,26 @@
 browser-observed-outcome-matrix:
   note: synthetic in-memory observer; not real browser/MCP delivery
+  credit: resource-binding counterexample context from achiya-automation
   valid-transition: gate=passed precondition=passed resource=passed postcondition=passed tool=success
     note: valid start, correct resource, actual transition
+  wrong-tab-binding-only: gate=failed precondition=passed resource=failed postcondition=passed tool=success
+    note: observed resource object differs from intended action target (caller labels ignored)
+  forged-caller-label: gate=failed precondition=passed resource=failed postcondition=passed tool=success
+    note: observed resource object differs from intended action target (caller labels ignored)
+  wrong-binding-incomplete-window: gate=failed precondition=passed resource=failed postcondition=unknown tool=success
+    note: observed resource object differs from intended action target (caller labels ignored); postcondition evidence unavailable (incomplete observation window)
+  observer-missing: gate=unknown precondition=unknown resource=unknown postcondition=unknown tool=success
+    note: observer missing/failed — never success
   tool-success-no-effect: gate=failed precondition=passed resource=passed postcondition=failed tool=success
     note: tool may report success but observed state unchanged
-  wrong-resource-already-target: gate=failed precondition=skipped resource=failed postcondition=skipped tool=success
-    note: observation resource differs from action target — page-value equality must not pass
-  invalid-start: gate=failed precondition=failed resource=passed postcondition=skipped tool=success
-    note: invalid starting state — postcondition skipped
-  observer-incomplete: gate=unknown precondition=unknown resource=unknown postcondition=unknown tool=success
-    note: observer missing/failed/incomplete — never success
-classes: valid-transition:passed,tool-success-no-effect:failed,wrong-resource-already-target:failed,invalid-start:failed,observer-incomplete:unknown
+  invalid-start: gate=failed precondition=failed resource=passed postcondition=failed tool=success
+    note: invalid starting state; tool may report success but observed state unchanged
+  ablation wrong-tab-binding-only (skip binding): gate=passed precondition=passed resource=skipped postcondition=passed
+classes: valid-transition:passed,wrong-tab-binding-only:failed,forged-caller-label:failed,wrong-binding-incomplete-window:failed,observer-missing:unknown,tool-success-no-effect:failed,invalid-start:failed
+om-attempt-comparison:
+  a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100
+  a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id
+url-redaction-controls:
+  https://shop.example/checkout?token=sekrit-query-token -> https://shop.example/checkout?token=[REDACTED] (credentials=true ids=false)
+  https://user:pass@shop.example/orders/12345 -> https://shop.example/orders/[id] (credentials=true ids=true)
+  https://shop.example/orders/user_9f3c2a1b0d4e5f678901/checkout -> https://shop.example/orders/[id]/checkout (credentials=false ids=true)

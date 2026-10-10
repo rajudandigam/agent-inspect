@@ -38,6 +38,7 @@ describe("packed adapter no-key golden paths (#213 contract)", () => {
     expect(packSmokeScript).toContain("scripts/package-smoke.mjs");
     expect(packSmokeScript).toContain("scripts/packed-openai-agents-e2e.mjs");
     expect(packSmokeScript).toContain("scripts/packed-mcp-e2e.mjs");
+    expect(packSmokeScript).toContain("scripts/packed-mcp-sdk-e2e.mjs");
   });
 
   for (const adapter of OFFICIAL_ADAPTERS) {

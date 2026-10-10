@@ -1,0 +1,17 @@
+{
+  "name": "agent-inspect-recipe-nestjs-tenant-incident",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "10.4.20",
+    "@nestjs/core": "10.4.20",
+    "@nestjs/testing": "10.4.20",
+    "agent-inspect": "workspace:*",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "tsx": "^4.19.0"
+  }
+}

@@ -1,0 +1,7 @@
+access-disclosure-controls:
+  P01-denied-no-invoke: expected=pass observed=pass
+  P02-awaiting-approval: expected=awaiting observed=awaiting
+  P03-allowed-disclosed: expected=fail-prevention observed=fail-prevention
+  P04-incomplete-observer: expected=unknown observed=unknown
+classes: P01:pass,P02:awaiting,P03:fail-prevention,P04:unknown
+redaction-canary: beforeDisk=true shareExport=true

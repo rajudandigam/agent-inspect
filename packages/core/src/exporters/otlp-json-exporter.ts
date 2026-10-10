@@ -71,6 +71,79 @@ function genAiOperationName(kind: InspectKind): string | undefined {
   }
 }
 
+/** Bounded structural retry/operation identity keys (not broad attribute dump). */
+const STRUCTURAL_IDENTITY_KEYS = [
+  "operationId",
+  "attemptId",
+  "retryOf",
+  "attemptNumber",
+  "attempt",
+] as const;
+
+function pickBoundedIdentityString(
+  bag: Record<string, unknown> | undefined,
+  key: string,
+  maxLen: number,
+): string | undefined {
+  if (!bag || typeof bag !== "object") return undefined;
+  const direct = bag[key];
+  if (typeof direct === "string" && direct.trim() !== "") {
+    return direct.trim().slice(0, maxLen);
+  }
+  const nested =
+    bag.metadata && typeof bag.metadata === "object"
+      ? (bag.metadata as Record<string, unknown>)[key]
+      : undefined;
+  if (typeof nested === "string" && nested.trim() !== "") {
+    return nested.trim().slice(0, maxLen);
+  }
+  return undefined;
+}
+
+function pickBoundedIdentityNumber(
+  bag: Record<string, unknown> | undefined,
+  key: string,
+): number | undefined {
+  if (!bag || typeof bag !== "object") return undefined;
+  const direct = bag[key];
+  if (typeof direct === "number" && Number.isFinite(direct)) return direct;
+  const nested =
+    bag.metadata && typeof bag.metadata === "object"
+      ? (bag.metadata as Record<string, unknown>)[key]
+      : undefined;
+  if (typeof nested === "number" && Number.isFinite(nested)) return nested;
+  return undefined;
+}
+
+/**
+ * Emit explicitly recorded operation/attempt/retry identity as bounded OTLP
+ * attributes without enabling broad `includeAttributes`.
+ */
+function appendStructuralIdentityAttrs(
+  attrs: OtlpAttr[],
+  meta: Record<string, unknown> | undefined,
+  maxLen: number,
+): void {
+  const operationId = pickBoundedIdentityString(meta, "operationId", maxLen);
+  if (operationId !== undefined) {
+    attrs.push(stringAttr("agent_inspect.operation_id", operationId));
+  }
+  const attemptId = pickBoundedIdentityString(meta, "attemptId", maxLen);
+  if (attemptId !== undefined) {
+    attrs.push(stringAttr("agent_inspect.attempt_id", attemptId));
+  }
+  const retryOf = pickBoundedIdentityString(meta, "retryOf", maxLen);
+  if (retryOf !== undefined) {
+    attrs.push(stringAttr("agent_inspect.retry_of", retryOf));
+  }
+  const attemptNumber =
+    pickBoundedIdentityNumber(meta, "attemptNumber") ??
+    pickBoundedIdentityNumber(meta, "attempt");
+  if (attemptNumber !== undefined) {
+    attrs.push(intAttr("agent_inspect.attempt_number", attemptNumber));
+  }
+}
+
 function resolveSpanTimes(ev: {
   timestamp: number;
   durationMs?: number;
@@ -108,6 +181,7 @@ export function exportOtlpJson(
     "OTLP JSON export uses OTel GenAI-aligned attributes where applicable; experimental until verified against specific collectors.",
     "Not OTLP gRPC/protobuf — JSON mapping only. Generated locally; no network upload.",
     "Status and span kind use OTLP numeric enums (StatusCode 0/1/2, SpanKind INTERNAL=1).",
+    "When present on source events, operationId/attemptId/retryOf/attemptNumber are emitted as bounded agent_inspect.* identity attributes (not a broad attribute dump).",
   ];
 
   const traceId = hexFrom(`trace:${tree.runId}`, 16);
@@ -178,8 +252,14 @@ export function exportOtlpJson(
       if (typeof outp === "number") attrs.push(intAttr("gen_ai.usage.output_tokens", outp));
     }
 
+    appendStructuralIdentityAttrs(
+      attrs,
+      meta && typeof meta === "object" ? (meta as Record<string, unknown>) : undefined,
+      maxLen,
+    );
+
     if (includeAttributes && meta && typeof meta === "object") {
-      const skipKeys = new Set([
+      const skipKeys = new Set<string>([
         "tokens",
         "model",
         "modelId",
@@ -187,6 +267,7 @@ export function exportOtlpJson(
         "responseModelId",
         "provider",
         "originalSourceType",
+        ...STRUCTURAL_IDENTITY_KEYS,
       ]);
       for (const [k, v] of Object.entries(meta)) {
         if (skipKeys.has(k)) continue;

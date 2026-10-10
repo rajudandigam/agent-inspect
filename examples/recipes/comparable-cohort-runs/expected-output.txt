@@ -1,14 +1,10 @@
 pairwise-comparability:
-  matching-stages: equivalent_stage_inputs
-    note: matching identities and measured stage commitments (synthetic fixture bytes)
-  changed-retrieval: changed_retrieval_boundary
-    note: tool/retrieval stage output commitment differs — not equivalent-input evidence
-  missing-commitment: partial_unknown
-    note: missing stage input/tool commitment
-  mismatched-cohort: incompatible_scope
-    note: mismatched cohort or testCase — comparison scope incompatible
-  sampling-changed: sampling_or_model_changed
-    note: sampling evidence differs
-  treatment-diff: declared_treatment_diff
-    note: treatment differs (control vs variant-b); stage inputs still match
-classes: equivalent_stage_inputs,changed_retrieval_boundary,partial_unknown,incompatible_scope,sampling_or_model_changed,declared_treatment_diff
+  note: commitments measured from executed stub tool/model boundaries; not stochastic-output proof
+  G01-matching-stages: equivalent_stage_inputs
+  G02-changed-retrieval: changed_retrieval_boundary
+  G03-missing-right-capture: partial_unknown
+  G04-sampling-changed: sampling_or_model_changed
+  G05-incompatible-cohort: incompatible_scope
+  G06-missing-grader: grader_unproven
+  G07-declared-commitment-lie: commitment_mismatch
+classes: equivalent_stage_inputs,changed_retrieval_boundary,partial_unknown,sampling_or_model_changed,incompatible_scope,grader_unproven,commitment_mismatch
