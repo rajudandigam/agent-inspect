@@ -1,5 +1,14 @@
 # @agent-inspect/mcp-server
 
+## 6.31.19
+
+### Patch Changes
+
+- 8df3096: Fix residual recovery attemptNumber undercount and invalid result-availability times; promote OTLP agent_inspect.\* identity into workflow metadata on read; harden packed MCP SDK e2e (429/cancel/overlap/readiness); complete keyless Fix-Owes fixture corpus (Om through Thorin, Bezalel invariants).
+- Updated dependencies [8df3096]
+  - agent-inspect@6.31.19
+  - @agent-inspect/redact@6.31.19
+
 ## 6.31.18
 
 ### Patch Changes
