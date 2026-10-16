@@ -2,7 +2,7 @@
 
 **Status:** PARTIAL — evidence from maintainer CI + local smoke scripts; not a full OS×Node grid.  
 **Authority:** [implementation/ROADMAP.md](./implementation/ROADMAP.md) · [STABILITY-BASELINE.md](./STABILITY-BASELINE.md)
-**Date:** 2026-10-11 · CI primary `agent-inspect@6.31.20`; Windows dated rows below; first **released** Windows `--policy` drive-path fix is **6.31.17** (keep #209 open)
+**Date:** 2026-10-16 · CI primary `agent-inspect@6.31.23`; Windows dated rows below; first **released** Windows `--policy` drive-path fix is **6.31.17** (keep #209 open)
 
 ## Method
 
