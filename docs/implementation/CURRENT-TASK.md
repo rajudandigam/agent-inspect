@@ -66,6 +66,15 @@ worktreeIgnoreOnly:
 
 Full #484 issue closure still needs remaining W04 partner-packet acceptance beyond this matrix. #494 stays open; its Vercel check is an access decision. After 6.31.28 publish: item 05 Gary cohort. No email / no 6.32.
 
+## 2026-10-28 scoped evidence-sharing follow-up
+
+At the maintainer's request, added a [browsable synthetic evidence snapshot](../evidence/2026-10-22/README.md)
+for link-based review. Twenty selected October 22 files retain their original
+bytes and 6.31.23 attribution; private workspace logs and duplicate archives are
+excluded. Current MCP source is linked instead of republishing obsolete packets.
+This does not complete the external partner handoff or change any release gate.
+No runtime, schema, package version, or dependency changes are included.
+
 ## Stop marker
 
 ```text

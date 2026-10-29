@@ -65,6 +65,7 @@ blockedTrains:
   - "v7.0.0 (assessment only — V7_DECISION: NO-GO)"
   - "6.32.0 until EVIDENCE_GATE approved"
 amendments:
+  - "2026-10-28 scoped maintainer-requested evidence links: docs/evidence/2026-10-22; historical 6.31.23 excerpts only; external acceptance and release gates unchanged"
   - "Adoption freeze excluded"
   - "2026-10-07 6.31.17 published; W02 merged; W11 skip empty patch"
   - "2026-10-12 6.31.21 published (Trusted Publish 38204663903)"

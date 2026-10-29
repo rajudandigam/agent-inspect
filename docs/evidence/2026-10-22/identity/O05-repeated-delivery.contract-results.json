@@ -1,0 +1,23 @@
+{
+  "note": "Repeated delivery of the same persisted events — distinct from two handler executions. Assert both maxAttempts ceilings.",
+  "maxAttempts1": {
+    "sourceStatus": "fail",
+    "otlpStatus": "fail",
+    "sourceFindings": [
+      "contract.retry.max-attempts"
+    ],
+    "otlpFindings": [
+      "contract.retry.max-attempts"
+    ]
+  },
+  "maxAttempts2": {
+    "sourceStatus": "pass",
+    "otlpStatus": "pass",
+    "sourceFindings": [],
+    "otlpFindings": []
+  },
+  "sourceAttemptCount": 2,
+  "otlpAttemptCount": 2,
+  "physicalEventRows": 12,
+  "uniqueLogicalAttemptsExpected": 2
+}
