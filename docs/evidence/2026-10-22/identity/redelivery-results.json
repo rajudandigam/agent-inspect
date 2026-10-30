@@ -1,0 +1,38 @@
+[
+  {
+    "format": "source",
+    "maxAttempts": 1,
+    "status": "fail",
+    "findings": [
+      {
+        "ruleId": "contract.retry.max-attempts",
+        "actual": 2,
+        "message": "Operation op1 exceeded maxAttempts 1."
+      }
+    ]
+  },
+  {
+    "format": "source",
+    "maxAttempts": 2,
+    "status": "pass",
+    "findings": []
+  },
+  {
+    "format": "otlp",
+    "maxAttempts": 1,
+    "status": "fail",
+    "findings": [
+      {
+        "ruleId": "contract.retry.max-attempts",
+        "actual": 2,
+        "message": "Operation op1 exceeded maxAttempts 1."
+      }
+    ]
+  },
+  {
+    "format": "otlp",
+    "maxAttempts": 2,
+    "status": "pass",
+    "findings": []
+  }
+]

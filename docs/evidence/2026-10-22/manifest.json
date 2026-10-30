@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "description": "Selected unchanged synthetic evidence files from the October 22 packets. This is a subset, not an external conformance acceptance manifest.",
+  "capturedVersion": "6.31.23",
+  "publishedAsLinksOn": "2026-10-28",
+  "files": [
+    {
+      "path": "identity/O01-robb-one-op-two-attempts.contract-results.json",
+      "bytes": 197,
+      "sha256": "dfdfcacd397031d16e93f495063e49fb7a932dea4839605e162d2e80ef1a1609",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O01-robb-one-op-two-attempts.contract-results.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O01-robb-one-op-two-attempts.default-otlp.json",
+      "bytes": 7227,
+      "sha256": "262adeb537473ebc7038517172ff4891db69087437474d7dec272ce15f34d556",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O01-robb-one-op-two-attempts.default-otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O01-robb-one-op-two-attempts.source.jsonl",
+      "bytes": 1713,
+      "sha256": "42e1703475335c767697123629d4949600faba13ef445d5c4cb396d4109214e7",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O01-robb-one-op-two-attempts.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O05-repeated-delivery-base.default-otlp.json",
+      "bytes": 5425,
+      "sha256": "cd92b90f4581de0699534667ed7c47600f8c63139c087c07d9710899ade111cb",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O05-repeated-delivery-base.default-otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O05-repeated-delivery-base.source.jsonl",
+      "bytes": 1275,
+      "sha256": "ace6a411833c0cedfea1b352a05664e68445911b49446472ac841dbccd332804",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O05-repeated-delivery-base.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O05-repeated-delivery.contract-results.json",
+      "bytes": 594,
+      "sha256": "5fd7039bfba96b1eee4ad9a89a2f3ff8b54b5ffd62c4204ae5c024506f9fd5de",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O05-repeated-delivery.contract-results.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O05-repeated-delivery.default-otlp.json",
+      "bytes": 5425,
+      "sha256": "cd92b90f4581de0699534667ed7c47600f8c63139c087c07d9710899ade111cb",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O05-repeated-delivery.default-otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/O05-repeated-delivery.source.jsonl",
+      "bytes": 2550,
+      "sha256": "3a7e7158732d77aa2b56399d3a39390c9d14d838171575a4165922b5bee69a53",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "f04-evidence/O05-repeated-delivery.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/long-direct-nested-collision.otlp.json",
+      "bytes": 4206,
+      "sha256": "78b6a25e1b85868a38e9c5645d1c2f948d550b8a859bf3c701bbfea905a62c2a",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/long-direct-nested-collision.otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/long-direct-nested-collision.source.jsonl",
+      "bytes": 1408,
+      "sha256": "b1184b424b32ad9deb1869ee4a968837b1b98c2e7ca5adb2f524aa95dc062cf3",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/long-direct-nested-collision.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/native-opaque-control.otlp.json",
+      "bytes": 5230,
+      "sha256": "28c57ac6edee4e2bb572206c8951d3fac4fd7979b2d66a6565b68845d7e4a359",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/native-opaque-control.otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/native-opaque-control.source.jsonl",
+      "bytes": 684,
+      "sha256": "e27663a1a57220a8411b759728c3793834cb99d9a1a0431912842ba058f9f1a4",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/native-opaque-control.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/native-synthetic-shaped-ids.otlp.json",
+      "bytes": 5256,
+      "sha256": "a75e4d7d9dbf15c2dc4461a9c5dbbcab9146e89e5896ec4b815e08c267630cb3",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/native-synthetic-shaped-ids.otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/native-synthetic-shaped-ids.source.jsonl",
+      "bytes": 710,
+      "sha256": "1978b0a53529b4c08b85268f16f76be8b0d718ffe129d64cd558d32409ec75f1",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/native-synthetic-shaped-ids.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/short-direct-nested-fixed.otlp.json",
+      "bytes": 3210,
+      "sha256": "f04c493a263c5514189a4180f1b0249f2518de65ccdce924799ef02463ab84ff",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/short-direct-nested-fixed.otlp.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals/short-direct-nested-fixed.source.jsonl",
+      "bytes": 410,
+      "sha256": "b16118e515375d267e41e9c5d001bb36a61a6228f889d3b65c02a300ac47077a",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals/short-direct-nested-fixed.source.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/residuals-results.json",
+      "bytes": 10413,
+      "sha256": "b9b30c96aba2a1ebf40875f5d91803bc84ce0854b0b749fe61506838831b79fc",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "identity-residuals-results.json",
+      "transformation": "none"
+    },
+    {
+      "path": "identity/redelivery-results.json",
+      "bytes": 683,
+      "sha256": "a06b096e1f3218b094b845f2db30eb9d16ab317451fa7d13060be805b3f22802",
+      "sourcePacket": "AgentInspect-Identity-Verification-6.31.23-Oct22.zip",
+      "sourceMember": "otlp-delivery-boundary-results.json",
+      "transformation": "none"
+    },
+    {
+      "path": "strict-stack/source.jsonl",
+      "bytes": 1133,
+      "sha256": "54351bb33d8588b8e2df65a06d50facc4ece45b7c3d1ecde54ebfb3363baa371",
+      "sourcePacket": "AgentInspect-Strict-Stack-Reproduction-6.31.23-Oct22.zip",
+      "sourceMember": "redaction-evidence/raw/run_I1aW_rXDir.jsonl",
+      "transformation": "none"
+    },
+    {
+      "path": "strict-stack/strict-6.31.23.jsonl",
+      "bytes": 1089,
+      "sha256": "201c63380d67d8163b812835a15b73be3539684f416328cbe9816ffada6fbe82",
+      "sourcePacket": "AgentInspect-Strict-Stack-Reproduction-6.31.23-Oct22.zip",
+      "sourceMember": "redaction-evidence/strict.jsonl",
+      "transformation": "none"
+    }
+  ]
+}

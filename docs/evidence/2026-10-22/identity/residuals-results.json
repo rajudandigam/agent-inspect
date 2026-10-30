@@ -1,0 +1,249 @@
+{
+  "version": "6.31.23",
+  "results": [
+    {
+      "name": "short-direct-nested-fixed",
+      "source": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.ambiguous-identity",
+            "status": "fail",
+            "actual": "direct/nested conflict"
+          }
+        ],
+        "toolEvents": 1,
+        "warnings": []
+      },
+      "otlp": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.ambiguous-identity",
+            "status": "fail",
+            "actual": "direct/nested conflict"
+          }
+        ],
+        "toolEvents": 1,
+        "warnings": [
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Conflicting attemptId: attributes.attemptId vs nested alternate from agent_inspect.identity_conflict.attempt_id; retaining both.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.attempt_id"
+          },
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Identity representation conflict fields retained after OTLP bounding: attemptId.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.fields"
+          },
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Conflicting attemptId: attributes.attemptId vs nested alternate from agent_inspect.identity_conflict.attempt_id; retaining both.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.attempt_id"
+          },
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Identity representation conflict fields retained after OTLP bounding: attemptId.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.fields"
+          }
+        ]
+      },
+      "exportWarnings": [
+        "OTLP JSON export uses OTel GenAI-aligned attributes where applicable; experimental until verified against specific collectors.",
+        "Not OTLP gRPC/protobuf — JSON mapping only. Generated locally; no network upload.",
+        "Status and span kind use OTLP numeric enums (StatusCode 0/1/2, SpanKind INTERNAL=1).",
+        "When present on source events, operationId/attemptId/retryOf/attemptNumber are emitted as bounded agent_inspect.* identity attributes (not a broad attribute dump).",
+        "When direct and nested identity disagree, export prefers direct for non-strict consumers and emits agent_inspect.identity_conflict.* for the nested alternate; this does not certify conflicting identity.",
+        "Identity representation conflict on event native-tool: attemptId (direct preferred; nested retained on agent_inspect.identity_conflict.*)."
+      ],
+      "exportedIdentity": [
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "a1"
+          }
+        },
+        {
+          "key": "agent_inspect.identity_conflict.attempt_id",
+          "value": {
+            "stringValue": "a2"
+          }
+        },
+        {
+          "key": "agent_inspect.identity_conflict.fields",
+          "value": {
+            "stringValue": "attemptId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "long-direct-nested-collision",
+      "source": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.ambiguous-identity",
+            "status": "fail",
+            "actual": "direct/nested conflict"
+          }
+        ],
+        "toolEvents": 1,
+        "warnings": []
+      },
+      "otlp": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.ambiguous-identity",
+            "status": "fail",
+            "actual": "direct/nested conflict"
+          }
+        ],
+        "toolEvents": 1,
+        "warnings": [
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Identity representation conflict fields retained after OTLP bounding: attemptId.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.fields"
+          },
+          {
+            "code": "otlp_identity_conflict",
+            "message": "Identity representation conflict fields retained after OTLP bounding: attemptId.",
+            "severity": "warning",
+            "field": "resourceSpans[0].scopeSpans[0].spans[0].agent_inspect.identity_conflict.fields"
+          }
+        ]
+      },
+      "exportWarnings": [
+        "OTLP JSON export uses OTel GenAI-aligned attributes where applicable; experimental until verified against specific collectors.",
+        "Not OTLP gRPC/protobuf — JSON mapping only. Generated locally; no network upload.",
+        "Status and span kind use OTLP numeric enums (StatusCode 0/1/2, SpanKind INTERNAL=1).",
+        "When present on source events, operationId/attemptId/retryOf/attemptNumber are emitted as bounded agent_inspect.* identity attributes (not a broad attribute dump).",
+        "When direct and nested identity disagree, export prefers direct for non-strict consumers and emits agent_inspect.identity_conflict.* for the nested alternate; this does not certify conflicting identity.",
+        "Identity representation conflict on event native-tool: attemptId (direct preferred; nested retained on agent_inspect.identity_conflict.*)."
+      ],
+      "exportedIdentity": [
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          }
+        },
+        {
+          "key": "agent_inspect.identity_conflict.attempt_id",
+          "value": {
+            "stringValue": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          }
+        },
+        {
+          "key": "agent_inspect.identity_conflict.fields",
+          "value": {
+            "stringValue": "attemptId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "native-synthetic-shaped-ids",
+      "source": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.duplicate-attempt-id",
+            "status": "fail",
+            "actual": "duplicate"
+          }
+        ],
+        "toolEvents": 2,
+        "warnings": []
+      },
+      "otlp": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.duplicate-attempt-id",
+            "status": "fail",
+            "actual": "duplicate"
+          }
+        ],
+        "toolEvents": 2,
+        "warnings": []
+      },
+      "exportWarnings": [
+        "OTLP JSON export uses OTel GenAI-aligned attributes where applicable; experimental until verified against specific collectors.",
+        "Not OTLP gRPC/protobuf — JSON mapping only. Generated locally; no network upload.",
+        "Status and span kind use OTLP numeric enums (StatusCode 0/1/2, SpanKind INTERNAL=1).",
+        "When present on source events, operationId/attemptId/retryOf/attemptNumber are emitted as bounded agent_inspect.* identity attributes (not a broad attribute dump).",
+        "When direct and nested identity disagree, export prefers direct for non-strict consumers and emits agent_inspect.identity_conflict.* for the nested alternate; this does not certify conflicting identity."
+      ],
+      "exportedIdentity": [
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "a1"
+          }
+        },
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "a1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "native-opaque-control",
+      "source": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.duplicate-attempt-id",
+            "status": "fail",
+            "actual": "duplicate"
+          }
+        ],
+        "toolEvents": 2,
+        "warnings": []
+      },
+      "otlp": {
+        "status": "fail",
+        "findings": [
+          {
+            "ruleId": "contract.retry.duplicate-attempt-id",
+            "status": "fail",
+            "actual": "duplicate"
+          }
+        ],
+        "toolEvents": 2,
+        "warnings": []
+      },
+      "exportWarnings": [
+        "OTLP JSON export uses OTel GenAI-aligned attributes where applicable; experimental until verified against specific collectors.",
+        "Not OTLP gRPC/protobuf — JSON mapping only. Generated locally; no network upload.",
+        "Status and span kind use OTLP numeric enums (StatusCode 0/1/2, SpanKind INTERNAL=1).",
+        "When present on source events, operationId/attemptId/retryOf/attemptNumber are emitted as bounded agent_inspect.* identity attributes (not a broad attribute dump).",
+        "When direct and nested identity disagree, export prefers direct for non-strict consumers and emits agent_inspect.identity_conflict.* for the nested alternate; this does not certify conflicting identity."
+      ],
+      "exportedIdentity": [
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "a1"
+          }
+        },
+        {
+          "key": "agent_inspect.attempt_id",
+          "value": {
+            "stringValue": "a1"
+          }
+        }
+      ]
+    }
+  ]
+}
