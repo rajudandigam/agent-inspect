@@ -50,6 +50,20 @@ function persisted(
   };
 }
 
+/** A tool step that starts and finishes inside one millisecond shared by every call. */
+function sameMillisecondTool(eventId: string, toolName: string): PersistedInspectEvent {
+  const sameMillisecond = "2026-06-26T00:00:01.000Z";
+  return persisted(eventId, {
+    kind: "TOOL",
+    name: `tool:${toolName}`,
+    attributes: { toolName },
+    timestamp: sameMillisecond,
+    startedAt: sameMillisecond,
+    endedAt: sameMillisecond,
+    durationMs: 0,
+  });
+}
+
 function node(event: PersistedInspectEvent, depth = 0): InspectNode {
   return {
     event: {
@@ -591,19 +605,8 @@ describe("built-in run, tool, and LLM checks", () => {
   });
 
   it("breaks millisecond timestamp ties by recorded event order in causal modes", () => {
-    const sameMillisecond = "2026-06-26T00:00:01.000Z";
-    const instantTool = (eventId: string, toolName: string) =>
-      persisted(eventId, {
-        kind: "TOOL",
-        name: `tool:${toolName}`,
-        attributes: { toolName },
-        timestamp: sameMillisecond,
-        startedAt: sameMillisecond,
-        endedAt: sameMillisecond,
-        durationMs: 0,
-      });
-    const refund = instantTool("tie-refund", "issue_refund");
-    const lookup = instantTool("tie-lookup", "lookup_order");
+    const refund = sameMillisecondTool("tie-refund", "issue_refund");
+    const lookup = sameMillisecondTool("tie-lookup", "lookup_order");
 
     for (const mode of ["happens-before", "all-occurrences"] as const) {
       const rule = createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode });
@@ -622,6 +625,87 @@ describe("built-in run, tool, and LLM checks", () => {
       const inOrder = runTraceChecks({ read: readResult([lookup, refund]) }, { rules: [rule] });
       expect(inOrder.status).toBe("pass");
       expect(inOrder.findings).toEqual([]);
+    }
+  });
+
+  it("checks every tied occurrence, not only the first, in all-occurrences mode", () => {
+    const firstLookup = sameMillisecondTool("tie-lookup-1", "lookup_order");
+    const refund = sameMillisecondTool("tie-refund", "issue_refund");
+    const secondLookup = sameMillisecondTool("tie-lookup-2", "lookup_order");
+    const allOccurrences = createToolOrderingRule({
+      before: "lookup_order",
+      after: "issue_refund",
+      mode: "all-occurrences",
+    });
+
+    const lookupAfterRefund = runTraceChecks(
+      { read: readResult([firstLookup, refund, secondLookup]) },
+      { rules: [allOccurrences] },
+    );
+    expect(lookupAfterRefund.status).toBe("fail");
+    expect(lookupAfterRefund.findings[0]).toMatchObject({
+      actual: { resolvedBy: "recorded-order" },
+      evidence: [{ eventId: "tie-lookup-2" }, { eventId: "tie-refund" }],
+    });
+
+    const happensBefore = runTraceChecks(
+      { read: readResult([firstLookup, refund, secondLookup]) },
+      {
+        rules: [
+          createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode: "happens-before" }),
+        ],
+      },
+    );
+    expect(happensBefore.status).toBe("pass");
+
+    const bothLookupsFirst = runTraceChecks(
+      { read: readResult([firstLookup, secondLookup, refund]) },
+      { rules: [allOccurrences] },
+    );
+    expect(bothLookupsFirst.status).toBe("pass");
+  });
+
+  it("fails closed on a timestamp tie when the recorded rows cannot be located", () => {
+    // runTraceChecks projects logical events from the same rows, so only a caller
+    // that evaluates a rule against its own context can hit this path.
+    const withoutRawRows = (rule: TraceCheckRule): TraceCheckRule => ({
+      ...rule,
+      evaluate: (context) => rule.evaluate({ ...context, events: [] }),
+    });
+    const tiedInOrder = readResult([
+      sameMillisecondTool("tie-lookup", "lookup_order"),
+      sameMillisecondTool("tie-refund", "issue_refund"),
+    ]);
+    const untied = readResult([
+      persisted("untied-lookup", {
+        kind: "TOOL",
+        name: "tool:lookup_order",
+        attributes: { toolName: "lookup_order" },
+        timestamp: "2026-06-26T00:00:01.000Z",
+        startedAt: "2026-06-26T00:00:01.000Z",
+        endedAt: "2026-06-26T00:00:01.000Z",
+      }),
+      persisted("untied-refund", {
+        kind: "TOOL",
+        name: "tool:issue_refund",
+        attributes: { toolName: "issue_refund" },
+        timestamp: "2026-06-26T00:00:01.001Z",
+        startedAt: "2026-06-26T00:00:01.001Z",
+        endedAt: "2026-06-26T00:00:01.001Z",
+      }),
+    ]);
+
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const rule = withoutRawRows(
+        createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+      );
+
+      const tied = runTraceChecks({ read: tiedInOrder }, { rules: [rule] });
+      expect(tied.status).toBe("fail");
+      expect(tied.findings[0]?.actual).toMatchObject({ resolvedBy: "recorded-order-unavailable" });
+      expect(tied.findings[0]?.message).toContain("could not be resolved");
+
+      expect(runTraceChecks({ read: untied }, { rules: [rule] }).status).toBe("pass");
     }
   });
 
