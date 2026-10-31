@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.31
+
+### Patch Changes
+
+- 1ca1c11: Oct 30 residuals: stricter saved-evidence verifiers, HTML attempt-preserving lifecycle presentation, Om beyond-budget readiness guard, Jan packed MCP SDK assertions, Roy path-scrubbed -003 packet and UNPROVABLE receipt fixtures, and status/docs reconcile.
+
 ## 6.31.30
 
 ### Patch Changes
