@@ -44,6 +44,7 @@ Contracts compile to deterministic check rules for common cases:
 - `happens-before` requires the first `before` occurrence to finish before the first `after` occurrence starts;
 - `all-occurrences` requires every `before` occurrence to finish before every `after` occurrence starts (`max(before.end) <= min(after.start)`);
 - causal modes fail when a required interval boundary cannot be resolved instead of falling back to encounter order.
+- when the boundary timestamps tie at millisecond resolution (for example scripted or mocked tools that start and finish inside one millisecond), causal modes decide by recorded event order: the before event must have been recorded as finished before the after event was recorded as started. Such findings carry `resolvedBy: "recorded-order"`.
 
 Examples for `requiredOrder: ["retrieve_policy", "send_email"]` (both TOOL-typed):
 
@@ -118,6 +119,7 @@ The evaluator expands each list into adjacent pairs and applies one `requiredOrd
 - `requiredOrderMode: "happens-before"` requires the first before to **end** before the first after **starts**; overlap fails.
 - `requiredOrderMode: "all-occurrences"` requires every before to end before every after starts; any cross-boundary overlap or later before fails.
 - Missing interval boundaries fail closed in the two causal modes.
+- Millisecond timestamp ties are decided by recorded event order in the two causal modes.
 
 ### `alternatives.anyOf` (shipped)
 

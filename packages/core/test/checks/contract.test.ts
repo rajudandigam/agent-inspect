@@ -354,6 +354,61 @@ describe("trace contract", () => {
       }
     });
 
+    it("does not let causal modes pass a reversed v0.1 trace whose steps share one millisecond", async () => {
+      // Instant manual tool steps (scripted or mocked tools in CI) write every row
+      // with the same millisecond timestamp; only row order records what happened.
+      const at = 1_793_407_645_024;
+      const runId = "run_tie";
+      const row = (fields: Record<string, unknown>) =>
+        JSON.stringify({ schemaVersion: "0.1", timestamp: at, runId, ...fields });
+      const started = (stepId: string, toolName: string) =>
+        row({ event: "step_started", stepId, name: toolName, type: "tool", startTime: at, metadata: { toolName } });
+      const completed = (stepId: string) =>
+        row({ event: "step_completed", stepId, status: "success", endTime: at, durationMs: 0 });
+      const trace = (steps: string[]) =>
+        [
+          row({ event: "run_started", name: "tie", startTime: at }),
+          ...steps,
+          row({ event: "run_completed", status: "success", endTime: at, durationMs: 0 }),
+        ].join("\n");
+
+      const reversed = await openTrace({
+        type: "string",
+        content: trace([started("s1", "issue_refund"), completed("s1"), started("s2", "lookup_order"), completed("s2")]),
+      });
+      const overlapping = await openTrace({
+        type: "string",
+        content: trace([started("s1", "lookup_order"), started("s2", "issue_refund"), completed("s1"), completed("s2")]),
+      });
+      const inOrder = await openTrace({
+        type: "string",
+        content: trace([started("s1", "lookup_order"), completed("s1"), started("s2", "issue_refund"), completed("s2")]),
+      });
+
+      const contracts = (["happens-before", "all-occurrences"] as const).flatMap((mode) => [
+        defineTraceContract({ tools: { requiredOrder: ["lookup_order", "issue_refund"], requiredOrderMode: mode } }),
+        defineTraceContract({
+          tools: { orderRules: [{ before: "lookup_order", after: "issue_refund", occurrenceMode: mode }] },
+        }),
+        defineTraceContract({
+          steps: {
+            orderRelations: [
+              { before: { kind: "TOOL", name: "lookup_order" }, after: { kind: "TOOL", name: "issue_refund" }, mode },
+            ],
+          },
+        }),
+      ]);
+
+      for (const contract of contracts) {
+        const reversedResult = evaluateTraceContractRead(reversed, contract);
+        expect(reversedResult.status).toBe("fail");
+        expect(failFindings(reversedResult)[0]?.actual).toMatchObject({ resolvedBy: "recorded-order" });
+
+        expect(evaluateTraceContractRead(overlapping, contract).status).toBe("fail");
+        expect(evaluateTraceContractRead(inOrder, contract).status).toBe("pass");
+      }
+    });
+
     it("still treats requiredOrder endpoints as TOOL-only when an LLM shares the name", () => {
       const llmGenerate = persisted("llm-generate", {
         kind: "LLM",

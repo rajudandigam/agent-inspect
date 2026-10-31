@@ -590,6 +590,41 @@ describe("built-in run, tool, and LLM checks", () => {
     }
   });
 
+  it("breaks millisecond timestamp ties by recorded event order in causal modes", () => {
+    const sameMillisecond = "2026-06-26T00:00:01.000Z";
+    const instantTool = (eventId: string, toolName: string) =>
+      persisted(eventId, {
+        kind: "TOOL",
+        name: `tool:${toolName}`,
+        attributes: { toolName },
+        timestamp: sameMillisecond,
+        startedAt: sameMillisecond,
+        endedAt: sameMillisecond,
+        durationMs: 0,
+      });
+    const refund = instantTool("tie-refund", "issue_refund");
+    const lookup = instantTool("tie-lookup", "lookup_order");
+
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const rule = createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode });
+
+      const reversed = runTraceChecks({ read: readResult([refund, lookup]) }, { rules: [rule] });
+      expect(reversed.status).toBe("fail");
+      expect(reversed.findings[0]).toMatchObject({
+        ruleId: "tool.order",
+        status: "fail",
+        expected: { mode },
+        actual: { resolvedBy: "recorded-order" },
+        evidence: [{ eventId: "tie-lookup" }, { eventId: "tie-refund" }],
+      });
+      expect(reversed.findings[0]?.message).toContain("recorded");
+
+      const inOrder = runTraceChecks({ read: readResult([lookup, refund]) }, { rules: [rule] });
+      expect(inOrder.status).toBe("pass");
+      expect(inOrder.findings).toEqual([]);
+    }
+  });
+
   it("fails causal same-tool ordering deterministically", () => {
     const retrieve = persisted("same-retrieve", {
       kind: "TOOL",

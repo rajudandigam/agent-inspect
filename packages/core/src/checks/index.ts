@@ -393,7 +393,8 @@ export interface StepOrderingRuleOptions {
    * Ordering semantics. `first-occurrence` preserves first-occurrence encounter
    * ordering, `happens-before` requires the first before event to finish before
    * the first after event starts, and `all-occurrences` applies that causal
-   * boundary to every matching occurrence.
+   * boundary to every matching occurrence. When the boundary timestamps tie at
+   * millisecond resolution, the causal modes decide by recorded event order.
    *
    * @defaultValue `"first-occurrence"`
    */
@@ -425,7 +426,8 @@ export interface ToolOrderingRuleOptions {
    * Ordering semantics. `first-occurrence` preserves first-occurrence encounter
    * ordering, `happens-before` requires the first before event to finish before
    * the first after event starts, and `all-occurrences` applies that causal
-   * boundary to every matching occurrence.
+   * boundary to every matching occurrence. When the boundary timestamps tie at
+   * millisecond resolution, the causal modes decide by recorded event order.
    *
    * @defaultValue `"first-occurrence"`
    * @experimental Available through `agent-inspect/checks`.
@@ -1300,6 +1302,97 @@ function eventEndMs(event: PersistedInspectEvent): number | undefined {
   return undefined;
 }
 
+function rowIndexByEventId(events: readonly PersistedInspectEvent[]): Map<string, number> {
+  const index = new Map<string, number>();
+  for (const [position, event] of events.entries()) {
+    if (!index.has(event.eventId)) index.set(event.eventId, position);
+  }
+  return index;
+}
+
+/**
+ * Raw trace rows that recorded an event's start (`first`) and completion
+ * (`last`). Paired logical events carry both rows in `sourceEventIds`;
+ * single-row events map to their own row.
+ */
+function recordedRowSpan(
+  rowIndex: ReadonlyMap<string, number>,
+  event: PersistedInspectEvent,
+): { first: number; last: number } | undefined {
+  const sourceIds: readonly unknown[] =
+    "sourceEventIds" in event && Array.isArray(event.sourceEventIds)
+      ? event.sourceEventIds
+      : [event.eventId];
+  const rows: number[] = [];
+  for (const id of sourceIds) {
+    const row = typeof id === "string" ? rowIndex.get(id) : undefined;
+    if (row === undefined) return undefined;
+    rows.push(row);
+  }
+  if (rows.length === 0) return undefined;
+  return { first: Math.min(...rows), last: Math.max(...rows) };
+}
+
+interface RecordedTieOrder {
+  /** Undefined when a tied event's rows cannot be located in the trace. */
+  inOrder: boolean | undefined;
+  lastFinishedBefore?: PersistedInspectEvent;
+  firstStartedAfter?: PersistedInspectEvent;
+}
+
+/**
+ * Persisted timestamps have millisecond resolution, so steps that start and
+ * finish inside one millisecond (scripted or mocked tools) tie on time. The
+ * row order is then the only record of what happened first: every tied
+ * `before` must have been recorded as finished before any tied `after` was
+ * recorded as started.
+ */
+function recordedTieOrder(
+  context: TraceCheckContext,
+  tiedBefore: readonly PersistedInspectEvent[],
+  tiedAfter: readonly PersistedInspectEvent[],
+): RecordedTieOrder {
+  const rowIndex = rowIndexByEventId(context.events);
+  let lastFinished: { event: PersistedInspectEvent; row: number } | undefined;
+  let firstStarted: { event: PersistedInspectEvent; row: number } | undefined;
+  for (const event of tiedBefore) {
+    const span = recordedRowSpan(rowIndex, event);
+    if (span === undefined) return { inOrder: undefined };
+    if (lastFinished === undefined || span.last > lastFinished.row) {
+      lastFinished = { event, row: span.last };
+    }
+  }
+  for (const event of tiedAfter) {
+    const span = recordedRowSpan(rowIndex, event);
+    if (span === undefined) return { inOrder: undefined };
+    if (firstStarted === undefined || span.first < firstStarted.row) {
+      firstStarted = { event, row: span.first };
+    }
+  }
+  if (lastFinished === undefined || firstStarted === undefined) return { inOrder: undefined };
+  return {
+    inOrder: lastFinished.row < firstStarted.row,
+    lastFinishedBefore: lastFinished.event,
+    firstStartedAfter: firstStarted.event,
+  };
+}
+
+function tieResolution(order: RecordedTieOrder): "recorded-order" | "recorded-order-unavailable" {
+  return order.inOrder === undefined ? "recorded-order-unavailable" : "recorded-order";
+}
+
+/** Explains a tie-broken failure, where the printed timestamps alone look equal. */
+function tieMessage(
+  order: RecordedTieOrder | undefined,
+  beforeLabel: string,
+  afterLabel: string,
+): string {
+  if (order === undefined || order.inOrder === true) return "";
+  return order.inOrder === undefined
+    ? " Their timestamps tie at the same millisecond and the recorded event order could not be resolved."
+    : ` Their timestamps tie at the same millisecond; the recorded event order shows ${afterLabel} started before ${beforeLabel} finished.`;
+}
+
 function sortedStrings(values: readonly string[] | undefined): string[] {
   return [...(values ?? [])].sort((a, b) => a.localeCompare(b));
 }
@@ -2119,16 +2212,21 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             ),
           ];
         }
-        if (beforeEnd > afterStart) {
+        const tie =
+          beforeEnd === afterStart
+            ? recordedTieOrder(context, [beforeEvent], [afterEvent])
+            : undefined;
+        if (beforeEnd > afterStart || (tie !== undefined && tie.inOrder !== true)) {
           return [
             failFinding(
               ruleId,
-              `${subject} ${beforeLabel} must finish before ${afterLabel} starts.`,
+              `${subject} ${beforeLabel} must finish before ${afterLabel} starts.${tieMessage(tie, beforeLabel, afterLabel)}`,
               [eventEvidence(beforeEvent), eventEvidence(afterEvent)],
               expected,
               {
                 beforeEndedAt: new Date(beforeEnd).toISOString(),
                 afterStartedAt: new Date(afterStart).toISOString(),
+                ...(tie !== undefined ? { resolvedBy: tieResolution(tie) } : {}),
               },
             ),
           ];
@@ -2207,18 +2305,33 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             ),
           ];
         }
-        if (latestBefore.end > earliestAfter.start) {
+        const tiedEnd = latestBefore.end;
+        const tiedStart = earliestAfter.start;
+        const tie =
+          tiedEnd === tiedStart
+            ? recordedTieOrder(
+                context,
+                beforeEvents.filter((event) => eventEndMs(event) === tiedEnd),
+                afterEvents.filter((event) => eventStartMs(event) === tiedStart),
+              )
+            : undefined;
+        if (latestBefore.end > earliestAfter.start || (tie !== undefined && tie.inOrder !== true)) {
           return [
             failFinding(
               ruleId,
-              bothTools
+              (bothTools
                 ? `Every ${options.before.name} tool call must finish before any ${options.after.name} tool call starts.`
-                : `Every ${beforeLabel} must finish before any ${afterLabel} starts.`,
-              [eventEvidence(latestBefore.event), eventEvidence(earliestAfter.event)],
+                : `Every ${beforeLabel} must finish before any ${afterLabel} starts.`) +
+                tieMessage(tie, beforeLabel, afterLabel),
+              [
+                eventEvidence(tie?.lastFinishedBefore ?? latestBefore.event),
+                eventEvidence(tie?.firstStartedAfter ?? earliestAfter.event),
+              ],
               expected,
               {
                 latestBeforeEndedAt: new Date(latestBefore.end).toISOString(),
                 earliestAfterStartedAt: new Date(earliestAfter.start).toISOString(),
+                ...(tie !== undefined ? { resolvedBy: tieResolution(tie) } : {}),
               },
             ),
           ];
