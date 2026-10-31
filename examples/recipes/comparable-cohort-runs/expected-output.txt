@@ -9,4 +9,14 @@ pairwise-comparability:
   G07-declared-commitment-lie: commitment_mismatch
 classes: equivalent_stage_inputs,changed_retrieval_boundary,partial_unknown,sampling_or_model_changed,incompatible_scope,grader_unproven,commitment_mismatch
 evidence-table: .agent-inspect-runs/comparable-evidence/per-stage-commitments.json
+evidence-manifest: .agent-inspect-runs/comparable-evidence/manifest.json
+physical-executions: 13
+fresh-process-verify: ok
+tamper-control: left-tool-bytes rejected as expected
+tamper-control: left-llm-bytes rejected as expected
+tamper-control: right-tool-bytes rejected as expected
+tamper-control: declared-digest rejected as expected
+tamper-control: run-link rejected as expected
+tamper-control: cohort-link rejected as expected
+tamper-control: missing-right rejected as expected
 tamper-control: digest mismatch detected as expected

@@ -1,0 +1,8 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1793311696571,"runId":"run_cqkHHw521n","name":"O01-robb-one-op-two-attempts","startTime":1793311696571}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696574,"runId":"run_cqkHHw521n","stepId":"step__cDh_np1qV","name":"logical-retrieve","type":"logic","startTime":1793311696574}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696575,"runId":"run_cqkHHw521n","stepId":"step_t9_dWWvT5b","parentId":"step__cDh_np1qV","name":"retrieve_policy","type":"tool","startTime":1793311696575,"metadata":{"toolName":"retrieve_policy","operationId":"op1","attemptId":"a1","attemptNumber":1}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696577,"runId":"run_cqkHHw521n","stepId":"step_t9_dWWvT5b","status":"success","endTime":1793311696577,"durationMs":2}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696578,"runId":"run_cqkHHw521n","stepId":"step_TF3RVG7f6j","parentId":"step__cDh_np1qV","name":"retrieve_policy","type":"tool","startTime":1793311696578,"metadata":{"toolName":"retrieve_policy","operationId":"op1","attemptId":"a2","attemptNumber":2,"retryOf":"a1"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696579,"runId":"run_cqkHHw521n","stepId":"step_TF3RVG7f6j","status":"success","endTime":1793311696579,"durationMs":1}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696580,"runId":"run_cqkHHw521n","stepId":"step__cDh_np1qV","status":"success","endTime":1793311696580,"durationMs":6}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1793311696580,"runId":"run_cqkHHw521n","status":"success","endTime":1793311696580,"durationMs":9}

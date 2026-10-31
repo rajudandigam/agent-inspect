@@ -21,10 +21,12 @@ Acceptance matrix (all synthetic / in-memory):
 | No observer / incomplete without a known violation | `unknown` — never fabricated absence |
 | Tool success but observed state unchanged | `failed` (postcondition) |
 
-Also includes Om's synthetic a1→a2 attempt comparison (`retryOf`, locator facts)
+Also includes Om's synthetic a1→a2 attempt comparison (`retryOf`, locator facts),
+injected-clock wait/readiness diagnostics (document/loading, in-flight,
+obstruction unknown-unless-observed, elapsed/budget/remaining, stop reason),
 and URL redaction controls (query token, userinfo, identifier-bearing path).
-Safe route templates such as `/orders/:id` are preferred over stripping query
-params alone.
+`LocatorNotFound` is not treated as overlay evidence. Safe route templates such
+as `/orders/:id` are preferred over stripping query params alone.
 
 **Credit:** resource-binding counterexample context from achiya-automation
 (permitted contribution).

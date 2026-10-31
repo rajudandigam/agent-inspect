@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "verify": "tsx src/verify-cli.ts"
   },
   "dependencies": {
     "agent-inspect": "workspace:*",

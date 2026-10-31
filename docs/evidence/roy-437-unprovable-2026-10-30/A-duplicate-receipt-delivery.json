@@ -1,0 +1,51 @@
+{
+  "caseId": "A-duplicate-receipt-delivery",
+  "contractVersion": "proposed-437-v0",
+  "partnerRequest": "duplicate receipt / duplicate delivery → UNPROVABLE (no guessed winner)",
+  "receiptScope": {
+    "endpoint": "tool:synthetic_write",
+    "target": "tenant-synthetic-roy-01"
+  },
+  "traceIntentRef": {
+    "runId": "run_syn_dup_receipt",
+    "operationId": "op-syn-1",
+    "idempotencyKey": "key-syn-dup"
+  },
+  "deliveries": [
+    {
+      "deliveryId": "del-1",
+      "receiptId": "rcpt-shared-001",
+      "idempotencyKey": "key-syn-dup",
+      "operationId": "op-syn-1",
+      "status": "recorded",
+      "receivedAt": "2026-10-30T00:00:01.000Z",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "deliveryId": "del-2",
+      "receiptId": "rcpt-shared-001",
+      "idempotencyKey": "key-syn-dup",
+      "operationId": "op-syn-1",
+      "status": "recorded",
+      "receivedAt": "2026-10-30T00:00:02.000Z",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "controlDistinctReceipt": {
+    "deliveryId": "del-control",
+    "receiptId": "rcpt-distinct-002",
+    "idempotencyKey": "key-syn-control",
+    "operationId": "op-syn-control",
+    "status": "recorded",
+    "receivedAt": "2026-10-30T00:00:03.000Z",
+    "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "expected": {
+    "duplicateReceiptDiagnostic": "duplicate_receipt",
+    "billableAttribution": "UNPROVABLE",
+    "retainBothDeliveries": true,
+    "inferExactlyOnceExecution": false,
+    "controlDistinctReceiptAttribution": "ATTRIBUTABLE",
+    "rationale": "Two observations of the same receiptId/scope must both be retained. Dedup rationale is diagnostic only; metering must not guess a single billable winner from trace equality alone."
+  }
+}

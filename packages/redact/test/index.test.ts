@@ -132,6 +132,22 @@ describe("@agent-inspect/redact", () => {
 
     const strict = redact({ prompt: "hidden", model: "fixture" }, { profile: "strict" });
     expect(strict.value).toEqual({ prompt: "[REDACTED]", model: "fixture" });
+
+    const stack = "Error: synthetic-private-sentence-uduak\n    at frame (/tmp/synthetic-private/uduak-secret.txt:1:1)";
+    const nested = redact(
+      {
+        stack,
+        errorStack: stack,
+        cause: { stack, stackTrace: stack, message: "synthetic-private-sentence-uduak" },
+        operationId: "tenant-residual-not-a-stack",
+      },
+      { profile: "strict" },
+    );
+    expect(JSON.stringify(nested.value)).not.toContain("synthetic-private-sentence-uduak");
+    expect(JSON.stringify(nested.value)).not.toContain("/tmp/synthetic-private/uduak-secret.txt");
+    expect(nested.value).toMatchObject({ operationId: "tenant-residual-not-a-stack" });
+    const shareStack = redact({ stack }, { profile: "share" });
+    expect(shareStack.value).toEqual({ stack });
   });
 
   it("redacts framework task/user text keys on share profile", () => {

@@ -8,6 +8,7 @@ import {
   safeString,
   stableJson,
 } from "./helpers.js";
+import { presentLifecycleJoinedTree } from "./presentation-lifecycle.js";
 
 function renderTreeAscii(nodes: InspectNode[], indent = ""): string {
   const lines: string[] = [];
@@ -41,8 +42,9 @@ export function exportMarkdown(
   const includeErrors = options?.includeErrors ?? true;
   const maxLen = options?.maxAttributeLength ?? 500;
   const redacted = options?.redacted ?? true;
+  const view = presentLifecycleJoinedTree(tree);
 
-  const titleName = tree.name ?? tree.runId;
+  const titleName = view.name ?? view.runId;
   const lines: string[] = [];
   lines.push(`# AgentInspect Run: ${escapeMarkdown(titleName)}`);
   lines.push("");
@@ -52,28 +54,28 @@ export function exportMarkdown(
   if (includeMetadata) {
     lines.push("## Summary");
     lines.push("");
-    lines.push(`- **runId**: ${escapeMarkdown(tree.runId)}`);
-    if (tree.name !== undefined) lines.push(`- **name**: ${escapeMarkdown(tree.name)}`);
-    lines.push(`- **status**: ${escapeMarkdown(String(tree.status ?? "unknown"))}`);
+    lines.push(`- **runId**: ${escapeMarkdown(view.runId)}`);
+    if (view.name !== undefined) lines.push(`- **name**: ${escapeMarkdown(view.name)}`);
+    lines.push(`- **status**: ${escapeMarkdown(String(view.status ?? "unknown"))}`);
     lines.push(
-      `- **durationMs**: ${tree.durationMs !== undefined ? escapeMarkdown(String(tree.durationMs)) : "-"}`,
+      `- **durationMs**: ${view.durationMs !== undefined ? escapeMarkdown(String(view.durationMs)) : "-"}`,
     );
     lines.push(
-      `- **startedAt**: ${tree.startedAt !== undefined ? escapeMarkdown(String(tree.startedAt)) : "-"}`,
+      `- **startedAt**: ${view.startedAt !== undefined ? escapeMarkdown(String(view.startedAt)) : "-"}`,
     );
     lines.push(
-      `- **endedAt**: ${tree.endedAt !== undefined ? escapeMarkdown(String(tree.endedAt)) : "-"}`,
+      `- **endedAt**: ${view.endedAt !== undefined ? escapeMarkdown(String(view.endedAt)) : "-"}`,
     );
-    lines.push(`- **totalEvents**: ${tree.metadata.totalEvents}`);
+    lines.push(`- **totalEvents**: ${view.metadata.totalEvents}`);
     lines.push("");
     lines.push("### Confidence breakdown");
     lines.push("");
     lines.push("| bucket | count |");
     lines.push("| --- | --- |");
-    for (const k of Object.keys(tree.metadata.confidenceBreakdown).sort()) {
-      const key = k as keyof typeof tree.metadata.confidenceBreakdown;
+    for (const k of Object.keys(view.metadata.confidenceBreakdown).sort()) {
+      const key = k as keyof typeof view.metadata.confidenceBreakdown;
       lines.push(
-        `| ${escapeMarkdown(key)} | ${tree.metadata.confidenceBreakdown[key]} |`,
+        `| ${escapeMarkdown(key)} | ${view.metadata.confidenceBreakdown[key]} |`,
       );
     }
     lines.push("");
@@ -81,9 +83,9 @@ export function exportMarkdown(
     lines.push("");
     lines.push("| kind | count |");
     lines.push("| --- | --- |");
-    for (const k of Object.keys(tree.metadata.kinds).sort()) {
-      const key = k as keyof typeof tree.metadata.kinds;
-      const c = tree.metadata.kinds[key];
+    for (const k of Object.keys(view.metadata.kinds).sort()) {
+      const key = k as keyof typeof view.metadata.kinds;
+      const c = view.metadata.kinds[key];
       if (c > 0) lines.push(`| ${escapeMarkdown(key)} | ${c} |`);
     }
     lines.push("");
@@ -93,12 +95,12 @@ export function exportMarkdown(
   lines.push("");
   lines.push("```text");
   lines.push(
-    tree.children.length > 0 ? renderTreeAscii(tree.children) : "(no steps)",
+    view.children.length > 0 ? renderTreeAscii(view.children) : "(no steps)",
   );
   lines.push("```");
   lines.push("");
 
-  const flat = flattenTree(tree);
+  const flat = flattenTree(view);
   const errors = flat.filter((n) => n.event.status === "error");
   if (includeErrors && errors.length > 0) {
     lines.push("## Errors");

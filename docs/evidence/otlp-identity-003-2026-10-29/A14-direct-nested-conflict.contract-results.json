@@ -1,0 +1,23 @@
+{
+  "note": "Direct/nested identity disagreement must fail ambiguous-identity on source and OTLP; not a silent PASS.",
+  "sourceStatus": "fail",
+  "otlpStatus": "fail",
+  "sourceFindings": [
+    "contract.retry.ambiguous-identity"
+  ],
+  "otlpFindings": [
+    "contract.retry.ambiguous-identity"
+  ],
+  "otlpWarnings": [
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict",
+    "otlp_identity_conflict"
+  ]
+}

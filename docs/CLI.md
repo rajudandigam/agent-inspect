@@ -382,11 +382,36 @@ Rich TraceContract JSON (6.30+):
 }
 ```
 
-Supported `contract` fields: `run`, `tools` (including `arguments`, `orderRules`),
+Supported `contract` fields: `run`, `tools` (including `arguments`, `orderRules`,
+`requiredOrder`, `requiredOrderMode`), `steps` (including `orderRelations`),
 `llm`, `observations` (including `requireProvenance`), `scope`, `alternatives.anyOf`,
 `controls`, and `retry`. Unknown keys fail closed (exit 2). With `--evidence-on`,
 contract mode writes `contract.resolved.json` and binds digests into check-results.
 YAML is not supported. TypeScript config files (`.ts`, `.mts`, `.cts`) fail clearly unless a future explicit loader strategy is added; use precompiled JavaScript config instead.
+
+`steps.orderRelations` (6.31+) declares typed cross-kind ordering (for example TOOL
+before LLM). Each relation has `before` / `after` step refs (`kind` + `name`), optional
+`mode` (`first-occurrence` | `happens-before` | `all-occurrences`; default
+`first-occurrence`), and optional `requireEndpoints` (default `true`). This is separate
+from TOOL-only `tools.requiredOrder` / `orderRules`. Invalid shapes and unknown keys
+fail closed.
+
+```json
+{
+  "contract": {
+    "tools": { "required": ["retrieve_policy"] },
+    "steps": {
+      "orderRelations": [
+        {
+          "before": { "kind": "TOOL", "name": "retrieve_policy" },
+          "after": { "kind": "LLM", "name": "answer" },
+          "mode": "first-occurrence"
+        }
+      ]
+    }
+  }
+}
+```
 
 Examples:
 

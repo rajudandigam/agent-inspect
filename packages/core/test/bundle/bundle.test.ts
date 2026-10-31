@@ -6,6 +6,7 @@ import {
   resolveBundleRunIds,
   toMetadataSafeStatus,
 } from "../../src/bundle/index.js";
+import { resolveRedactionProfile } from "../../src/redaction-profiles.js";
 import type { SessionIndex, SessionRunRecord } from "../../src/sessions/types.js";
 
 function run(runId: string, startedAt?: number): SessionRunRecord {
@@ -68,6 +69,13 @@ describe("aggregateBundleSafeStatus", () => {
 
   it("maps metadata status", () => {
     expect(toMetadataSafeStatus("SAFE WITH WARNINGS")).toBe("SAFE_WITH_WARNINGS");
+  });
+
+  it("strict bundle profile keys include serialized stacks", () => {
+    const strict = resolveRedactionProfile("strict").extraKeys;
+    expect(strict).toEqual(expect.arrayContaining(["stack", "errorStack", "stackTrace"]));
+    expect(resolveRedactionProfile("share").extraKeys).not.toContain("stack");
+    expect(resolveRedactionProfile("local").extraKeys).not.toContain("errorStack");
   });
 
   it("fails on unsafe unless allowed", () => {

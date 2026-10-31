@@ -1,0 +1,11 @@
+{
+  "note": "Full attemptId disagreement past 500 chars must FAIL/FAIL ambiguous-identity; no unbounded values in export.",
+  "sourceStatus": "fail",
+  "otlpStatus": "fail",
+  "sourceFindings": [
+    "contract.retry.ambiguous-identity"
+  ],
+  "otlpFindings": [
+    "contract.retry.ambiguous-identity"
+  ]
+}

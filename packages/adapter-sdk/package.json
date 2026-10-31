@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/adapter-sdk",
-  "version": "6.31.23",
+  "version": "6.31.31",
   "license": "MIT",
   "type": "module",
   "description": "Adapter authoring toolkit with conformance and privacy helpers",

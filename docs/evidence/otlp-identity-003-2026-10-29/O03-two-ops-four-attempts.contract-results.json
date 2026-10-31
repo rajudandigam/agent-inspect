@@ -1,0 +1,13 @@
+{
+  "expectedFail": true,
+  "sourceStatus": "fail",
+  "otlpStatus": "fail",
+  "sourceFindings": [
+    "contract.retry.max-attempts",
+    "contract.retry.max-attempts"
+  ],
+  "otlpFindings": [
+    "contract.retry.max-attempts",
+    "contract.retry.max-attempts"
+  ]
+}

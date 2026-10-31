@@ -73,6 +73,32 @@ describe("Redactor profile keys", () => {
     expect(out.model).toBe("gpt-4");
   });
 
+  it("strict profile redacts nested stack copies and share does not", () => {
+    const stack = "Error: synthetic-private-sentence-uduak\n    at frame (/tmp/synthetic-private/uduak-secret.txt:1:1)";
+    const input = {
+      stack,
+      errorStack: stack,
+      stackTrace: stack,
+      cause: { stack, message: "synthetic-private-sentence-uduak" },
+      copies: [{ errorStack: stack }],
+      operationId: "tenant-residual-not-a-stack",
+    };
+    const strict = new Redactor({
+      extraKeys: resolveRedactionProfile("strict").extraKeys,
+    }).redactRecord(input);
+    expect(JSON.stringify(strict)).not.toContain("synthetic-private-sentence-uduak");
+    expect(JSON.stringify(strict)).not.toContain("/tmp/synthetic-private/uduak-secret.txt");
+    expect(strict.operationId).toBe("tenant-residual-not-a-stack");
+    expect(input.stack).toContain("/tmp/synthetic-private/uduak-secret.txt");
+
+    const share = new Redactor({
+      extraKeys: resolveRedactionProfile("share").extraKeys,
+    }).redactRecord(input);
+    expect(share.stack).toContain("/tmp/synthetic-private/uduak-secret.txt");
+    expect(resolveRedactionProfile("local").extraKeys).not.toContain("stack");
+    expect(resolveRedactionProfile("share").extraKeys).not.toContain("stack");
+  });
+
   it("custom rules still apply with profile extra keys", () => {
     const r = new Redactor({
       extraKeys: resolveRedactionProfile("share").extraKeys,
@@ -238,6 +264,40 @@ describe("export redaction profiles", () => {
     expect(result.content).toContain("[REDACTED]");
     expect(result.content).not.toContain("do not share");
     expect(result.content).not.toContain("hello world");
+  });
+
+  it("strict export drops stack canaries from html, markdown, and openinference", () => {
+    const message = "synthetic-private-sentence-uduak";
+    const pathCanary = "/tmp/synthetic-private/uduak-secret.txt";
+    const stack = `Error: ${message}\n    at frame (${pathCanary}:1:1)`;
+    const events = traceWithSensitiveStepMetadata();
+    const stepCompleted = events.find((event) => event.event === "step_completed");
+    if (stepCompleted?.event === "step_completed") {
+      stepCompleted.error = {
+        message,
+        stack,
+        cause: { message, stack, stackTrace: stack },
+      } as typeof stepCompleted.error;
+    }
+    const runCompleted = events.find((event) => event.event === "run_completed");
+    if (runCompleted?.event === "run_completed") {
+      runCompleted.status = "error";
+      runCompleted.error = { message, stack };
+    }
+    const tree = manualTraceEventsToRunTree(events);
+    const original = JSON.stringify(tree);
+    for (const format of ["html", "markdown", "openinference"] as const) {
+      const result = exportRunTree(tree, {
+        format,
+        includeAttributes: true,
+        includeErrors: true,
+        redactionProfile: "strict",
+      });
+      expect(result.content).not.toContain(message);
+      expect(result.content).not.toContain(pathCanary);
+    }
+    expect(JSON.stringify(tree)).toBe(original);
+    expect(original).toContain(pathCanary);
   });
 
   it("openinference export redacts preview attributes under share profile", () => {

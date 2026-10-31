@@ -1,0 +1,262 @@
+{
+  "fieldMapping": {
+    "source metadata.operationId": "attributes.agent_inspect.operation_id → reader attributes.operationId",
+    "source metadata.attemptId": "attributes.agent_inspect.attempt_id → reader attributes.attemptId",
+    "source metadata.retryOf": "attributes.agent_inspect.retry_of → reader attributes.retryOf",
+    "source metadata.attemptNumber|attempt": "attributes.agent_inspect.attempt_number → reader attributes.attemptNumber",
+    "source parentId": "span.parentSpanId (hashed)",
+    "source runId": "attributes.agent_inspect.run_id"
+  },
+  "lossNotes": [
+    "Raw dotted agent_inspect.* attrs are retained alongside promoted camelCase.",
+    "Conflicting camelCase vs dotted values warn (otlp_identity_conflict) and keep camelCase.",
+    "Identities are never inferred from tool name/arguments."
+  ],
+  "controls": {
+    "O01": [
+      {
+        "name": "logical-retrieve",
+        "parentSpanId": null,
+        "operationId": null,
+        "attemptId": null,
+        "retryOf": null,
+        "attemptNumber": null,
+        "runId": "run_cqkHHw521n"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": "f746a1df277301e2",
+        "operationId": "op1",
+        "attemptId": "a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_cqkHHw521n"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": "f746a1df277301e2",
+        "operationId": "op1",
+        "attemptId": "a2",
+        "retryOf": "a1",
+        "attemptNumber": "2",
+        "runId": "run_cqkHHw521n"
+      }
+    ],
+    "O02": [
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_fFpT56jY9c"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "a2",
+        "retryOf": "a1",
+        "attemptNumber": "2",
+        "runId": "run_fFpT56jY9c"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "a3",
+        "retryOf": "a2",
+        "attemptNumber": "3",
+        "runId": "run_fFpT56jY9c"
+      }
+    ],
+    "O03": [
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "op1-a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_U0WeCSZrwN"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "op1-a2",
+        "retryOf": "op1-a1",
+        "attemptNumber": "2",
+        "runId": "run_U0WeCSZrwN"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op2",
+        "attemptId": "op2-a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_U0WeCSZrwN"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op2",
+        "attemptId": "op2-a2",
+        "retryOf": "op2-a1",
+        "attemptNumber": "2",
+        "runId": "run_U0WeCSZrwN"
+      }
+    ],
+    "O04": {
+      "runA": "run_cqkHHw521n",
+      "runB": "run_tqPxyQ4s3c",
+      "distinctPhysicalRuns": true,
+      "spans": [
+        {
+          "name": "retrieve_policy",
+          "parentSpanId": null,
+          "operationId": "op1",
+          "attemptId": "a1",
+          "retryOf": null,
+          "attemptNumber": "1",
+          "runId": "run_tqPxyQ4s3c"
+        },
+        {
+          "name": "retrieve_policy",
+          "parentSpanId": null,
+          "operationId": "op1",
+          "attemptId": "a2",
+          "retryOf": "a1",
+          "attemptNumber": "2",
+          "runId": "run_tqPxyQ4s3c"
+        }
+      ]
+    },
+    "O05_identity_collision": [
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_Iwm437qJ0q"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "op1",
+        "attemptId": "a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_Iwm437qJ0q"
+      }
+    ],
+    "O06": [
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": null,
+        "attemptId": null,
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_jshsJtc5hr"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": null,
+        "attemptId": null,
+        "retryOf": null,
+        "attemptNumber": null,
+        "runId": "run_jshsJtc5hr"
+      }
+    ],
+    "O07": [
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "opA",
+        "attemptId": "a1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_Lv99TDwqnc"
+      },
+      {
+        "name": "retrieve_policy",
+        "parentSpanId": null,
+        "operationId": "opB",
+        "attemptId": "b1",
+        "retryOf": null,
+        "attemptNumber": "1",
+        "runId": "run_Lv99TDwqnc"
+      }
+    ]
+  },
+  "counts": {
+    "O01": {
+      "operations": 1,
+      "attempts": 2,
+      "runId": "run_cqkHHw521n",
+      "retryLinks": [
+        {
+          "name": "retrieve_policy",
+          "parentSpanId": "f746a1df277301e2",
+          "operationId": "op1",
+          "attemptId": "a2",
+          "retryOf": "a1",
+          "attemptNumber": "2",
+          "runId": "run_cqkHHw521n"
+        }
+      ]
+    },
+    "O02": {
+      "operations": 1,
+      "attempts": 3,
+      "runId": "run_fFpT56jY9c",
+      "retryLinks": [
+        {
+          "name": "retrieve_policy",
+          "parentSpanId": null,
+          "operationId": "op1",
+          "attemptId": "a2",
+          "retryOf": "a1",
+          "attemptNumber": "2",
+          "runId": "run_fFpT56jY9c"
+        },
+        {
+          "name": "retrieve_policy",
+          "parentSpanId": null,
+          "operationId": "op1",
+          "attemptId": "a3",
+          "retryOf": "a2",
+          "attemptNumber": "3",
+          "runId": "run_fFpT56jY9c"
+        }
+      ]
+    },
+    "O03": {
+      "operations": 2,
+      "attempts": 4,
+      "runId": "run_U0WeCSZrwN"
+    },
+    "O04": {
+      "operations": 1,
+      "attempts": 2,
+      "runId": "run_tqPxyQ4s3c",
+      "distinctFromO01": true
+    },
+    "O06": {
+      "operations": 0,
+      "attempts": 0,
+      "runId": "run_jshsJtc5hr"
+    },
+    "O07": {
+      "operations": 2,
+      "attempts": 2,
+      "runId": "run_Lv99TDwqnc"
+    }
+  }
+}

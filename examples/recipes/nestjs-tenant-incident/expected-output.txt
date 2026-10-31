@@ -1,10 +1,26 @@
 nestjs-tenant-incident:
-  note: real NestJS TestingModule; stubbed tools/model; keyless
-  N01-good-tenant-a: expected=pass observed=pass
-  N02-wrong-tenant-bind: expected=fail observed=fail
-  N03-absent-capture: expected=fail observed=fail
-  N04-overlap-isolated: expected=pass observed=pass
-  N05-app-error-preserved: expected=pass observed=pass
+  note: real Nest SupportService/PolicyService path; verdicts from reopened saved evidence
+  N01-good-tenant-a: expected=pass observed=pass consumption=pass contract=pass
+    note: structural TraceContract is not a tenant-consumption oracle
+  N02-wrong-tenant-bind: expected=fail observed=fail consumption=fail contract=pass
+    note: structural TraceContract is not a tenant-consumption oracle
+  N03-absent-capture: expected=fail observed=fail consumption=fail contract=fail
+    note: structural TraceContract is not a tenant-consumption oracle
+  N03b-stale-result-ref: expected=fail observed=fail consumption=fail contract=pass
+    note: structural TraceContract is not a tenant-consumption oracle
+  N04-overlap-isolated: expected=pass observed=pass consumption=pass
+  N05-app-error-preserved: expected=pass observed=pass consumption=unknown contract=fail
+    note: structural TraceContract is not a tenant-consumption oracle
   N06-close-no-handles: expected=pass observed=pass
-classes: N01:pass,N02:fail,N03:fail,N04:pass,N05:pass,N06:pass
-claim: answer must consume policy for the requested tenant (explicit join)
+  N07-privacy-surfaces: expected=pass observed=pass profiles=local,share,strict
+    note: SAFE is not a privacy certificate; checked local/share/strict JSONL projections
+  N08-saved-relation-tamper: expected=pass observed=pass before=pass after=fail
+  N09a-foreign-run: expected=pass observed=pass consumption=fail
+  N09b-wrong-retrieved-resultRef: expected=pass observed=pass consumption=fail
+  N09c-consumption-before-retrieval: expected=pass observed=pass consumption=fail
+  N09d-failed-retrieval: expected=pass observed=pass consumption=fail
+  N09e-contradictory-tenant: expected=pass observed=pass consumption=fail
+  N09f-operation-mismatch: expected=pass observed=pass consumption=fail
+classes: N01:pass,N02:fail,N03:fail,N03b:fail,N04:pass,N05:pass,N06:pass,N07:pass,N08:pass,N09a:pass,N09b:pass,N09c:pass,N09d:pass,N09e:pass,N09f:pass
+claim: answer must consume Nest-retrieved policy for the requested tenant (saved evidence)
+note: structural TraceContract is not a tenant-consumption oracle; N02 can pass structure and still fail consumption

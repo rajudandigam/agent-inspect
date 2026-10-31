@@ -1,6 +1,6 @@
 {
   "name": "agent-inspect",
-  "version": "6.31.23",
+  "version": "6.31.31",
   "license": "MIT",
   "type": "module",
   "description": "Local evidence debugger and trajectory-test toolkit for TypeScript AI agents — execution trees, TraceContract checks, Evidence v2, and read-only MCP",
@@ -245,7 +245,7 @@
     "demo:verify": "node scripts/demo-verify.mjs",
     "compat:smoke": "node scripts/compat-smoke.mjs",
     "compat:ai-sdk-matrix": "node scripts/ai-sdk-peer-matrix.mjs",
-    "fixtures:check": "node scripts/validate-fixtures.mjs",
+    "fixtures:check": "node scripts/validate-fixtures.mjs && node scripts/check-otlp-identity-003-shareable.mjs && node scripts/check-roy-437-unprovable.mjs",
     "recipes:check": "node scripts/validate-recipes.mjs",
     "test:integration-offline": "node --test examples/recipes/integration-fixtures/helpers.test.mjs examples/recipes/promptfoo-use-together/lib/matrix-interpret.test.mjs examples/reviewer-kits/promptfoo-trajectory/lib/matrix-interpret.test.mjs examples/recipes/elastic-otlp/live-controls.test.mjs examples/recipes/openai-node-chat-completions/openai-boundary.test.mjs && node examples/recipes/otel-collector-roundtrip/verify.mjs && node examples/recipes/elastic-otlp/verify.mjs",
     "perf:baseline": "node scripts/performance-baseline.mjs",

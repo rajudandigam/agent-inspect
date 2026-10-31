@@ -1,0 +1,183 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "agent-inspect"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "agent-inspect"
+          },
+          "spans": [
+            {
+              "traceId": "523572944b2d78b3e5a8df5ae210abd2",
+              "spanId": "4988d7d5d1d3c735",
+              "name": "retrieve_policy",
+              "kind": 1,
+              "startTimeUnixNano": "1793311696665000000",
+              "attributes": [
+                {
+                  "key": "agent_inspect.kind",
+                  "value": {
+                    "stringValue": "TOOL"
+                  }
+                },
+                {
+                  "key": "agent_inspect.confidence",
+                  "value": {
+                    "stringValue": "explicit"
+                  }
+                },
+                {
+                  "key": "agent_inspect.source.type",
+                  "value": {
+                    "stringValue": "manual"
+                  }
+                },
+                {
+                  "key": "agent_inspect.run_id",
+                  "value": {
+                    "stringValue": "run_Iwm437qJ0q"
+                  }
+                },
+                {
+                  "key": "agent_inspect.event_id",
+                  "value": {
+                    "stringValue": "step_ONPNfccLAB"
+                  }
+                },
+                {
+                  "key": "agent_inspect.status",
+                  "value": {
+                    "stringValue": "ok"
+                  }
+                },
+                {
+                  "key": "agent_inspect.duration_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "gen_ai.operation.name",
+                  "value": {
+                    "stringValue": "execute_tool"
+                  }
+                },
+                {
+                  "key": "agent_inspect.operation_id",
+                  "value": {
+                    "stringValue": "op1"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_id",
+                  "value": {
+                    "stringValue": "a1"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_number",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "status": {
+                "code": 1
+              },
+              "endTimeUnixNano": "1793311696665000000"
+            },
+            {
+              "traceId": "523572944b2d78b3e5a8df5ae210abd2",
+              "spanId": "3dff41871888bd19",
+              "name": "retrieve_policy",
+              "kind": 1,
+              "startTimeUnixNano": "1793311696665000000",
+              "attributes": [
+                {
+                  "key": "agent_inspect.kind",
+                  "value": {
+                    "stringValue": "TOOL"
+                  }
+                },
+                {
+                  "key": "agent_inspect.confidence",
+                  "value": {
+                    "stringValue": "explicit"
+                  }
+                },
+                {
+                  "key": "agent_inspect.source.type",
+                  "value": {
+                    "stringValue": "manual"
+                  }
+                },
+                {
+                  "key": "agent_inspect.run_id",
+                  "value": {
+                    "stringValue": "run_Iwm437qJ0q"
+                  }
+                },
+                {
+                  "key": "agent_inspect.event_id",
+                  "value": {
+                    "stringValue": "step_SVQ_O3MWFY"
+                  }
+                },
+                {
+                  "key": "agent_inspect.status",
+                  "value": {
+                    "stringValue": "ok"
+                  }
+                },
+                {
+                  "key": "agent_inspect.duration_ms",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "gen_ai.operation.name",
+                  "value": {
+                    "stringValue": "execute_tool"
+                  }
+                },
+                {
+                  "key": "agent_inspect.operation_id",
+                  "value": {
+                    "stringValue": "op1"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_id",
+                  "value": {
+                    "stringValue": "a1"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_number",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "status": {
+                "code": 1
+              },
+              "endTimeUnixNano": "1793311696666000000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

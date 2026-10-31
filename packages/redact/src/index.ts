@@ -114,6 +114,7 @@ export const SHARE_PROFILE_EXTRA_KEYS = [
   "conversationText",
 ] as const;
 
+/** Keep `stack`, `errorStack`, and `stackTrace` in sync with `packages/core/src/redaction-profiles.ts`. */
 export const STRICT_PROFILE_EXTRA_KEYS = [
   "prompt",
   "completion",
@@ -131,6 +132,9 @@ export const STRICT_PROFILE_EXTRA_KEYS = [
   "chunks",
   "retrieval",
   "query",
+  "stack",
+  "errorStack",
+  "stackTrace",
 ] as const;
 
 type CompiledRule = (

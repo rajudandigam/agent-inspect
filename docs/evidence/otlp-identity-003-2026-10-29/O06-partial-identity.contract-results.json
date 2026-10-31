@@ -1,0 +1,9 @@
+{
+  "note": "Without operationId, global maxAttempts does not invent a grouping; missing identity stays unknown/unverifiable at packet level.",
+  "sourceStatus": "pass",
+  "otlpStatus": "pass",
+  "packetClassification": "unknown_unverifiable",
+  "operationCount": 0,
+  "attemptCount": 0,
+  "physicalRunId": "run_jshsJtc5hr"
+}

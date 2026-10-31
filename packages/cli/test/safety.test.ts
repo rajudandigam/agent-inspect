@@ -1,12 +1,13 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { redactCommand } from "../src/redact.js";
 import { scanCommand, verifySafeCommand } from "../src/safety.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -258,6 +259,39 @@ describe("scan and verify-safe commands", () => {
     expect(process.exitCode).toBe(2);
     expect(result.status).toBe("UNKNOWN");
     expect(result.diagnostics?.[0]?.code).toBe("AI_SAFETY_UNSUPPORTED_FORMAT");
+  });
+
+  it("strict redact output has no stack canaries and verify-safe does not certify the residual", async () => {
+    const message = "synthetic-private-sentence-uduak";
+    const pathCanary = "/tmp/synthetic-private/uduak-secret.txt";
+    const stack = `Error: ${message}\n    at frame (${pathCanary}:1:1)`;
+    const source = jsonl(
+      event("event-a", {
+        status: "error",
+        error: { message, name: "Error" },
+        attributes: {
+          errorStack: stack,
+          stackTrace: stack,
+          cause: { message, stack, stackTrace: stack },
+          operationId: "tenant-residual-not-a-stack",
+        },
+      }),
+    );
+    const file = await writeTrace(tmp, "run-safety-cli.jsonl", source);
+    const output = path.join(tmp, "redacted.jsonl");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    await redactCommand(file, { profile: "strict", output, json: true });
+    logSpy.mockRestore();
+
+    expect(await readFile(file, "utf-8")).toBe(source);
+    const redacted = await readFile(output, "utf-8");
+    expect(redacted).not.toContain(message);
+    expect(redacted).not.toContain(pathCanary);
+    expect(redacted).toContain("tenant-residual-not-a-stack");
+
+    const assessment = await runSafety(verifySafeCommand, output);
+    expect(JSON.stringify(assessment)).not.toMatch(/stackPolicySatisfied|strictPolicyCertified/i);
+    expect(assessment).not.toHaveProperty("stackPolicySatisfied");
   });
 });
 

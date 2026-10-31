@@ -49,7 +49,10 @@ import {
 } from "@agent-inspect/core/advanced";
 import { exportRunTree } from "@agent-inspect/core/exporters";
 import { openTrace } from "@agent-inspect/core/readers";
-import type { PersistedInspectEvent } from "@agent-inspect/core/persisted";
+import {
+  persistedInspectEventsToRunTrees,
+  type PersistedInspectEvent,
+} from "@agent-inspect/core/persisted";
 import { readWorkspaceManifestFile, resolveInsideWorkspace, resolveWorkspaceLocation } from "@agent-inspect/core/workspace";
 import type { RedactionProfile } from "@agent-inspect/redact";
 
@@ -391,11 +394,21 @@ export async function bundleCommand(
       });
     }
 
-    if (artifactTree) {
-      artifactTrees.push(artifactTree);
-    } else {
-      const selected = read.runs.find((run) => run.runId === runId);
-      if (selected) artifactTrees.push(selected);
+    const persistedForRun =
+      artifactEventsByRun.get(runId) ??
+      read.events.filter((event) => event.runId === runId);
+    const presentationTrees = persistedInspectEventsToRunTrees(persistedForRun, {
+      coalesceLifecycle: true,
+      skipInvalid: true,
+    });
+    const presentationTree =
+      presentationTrees.find((candidate) => candidate.runId === runId) ??
+      presentationTrees[0] ??
+      artifactTree ??
+      read.runs.find((run) => run.runId === runId);
+
+    if (presentationTree) {
+      artifactTrees.push(presentationTree);
     }
 
     const status = safetyStatusFromAssess(artifactSafety.status);
@@ -408,8 +421,18 @@ export async function bundleCommand(
       findings: artifactSafety.summary.findings,
     });
 
-    const selected = read.runs.find((run) => run.runId === runId);
-    const runReport = exportRunTree(selected ?? read.runs[0]!, {
+    if (!presentationTree) {
+      const message = `No run tree could be built for HTML presentation: ${runId}`;
+      if (options.json) {
+        console.log(writeJson({ ok: false, error: message }).trimEnd());
+      } else {
+        console.error(`[AgentInspect] bundle failed: ${message}`);
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    const runReport = exportRunTree(presentationTree, {
       format: "html",
       redacted: true,
       redactionProfile: toReportProfile(profile),

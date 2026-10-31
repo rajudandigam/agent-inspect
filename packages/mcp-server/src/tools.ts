@@ -90,7 +90,13 @@ function withUntrustedTraceWarning(description: string): string {
 
 const RUN_ID_SCHEMA = {
   type: "object",
-  properties: { runId: { type: "string" } },
+  properties: {
+    runId: {
+      type: "string",
+      description:
+        "Identifies an existing local trace run returned by list_recent_runs or list_traces.",
+    },
+  },
   required: ["runId"],
 } as const;
 
@@ -203,7 +209,8 @@ export const LEGACY_TOOLS: McpToolDefinition[] = [
   },
   {
     name: "find_slowest_path",
-    description: "Summarize the slowest steps in one run.",
+    description:
+      "Legacy compatibility alias of get_slowest_path. New clients should call get_slowest_path.",
     inputSchema: RUN_ID_SCHEMA,
   },
   {

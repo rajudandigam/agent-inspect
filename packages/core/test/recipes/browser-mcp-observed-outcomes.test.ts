@@ -3,6 +3,10 @@ import {
   evaluateScenario,
   type ScenarioInput,
 } from "../../../../examples/recipes/browser-mcp-observed-outcomes/src/evaluate.js";
+import {
+  OM_WAIT_SCENARIOS,
+  runWaitScenario,
+} from "../../../../examples/recipes/browser-mcp-observed-outcomes/src/wait-diagnostics.js";
 
 const tabA = "browser://fixture/tab-A";
 const tabB = "browser://fixture/tab-B";
@@ -120,5 +124,43 @@ describe("browser-mcp-observed-outcomes evaluator (F03)", () => {
     expect(r.resourceBinding).toBe("passed");
     expect(r.postcondition).toBe("failed");
     expect(r.gate).toBe("failed");
+  });
+});
+
+describe("om wait/readiness diagnostics (synthetic injected clock)", () => {
+  it("produces distinct stop reasons without inventing overlay from LocatorNotFound", () => {
+    const byId = Object.fromEntries(
+      OM_WAIT_SCENARIOS.map((s) => [s.id, runWaitScenario(s)]),
+    );
+    expect(byId["known-not-ready"]?.stopReason).toBe("known-not-ready");
+    expect(byId["known-not-ready"]?.ready).toBe(false);
+    expect(byId["known-not-ready"]?.obstruction).toBe("unknown");
+    expect(byId["known-not-ready"]?.elapsedMs).toBeLessThan(
+      byId["known-not-ready"]!.budgetMs,
+    );
+
+    expect(byId["unknown-readiness"]?.stopReason).toBe("unknown-readiness");
+    expect(byId["unknown-readiness"]?.ready).toBe("unknown");
+
+    expect(byId["successful-retry-ready"]?.ready).toBe(true);
+    expect(byId["successful-retry-ready"]?.stopReason).toBe(
+      "completed-before-budget",
+    );
+
+    expect(byId["exhausted-budget"]?.stopReason).toBe("budget-exhausted");
+    expect(byId["exhausted-budget"]?.remainingMs).toBe(0);
+    expect(byId["exhausted-budget"]?.elapsedMs).toBe(
+      byId["exhausted-budget"]!.budgetMs,
+    );
+
+    expect(byId["completed-before-budget"]?.stopReason).toBe(
+      "completed-before-budget",
+    );
+    expect(byId["completed-before-budget"]!.elapsedMs).toBeLessThan(
+      byId["completed-before-budget"]!.budgetMs,
+    );
+    expect(byId["completed-before-budget"]!.elapsedMs).not.toBe(
+      byId["completed-before-budget"]!.budgetMs,
+    );
   });
 });

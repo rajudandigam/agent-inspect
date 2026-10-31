@@ -131,7 +131,7 @@ redact(
 4. **CLI size thresholds** on `scan` / `verify-safe` (`--max-string-length`, etc.) when oversized findings are false positives for your workload.
 5. **Bundle write override** with explicit `--allow-unsafe` after reviewing `verify-safe --explain` (records that the artifact was not share-gated).
 
-High-confidence built-in credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in redaction profiles. Context-sensitive findings such as private filesystem paths may remain verification-only when automatic erasure would create excessive false positives or destroy legitimate debugging context. `redact` remains best-effort; `verify-safe` remains the final automated local assessment before sharing.
+High-confidence built-in credentials (including bounded `token=` / `api_key=` / `internal_token=` forms) are covered by built-in redaction profiles. The strict profile also replaces serialized `stack`, `errorStack`, and `stackTrace` values, including nested copies, so private message text and paths inside those fields are not written to derived strict artifacts. Local and share profiles keep stacks for diagnostics and still scrub high-confidence credentials. Context-sensitive findings such as private filesystem paths outside those fields may remain verification-only when automatic erasure would create excessive false positives or destroy legitimate debugging context. `redact` remains best-effort; `verify-safe` remains the final automated local assessment before sharing. A SAFE result is not a certificate that every residual identifier is gone.
 
 ### Disallowed
 

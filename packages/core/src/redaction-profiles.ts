@@ -25,7 +25,10 @@ export const SHARE_PROFILE_EXTRA_KEYS = [
   "parentSpanId",
 ] as const;
 
-/** Extra keys redacted under the `strict` profile (in addition to share keys). */
+/**
+ * Extra keys redacted under the `strict` profile (in addition to share keys).
+ * `stack`, `errorStack`, and `stackTrace` match `packages/redact/src/index.ts`.
+ */
 export const STRICT_PROFILE_EXTRA_KEYS = [
   "prompt",
   "completion",
@@ -43,6 +46,9 @@ export const STRICT_PROFILE_EXTRA_KEYS = [
   "chunks",
   "retrieval",
   "query",
+  "stack",
+  "errorStack",
+  "stackTrace",
 ] as const;
 
 export interface ResolvedRedactionProfile {

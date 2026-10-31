@@ -7,8 +7,10 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createInspector } from "agent-inspect";
 import { defineTraceContract, evaluateTraceContract } from "agent-inspect/checks";
 import { openTrace } from "agent-inspect/readers";
+import { fileWriter } from "agent-inspect/writers";
 
 import { FINAL_ANSWER } from "./final-answer.mjs";
 
@@ -46,25 +48,53 @@ const contract = defineTraceContract({
     requiredOrder: ["retrieve_policy"],
     forbidden: ["search_docs"],
   },
+  steps: {
+    orderRelations: [
+      {
+        before: { kind: "TOOL", name: "retrieve_policy" },
+        after: { kind: "LLM", name: "generate_answer" },
+        mode: "first-occurrence",
+        requireEndpoints: true,
+      },
+    ],
+  },
   observations: {
     required: ["policyShown"],
     failOn: ["failed", "unknown", "skipped"],
   },
 });
 
-async function evaluate(runId) {
+const controlDir = path.join(traceDir, "order-controls");
+
+async function evaluateFile(runId, dir = traceDir) {
   const read = await openTrace(
-    { type: "file", path: path.join(traceDir, `${runId}.jsonl`) },
+    { type: "file", path: path.join(dir, `${runId}.jsonl`) },
     { format: "agent-inspect-jsonl" },
   );
   return evaluateTraceContract({ read }, contract);
 }
 
+async function writeControl(name, run) {
+  const inspector = createInspector({
+    writer: fileWriter({ dir: controlDir }),
+    traceDir: controlDir,
+    silent: true,
+  });
+  await inspector.run("order-control", () => run(inspector), { runId: name });
+  await inspector.flush();
+  await inspector.close();
+  return evaluateFile(name, controlDir);
+}
+
+function failedIds(result) {
+  return result.findings.filter((finding) => finding.status === "fail").map((finding) => finding.ruleId);
+}
+
 const goodAnswer = runVariant("good");
 const regressionAnswer = runVariant("regression");
 
-const good = await evaluate("demo-good");
-const regression = await evaluate("demo-regression");
+const good = await evaluateFile("demo-good");
+const regression = await evaluateFile("demo-regression");
 
 const outputEqual = goodAnswer === regressionAnswer && goodAnswer === FINAL_ANSWER;
 const goodPass = good.status === "pass";
@@ -80,6 +110,54 @@ if (regression.status === "fail") {
   }
 }
 
-if (!outputEqual || !goodPass || !regressionFail) {
+const reversed = await writeControl("s02-reversed", async (inspector) => {
+  await inspector.llm("generate_answer", async () => FINAL_ANSWER);
+  await inspector.tool("retrieve_policy", async () => ({ policy: "P-204" }));
+  await inspector.observeOutcome("policyShown", {
+    expectation: "Refund policy visible to the customer",
+    status: "passed",
+    method: "custom",
+  });
+  return FINAL_ANSWER;
+});
+const missing = await writeControl("s03-missing-llm", async (inspector) => {
+  await inspector.tool("retrieve_policy", async () => ({ policy: "P-204" }));
+  await inspector.observeOutcome("policyShown", {
+    expectation: "Refund policy visible to the customer",
+    status: "passed",
+    method: "custom",
+  });
+  return FINAL_ANSWER;
+});
+const repeated = await writeControl("s06-repeated-retrieve", async (inspector) => {
+  await inspector.tool("retrieve_policy", async () => ({ policy: "P-204" }));
+  await inspector.tool("retrieve_policy", async () => ({ policy: "P-204", duplicate: true }));
+  await inspector.llm("generate_answer", async () => FINAL_ANSWER);
+  await inspector.observeOutcome("policyShown", {
+    expectation: "Refund policy visible to the customer",
+    status: "passed",
+    method: "custom",
+  });
+  return FINAL_ANSWER;
+});
+
+const s02Ids = failedIds(reversed);
+const s02ok = reversed.status === "fail" && s02Ids.length === 1 && s02Ids[0] === "contract.step.orderRelation.0";
+const s03ok = missing.status !== "pass" && failedIds(missing).includes("contract.step.orderRelation.0");
+const s04ok =
+  regressionFail &&
+  regression.findings.some(
+    (finding) => finding.status === "fail" && finding.ruleId === "tool.usage" && finding.message.includes("search_docs"),
+  );
+const s06ok = repeated.status === "pass";
+
+console.log(`S01 retrieve-then-answer: ${goodPass ? "pass" : "fail"}`);
+console.log(`S02 reversed-order: ${s02ok ? "fail" : "unexpected"} ${s02Ids.join(",")}`);
+console.log(`S03 missing-endpoint: ${s03ok ? "non-pass" : "unexpected"}`);
+console.log(`S04 forbidden-search-docs: ${s04ok ? "fail" : "unexpected"}`);
+console.log(`S05 same-answer-different-path: ${outputEqual && goodPass && regressionFail ? "pass" : "fail"}`);
+console.log(`S06 repeated-retrieve: ${s06ok ? "pass" : "fail"}`);
+
+if (!outputEqual || !goodPass || !regressionFail || !s02ok || !s03ok || !s04ok || !s06ok) {
   process.exitCode = 1;
 }

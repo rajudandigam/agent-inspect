@@ -15,6 +15,7 @@ import {
   type PersistedTraceContext,
 } from "./types/persisted-inspect-event.js";
 import type {
+  ErrorInfo,
   InspectRunOptions,
   RedactionProfile,
   StepMetadata,
@@ -335,6 +336,43 @@ function getEventMetadata(event: TraceEvent): Record<string, unknown> | undefine
   return undefined;
 }
 
+const SERIALIZED_ERROR_TEXT_KEYS = new Set([
+  "message",
+  "stack",
+  "errorstack",
+  "stacktrace",
+]);
+
+function isSerializedErrorTextKey(key: string): boolean {
+  return SERIALIZED_ERROR_TEXT_KEYS.has(key.toLowerCase());
+}
+
+/**
+ * Credential-scrub stack and message strings that key redaction left in place.
+ * Strict profile key rules already replace those fields before this walk.
+ */
+function scrubSerializedErrorStrings(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => scrubSerializedErrorStrings(item));
+  }
+  if (!isRecord(value)) return value;
+
+  const out: Record<string, unknown> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry === "string" && isSerializedErrorTextKey(key)) {
+      const scrubbed = redactHighConfidenceCredentialsInString(entry);
+      if (key.toLowerCase() === "message" && scrubbed !== entry && scrubbed.length === 0) {
+        out[key] = "Unknown error";
+      } else {
+        out[key] = scrubbed;
+      }
+      continue;
+    }
+    out[key] = scrubSerializedErrorStrings(entry);
+  }
+  return out;
+}
+
 /**
  * Applies redaction, metadata truncation, and final serialized size bounds.
  * Never throws; returns a schema-valid event or a minimally truncated variant.
@@ -355,32 +393,11 @@ function prepareTraceEventErrorForDisk(
     rules: opts.redactionRules,
     extraKeys: opts.profileExtraKeys,
   });
-  const nextError = { ...event.error };
-  let changed = false;
-
-  if (typeof nextError.message === "string") {
-    const keyRedacted = redactor.redactValue("message", nextError.message);
-    const message =
-      typeof keyRedacted === "string"
-        ? redactHighConfidenceCredentialsInString(keyRedacted)
-        : "[REDACTED]";
-    if (message !== nextError.message) {
-      nextError.message = message.length > 0 ? message : "Unknown error";
-      changed = true;
-    }
-  }
-
-  // Stack frames often echo error.message; scrub credential-bearing stacks too.
-  if (typeof nextError.stack === "string") {
-    const scrubbedStack = redactHighConfidenceCredentialsInString(nextError.stack);
-    if (scrubbedStack !== nextError.stack) {
-      nextError.stack = scrubbedStack;
-      changed = true;
-    }
-  }
-
-  if (!changed) return event;
-  return { ...event, error: nextError };
+  const walked = redactor.redactRecord({ ...event.error });
+  const nextError = scrubSerializedErrorStrings(walked);
+  if (!isRecord(nextError)) return event;
+  if (JSON.stringify(nextError) === JSON.stringify(event.error)) return event;
+  return { ...event, error: nextError as unknown as ErrorInfo };
 }
 
 export function prepareTraceEventForDisk(

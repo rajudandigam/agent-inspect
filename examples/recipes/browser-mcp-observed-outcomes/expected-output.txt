@@ -18,8 +18,15 @@ browser-observed-outcome-matrix:
   ablation wrong-tab-binding-only (skip binding): gate=passed precondition=passed resource=skipped postcondition=passed
 classes: valid-transition:passed,wrong-tab-binding-only:failed,forged-caller-label:failed,wrong-binding-incomplete-window:failed,observer-missing:unknown,tool-success-no-effect:failed,invalid-start:failed
 om-attempt-comparison:
-  a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100
+  a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100 (LocatorNotFound≠overlay)
   a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id
+om-wait-diagnostics: clock=injected-synthetic
+  known-not-ready: ready=false doc=loading inFlight=navigation obstruction=unknown elapsed=40ms budget=100ms remaining=60ms stop=known-not-ready
+  unknown-readiness: ready=unknown doc=unknown inFlight=unknown obstruction=unknown elapsed=50ms budget=80ms remaining=30ms stop=unknown-readiness
+  successful-retry-ready: ready=true doc=complete inFlight=none obstruction=none elapsed=35ms budget=100ms remaining=65ms stop=completed-before-budget
+  exhausted-budget: ready=false doc=interactive inFlight=navigation obstruction=unknown elapsed=60ms budget=60ms remaining=0ms stop=budget-exhausted
+  completed-before-budget: ready=true doc=complete inFlight=none obstruction=none elapsed=25ms budget=200ms remaining=175ms stop=completed-before-budget
+  ready-after-budget: ready=unknown doc=unknown inFlight=unknown obstruction=unknown elapsed=100ms budget=100ms remaining=0ms stop=budget-exhausted
 url-redaction-controls:
   https://shop.example/checkout?token=sekrit-query-token -> https://shop.example/checkout?token=[REDACTED] (credentials=true ids=false)
   https://user:pass@shop.example/orders/12345 -> https://shop.example/orders/[id] (credentials=true ids=true)

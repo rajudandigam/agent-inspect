@@ -1,6 +1,9 @@
 /**
  * Packed MCP consumer E2E with a real `@modelcontextprotocol/sdk` Client
  * (#488 / Mikhail). Plain-object fakes do not prove Proxy/prototype bounds.
+ * Tool-result `isError` persistence lives here (the shape from johnnylemonny
+ * in #494) so the mock harness stays a single script and does not grow a
+ * second packed SDK consumer.
  *
  * Run from repo root after build: node scripts/packed-mcp-sdk-e2e.mjs
  *
@@ -152,6 +155,11 @@ async function createLinked(options = {}) {
         inputSchema: { type: "object", properties: {} },
       },
       {
+        name: "fail",
+        description: "returns isError",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
         name: "slow",
         description: "slow then ok",
         inputSchema: { type: "object", properties: {} },
@@ -162,6 +170,12 @@ async function createLinked(options = {}) {
     callCount += 1;
     if (req.params.name === "boom") {
       throw new Error("mcp boom");
+    }
+    if (req.params.name === "fail") {
+      return {
+        content: [{ type: "text", text: "tool-private-sentence" }],
+        isError: true,
+      };
     }
     if (req.params.name === "slow" || (req.params.name === "echo" && slowEchoMs > 0)) {
       await new Promise((r) => setTimeout(r, slowEchoMs || 80));
@@ -217,8 +231,10 @@ async function main() {
   {
     const { client, server } = await createLinked();
     if (!(client instanceof Client)) throw new Error("not a real SDK Client");
+    const sdkServerName = "packed-sdk-" + ${JSON.stringify(kind)};
+    const runName = "mcp-sdk-" + ${JSON.stringify(kind)};
     const wrapped = wrapMcpClient(client, {
-      serverName: "packed-sdk-" + ${JSON.stringify(kind)},
+      serverName: sdkServerName,
     });
     if (!(wrapped instanceof Client)) {
       throw new Error("Proxy lost instanceof Client");
@@ -226,18 +242,46 @@ async function main() {
     if (typeof wrapped.close !== "function" || typeof wrapped.connect !== "function") {
       throw new Error("prototype methods missing after wrap");
     }
+    if (typeof wrapped.ping !== "function") {
+      throw new Error("prototype ping missing after wrap");
+    }
+    // Receiver-binding probe: ping is not step-wrapped; must keep SDK this-binding.
+    await wrapped.ping();
 
-    const appResult = await inspectRun(
-      "mcp-sdk-" + ${JSON.stringify(kind)},
-      async () => {
-        const listed = await wrapped.listTools();
-        const called = await wrapped.callTool({
-          name: "echo",
-          arguments: { n: 1 },
-        });
-        return { listed, called };
-      },
-      { silent: true, traceDir: ${JSON.stringify(traceDirName)} },
+    const warnings = [];
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      warnings.push(args.map(String).join(" "));
+      originalWarn(...args);
+    };
+    let appResult;
+    try {
+      appResult = await inspectRun(
+        runName,
+        async () => {
+          const listed = await wrapped.listTools();
+          const called = await wrapped.callTool({
+            name: "echo",
+            arguments: { n: 1 },
+          });
+          return { listed, called };
+        },
+        { silent: true, traceDir: ${JSON.stringify(traceDirName)} },
+      );
+    } finally {
+      console.warn = originalWarn;
+    }
+
+    const outside = warnings.filter((w) => /outside inspectRun/i.test(w));
+    if (outside.length > 0) {
+      throw new Error(
+        "outside-context warning emitted during M01/M02 run: " + outside.join(" | "),
+      );
+    }
+    check(
+      "M01b-zero-outside-warnings-" + ${JSON.stringify(kind)},
+      "pass",
+      "pass",
     );
 
     const listOk = appResult.listed?.tools?.some((t) => t.name === "echo");
@@ -246,6 +290,49 @@ async function main() {
       ${JSON.stringify(kind === "esm" ? "M01-esm-real-client" : "M02-cjs-real-client")},
       "pass",
       listOk && callOk ? "pass" : "fail",
+    );
+
+    // Reopen saved JSONL for this physical run only (not substring / other runs).
+    const m01Files = readdirSync(${JSON.stringify(traceDirName)}).filter((f) =>
+      f.endsWith(".jsonl"),
+    );
+    if (m01Files.length === 0) {
+      throw new Error("no JSONL traces written under M01/M02 inspectRun");
+    }
+    const m01Lines = m01Files.flatMap((f) =>
+      readFileSync(path.join(${JSON.stringify(traceDirName)}, f), "utf8")
+        .split("\\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line)),
+    );
+    const runStarted = m01Lines.find(
+      (e) => e && e.event === "run_started" && e.name === runName,
+    );
+    if (!runStarted?.runId) {
+      throw new Error("M01/M02 run_started missing for " + runName);
+    }
+    const runId = runStarted.runId;
+    const inRun = m01Lines.filter((e) => e && e.runId === runId);
+    const listStep = inRun.find(
+      (e) => e.event === "step_started" && e.name === "mcp:tools/list",
+    );
+    if (!listStep) {
+      throw new Error(
+        "mcp:tools/list step_started missing under runId " + runId,
+      );
+    }
+    if (listStep.metadata?.mcpServerName !== sdkServerName) {
+      throw new Error(
+        "mcpServerName mismatch on mcp:tools/list: got " +
+          JSON.stringify(listStep.metadata?.mcpServerName) +
+          " expected " +
+          JSON.stringify(sdkServerName),
+      );
+    }
+    check(
+      "M01c-saved-tools-list-" + ${JSON.stringify(kind)},
+      "pass",
+      "pass",
     );
 
     // M07: application error preserved through wrapper
@@ -264,6 +351,54 @@ async function main() {
     const boomOk =
       thrown instanceof Error && /mcp boom/i.test(String(thrown.message));
     check("M07-error-preserved-" + ${JSON.stringify(kind)}, "pass", boomOk ? "pass" : "fail");
+
+    // Persisted semantic failure for an SDK isError result (#494 shape).
+    // Transport success stays a successful step; the failed outcome is the fact.
+    const failed = await inspectRun(
+      "mcp-sdk-tool-error-" + ${JSON.stringify(kind)},
+      async () =>
+        wrapped.callTool(
+          { name: "fail", arguments: {} },
+          undefined,
+          { metadata: { operationId: "op-fail", attemptId: "1" } },
+        ),
+      { silent: true, traceDir: ${JSON.stringify(traceDirName)} },
+    );
+    const files = readdirSync(${JSON.stringify(traceDirName)}).filter((f) =>
+      f.endsWith(".jsonl"),
+    );
+    const lines = files.flatMap((f) =>
+      readFileSync(path.join(${JSON.stringify(traceDirName)}, f), "utf8")
+        .split("\\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line)),
+    );
+    const toolStep = lines.find(
+      (event) => event && event.event === "step_started" && event.name === "mcp:fail",
+    );
+    const completed = lines.find(
+      (event) =>
+        event &&
+        event.event === "step_completed" &&
+        event.stepId === toolStep?.stepId,
+    );
+    const outcome = lines.find(
+      (event) => event && event.event === "outcome_observed" && event.status === "failed",
+    );
+    const toolErrorOk =
+      failed?.isError === true &&
+      completed?.status === "success" &&
+      outcome?.parentId === toolStep?.stepId &&
+      outcome?.evidence?.toolFailure === true &&
+      outcome?.evidence?.toolName === "fail" &&
+      outcome?.evidence?.operationId === "op-fail" &&
+      outcome?.evidence?.attemptId === "1" &&
+      !JSON.stringify(outcome ?? {}).includes("tool-private-sentence");
+    check(
+      "M13-tool-error-persisted-" + ${JSON.stringify(kind)},
+      "pass",
+      toolErrorOk ? "pass" : "fail",
+    );
 
     // M08: close/flush bounded — no throw; idle close is not failure
     await wrapped.close();

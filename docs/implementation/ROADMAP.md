@@ -1,8 +1,8 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.31.23` (published; all 18)
-**Roadmap horizon:** **6.31.23** published (Prompt A residuals / #484); residual W04+ partner/artifact work; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
-**Status:** **6.31.23 published**; named train `stability-after-63111`; W01/W02/W03/W26, Oct 10–11 Fix-Owes, 6.31.21 MCP options, and 6.31.22–23 Prompt A residuals closed; next = D1 MCP isError / partner packets / W04+; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
+**Baseline:** `agent-inspect@6.31.31` (published; all 18)
+**Roadmap horizon:** **6.31.31** published (Oct 30 residuals); partner acceptance; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
+**Status:** **6.31.31 published**; named train `stability-after-63111`; next = partner acceptance (Jan Windows PENDING); **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
 **Primary objective:** Finish verifier/SDK/timing/transport correctness and consumer evidence milestones—without schema 1.1, hosted SaaS, or fabricated external evidence
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
@@ -95,10 +95,18 @@ The canonical release sequence is:
 6.31.18 Fix-Owes recovery / OTLP identity / recipes / MCP SDK packed e2e  (published)
 6.31.19 Residual Fix-Owes recovery + OTLP identity fixtures  (published)
 6.31.20 Oct 11 MCP RequestOptions forward + Headsign/Keniel/evidence fixture owes  (published)
-6.31.21 MCP options + metadata compose, strict SDK Client types, Roy O05 redelivery  (published)
-6.31.22 Prompt A retry identity across source and OTLP (#484)  (published)
+6.31.21 MCP options+metadata compose; SDK Client TS; Roy O05 redelivery  (published)
+6.31.22 Prompt A identity fidelity (#484 matrix)  (published)
 6.31.23 Prompt A residuals — compare-before-bound + delivery_event_base  (published)
-6.31.24+ Conditional public defect only (omit empty slots)
+6.31.24 MCP runId and legacy slowest-path descriptions  (published)
+6.31.25 Strict stack/errorStack/stackTrace redaction  (published)
+6.31.26 MCP isError tool-result outcome  (published)
+6.31.27 Timeout-ledger saved-trace verifier  (published)
+6.31.28 Starter tool-before-answer orderRelations  (published)
+6.31.29 Recipe evidence integrity (#492 probes, #486 one-pass, Nest opaque refs)  (published)
+6.31.30 Nest/HTML/Om + Oct 29 evidence packets  (published)
+6.31.31 Oct 30 residuals (R1–R6 / N1–N2)  (published)
+6.31.32+ Conditional public defect only (omit empty slots)
 
 recipes   Collector roundtrip; executable Promptfoo; Elastic indexed readback (no root vendor deps)
 
@@ -125,6 +133,8 @@ website  Headers/crawler (#458) done; links/quickstart/TOC/badges retained
 **Amendment (2026-10-11):** **6.31.18**–**6.31.20** published (all 18). Fix-Owes and Oct 11 MCP RequestOptions / fixture owes shipped. W23A (#490) aligns this roadmap and active-plan pointers to **6.31.20**. **EVIDENCE_GATE** still not approved; keep #209 open.
 
 **Amendment (2026-10-16):** **6.31.21**–**6.31.23** published (all 18). MCP options + metadata compose, strict SDK Client types, and Prompt A identity fidelity / residuals (#484) shipped. #504 aligns this roadmap, active-plan, and matrix pointers to **6.31.23**. **EVIDENCE_GATE** still not approved; keep #209 open.
+
+**Amendment (2026-10-29):** Pointers reconciled to published **6.31.27** (Trusted Publish 40222772749). Historical **6.31.21**–**6.31.27** slots recorded as published. **6.31.28** starter order relation is on main (`e65e9445`); Version Packages [#512](https://github.com/rajudandigam/agent-inspect/pull/512) remains open (CI/Dependency Review may need `gh run rerun` when stuck at `action_required`). [#505](https://github.com/rajudandigam/agent-inspect/pull/505) (PR for #504) reconciled with current baseline. Draft [#513](https://github.com/rajudandigam/agent-inspect/pull/513) evidence handoff stays separate. Next implementation after publish: #486 comparable cohort. **EVIDENCE_GATE** still not approved; **V7_DECISION: NO-GO**.
 
 No major version is required. No new trace schema. No TrueForge-specific package. No full-content capture mode. No general temporal/workflow DSL.
 
@@ -228,10 +238,18 @@ Fail-closed deterministic gate hardening:
 | **6.31.18** | Fix-Owes recovery / OTLP / recipes / MCP packed e2e | published | Done |
 | **6.31.19** | Residual Fix-Owes fixtures | published | Done |
 | **6.31.20** | Oct 11 MCP RequestOptions + fixture owes | published | Done |
-| **6.31.21** | MCP options + metadata compose; SDK Client types; Roy O05 redelivery | published | Done |
-| **6.31.22** | Prompt A retry identity across source and OTLP (#484) | published | Done |
-| **6.31.23** | Prompt A residuals (compare-before-bound + delivery_event_base) | published | Done |
-| **6.31.24+** | Conditional public defect only | omit if empty | Skip unless defect reproduces |
+| **6.31.21** | MCP options+metadata; SDK Client TS; O05 redelivery | published | Done |
+| **6.31.22** | Prompt A identity fidelity (#484) | published | Done |
+| **6.31.23** | Prompt A residuals (compare-before-bound; delivery_event_base) | published | Done |
+| **6.31.24** | MCP runId / legacy slowest-path descriptions | published | Done |
+| **6.31.25** | Strict nested stack redaction | published | Done |
+| **6.31.26** | MCP isError tool-result outcome | published | Done |
+| **6.31.27** | Timeout-ledger saved-trace verifier | published | Done |
+| **6.31.28** | Starter tool-before-answer orderRelations | published | Done |
+| **6.31.29** | Recipe evidence integrity (#492/#486/Nest privacy) | published | Done |
+| **6.31.30** | Nest/HTML/Om + Oct 29 evidence packets | published | Done |
+| **6.31.31** | Oct 30 residuals (R1–R6 / N1–N2) | published | Done |
+| **6.31.32+** | Conditional public defect only | omit if empty | Skip unless defect reproduces |
 | **6.32.0** | External conformance + compact review | conditional | **BLOCKED_ON_EXTERNAL_EVIDENCE** |
 | **6.33.0** | Additive usability when justified | recipes / APIs | Conditional minor |
 

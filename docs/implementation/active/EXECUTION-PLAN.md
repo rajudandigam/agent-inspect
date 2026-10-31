@@ -1,29 +1,29 @@
-# Active execution plan — post-6.31.23
+# Active execution plan — post-6.31.31
 
 **Train:** `stability-after-63111`
 **Authority:** [../ROADMAP.md](../ROADMAP.md) · [NEXT-RELEASES.md](./NEXT-RELEASES.md)
-**Baseline:** published `agent-inspect@6.31.23` (all 18) · **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE** · **V7_DECISION: NO-GO**
+**Baseline:** published `agent-inspect@6.31.31` (all 18) · **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE** · **V7_DECISION: NO-GO**
 
 ## Scope
 
-1. Repository-only residual packages (W04–W20, W23–W28) as independently reviewed chunks
-2. Skip empty **6.31.24+** unless a public defect reproduces
-3. Conditional next patch only for a verified public defect or authorized partner-acceptance follow-through
-4. Conditional **6.32.0** only with approved [EXTERNAL-ACCEPTANCE-GATE.md](./EXTERNAL-ACCEPTANCE-GATE.md)
-5. v7 assessment only — no implementation
+1. Partner acceptance follow-through (#484 path-scrubbed `-003`, #494 Windows rerun **PENDING**, #491 closure, #437 fields) without fabricating results
+2. Skip empty **6.31.32+** unless a public defect reproduces
+3. Conditional **6.32.0** only with approved [EXTERNAL-ACCEPTANCE-GATE.md](./EXTERNAL-ACCEPTANCE-GATE.md)
+4. v7 assessment only — no implementation
 
 ## Explicit non-goals
 
 - Local `npm publish`
 - Schema 1.1 / hosted SaaS / default network / CoT capture / pricing engine / replay / retry execution
-- Merging grouped Dependabot majors without dedicated migrations
+- Merging grouped Dependabot majors without dedicated migrations (#496 / #506 remain red — do not merge)
 - Fabricating retained-use or external conformance evidence
 - Implementing v7
 - Blast email sends (artifact-first drafts only when authorized)
+- Blindly merging docs PRs that stop at an older baseline (e.g. #505 → 6.31.23)
 
 ## Chunks
 
-See [NEXT-RELEASES.md](./NEXT-RELEASES.md). Historical 6.17–6.31.23 trains are complete for their published scopes. #504 pointer sync is closed with this baseline.
+See [NEXT-RELEASES.md](./NEXT-RELEASES.md) and [../CURRENT-TASK.md](../CURRENT-TASK.md).
 
 ## Stop rule
 

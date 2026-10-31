@@ -1,12 +1,13 @@
 /**
  * Comparable cohort runs — commitments measured from executed stub captures.
  *
- * A predefined StageCommitments object is not evidence of a second invocation.
- * An orderId response cannot substantiate a commitment to policy text that was
- * never returned.
+ * One physical execution per available side (13 total). Console, table, and
+ * manifest references all derive from those same captures. Matching synthetic
+ * input commitments do not claim stochastic output determinism.
  */
-import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   readdirSync,
@@ -15,9 +16,21 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 import { inspectRun, step } from "agent-inspect";
-import { createRequire } from "node:module";
+
+import {
+  comparePair,
+  commitmentsToSide,
+  sha256,
+  stageCommitmentsFromMeasured,
+  verifySaved,
+  type PairClass,
+  type StageCommitments,
+  type TableRow,
+} from "./verify-saved.js";
 
 const requireAdv = createRequire(import.meta.url);
 const { getCurrentRunId } = requireAdv("agent-inspect/advanced") as {
@@ -25,186 +38,30 @@ const { getCurrentRunId } = requireAdv("agent-inspect/advanced") as {
 };
 
 const silent = process.env.AGENT_INSPECT_SILENT === "true";
+const here = path.dirname(fileURLToPath(import.meta.url));
 const baseTraceDir = path.join(process.cwd(), ".agent-inspect-runs");
+const evidenceDir = path.join(baseTraceDir, "comparable-evidence");
 
-/** Full SHA-256 of measured stage bytes. */
-export function sha256(bytes: string): string {
-  return createHash("sha256").update(bytes, "utf8").digest("hex");
-}
-
-export type PairClass =
-  | "equivalent_stage_inputs"
-  | "changed_retrieval_boundary"
-  | "partial_unknown"
-  | "incompatible_scope"
-  | "sampling_or_model_changed"
-  | "declared_treatment_diff"
-  | "grader_unproven"
-  | "commitment_mismatch";
-
-export interface StageCommitments {
-  cohortId?: string;
-  testCaseId?: string;
-  promptTemplateVersion?: string;
-  treatment?: string;
-  resolvedModel?: string;
-  samplingJson?: string;
-  graderProvenance?: string;
-  executionId: string;
-  runId: string | null;
-  llmStageInput: string;
-  toolStageOutput: string;
-  llmInputCommitment: string;
-  toolOutputCommitment: string;
-  /** Declared commitment to verify against measured bytes (G07). */
-  declaredToolCommitment?: string;
-}
-
-export function stageCommitmentsFromMeasured(input: {
-  cohortId?: string;
-  testCaseId?: string;
-  promptTemplateVersion?: string;
-  treatment?: string;
-  resolvedModel?: string;
-  sampling?: Record<string, unknown>;
-  graderProvenance?: string;
-  executionId: string;
-  runId: string | null;
-  llmStageInput: string;
-  toolStageOutput: string;
-  declaredToolCommitment?: string;
-}): StageCommitments {
-  const samplingJson =
-    input.sampling !== undefined ? JSON.stringify(input.sampling) : undefined;
-  return {
-    ...(input.cohortId !== undefined ? { cohortId: input.cohortId } : {}),
-    ...(input.testCaseId !== undefined ? { testCaseId: input.testCaseId } : {}),
-    ...(input.promptTemplateVersion !== undefined
-      ? { promptTemplateVersion: input.promptTemplateVersion }
-      : {}),
-    ...(input.treatment !== undefined ? { treatment: input.treatment } : {}),
-    ...(input.resolvedModel !== undefined ? { resolvedModel: input.resolvedModel } : {}),
-    ...(samplingJson !== undefined ? { samplingJson } : {}),
-    ...(input.graderProvenance !== undefined
-      ? { graderProvenance: input.graderProvenance }
-      : {}),
-    executionId: input.executionId,
-    runId: input.runId,
-    llmStageInput: input.llmStageInput,
-    toolStageOutput: input.toolStageOutput,
-    llmInputCommitment: sha256(input.llmStageInput),
-    toolOutputCommitment: sha256(input.toolStageOutput),
-    ...(input.declaredToolCommitment !== undefined
-      ? { declaredToolCommitment: input.declaredToolCommitment }
-      : {}),
-  };
-}
-
-/**
- * Pairwise / stagewise comparison. Labels alone never yield equivalent_stage_inputs.
- */
-export function comparePair(a: StageCommitments, b: StageCommitments): {
-  class: PairClass;
-  note: string;
-  changedStage?: "tool_output" | "llm_input" | "model_or_sampling" | "scope";
-} {
-  if (!a.runId || !b.runId || a.runId === b.runId) {
-    return {
-      class: "partial_unknown",
-      note: "need two distinct physical run IDs from separate executions",
-    };
-  }
-  if (!a.cohortId || !a.testCaseId || !b.cohortId || !b.testCaseId) {
-    return { class: "partial_unknown", note: "missing cohortId/testCaseId identity" };
-  }
-  if (a.cohortId !== b.cohortId || a.testCaseId !== b.testCaseId) {
-    return {
-      class: "incompatible_scope",
-      note: "mismatched cohort or testCase — comparison scope incompatible",
-      changedStage: "scope",
-    };
-  }
-  for (const side of [a, b]) {
-    if (
-      side.declaredToolCommitment &&
-      side.declaredToolCommitment !== side.toolOutputCommitment
-    ) {
-      return {
-        class: "commitment_mismatch",
-        note: "declared tool commitment does not match measured tool output bytes",
-      };
-    }
-  }
-  if (!a.graderProvenance || !b.graderProvenance) {
-    // Trajectory stage comparison may still proceed, but answer-quality claims are ungrounded.
-    if (!a.llmInputCommitment || !a.toolOutputCommitment || !b.llmInputCommitment || !b.toolOutputCommitment) {
-      return { class: "partial_unknown", note: "missing stage input/tool commitment" };
-    }
-  }
-  if (!a.llmInputCommitment || !a.toolOutputCommitment || !b.llmInputCommitment || !b.toolOutputCommitment) {
-    return { class: "partial_unknown", note: "missing stage input/tool commitment" };
-  }
-  if (
-    (a.resolvedModel !== undefined || b.resolvedModel !== undefined) &&
-    a.resolvedModel !== b.resolvedModel
-  ) {
-    return {
-      class: "sampling_or_model_changed",
-      note: `resolvedModel differs (${a.resolvedModel ?? "?"} vs ${b.resolvedModel ?? "?"})`,
-      changedStage: "model_or_sampling",
-    };
-  }
-  if (
-    (a.samplingJson !== undefined || b.samplingJson !== undefined) &&
-    a.samplingJson !== b.samplingJson
-  ) {
-    return {
-      class: "sampling_or_model_changed",
-      note: "sampling evidence differs",
-      changedStage: "model_or_sampling",
-    };
-  }
-  if (a.toolOutputCommitment !== b.toolOutputCommitment) {
-    return {
-      class: "changed_retrieval_boundary",
-      note: "tool/retrieval stage output commitment differs — not equivalent-input evidence",
-      changedStage: "tool_output",
-    };
-  }
-  if (a.llmInputCommitment !== b.llmInputCommitment) {
-    return {
-      class: "changed_retrieval_boundary",
-      note: "next-model stage input commitment differs after tool boundary",
-      changedStage: "llm_input",
-    };
-  }
-  if (!a.graderProvenance || !b.graderProvenance) {
-    return {
-      class: "grader_unproven",
-      note: "stage inputs match but grader provenance missing — no answer-quality comparability claim",
-    };
-  }
-  if (a.treatment !== b.treatment) {
-    return {
-      class: "declared_treatment_diff",
-      note: `treatment differs (${a.treatment ?? "none"} vs ${b.treatment ?? "none"}); stage inputs still match`,
-    };
-  }
-  return {
-    class: "equivalent_stage_inputs",
-    note: "matching identities and measured stage commitments from two executions (not stochastic-output proof)",
-  };
-}
-
-type StubSpec = {
-  policyVersion: number;
+/** Explicit synthetic request envelope actually passed into the stub. */
+export interface SyntheticRequestEnvelope {
+  system: string;
+  messages: Array<{ role: "user" | "assistant" | "tool"; content: string }>;
+  tools: Array<{ name: string; parameters: Record<string, unknown> }>;
   model: string;
   sampling: Record<string, unknown>;
-  treatment: string;
-  graderProvenance?: string;
-  /** Deliberately wrong declared digest for G07. */
-  lieAboutToolCommitment?: boolean;
-};
+  toolResults: Array<{ name: string; content: string }>;
+}
+
+export function serializeEnvelope(envelope: SyntheticRequestEnvelope): string {
+  return JSON.stringify({
+    system: envelope.system,
+    messages: envelope.messages,
+    tools: envelope.tools,
+    model: envelope.model,
+    sampling: envelope.sampling,
+    toolResults: envelope.toolResults,
+  });
+}
 
 /** Deterministic stub model — must consume the measured next-model input bytes. */
 export function stubModel(nextModelInput: string): {
@@ -221,6 +78,18 @@ export function stubModel(nextModelInput: string): {
   };
 }
 
+type StubSpec = {
+  policyVersion: number;
+  model: string;
+  sampling: Record<string, unknown>;
+  treatment: string;
+  graderProvenance?: string;
+  /** Cohort written into run metadata before capture. */
+  cohortId?: string;
+  /** Deliberately wrong declared digest for G07. */
+  lieAboutToolCommitment?: boolean;
+};
+
 async function executeStubWorkflow(
   label: string,
   spec: StubSpec,
@@ -229,6 +98,7 @@ async function executeStubWorkflow(
   const traceDir = path.join(baseTraceDir, executionId);
   rmSync(traceDir, { recursive: true, force: true });
 
+  const cohortId = spec.cohortId ?? "support-refund-cohort";
   let measuredToolOut = "";
   let measuredLlmIn = "";
   let runId: string | null = null;
@@ -239,24 +109,35 @@ async function executeStubWorkflow(
     async () => {
       runId = getCurrentRunId() ?? null;
       measuredToolOut = await step.tool("lookupPolicy", async () => {
-        // Deterministic stub tool — bytes are the measured commitment source.
         return JSON.stringify({
           orderId: "ord-1",
           policyVersion: spec.policyVersion,
           policyText: `policy-v${spec.policyVersion}-refund-rules`,
         });
       });
-      // Model-input boundary: template + actual tool bytes (not a predeclared digest).
-      measuredLlmIn = [
-        "template=refund-v3",
-        "tools=lookupPolicy",
-        `model=${spec.model}`,
-        `sampling=${JSON.stringify(spec.sampling)}`,
-        `toolOut=${measuredToolOut}`,
-      ].join("\n");
-      const modelOut = await step.llm(spec.model, async () =>
-        stubModel(measuredLlmIn),
-      );
+      const envelope: SyntheticRequestEnvelope = {
+        system: "synthetic-system: refund policy adjudication fixture",
+        messages: [
+          { role: "user", content: "Can order ord-1 be refunded?" },
+          { role: "assistant", content: "Looking up policy." },
+          { role: "tool", content: measuredToolOut },
+        ],
+        tools: [
+          {
+            name: "lookupPolicy",
+            parameters: {
+              type: "object",
+              properties: { orderId: { type: "string" } },
+              required: ["orderId"],
+            },
+          },
+        ],
+        model: spec.model,
+        sampling: spec.sampling,
+        toolResults: [{ name: "lookupPolicy", content: measuredToolOut }],
+      };
+      measuredLlmIn = serializeEnvelope(envelope);
+      const modelOut = await step.llm(spec.model, async () => stubModel(measuredLlmIn));
       modelConsumedDigest = modelOut.consumedInputDigest;
       if (modelOut.consumedInputDigest !== sha256(measuredLlmIn)) {
         throw new Error("stub model did not consume measured next-model input");
@@ -272,7 +153,7 @@ async function executeStubWorkflow(
       silent,
       traceDir,
       metadata: {
-        cohortId: "support-refund-cohort",
+        cohortId,
         testCaseId: "refund-happy-path",
         promptTemplateVersion: "refund-v3",
         treatment: spec.treatment,
@@ -283,7 +164,7 @@ async function executeStubWorkflow(
   );
 
   const measured = stageCommitmentsFromMeasured({
-    cohortId: "support-refund-cohort",
+    cohortId,
     testCaseId: "refund-happy-path",
     promptTemplateVersion: "refund-v3",
     treatment: spec.treatment,
@@ -297,9 +178,9 @@ async function executeStubWorkflow(
     declaredToolCommitment: spec.lieAboutToolCommitment
       ? sha256("policy text that was never returned")
       : undefined,
+    traceDir,
   });
 
-  // Require a real trace file for this execution.
   const files = existsSync(traceDir)
     ? readdirSync(traceDir).filter((f) => f.endsWith(".jsonl"))
     : [];
@@ -310,10 +191,11 @@ async function executeStubWorkflow(
   if (!text.includes(runId ?? "")) {
     throw new Error(`trace for ${label} missing runId`);
   }
+  if (!text.includes(`"cohortId":"${cohortId}"`) && !text.includes(`"cohortId": "${cohortId}"`)) {
+    throw new Error(`trace for ${label} missing cohortId ${cohortId}`);
+  }
   if (!modelConsumedDigest || modelConsumedDigest !== measured.llmInputCommitment) {
-    throw new Error(
-      `stub model consumption digest missing or mismatched for ${label}`,
-    );
+    throw new Error(`stub model consumption digest missing or mismatched for ${label}`);
   }
 
   return measured;
@@ -349,7 +231,7 @@ const pairCases: PairCase[] = [
   {
     name: "G05-incompatible-cohort",
     left: control,
-    right: { ...control, treatment: "control" },
+    right: { ...control, cohortId: "other-cohort" },
   },
   {
     name: "G06-missing-grader",
@@ -363,32 +245,35 @@ const pairCases: PairCase[] = [
   },
 ];
 
+rmSync(evidenceDir, { recursive: true, force: true });
+mkdirSync(evidenceDir, { recursive: true });
+
 const pairResults: Array<{
   name: string;
   class: PairClass;
   note: string;
   changedStage?: string;
-  leftRunId: string | null;
-  rightRunId: string | null;
+  left: StageCommitments;
+  right: StageCommitments | null;
 }> = [];
+
+let physicalExecutions = 0;
 
 for (const pair of pairCases) {
   const left = await executeStubWorkflow(`${pair.name}.left`, pair.left);
+  physicalExecutions += 1;
   let right: StageCommitments | null = null;
   if (pair.right) {
     right = await executeStubWorkflow(`${pair.name}.right`, pair.right);
-  }
-  if (pair.name === "G05-incompatible-cohort" && right) {
-    // Force incompatible cohort after measurement (capture still real).
-    right = { ...right, cohortId: "other-cohort" };
+    physicalExecutions += 1;
   }
   if (!right) {
     pairResults.push({
       name: pair.name,
       class: "partial_unknown",
       note: "right capture deleted/absent — strict comparison not green",
-      leftRunId: left.runId,
-      rightRunId: null,
+      left,
+      right: null,
     });
     continue;
   }
@@ -398,10 +283,42 @@ for (const pair of pairCases) {
     class: compared.class,
     note: compared.note,
     changedStage: compared.changedStage,
-    leftRunId: left.runId,
-    rightRunId: right.runId,
+    left,
+    right,
   });
 }
+
+if (physicalExecutions !== 13) {
+  throw new Error(`expected 13 physical executions, got ${physicalExecutions}`);
+}
+
+const stageTable: TableRow[] = pairResults.map((row) => ({
+  pair: row.name,
+  class: row.class,
+  note: row.note,
+  changedStage: row.changedStage,
+  left: commitmentsToSide(row.left),
+  right: row.right ? commitmentsToSide(row.right) : null,
+}));
+
+const tablePath = path.join(evidenceDir, "per-stage-commitments.json");
+writeFileSync(tablePath, `${JSON.stringify(stageTable, null, 2)}\n`);
+
+const manifest = {
+  physicalExecutions,
+  pairs: stageTable.map((row) => ({
+    pair: row.pair,
+    class: row.class,
+    leftRunId: row.left.runId,
+    rightRunId: row.right?.runId ?? null,
+    leftExecutionId: row.left.executionId,
+    rightExecutionId: row.right?.executionId ?? null,
+    leftTraceDir: row.left.traceDir ?? null,
+    rightTraceDir: row.right?.traceDir ?? null,
+  })),
+};
+const manifestPath = path.join(evidenceDir, "manifest.json");
+writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 console.log("pairwise-comparability:");
 console.log(
@@ -411,139 +328,263 @@ for (const row of pairResults) {
   console.log(`  ${row.name}: ${row.class}`);
   console.log(`    note: ${row.note}`);
   console.log(
-    `    runs: left=${row.leftRunId ?? "none"} right=${row.rightRunId ?? "none"}${row.changedStage ? ` changedStage=${row.changedStage}` : ""}`,
+    `    runs: left=${row.left.runId ?? "none"} right=${row.right?.runId ?? "none"}${row.changedStage ? ` changedStage=${row.changedStage}` : ""}`,
   );
 }
 console.log("classes:", pairResults.map((r) => r.class).join(","));
+console.log(
+  `evidence-table: ${path.relative(process.cwd(), tablePath) || tablePath}`,
+);
+console.log(
+  `evidence-manifest: ${path.relative(process.cwd(), manifestPath) || manifestPath}`,
+);
+console.log(`physical-executions: ${physicalExecutions}`);
 
-/** Per-stage evidence table linked to each run (G01–G07). */
-const evidenceDir = path.join(baseTraceDir, "comparable-evidence");
-mkdirSync(evidenceDir, { recursive: true });
-
-async function loadCommitmentsForPair(name: string): Promise<{
-  left: StageCommitments | null;
-  right: StageCommitments | null;
-}> {
-  // Re-read measured bytes from the last executed pairResults by re-running labels is wasteful;
-  // persist from the in-memory executions above via a side table built during the loop.
-  void name;
-  return { left: null, right: null };
-}
-void loadCommitmentsForPair;
-
-const stageTable: Array<Record<string, unknown>> = [];
-for (const pair of pairCases) {
-  const left = await executeStubWorkflow(`${pair.name}.table.left`, pair.left);
-  let right: StageCommitments | null = null;
-  if (pair.right) {
-    right = await executeStubWorkflow(`${pair.name}.table.right`, pair.right);
-  }
-  if (pair.name === "G05-incompatible-cohort" && right) {
-    right = { ...right, cohortId: "other-cohort" };
-  }
-  const compared = right
-    ? comparePair(left, right)
-    : {
-        class: "partial_unknown" as const,
-        note: "right capture deleted/absent",
-      };
-  const row = {
-    pair: pair.name,
-    class: compared.class,
-    note: compared.note,
-    changedStage: "changedStage" in compared ? compared.changedStage : undefined,
-    left: {
-      runId: left.runId,
-      executionId: left.executionId,
-      toolOutputBytes: left.toolStageOutput,
-      toolOutputDigest: left.toolOutputCommitment,
-      llmInputBytes: left.llmStageInput,
-      llmInputDigest: left.llmInputCommitment,
-      cohortId: left.cohortId,
-      testCaseId: left.testCaseId,
-      promptTemplateVersion: left.promptTemplateVersion,
-      resolvedModel: left.resolvedModel,
-      samplingJson: left.samplingJson,
-      treatment: left.treatment,
-      graderProvenance: left.graderProvenance,
-    },
-    right: right
-      ? {
-          runId: right.runId,
-          executionId: right.executionId,
-          toolOutputBytes: right.toolStageOutput,
-          toolOutputDigest: right.toolOutputCommitment,
-          llmInputBytes: right.llmStageInput,
-          llmInputDigest: right.llmInputCommitment,
-          cohortId: right.cohortId,
-          testCaseId: right.testCaseId,
-          promptTemplateVersion: right.promptTemplateVersion,
-          resolvedModel: right.resolvedModel,
-          samplingJson: right.samplingJson,
-          treatment: right.treatment,
-          graderProvenance: right.graderProvenance,
-        }
-      : null,
-  };
-  stageTable.push(row);
-
-  // Verifier: recompute digests from retained bytes.
-  if (sha256(left.toolStageOutput) !== left.toolOutputCommitment) {
-    throw new Error(`${pair.name}: left tool digest mismatch on recompute`);
-  }
-  if (sha256(left.llmStageInput) !== left.llmInputCommitment) {
-    throw new Error(`${pair.name}: left llm digest mismatch on recompute`);
-  }
+// In-process reopen of the same retained files (before child process).
+const reopened = verifySaved(evidenceDir);
+if (!reopened.ok) {
+  throw new Error(`saved evidence failed reopen: ${reopened.failures.join("; ")}`);
 }
 
-const tablePath = path.join(evidenceDir, "per-stage-commitments.json");
-writeFileSync(tablePath, JSON.stringify(stageTable, null, 2) + "\n");
-console.log(`evidence-table: ${tablePath}`);
-
-// Tamper control: mutate retained bytes and ensure digest check fails.
+// Fresh-process verifier — must not import this execution script.
 {
-  const g01row = stageTable.find((r) => r.pair === "G01-matching-stages");
-  if (!g01row || !g01row.left) throw new Error("missing G01 row for tamper");
-  const left = g01row.left as { toolOutputBytes: string; toolOutputDigest: string };
-  const tampered = left.toolOutputBytes + "-tamper";
-  if (sha256(tampered) === left.toolOutputDigest) {
-    throw new Error("tamper control failed — digest unchanged");
+  const child = spawnSync(
+    process.execPath,
+    ["--import", "tsx", path.join(here, "verify-cli.ts"), evidenceDir],
+    { encoding: "utf8", cwd: process.cwd() },
+  );
+  if (child.status !== 0) {
+    throw new Error(`verify-cli failed: ${child.stderr || child.stdout}`);
   }
-  console.log("tamper-control: digest mismatch detected as expected");
+  const parsed = JSON.parse(child.stdout.trim()) as { ok: boolean; pairCount: number };
+  if (!parsed.ok || parsed.pairCount !== 7) {
+    throw new Error(`verify-cli unexpected result: ${child.stdout}`);
+  }
+  console.log("fresh-process-verify: ok");
 }
+
+// Tamper copies of saved artifacts — never mutate the original packet.
+function tamperCopy(
+  id: string,
+  mutate: (table: TableRow[]) => void,
+): { id: string; ok: boolean; detail: string } {
+  const dir = path.join(evidenceDir, "tampers", id);
+  rmSync(dir, { recursive: true, force: true });
+  mkdirSync(dir, { recursive: true });
+  cpSync(tablePath, path.join(dir, "per-stage-commitments.json"));
+  const table = JSON.parse(
+    readFileSync(path.join(dir, "per-stage-commitments.json"), "utf8"),
+  ) as TableRow[];
+  mutate(table);
+  writeFileSync(
+    path.join(dir, "per-stage-commitments.json"),
+    `${JSON.stringify(table, null, 2)}\n`,
+  );
+  const verdict = verifySaved(dir);
+  return {
+    id,
+    ok: !verdict.ok,
+    detail: verdict.failures[0] ?? (verdict.ok ? "unexpectedly verified" : "failed"),
+  };
+}
+
+const g01 = stageTable.find((r) => r.pair === "G01-matching-stages");
+if (!g01?.left || !g01.right) throw new Error("missing G01 for tamper");
+
+const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
+  tamperCopy("left-tool-bytes", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.left.toolOutputBytes = `${row.left.toolOutputBytes}-tamper`;
+  }),
+  tamperCopy("left-llm-bytes", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.left.llmInputBytes = `${row.left.llmInputBytes}-tamper`;
+  }),
+  tamperCopy("right-tool-bytes", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.right!.toolOutputBytes = `${row.right!.toolOutputBytes}-tamper`;
+  }),
+  tamperCopy("declared-digest", (table) => {
+    const row = table.find((r) => r.pair === "G07-declared-commitment-lie")!;
+    row.left.declaredToolCommitment = row.left.toolOutputDigest;
+  }),
+  tamperCopy("run-link", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.left.runId = "foreign-run-id";
+  }),
+  tamperCopy("cohort-link", (table) => {
+    const row = table.find((r) => r.pair === "G05-incompatible-cohort")!;
+    row.right!.cohortId = "support-refund-cohort";
+  }),
+  tamperCopy("missing-right", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.right = null;
+    row.class = "equivalent_stage_inputs";
+  }),
+  tamperCopy("missing-trace-ref", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    delete row.left.traceDir;
+  }),
+  tamperCopy("execution-link", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.left.executionId = "exec_foreign_tampered";
+  }),
+  tamperCopy("testcase-link", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    row.left.testCaseId = "foreign-test-case";
+  }),
+];
+
+// Additional structural rejects (not just table field swaps).
+{
+  const emptyDir = path.join(evidenceDir, "tampers", "empty-table");
+  rmSync(emptyDir, { recursive: true, force: true });
+  mkdirSync(emptyDir, { recursive: true });
+  writeFileSync(path.join(emptyDir, "per-stage-commitments.json"), "[]\n");
+  const emptyVerdict = verifySaved(emptyDir);
+  if (emptyVerdict.ok) {
+    throw new Error("empty table unexpectedly verified");
+  }
+  tampers.push({
+    id: "empty-table",
+    ok: true,
+    detail: emptyVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  const corruptDir = path.join(evidenceDir, "tampers", "corrupt-jsonl");
+  rmSync(corruptDir, { recursive: true, force: true });
+  mkdirSync(corruptDir, { recursive: true });
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = table.find((r) => r.pair === "G01-matching-stages")!;
+  const badTrace = path.join(corruptDir, "trace");
+  mkdirSync(badTrace, { recursive: true });
+  writeFileSync(path.join(badTrace, "run_corrupt.jsonl"), "{not-json\n");
+  row.left.traceDir = badTrace;
+  writeFileSync(
+    path.join(corruptDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  const corruptVerdict = verifySaved(corruptDir);
+  if (corruptVerdict.ok) {
+    throw new Error("corrupt JSONL unexpectedly verified");
+  }
+  const status = corruptVerdict.pairs[0]?.integrity[0]?.status;
+  if (status !== "corrupt_jsonl") {
+    throw new Error(`corrupt JSONL expected corrupt_jsonl status, got ${status}`);
+  }
+  tampers.push({
+    id: "corrupt-jsonl",
+    ok: true,
+    detail: corruptVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  // Substring false positive: foreign runId that appears inside another string field.
+  const subDir = path.join(evidenceDir, "tampers", "substring-run");
+  rmSync(subDir, { recursive: true, force: true });
+  mkdirSync(subDir, { recursive: true });
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = structuredClone(
+    table.find((r) => r.pair === "G01-matching-stages")!,
+  );
+  const fakeTrace = path.join(subDir, "trace");
+  mkdirSync(fakeTrace, { recursive: true });
+  const decoy = `prefix-${row.left.runId}-suffix`;
+  writeFileSync(
+    path.join(fakeTrace, "run_decoy.jsonl"),
+    `${JSON.stringify({
+      schemaVersion: "0.1",
+      event: "run_started",
+      runId: "run_unrelated_physical",
+      name: "decoy",
+      metadata: {
+        cohortId: row.left.cohortId,
+        testCaseId: row.left.testCaseId,
+        executionId: row.left.executionId,
+        note: decoy,
+      },
+    })}\n`,
+  );
+  row.left.traceDir = fakeTrace;
+  writeFileSync(
+    path.join(subDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  const subVerdict = verifySaved(subDir);
+  if (subVerdict.ok) {
+    throw new Error("substring runId hit unexpectedly verified");
+  }
+  tampers.push({
+    id: "substring-run",
+    ok: true,
+    detail: subVerdict.failures[0] ?? "rejected",
+  });
+}
+
+for (const t of tampers) {
+  if (!t.ok) {
+    throw new Error(`tamper ${t.id} did not fail verification: ${t.detail}`);
+  }
+  console.log(`tamper-control: ${t.id} rejected as expected`);
+}
+
+// Original packet must still verify after tampers on copies.
+if (!verifySaved(evidenceDir).ok) {
+  throw new Error("original evidence packet was mutated by tampers");
+}
+console.log("tamper-control: digest mismatch detected as expected");
 
 // Harness checks
-const g01 = pairResults.find((r) => r.name === "G01-matching-stages");
-const g02 = pairResults.find((r) => r.name === "G02-changed-retrieval");
-const g03 = pairResults.find((r) => r.name === "G03-missing-right-capture");
-const g04 = pairResults.find((r) => r.name === "G04-sampling-changed");
-const g05 = pairResults.find((r) => r.name === "G05-incompatible-cohort");
-const g06 = pairResults.find((r) => r.name === "G06-missing-grader");
-const g07 = pairResults.find((r) => r.name === "G07-declared-commitment-lie");
-if (!g01 || g01.class !== "equivalent_stage_inputs") {
+const byName = Object.fromEntries(pairResults.map((r) => [r.name, r]));
+const g01r = byName["G01-matching-stages"];
+const g02r = byName["G02-changed-retrieval"];
+const g03r = byName["G03-missing-right-capture"];
+const g04r = byName["G04-sampling-changed"];
+const g05r = byName["G05-incompatible-cohort"];
+const g06r = byName["G06-missing-grader"];
+const g07r = byName["G07-declared-commitment-lie"];
+if (!g01r || g01r.class !== "equivalent_stage_inputs") {
   throw new Error("G01 must be equivalent_stage_inputs from two measured captures");
 }
-if (!g02 || g02.class !== "changed_retrieval_boundary" || g02.changedStage !== "tool_output") {
+if (!g02r || g02r.class !== "changed_retrieval_boundary" || g02r.changedStage !== "tool_output") {
   throw new Error("G02 must report changed tool_output retrieval boundary");
 }
-if (!g03 || g03.class !== "partial_unknown") {
+if (!g03r || g03r.class !== "partial_unknown") {
   throw new Error("G03 must be insufficient when one capture is missing");
 }
-if (!g04 || g04.class !== "sampling_or_model_changed") {
+if (!g04r || g04r.class !== "sampling_or_model_changed") {
   throw new Error("G04 must be sampling_or_model_changed");
 }
-if (!g05 || g05.class !== "incompatible_scope") {
+if (!g05r || g05r.class !== "incompatible_scope") {
   throw new Error("G05 must be incompatible_scope");
 }
-if (!g06 || g06.class !== "grader_unproven") {
+if (g05r.right?.cohortId !== "other-cohort" || g05r.left.cohortId !== "support-refund-cohort") {
+  throw new Error("G05 table cohort must match captured metadata");
+}
+if (!g06r || g06r.class !== "grader_unproven") {
   throw new Error("G06 must be grader_unproven");
 }
-if (!g07 || g07.class !== "commitment_mismatch") {
+if (!g07r || g07r.class !== "commitment_mismatch") {
   throw new Error("G07 must fail when declared commitment mismatches measured bytes");
 }
-if (!g01.leftRunId || !g01.rightRunId || g01.leftRunId === g01.rightRunId) {
+if (!g07r.left.declaredToolCommitment) {
+  throw new Error("G07 must retain declaredToolCommitment on the saved left side");
+}
+if (!g01r.left.runId || !g01r.right?.runId || g01r.left.runId === g01r.right.runId) {
   throw new Error("G01 requires two distinct physical run IDs");
 }
 if (stageTable.length !== 7) {
   throw new Error(`expected 7 stage-table rows, got ${stageTable.length}`);
+}
+// Console run IDs must equal table/manifest run IDs (same physical captures).
+for (const row of stageTable) {
+  const printed = byName[row.pair];
+  if (!printed) throw new Error(`missing printed row ${row.pair}`);
+  if (printed.left.runId !== row.left.runId) {
+    throw new Error(`${row.pair}: console left runId differs from table`);
+  }
+  if ((printed.right?.runId ?? null) !== (row.right?.runId ?? null)) {
+    throw new Error(`${row.pair}: console right runId differs from table`);
+  }
 }

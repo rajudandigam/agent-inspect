@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { Redactor } from "../../src/logs/redactor.js";
+import { resolveRedactionProfile } from "../../src/redaction-profiles.js";
 
 describe("redaction (pre-v1.0 conformance)", () => {
   it("redacts default sensitive keys", () => {
@@ -25,6 +26,21 @@ describe("redaction (pre-v1.0 conformance)", () => {
     const a = r.redactValue("secretRef", "same");
     const b = r.redactValue("secretRef", "same");
     expect(a).toBe(b);
+  });
+
+  it("strict profile redacts repeated serialized stacks without a privacy certificate", () => {
+    const pathCanary = "/tmp/synthetic-private/uduak-secret.txt";
+    const redactor = new Redactor({
+      extraKeys: resolveRedactionProfile("strict").extraKeys,
+    });
+    const out = redactor.redactRecord({
+      copies: [{ stack: pathCanary, errorStack: pathCanary, stackTrace: pathCanary }],
+      operationId: "tenant-residual-not-a-stack",
+    });
+    expect(JSON.stringify(out)).not.toContain(pathCanary);
+    expect(out.operationId).toBe("tenant-residual-not-a-stack");
+    expect(out).not.toHaveProperty("stackPolicySatisfied");
+    expect(resolveRedactionProfile("strict").extraKeys).not.toContain("operationId");
   });
 
   it("redacts nested objects", () => {

@@ -1,0 +1,6 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1793311696702,"runId":"run_jshsJtc5hr","name":"O06-partial-identity","startTime":1793311696702}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696703,"runId":"run_jshsJtc5hr","stepId":"step_2CBi192xU2","name":"retrieve_policy","type":"tool","startTime":1793311696703,"metadata":{"toolName":"retrieve_policy","attemptNumber":1}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696703,"runId":"run_jshsJtc5hr","stepId":"step_2CBi192xU2","status":"success","endTime":1793311696703,"durationMs":0}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696704,"runId":"run_jshsJtc5hr","stepId":"step_nj2_ng52ZI","name":"retrieve_policy","type":"tool","startTime":1793311696704,"metadata":{"toolName":"retrieve_policy"}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696704,"runId":"run_jshsJtc5hr","stepId":"step_nj2_ng52ZI","status":"success","endTime":1793311696704,"durationMs":0}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1793311696704,"runId":"run_jshsJtc5hr","status":"success","endTime":1793311696704,"durationMs":2}

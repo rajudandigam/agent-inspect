@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "packetId": "otlp-identity-003-2026-10-29",
+  "relatedIssue": "https://github.com/rajudandigam/agent-inspect/issues/484",
+  "description": "Full F04 controlled OTLP identity evidence (O01–O07 matrix plus A03/A14/AR01/AR04 adjunct cases). Local JSONL export, default OTLP JSON, and read-back TraceContract parity only.",
+  "capturedAt": "2026-10-29",
+  "packageVersion": "6.31.29",
+  "sourceGitSha": "cb74e6b1d6d749fc6fcc01d00e4a18bca7d494e5",
+  "generator": {
+    "script": "scripts/f04-otlp-identity-evidence.mjs",
+    "exitCode": 0,
+    "failures": 0
+  },
+  "notIncluded": [
+    "Honeycomb, Refinery, or live OpenTelemetry Collector validation",
+    "Billing or invoice impact claims",
+    "Partner acceptance or EVIDENCE_GATE approval",
+    "Customer data or private workspace logs"
+  ],
+  "historicalSubsetNote": "Draft PR #513 docs/evidence/2026-10-22/ remains the unchanged 6.31.23 browsable subset; this packet is a fresh full-matrix run at 6.31.29.",
+  "files": [
+    {
+      "path": "A03-opaque-eventid-suffix.contract-results.json",
+      "bytes": 321,
+      "sha256": "adfe33dfec2b9dadf3d18406f52afcab1018030f1f1363ebb456c47ee701c5c8"
+    },
+    {
+      "path": "A03-opaque-eventid-suffix.default-otlp.json",
+      "bytes": 4764,
+      "sha256": "88fab14f20600e8c5f37d986ba6f5eb1ff2ac02b709726deb21156a1e1fa387c"
+    },
+    {
+      "path": "A03-opaque-eventid-suffix.source.jsonl",
+      "bytes": 708,
+      "sha256": "7d53db4243976b3d43db25bf2fc8e34c5df5aedb2218365675ec6591b4db3352"
+    },
+    {
+      "path": "A14-direct-nested-conflict.contract-results.json",
+      "bytes": 626,
+      "sha256": "84da34decaf2fc4475f11e2ea2f30e10b59049e3f61e5bbd85492cc2583170b6"
+    },
+    {
+      "path": "A14-direct-nested-conflict.default-otlp.json",
+      "bytes": 3825,
+      "sha256": "5701f0a16dbf198c542fb926aa882a735d0d451729e115fa4cf4cc29ddc86f76"
+    },
+    {
+      "path": "A14-direct-nested-conflict.source.jsonl",
+      "bytes": 484,
+      "sha256": "fdca00cddfd533a4eb9728f9fca615ccbe851d92306c67e521d82d1149892d3a"
+    },
+    {
+      "path": "AR01-long-identity-collision.contract-results.json",
+      "bytes": 307,
+      "sha256": "6ab3701208f1179c535c94e32250da1a71c376234c0837ea9e0e85b1b98004b0"
+    },
+    {
+      "path": "AR01-long-identity-collision.default-otlp.json",
+      "bytes": 3966,
+      "sha256": "7ec4106c8cc569d5f8010aaa24decf3bcc222496e272113786789d66ffa2a70e"
+    },
+    {
+      "path": "AR01-long-identity-collision.source.jsonl",
+      "bytes": 1400,
+      "sha256": "36f784e101aa5a2cbe33d8a62d1ed5db314a66940eb5fa98788e26defadabf37"
+    },
+    {
+      "path": "AR04-native-synthetic-shaped.contract-results.json",
+      "bytes": 303,
+      "sha256": "acb8d7f9e1366f3cb45e6f7cd57c218d4f0ace781e76bc852b4a675a7b2cee17"
+    },
+    {
+      "path": "AR04-native-synthetic-shaped.default-otlp.json",
+      "bytes": 4790,
+      "sha256": "5403a822ef19331b50ae8206d0710fa1555428408ae45651a1c1a98b12c95b95"
+    },
+    {
+      "path": "AR04-native-synthetic-shaped.source.jsonl",
+      "bytes": 734,
+      "sha256": "0f2c27a499c234ef5c2c4bcee63bae2572cc211ec048749d84fb678ec4ad9f5b"
+    },
+    {
+      "path": "COMMANDS.md",
+      "bytes": 1262,
+      "sha256": "d50838ed2e9518d5da1d72feacde4621a509ee4fe8276d3807d7f9d2109fc7a9"
+    },
+    {
+      "path": "INDEX.md",
+      "bytes": 2994,
+      "sha256": "f55f091c0d918072c88982b3ebf3ac377ad72f81ddc946d5027c8bcd378d3f70"
+    },
+    {
+      "path": "LIMITS.md",
+      "bytes": 2897,
+      "sha256": "0e30cf7f4705cec9d77a2d8effcb525437ff0ac6ed9ee050355f1ac633880e55"
+    },
+    {
+      "path": "MAPPING-NOTES.md",
+      "bytes": 1748,
+      "sha256": "0bea61b32db0b7b1b13476a880b396e2f9d459afd33d4ea907726f265bf40e0e"
+    },
+    {
+      "path": "O01-robb-one-op-two-attempts.contract-results.json",
+      "bytes": 197,
+      "sha256": "dfdfcacd397031d16e93f495063e49fb7a932dea4839605e162d2e80ef1a1609"
+    },
+    {
+      "path": "O01-robb-one-op-two-attempts.default-otlp.json",
+      "bytes": 7227,
+      "sha256": "7e685b08a0d87a66fe884c555d3d1cd19181e5a915adaf208fa0936e9a1b1a04"
+    },
+    {
+      "path": "O01-robb-one-op-two-attempts.source.jsonl",
+      "bytes": 1712,
+      "sha256": "ecb0b4a46b76bf0bd590e26272b21d673bd005875110e028dd30478d933c0f4e"
+    },
+    {
+      "path": "O02-roy-three-attempts.contract-results.json",
+      "bytes": 215,
+      "sha256": "6e086eab62d7a413864516f221fb79050cb0c00dad6644dd61fed3869954b94b"
+    },
+    {
+      "path": "O02-roy-three-attempts.default-otlp.json",
+      "bytes": 8124,
+      "sha256": "0b061f4bfdd2d757282b3d6401cb8f36623ab11a3c4d483a32616fdabfbbbd7c"
+    },
+    {
+      "path": "O02-roy-three-attempts.source.jsonl",
+      "bytes": 3304,
+      "sha256": "1225ebf0cdac87239a9d68b7e91c67b70fc30a4f9c0d4e62d6fe239fd978c1b0"
+    },
+    {
+      "path": "O03-two-ops-four-attempts.contract-results.json",
+      "bytes": 267,
+      "sha256": "f276f084ba7ec7e83e26b070442b892fc1e678c9001672c011e0e9f936f9d7b9"
+    },
+    {
+      "path": "O03-two-ops-four-attempts.default-otlp.json",
+      "bytes": 10478,
+      "sha256": "84b4d14b6a28fd5c3950d4bb0eb542debd413eebd50f0656018d5c8225e6cfc0"
+    },
+    {
+      "path": "O03-two-ops-four-attempts.source.jsonl",
+      "bytes": 2257,
+      "sha256": "71275f71c5a8350f8b2efd88ff08bd9ba1dbbc492f514901153a99e10fe30c8a"
+    },
+    {
+      "path": "O04-second-physical-run.contract-results.json",
+      "bytes": 197,
+      "sha256": "dfdfcacd397031d16e93f495063e49fb7a932dea4839605e162d2e80ef1a1609"
+    },
+    {
+      "path": "O04-second-physical-run.default-otlp.json",
+      "bytes": 5425,
+      "sha256": "ab7141a8b097d1dbdaeb4ab76fb6bc43d2c700bb1e43f79fa22ece9ae72d5004"
+    },
+    {
+      "path": "O04-second-physical-run.source.jsonl",
+      "bytes": 1272,
+      "sha256": "8e573824c9619e246850db684cb44df6af97e20b1bffb136abb78197da08631d"
+    },
+    {
+      "path": "O05-identity-collision.contract-results.json",
+      "bytes": 865,
+      "sha256": "628b7a9749433679931f86571d15c2aa8f4ec92013026f6058fa6e661fb44871"
+    },
+    {
+      "path": "O05-identity-collision.default-otlp.json",
+      "bytes": 5248,
+      "sha256": "ed2bb84faa7c3d97d10d9e6234e4d82d38386d7175718795d5699a5376002c4b"
+    },
+    {
+      "path": "O05-identity-collision.source.jsonl",
+      "bytes": 1256,
+      "sha256": "083f3a336b78a12cbda59ac96e99791598bae688d838e40819f0c5eb81db0e77"
+    },
+    {
+      "path": "O05-repeated-delivery-base.default-otlp.json",
+      "bytes": 5425,
+      "sha256": "1ef21d25468d68309f3782c74acfb28d499c97a6d09474b33ff3ef4e9bcbfb2e"
+    },
+    {
+      "path": "O05-repeated-delivery-base.source.jsonl",
+      "bytes": 1275,
+      "sha256": "53a630882a26ecbd1b0bf7c2ae0c9dd13bd32ab4dc9c7c8b4cd1a8127320c425"
+    },
+    {
+      "path": "O05-repeated-delivery.contract-results.json",
+      "bytes": 594,
+      "sha256": "5fd7039bfba96b1eee4ad9a89a2f3ff8b54b5ffd62c4204ae5c024506f9fd5de"
+    },
+    {
+      "path": "O05-repeated-delivery.default-otlp.json",
+      "bytes": 5425,
+      "sha256": "1ef21d25468d68309f3782c74acfb28d499c97a6d09474b33ff3ef4e9bcbfb2e"
+    },
+    {
+      "path": "O05-repeated-delivery.source.jsonl",
+      "bytes": 2550,
+      "sha256": "57a106af61d24de69ef126c79a5463ad34814ba42eb9e7fa86113e1e15bdb387"
+    },
+    {
+      "path": "O06-partial-identity.contract-results.json",
+      "bytes": 326,
+      "sha256": "d4f9075a1c50b0904997a5e4401145f1223656faef262387e4a2d5b43e901e39"
+    },
+    {
+      "path": "O06-partial-identity.default-otlp.json",
+      "bytes": 4347,
+      "sha256": "7820bac09a2a09a50598dba345f5f0be15f25c7e73556645ef49a2a524b4abce"
+    },
+    {
+      "path": "O06-partial-identity.source.jsonl",
+      "bytes": 1162,
+      "sha256": "a007bc3016859a3d81165a7e71296dbfc3badccd5bd54f3397ccbc5bbb0b696d"
+    },
+    {
+      "path": "O07-equal-args-distinct-ops.default-otlp.json",
+      "bytes": 5248,
+      "sha256": "269582256521d2309940f28567db449ef8d25e32465d6b516355bb71011f0a2a"
+    },
+    {
+      "path": "O07-equal-args-distinct-ops.source.jsonl",
+      "bytes": 1319,
+      "sha256": "4b5e863336b725983d8d38152b000e9c88922011e11ed8f30a3dbf5df2a182f1"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1495,
+      "sha256": "b3f8d4170e475cae7236ce18fec31c6d3b796911faa36a967d8dcdf4dd8d7c13"
+    },
+    {
+      "path": "mapping-and-loss-table.json",
+      "bytes": 6760,
+      "sha256": "60641430d9dd8fe9174596e34b5c0c60fb9b77cd5d5f5b41ebfa6494b8af499d"
+    },
+    {
+      "path": "traces/O01-robb-one-op-two-attempts/run_cqkHHw521n.jsonl",
+      "bytes": 1712,
+      "sha256": "ecb0b4a46b76bf0bd590e26272b21d673bd005875110e028dd30478d933c0f4e"
+    },
+    {
+      "path": "traces/O02-roy-three-attempts/run_fFpT56jY9c.jsonl",
+      "bytes": 3304,
+      "sha256": "1225ebf0cdac87239a9d68b7e91c67b70fc30a4f9c0d4e62d6fe239fd978c1b0"
+    },
+    {
+      "path": "traces/O03-two-ops-four-attempts/run_U0WeCSZrwN.jsonl",
+      "bytes": 2257,
+      "sha256": "71275f71c5a8350f8b2efd88ff08bd9ba1dbbc492f514901153a99e10fe30c8a"
+    },
+    {
+      "path": "traces/O04-second-physical-run/run_tqPxyQ4s3c.jsonl",
+      "bytes": 1272,
+      "sha256": "8e573824c9619e246850db684cb44df6af97e20b1bffb136abb78197da08631d"
+    },
+    {
+      "path": "traces/O05-identity-collision/run_Iwm437qJ0q.jsonl",
+      "bytes": 1256,
+      "sha256": "083f3a336b78a12cbda59ac96e99791598bae688d838e40819f0c5eb81db0e77"
+    },
+    {
+      "path": "traces/O05-repeated-delivery-base/run_7IKz7akMuI.jsonl",
+      "bytes": 1275,
+      "sha256": "53a630882a26ecbd1b0bf7c2ae0c9dd13bd32ab4dc9c7c8b4cd1a8127320c425"
+    },
+    {
+      "path": "traces/O06-partial-identity/run_jshsJtc5hr.jsonl",
+      "bytes": 1162,
+      "sha256": "a007bc3016859a3d81165a7e71296dbfc3badccd5bd54f3397ccbc5bbb0b696d"
+    },
+    {
+      "path": "traces/O07-equal-args-distinct-ops/run_Lv99TDwqnc.jsonl",
+      "bytes": 1319,
+      "sha256": "4b5e863336b725983d8d38152b000e9c88922011e11ed8f30a3dbf5df2a182f1"
+    }
+  ],
+  "pathSanitization": {
+    "appliedAt": "2026-10-30",
+    "rule": "Replace absolute capture-host workspace roots in shareable JSONL error stacks with the token <repo>",
+    "filesTouched": [
+      "O02-roy-three-attempts.source.jsonl",
+      "traces/O02-roy-three-attempts/run_fFpT56jY9c.jsonl"
+    ],
+    "note": "Identity fields (runId/stepId/attemptId/operationId) unchanged; original capture SHA preserved in sourceGitSha; this is a shareable derivative scrub of stack strings only."
+  }
+}

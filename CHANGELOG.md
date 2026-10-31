@@ -1,5 +1,55 @@
 # Changelog
 
+## 6.31.31
+
+### Patch Changes
+
+- 1ca1c11: Oct 30 residuals: stricter saved-evidence verifiers, HTML attempt-preserving lifecycle presentation, Om beyond-budget readiness guard, Jan packed MCP SDK assertions, Roy path-scrubbed -003 packet and UNPROVABLE receipt fixtures, and status/docs reconcile.
+
+## 6.31.30
+
+### Patch Changes
+
+- 35923dd: Join sibling start/complete lifecycle rows in HTML/Markdown presentation and coalesce bundle HTML trees so completed steps are not shown as still running.
+- f1c1752: Nest tenant recipe now executes real SupportService/PolicyService seams and scores consumption from reopened saved outcomes (N01–N08), not in-memory joinOk.
+- f664b85: Om browser recipe records injected-clock wait/readiness diagnostics (document, in-flight, obstruction, elapsed/budget/remaining, stop reason) without inventing overlay from LocatorNotFound.
+
+## 6.31.29
+
+### Patch Changes
+
+- dcd714d: Tighten saved-evidence recipe controls: timeout-ledger same-run/marker/claim coverage, comparable-cohort one-pass reopen verification, and Nest opaque tenant/operation refs.
+
+## 6.31.28
+
+### Patch Changes
+
+- e65e944: Check the broken-agent starter with the typed tool-before-answer order relation, including a reversed path that fails only that relation.
+
+## 6.31.27
+
+### Patch Changes
+
+- 473c918: Recompute timeout-ledger verdicts from saved traces so a corrected operation join cannot hide a changed retry amount.
+
+## 6.31.26
+
+### Patch Changes
+
+- 4dc9588: Record an MCP SDK `isError: true` tool result as a failed outcome without throwing or changing the returned value.
+
+## 6.31.25
+
+### Patch Changes
+
+- 67563a2: Replace serialized stack, errorStack, and stackTrace values under the strict profile, including nested copies, so private message text and absolute paths cannot survive derived strict artifacts while checks still report SAFE.
+
+## 6.31.24
+
+### Patch Changes
+
+- 9058e64: Describe MCP runId as an existing local run from the listing tools, and describe find_slowest_path as the legacy alias of get_slowest_path.
+
 ## 6.31.23
 
 ### Patch Changes

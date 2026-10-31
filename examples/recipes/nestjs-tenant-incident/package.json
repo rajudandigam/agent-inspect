@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "verify-saved": "tsx src/verify-cli.ts"
   },
   "dependencies": {
     "@nestjs/common": "10.4.20",

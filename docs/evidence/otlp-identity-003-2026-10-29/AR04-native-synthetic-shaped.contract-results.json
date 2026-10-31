@@ -1,0 +1,11 @@
+{
+  "note": "Native manual:…:1 / :2 without delivery_event_base must FAIL duplicate-attempt-id in both formats.",
+  "sourceStatus": "fail",
+  "otlpStatus": "fail",
+  "sourceFindings": [
+    "contract.retry.duplicate-attempt-id"
+  ],
+  "otlpFindings": [
+    "contract.retry.duplicate-attempt-id"
+  ]
+}

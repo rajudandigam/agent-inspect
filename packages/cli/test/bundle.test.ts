@@ -1,10 +1,14 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { resolveRedactionProfile } from "@agent-inspect/core/advanced";
+import { createRedactionProfile } from "@agent-inspect/redact";
 
 import { bundleCommand } from "../src/bundle.js";
 
@@ -39,6 +43,20 @@ function event(
 
 async function writeTrace(dir: string, name: string, rows: unknown[]): Promise<void> {
   await writeFile(path.join(dir, name), jsonl(...rows), "utf-8");
+}
+
+async function readTreeText(dir: string): Promise<string> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const parts: string[] = [];
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      parts.push(await readTreeText(full));
+    } else {
+      parts.push(await readFile(full, "utf-8"));
+    }
+  }
+  return parts.join("\n");
 }
 
 describe("bundle command", () => {
@@ -172,6 +190,57 @@ describe("bundle command", () => {
     await bundleCommand("run-bundle-mtime", { dir: tmp, out: outputDir });
     const after = (await stat(tracePath)).mtimeMs;
     expect(after).toBe(before);
+  });
+
+  it("strict bundle removes stack canaries from every derived file and leaves the source bytes", async () => {
+    const message = "synthetic-private-sentence-uduak";
+    const pathCanary = "/tmp/synthetic-private/uduak-secret.txt";
+    const stack = `Error: ${message}\n    at frame (${pathCanary}:1:1)`;
+    const tracePath = path.join(tmp, "run-strict-stack.jsonl");
+    const source = jsonl(
+      event("event-a", {
+        runId: "run-strict-stack",
+        status: "error",
+        error: { message, name: "Error" },
+        attributes: {
+          errorStack: stack,
+          stackTrace: stack,
+          cause: { message, stack },
+          copies: [{ stack, errorStack: stack, stackTrace: stack }],
+          operationId: "tenant-residual-not-a-stack",
+        },
+      }),
+    );
+    await writeFile(tracePath, source, "utf-8");
+    const before = createHash("sha256").update(source).digest("hex");
+    const outputDir = path.join(tmp, "bundle-strict-stack");
+
+    await bundleCommand("run-strict-stack", {
+      dir: tmp,
+      out: outputDir,
+      profile: "strict",
+      json: true,
+    });
+
+    expect(process.exitCode ?? 0).toBe(0);
+    const after = createHash("sha256")
+      .update(await readFile(tracePath, "utf-8"))
+      .digest("hex");
+    expect(after).toBe(before);
+    expect(await readFile(tracePath, "utf-8")).toContain(pathCanary);
+
+    const derived = await readTreeText(outputDir);
+    expect(derived).not.toContain(message);
+    expect(derived).not.toContain(pathCanary);
+    expect(derived).toContain("tenant-residual-not-a-stack");
+    expect(derived).not.toContain("stackPolicySatisfied");
+
+    const coreKeys = resolveRedactionProfile("strict").extraKeys;
+    const redactKeys = createRedactionProfile("strict").extraKeys;
+    for (const key of ["stack", "errorStack", "stackTrace"]) {
+      expect(coreKeys).toContain(key);
+      expect(redactKeys).toContain(key);
+    }
   });
 
   it("strips .zip suffix from --out to a folder path", async () => {

@@ -1,4 +1,4 @@
-import { step } from "agent-inspect";
+import { observeOutcome, step } from "agent-inspect";
 
 import { hashServerUrl, summarizeMcpValue } from "./summarize.js";
 import type {
@@ -9,6 +9,45 @@ import type {
 } from "./types.js";
 
 let toolCallCounter = 0;
+
+function resultReportsToolError(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  if (record.isError === true) return true;
+  const nested = record.toolResult;
+  if (!nested || typeof nested !== "object") return false;
+  return (nested as Record<string, unknown>).isError === true;
+}
+
+function boundedId(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  if (trimmed === "" || trimmed.length > 200) return undefined;
+  return trimmed;
+}
+
+async function recordToolResultOutcome(
+  toolName: string,
+  toolCallId: string,
+  result: unknown,
+  callMetadata: Record<string, unknown>,
+): Promise<void> {
+  if (!resultReportsToolError(result)) return;
+  const operationId = boundedId(callMetadata.operationId);
+  const attemptId = boundedId(callMetadata.attemptId);
+  await observeOutcome(`mcp:${toolName}:tool-result`, {
+    expectation: "MCP tool result is not an error",
+    status: "failed",
+    method: "custom",
+    evidence: {
+      toolFailure: true,
+      toolName,
+      toolCallId,
+      ...(operationId !== undefined ? { operationId } : {}),
+      ...(attemptId !== undefined ? { attemptId } : {}),
+    },
+  });
+}
 
 function nextToolCallId(prefix?: string): string {
   toolCallCounter += 1;
@@ -233,15 +272,29 @@ export function wrapMcpClient<T extends McpClientLike>(
       maybeOptions,
     );
 
+    const toolCallId = nextToolCallId(options.toolCallIdPrefix);
     return step(
       `mcp:${params.name}`,
-      async () =>
-        invokeCallTool(callToolImpl, params, resultSchema, requestOptions),
+      async () => {
+        const result = await invokeCallTool(
+          callToolImpl,
+          params,
+          resultSchema,
+          requestOptions,
+        );
+        await recordToolResultOutcome(
+          params.name,
+          toolCallId,
+          result,
+          callMetadata,
+        );
+        return result;
+      },
       {
         type: "tool",
         metadata: baseMetadata(options, {
           toolName: params.name,
-          toolCallId: nextToolCallId(options.toolCallIdPrefix),
+          toolCallId,
           argumentSummary: summarizeMcpValue(
             params.arguments ?? {},
             maxSummaryLength,

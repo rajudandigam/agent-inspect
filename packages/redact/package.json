@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/redact",
-  "version": "6.31.23",
+  "version": "6.31.31",
   "license": "MIT",
   "type": "module",
   "description": "Reusable deterministic redaction utilities for local AgentInspect workflows",

@@ -1,0 +1,31 @@
+{
+  "caseId": "B-missing-attempt-identity",
+  "contractVersion": "proposed-437-v0",
+  "partnerRequest": "absent attempt identity → UNPROVABLE for operation-grain attribution (no invented attemptId)",
+  "receiptScope": {
+    "endpoint": "tool:synthetic_write",
+    "target": "tenant-synthetic-roy-01"
+  },
+  "requestedAttributionGrain": "operation_attempt",
+  "probe": {
+    "runId": "run_syn_missing_attempt",
+    "operationId": "op-syn-2",
+    "attemptId": null,
+    "idempotencyKey": "key-syn-missing-attempt",
+    "note": "Adapter/fixture may express partner UNPROVABLE; AgentInspect preserves the missing evidence and must not invent attemptId."
+  },
+  "controlCompleteIdentity": {
+    "runId": "run_syn_complete_attempt",
+    "operationId": "op-syn-2",
+    "attemptId": "att-1",
+    "idempotencyKey": "key-syn-complete-attempt",
+    "note": "Complete identity retains supported attribution."
+  },
+  "expected": {
+    "probeAttribution": "UNPROVABLE",
+    "controlAttribution": "ATTRIBUTABLE",
+    "inventAttemptId": false,
+    "redefineCoreSchema": false,
+    "rationale": "Operation-grain attempt attribution requires attempt identity. Missing attemptId yields UNPROVABLE rather than guessed parent attribution."
+  }
+}

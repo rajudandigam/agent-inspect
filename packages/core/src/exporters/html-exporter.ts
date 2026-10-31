@@ -8,6 +8,7 @@ import {
   safeString,
   stableJson,
 } from "./helpers.js";
+import { presentLifecycleJoinedTree } from "./presentation-lifecycle.js";
 
 function renderTreeHtml(nodes: InspectNode[], ulClass = "tree"): string {
   if (nodes.length === 0) return "";
@@ -39,35 +40,37 @@ export function exportHtml(tree: InspectRunTree, options?: Partial<ExportOptions
   const includeErrors = options?.includeErrors ?? true;
   const maxLen = options?.maxAttributeLength ?? 500;
   const redacted = options?.redacted ?? true;
+  // Presentation join only — does not mutate the caller tree or source events.
+  const view = presentLifecycleJoinedTree(tree);
 
-  const titleName = escapeHtml(tree.name ?? tree.runId);
+  const titleName = escapeHtml(view.name ?? view.runId);
 
   const summaryRows: string[] = [];
   summaryRows.push(
-    `<tr><th scope="row">runId</th><td><code>${escapeHtml(tree.runId)}</code></td></tr>`,
+    `<tr><th scope="row">runId</th><td><code>${escapeHtml(view.runId)}</code></td></tr>`,
   );
-  if (tree.name !== undefined) {
-    summaryRows.push(`<tr><th scope="row">name</th><td>${escapeHtml(tree.name)}</td></tr>`);
+  if (view.name !== undefined) {
+    summaryRows.push(`<tr><th scope="row">name</th><td>${escapeHtml(view.name)}</td></tr>`);
   }
   summaryRows.push(
-    `<tr><th scope="row">status</th><td>${escapeHtml(String(tree.status ?? "unknown"))}</td></tr>`,
+    `<tr><th scope="row">status</th><td>${escapeHtml(String(view.status ?? "unknown"))}</td></tr>`,
   );
   summaryRows.push(
-    `<tr><th scope="row">durationMs</th><td>${tree.durationMs !== undefined ? escapeHtml(String(tree.durationMs)) : "—"}</td></tr>`,
+    `<tr><th scope="row">durationMs</th><td>${view.durationMs !== undefined ? escapeHtml(String(view.durationMs)) : "—"}</td></tr>`,
   );
   summaryRows.push(
-    `<tr><th scope="row">startedAt</th><td>${tree.startedAt !== undefined ? escapeHtml(String(tree.startedAt)) : "—"}</td></tr>`,
+    `<tr><th scope="row">startedAt</th><td>${view.startedAt !== undefined ? escapeHtml(String(view.startedAt)) : "—"}</td></tr>`,
   );
   summaryRows.push(
-    `<tr><th scope="row">endedAt</th><td>${tree.endedAt !== undefined ? escapeHtml(String(tree.endedAt)) : "—"}</td></tr>`,
+    `<tr><th scope="row">endedAt</th><td>${view.endedAt !== undefined ? escapeHtml(String(view.endedAt)) : "—"}</td></tr>`,
   );
   summaryRows.push(
-    `<tr><th scope="row">totalEvents</th><td>${escapeHtml(String(tree.metadata.totalEvents))}</td></tr>`,
+    `<tr><th scope="row">totalEvents</th><td>${escapeHtml(String(view.metadata.totalEvents))}</td></tr>`,
   );
 
   let confidenceHtml = "";
   if (includeMetadata) {
-    const cb = tree.metadata.confidenceBreakdown;
+    const cb = view.metadata.confidenceBreakdown;
     confidenceHtml += "<h3>Confidence breakdown</h3><table><thead><tr><th>bucket</th><th>count</th></tr></thead><tbody>";
     for (const k of Object.keys(cb).sort()) {
       const key = k as keyof typeof cb;
@@ -76,15 +79,15 @@ export function exportHtml(tree: InspectRunTree, options?: Partial<ExportOptions
     confidenceHtml += "</tbody></table>";
 
     confidenceHtml += "<h3>Kind breakdown</h3><table><thead><tr><th>kind</th><th>count</th></tr></thead><tbody>";
-    for (const k of Object.keys(tree.metadata.kinds).sort()) {
-      const key = k as keyof typeof tree.metadata.kinds;
-      const c = tree.metadata.kinds[key];
+    for (const k of Object.keys(view.metadata.kinds).sort()) {
+      const key = k as keyof typeof view.metadata.kinds;
+      const c = view.metadata.kinds[key];
       if (c > 0) confidenceHtml += `<tr><td>${escapeHtml(key)}</td><td>${c}</td></tr>`;
     }
     confidenceHtml += "</tbody></table>";
   }
 
-  const flat = flattenTree(tree);
+  const flat = flattenTree(view);
   const errors = flat.filter((n) => n.event.status === "error");
   let errorsHtml = "";
   if (includeErrors && errors.length > 0) {
@@ -145,7 +148,7 @@ footer{margin-top:2rem;font-size:0.85rem;color:#555}
 <header><h1>AgentInspect Run: ${titleName}</h1></header>
 <p class="note">Generated locally by AgentInspect.</p>
 ${includeMetadata ? `<section class="summary"><h2>Summary</h2><table>${summaryRows.join("")}</table>${confidenceHtml}</section>` : ""}
-<section class="tree"><h2>Execution tree</h2>${tree.children.length > 0 ? renderTreeHtml(tree.children) : "<p>No steps recorded.</p>"}</section>
+<section class="tree"><h2>Execution tree</h2>${view.children.length > 0 ? renderTreeHtml(view.children) : "<p>No steps recorded.</p>"}</section>
 ${errorsHtml}
 ${attrsHtml}
 <footer>Generated locally by AgentInspect. Review for sensitive data before sharing.</footer>

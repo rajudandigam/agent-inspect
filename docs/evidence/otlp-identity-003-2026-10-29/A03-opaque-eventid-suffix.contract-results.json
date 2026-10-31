@@ -1,0 +1,11 @@
+{
+  "note": "Native opaque eventId suffixes (execution:1 / execution:2) must not be stripped; duplicate-attempt-id on both formats.",
+  "sourceStatus": "fail",
+  "otlpStatus": "fail",
+  "sourceFindings": [
+    "contract.retry.duplicate-attempt-id"
+  ],
+  "otlpFindings": [
+    "contract.retry.duplicate-attempt-id"
+  ]
+}

@@ -1,0 +1,6 @@
+{"schemaVersion":"0.1","event":"run_started","timestamp":1793311696708,"runId":"run_Lv99TDwqnc","name":"O07-equal-args-distinct-ops","startTime":1793311696708}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696709,"runId":"run_Lv99TDwqnc","stepId":"step_cE6-ED6ZTP","name":"retrieve_policy","type":"tool","startTime":1793311696709,"metadata":{"toolName":"retrieve_policy","operationId":"opA","attemptId":"a1","attemptNumber":1,"arguments":{"policyId":"p"}}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696710,"runId":"run_Lv99TDwqnc","stepId":"step_cE6-ED6ZTP","status":"success","endTime":1793311696710,"durationMs":1}
+{"schemaVersion":"0.1","event":"step_started","timestamp":1793311696710,"runId":"run_Lv99TDwqnc","stepId":"step_tglNfgdwhi","name":"retrieve_policy","type":"tool","startTime":1793311696710,"metadata":{"toolName":"retrieve_policy","operationId":"opB","attemptId":"b1","attemptNumber":1,"arguments":{"policyId":"p"}}}
+{"schemaVersion":"0.1","event":"step_completed","timestamp":1793311696710,"runId":"run_Lv99TDwqnc","stepId":"step_tglNfgdwhi","status":"success","endTime":1793311696710,"durationMs":0}
+{"schemaVersion":"0.1","event":"run_completed","timestamp":1793311696711,"runId":"run_Lv99TDwqnc","status":"success","endTime":1793311696711,"durationMs":3}

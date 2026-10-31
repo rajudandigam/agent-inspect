@@ -16,6 +16,11 @@ import {
   type Page,
   type ScenarioInput,
 } from "./evaluate.js";
+import {
+  OM_WAIT_SCENARIOS,
+  runWaitScenario,
+  type WaitObservation,
+} from "./wait-diagnostics.js";
 
 const URL_REDACTION_OPTS = {
   sensitiveKeys: ["token", "key", "password", "secret", "authorization"],
@@ -321,6 +326,34 @@ await inspectRun(
       );
 
       const cmp = compareAttempts(a1, a2);
+
+      // Bounded wait/readiness facts from an injected clock (not LocatorNotFound→overlay).
+      const waitObservations: Record<string, WaitObservation> = {};
+      for (const scenario of OM_WAIT_SCENARIOS) {
+        const observation = runWaitScenario(scenario);
+        waitObservations[scenario.id] = observation;
+        await observeOutcome(`om.wait.${scenario.id}`, {
+          expectation: `synthetic wait scenario ${scenario.id} records bounded readiness facts`,
+          status:
+            observation.stopReason === "unknown-readiness" &&
+            observation.ready === "unknown"
+              ? "unknown"
+              : observation.ready === true ||
+                  observation.stopReason === "known-not-ready" ||
+                  observation.stopReason === "budget-exhausted" ||
+                  observation.stopReason === "completed-before-budget"
+                ? "passed"
+                : "failed",
+          method: "custom",
+          actual: observation,
+          evidence: {
+            clock: observation.clock,
+            scenarioId: scenario.id,
+            note: "Injected synthetic schedule; not a live browser/Playwright wait",
+          },
+        });
+      }
+
       await observeOutcome("om.attemptComparison", {
         expectation: "failed a1 then successful a2 with retryOf and observed transition",
         status:
@@ -337,6 +370,7 @@ await inspectRun(
             frame: a1.locator.frame,
             shadow: a1.locator.shadow,
             waitBudgetMs: a1.locator.waitBudgetMs,
+            note: "LocatorNotFound is not evidence of overlay/obstruction",
           },
           a2: {
             attemptId: a2.attemptId,
@@ -346,6 +380,7 @@ await inspectRun(
             observedTransition: a2.observedTransition,
           },
           comparison: cmp,
+          waitObservations,
         },
         evidence: {
           routeTemplate: a2.routeTemplate,
@@ -353,7 +388,7 @@ await inspectRun(
           note: "Controlled synthetic page/locator; not a claim a real browser supplied these values",
         },
       });
-      return cmp;
+      return { cmp, waitObservations };
     });
   },
   { silent, traceDir, metadata: { recipe: "browser-mcp-observed-outcomes" } },
@@ -381,11 +416,42 @@ console.log(
 
 console.log("om-attempt-comparison:");
 console.log(
-  "  a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100",
+  "  a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100 (LocatorNotFound≠overlay)",
 );
 console.log(
   "  a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id",
 );
+
+{
+  // Derive printed wait diagnostics from the same synthetic schedule records.
+  console.log("om-wait-diagnostics: clock=injected-synthetic");
+  for (const scenario of OM_WAIT_SCENARIOS) {
+    const o = runWaitScenario(scenario);
+    console.log(
+      `  ${scenario.id}: ready=${o.ready} doc=${o.documentLoading} inFlight=${o.inFlight} obstruction=${o.obstruction} elapsed=${o.elapsedMs}ms budget=${o.budgetMs}ms remaining=${o.remainingMs}ms stop=${o.stopReason}`,
+    );
+    if (o.elapsedMs === o.budgetMs && o.stopReason === "completed-before-budget") {
+      throw new Error("elapsed must not be hardcoded equal to budget for early completion");
+    }
+    if (
+      o.stopReason === "completed-before-budget" &&
+      !(o.elapsedMs < o.budgetMs && o.ready === true)
+    ) {
+      throw new Error("completed-before-budget requires ready with elapsed < budget");
+    }
+    if (o.stopReason === "budget-exhausted" && o.remainingMs !== 0) {
+      throw new Error("budget-exhausted requires remainingMs=0");
+    }
+    if (scenario.id === "ready-after-budget") {
+      if (o.ready === true) {
+        throw new Error("ready-after-budget must not report ready from beyond-budget ticks");
+      }
+      if (o.stopReason !== "budget-exhausted") {
+        throw new Error("ready-after-budget must stop with budget-exhausted");
+      }
+    }
+  }
+}
 
 console.log("url-redaction-controls:");
 for (const row of demoUrlRedaction()) {

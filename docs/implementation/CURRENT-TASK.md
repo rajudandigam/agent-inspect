@@ -4,12 +4,12 @@
 executionMode: maintainer-reviewed
 namedTrain: stability-after-63111
 currentTrain: stability-after-63111
-trainStatus: "6.31.23 published; partner holds; 6.32 blocked"
-currentChunk: "post-6.31.23 — next prompt D1; holds"
-nextAction: "D1 MCP isError evidence; hold Indu/Swapnil/João/#494/#98/email; no 6.32 without EVIDENCE_GATE"
+trainStatus: "6.31.31 published; Oct 30 residual queue shipped; 6.32 blocked"
+currentChunk: "post-63131 partner acceptance — hold Indu v3 / Swapnil fields / email"
+nextAction: "Partner acceptance for #484/#491/#494; Jan Windows PENDING; hold Indu v3; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
-pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; C10 Elastic --live; Collector Docker"
+pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; C10 Elastic --live; Collector Docker; Jan Windows PENDING"
 worktreeIgnoreOnly:
   - .redstamp/
   - redstamp-proposal-issue-body.md
@@ -19,27 +19,25 @@ worktreeIgnoreOnly:
 
 ## Published baseline
 
-**6.31.23** — all 18 packages on npm (Trusted Publish [38810913852](https://github.com/rajudandigam/agent-inspect/actions/runs/38810913852); Version Packages [#503](https://github.com/rajudandigam/agent-inspect/pull/503); code `297b1f11`).
+**6.31.31** — Trusted Publish [41174039799](https://github.com/rajudandigam/agent-inspect/actions/runs/41174039799); Version Packages [#516](https://github.com/rajudandigam/agent-inspect/pull/516). npm `agent-inspect@6.31.31` (registry confirmed).
 
-## Shipped in 6.31.23 (Prompt A residuals / #484)
+## Oct 30 residual queue
 
 | Chunk | Status | Proof |
 | --- | --- | --- |
-| Compare full identity before OTLP bound + truncated-collision `identity_conflict.fields` | **published** | AR01–AR03; f04 |
-| Converter `delivery_event_base` provenance; strip only with stamp | **published** | AR04–AR06; O05 retained |
-| Manual holds | **held** | Indu v3; Swapnil #437; João; Mikhail #494; plumbline #98; email |
+| R5 Roy path scrub | **published** | `check-otlp-identity-003-shareable.mjs` |
+| N1 Jan packed SDK | **published** | `packed-mcp-sdk-e2e.mjs` M01b/M01c |
+| R1 Gary reject | **published** | comparable-cohort tampers |
+| R2 Nest exact join | **published** | N09a–N09f |
+| R3 HTML attempts | **published** | presentation-lifecycle + html-exporter tests |
+| R4 Om budget | **published** | ready-after-budget scenario |
+| N2 Roy UNPROVABLE | **published** | `roy-437-unprovable-2026-10-30` + check script |
+| R6 docs | **published** | ROADMAP/status/Windows PENDING |
+| Email / GitHub follow-through | **partial** | Jan #494 + Roy #437/#484 comments posted; Faham/Hashim Gmail still gated (no Gmail tool here) |
 
 ## Honesty
 
-Full #484 issue closure still needs remaining W04 partner-packet acceptance beyond this matrix. Next code chunk: D1. No email / no 6.32.
-
-## Stop marker
-
-```text
-LAST_PUBLISHED_RELEASE: 6.31.23
-ACTIVE: next D1; partner holds
-NEXT: D1 MCP isError evidence; no 6.32 without EVIDENCE_GATE
-V7_DECISION: NO-GO
-EVIDENCE_GATE: not approved
-ADOPTION_FREEZE: excluded
-```
+- Partner issues stay open for acceptance.
+- Windows matrix for packed MCP SDK remains **NOT RUN / PENDING**.
+- #496 / #506 stay red; do not merge.
+- Indu v3 / Swapnil fields / EVIDENCE_GATE / v7 unchanged.

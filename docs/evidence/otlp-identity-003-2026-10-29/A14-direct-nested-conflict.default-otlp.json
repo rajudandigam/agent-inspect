@@ -1,0 +1,133 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "agent-inspect"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "agent-inspect"
+          },
+          "spans": [
+            {
+              "traceId": "69fe6b0f83cebde9ecbfe03035331e21",
+              "spanId": "dcc208f11d727416",
+              "name": "tool:retrieve",
+              "kind": 1,
+              "startTimeUnixNano": "1791936001000000000",
+              "attributes": [
+                {
+                  "key": "agent_inspect.kind",
+                  "value": {
+                    "stringValue": "TOOL"
+                  }
+                },
+                {
+                  "key": "agent_inspect.confidence",
+                  "value": {
+                    "stringValue": "explicit"
+                  }
+                },
+                {
+                  "key": "agent_inspect.source.type",
+                  "value": {
+                    "stringValue": "manual"
+                  }
+                },
+                {
+                  "key": "agent_inspect.run_id",
+                  "value": {
+                    "stringValue": "run-conflict"
+                  }
+                },
+                {
+                  "key": "agent_inspect.event_id",
+                  "value": {
+                    "stringValue": "e-conflict"
+                  }
+                },
+                {
+                  "key": "agent_inspect.status",
+                  "value": {
+                    "stringValue": "ok"
+                  }
+                },
+                {
+                  "key": "gen_ai.operation.name",
+                  "value": {
+                    "stringValue": "execute_tool"
+                  }
+                },
+                {
+                  "key": "agent_inspect.operation_id",
+                  "value": {
+                    "stringValue": "op-direct"
+                  }
+                },
+                {
+                  "key": "agent_inspect.identity_conflict.operation_id",
+                  "value": {
+                    "stringValue": "op-nested"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_id",
+                  "value": {
+                    "stringValue": "a-direct"
+                  }
+                },
+                {
+                  "key": "agent_inspect.identity_conflict.attempt_id",
+                  "value": {
+                    "stringValue": "a-nested"
+                  }
+                },
+                {
+                  "key": "agent_inspect.retry_of",
+                  "value": {
+                    "stringValue": "prior-direct"
+                  }
+                },
+                {
+                  "key": "agent_inspect.identity_conflict.retry_of",
+                  "value": {
+                    "stringValue": "prior-nested"
+                  }
+                },
+                {
+                  "key": "agent_inspect.attempt_number",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent_inspect.identity_conflict.attempt_number",
+                  "value": {
+                    "intValue": "2"
+                  }
+                },
+                {
+                  "key": "agent_inspect.identity_conflict.fields",
+                  "value": {
+                    "stringValue": "operationId,attemptId,retryOf,attemptNumber"
+                  }
+                }
+              ],
+              "status": {
+                "code": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
