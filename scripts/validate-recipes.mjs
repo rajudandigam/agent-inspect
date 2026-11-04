@@ -74,6 +74,7 @@ const RECIPES = [
   "causal-failure-summary",
   "nestjs-tenant-incident",
   "mcp-transport-retry-429",
+  "refund-value-entity-checks",
 ];
 
 const LOG_RECIPE_FILES = {

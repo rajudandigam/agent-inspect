@@ -1,0 +1,16 @@
+refund-value-entity-checks:
+  note: recipe-local TraceCheckRule via runTraceChecks; native operators remain exists|type|equals|oneOf
+  policy: ceiling=100USD approvalThreshold=50USD unit=USD(number)
+  credit: discussion #527 value/entity examples (Frank); Firat stress cases inspired reproductions
+  correct-low: expected=pass observed=pass
+  correct-with-approval: expected=pass observed=pass
+  above-ceiling: expected=fail observed=fail rules=recipe.refund.amount-ceiling
+  wrong-entity: expected=fail observed=fail rules=recipe.refund.entity-bind
+  missing-amount: expected=fail observed=fail rules=recipe.refund.amount-ceiling
+  nonnumeric-amount: expected=fail observed=fail rules=recipe.refund.amount-ceiling
+  above-threshold-no-approval: expected=fail observed=fail rules=recipe.refund.approval-gate
+  unrelated-operation: expected=fail observed=fail rules=recipe.refund.entity-bind
+classes: correct-low:pass,correct-with-approval:pass,above-ceiling:fail,wrong-entity:fail,missing-amount:fail,nonnumeric-amount:fail,above-threshold-no-approval:fail,unrelated-operation:fail
+ledger-reconciliation:
+  covered=1 uninstrumented=1 status=needs-reconcile
+  note: uninstrumented ledger rows are outside declared trace coverage; forbidden-tools cannot observe unrecorded SDK calls
