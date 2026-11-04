@@ -72,16 +72,29 @@ export type IntegrityStatus =
   | "ok"
   | "digest_mismatch"
   | "declared_mismatch"
+  | "commitment_missing"
+  | "rehashed_mismatch"
   | "run_link_broken"
   | "cohort_link_broken"
   | "execution_link_broken"
   | "testcase_link_broken"
   | "missing_trace_ref"
   | "corrupt_jsonl"
+  | "malformed_side"
   | "empty_table"
   | "missing_right"
   | "class_mismatch"
   | "unverifiable";
+
+/** Sidecar written beside each physical capture; digests must match the table. */
+export const BOUNDARY_COMMITMENTS_FILENAME = "boundary-commitments.json";
+
+export interface BoundaryCommitmentsFile {
+  executionId: string;
+  runId: string | null;
+  toolOutputCommitment: string;
+  llmInputCommitment: string;
+}
 
 export interface SideIntegrity {
   side: "left" | "right";
@@ -312,6 +325,33 @@ function metaString(
   return typeof value === "string" && value.trim() !== "" ? value : undefined;
 }
 
+/**
+ * Resolve a saved traceDir against the evidence packet root.
+ * Packet-relative paths (preferred) resolve under evidenceDir; absolute paths
+ * are accepted only when they already exist (legacy packets).
+ */
+export function resolvePacketTraceDir(
+  evidenceDir: string,
+  traceDir: string,
+): string {
+  if (path.isAbsolute(traceDir)) {
+    return traceDir;
+  }
+  return path.resolve(evidenceDir, traceDir);
+}
+
+/** Store traces as paths relative to the evidence packet (portable reopen). */
+export function toPacketRelativeTraceDir(
+  evidenceDir: string,
+  absoluteTraceDir: string,
+): string {
+  const relative = path.relative(
+    path.resolve(evidenceDir),
+    path.resolve(absoluteTraceDir),
+  );
+  return relative.split(path.sep).join("/");
+}
+
 function parseTraceDir(traceDir: string | undefined): TraceParseResult {
   if (!traceDir) {
     return { ok: false, reason: "missing", detail: "traceDir absent" };
@@ -346,6 +386,41 @@ function parseTraceDir(traceDir: string | undefined): TraceParseResult {
   return { ok: true, events };
 }
 
+function readBoundaryCommitments(
+  traceDir: string,
+):
+  | { ok: true; value: BoundaryCommitmentsFile }
+  | { ok: false; detail: string } {
+  const file = path.join(traceDir, BOUNDARY_COMMITMENTS_FILENAME);
+  if (!existsSync(file)) {
+    return { ok: false, detail: `missing ${BOUNDARY_COMMITMENTS_FILENAME}` };
+  }
+  try {
+    const raw = JSON.parse(readFileSync(file, "utf8")) as Partial<BoundaryCommitmentsFile>;
+    if (
+      typeof raw.executionId !== "string" ||
+      raw.executionId.trim() === "" ||
+      typeof raw.toolOutputCommitment !== "string" ||
+      raw.toolOutputCommitment.length !== 64 ||
+      typeof raw.llmInputCommitment !== "string" ||
+      raw.llmInputCommitment.length !== 64
+    ) {
+      return { ok: false, detail: "malformed boundary-commitments.json" };
+    }
+    return {
+      ok: true,
+      value: {
+        executionId: raw.executionId,
+        runId: typeof raw.runId === "string" ? raw.runId : raw.runId === null ? null : null,
+        toolOutputCommitment: raw.toolOutputCommitment,
+        llmInputCommitment: raw.llmInputCommitment,
+      },
+    };
+  } catch {
+    return { ok: false, detail: "corrupt boundary-commitments.json" };
+  }
+}
+
 function runStartedFor(
   events: ParsedTraceEvent[],
   runId: string,
@@ -358,12 +433,32 @@ function runStartedFor(
 export function checkSideIntegrity(
   side: SideRecord,
   which: "left" | "right",
+  evidenceDir?: string,
 ): SideIntegrity {
-  if (!side.executionId || side.executionId.trim() === "") {
+  if (
+    typeof side.executionId !== "string" ||
+    side.executionId.trim() === "" ||
+    typeof side.toolOutputBytes !== "string" ||
+    typeof side.llmInputBytes !== "string" ||
+    typeof side.toolOutputDigest !== "string" ||
+    typeof side.llmInputDigest !== "string"
+  ) {
     return {
       side: which,
-      status: "execution_link_broken",
-      detail: "executionId missing on saved side",
+      status: "malformed_side",
+      detail: "side missing required stage/boundary fields",
+    };
+  }
+  if (
+    side.toolOutputDigest.trim() === "" ||
+    side.llmInputDigest.trim() === "" ||
+    side.toolOutputDigest.length !== 64 ||
+    side.llmInputDigest.length !== 64
+  ) {
+    return {
+      side: which,
+      status: "commitment_missing",
+      detail: "stage/boundary commitments must be full sha256 digests",
     };
   }
   if (sha256(side.toolOutputBytes) !== side.toolOutputDigest) {
@@ -402,7 +497,12 @@ export function checkSideIntegrity(
     return { side: which, status: "ok", detail: "digests hold (no traceDir claimed)" };
   }
 
-  const parsed = parseTraceDir(side.traceDir);
+  const resolvedTraceDir =
+    evidenceDir !== undefined
+      ? resolvePacketTraceDir(evidenceDir, side.traceDir)
+      : side.traceDir;
+
+  const parsed = parseTraceDir(resolvedTraceDir);
   if (!parsed.ok) {
     if (parsed.reason === "corrupt") {
       return { side: which, status: "corrupt_jsonl", detail: parsed.detail };
@@ -411,6 +511,33 @@ export function checkSideIntegrity(
       side: which,
       status: "unverifiable",
       detail: parsed.detail,
+    };
+  }
+
+  const boundary = readBoundaryCommitments(resolvedTraceDir);
+  if (!boundary.ok) {
+    return {
+      side: which,
+      status: "commitment_missing",
+      detail: boundary.detail,
+    };
+  }
+  if (
+    boundary.value.toolOutputCommitment !== side.toolOutputDigest ||
+    boundary.value.llmInputCommitment !== side.llmInputDigest
+  ) {
+    return {
+      side: which,
+      status: "rehashed_mismatch",
+      detail:
+        "table digests do not match capture boundary-commitments.json (rehashed or forged)",
+    };
+  }
+  if (boundary.value.executionId !== side.executionId) {
+    return {
+      side: which,
+      status: "execution_link_broken",
+      detail: `boundary executionId mismatch (saved=${side.executionId} boundary=${boundary.value.executionId})`,
     };
   }
 
@@ -465,7 +592,7 @@ export function checkSideIntegrity(
     };
   }
 
-  return { side: which, status: "ok", detail: "digests and exact links hold" };
+  return { side: which, status: "ok", detail: "digests, boundary commitments, and exact links hold" };
 }
 
 export function loadTable(tablePath: string): TableRow[] {
@@ -476,8 +603,13 @@ export function loadTable(tablePath: string): TableRow[] {
   return raw as TableRow[];
 }
 
-export function verifyTableRow(row: TableRow): PairVerifyResult {
-  const integrity: SideIntegrity[] = [checkSideIntegrity(row.left, "left")];
+export function verifyTableRow(
+  row: TableRow,
+  evidenceDir?: string,
+): PairVerifyResult {
+  const integrity: SideIntegrity[] = [
+    checkSideIntegrity(row.left, "left", evidenceDir),
+  ];
   if (!row.right) {
     integrity.push({
       side: "right",
@@ -499,7 +631,7 @@ export function verifyTableRow(row: TableRow): PairVerifyResult {
       ok,
     };
   }
-  integrity.push(checkSideIntegrity(row.right, "right"));
+  integrity.push(checkSideIntegrity(row.right, "right", evidenceDir));
   const left = sideToCommitments(row.left);
   const right = sideToCommitments(row.right);
   // Recompute digests from retained bytes before compare.
@@ -511,6 +643,9 @@ export function verifyTableRow(row: TableRow): PairVerifyResult {
   const hardFail = integrity.some(
     (i) =>
       i.status === "digest_mismatch" ||
+      i.status === "commitment_missing" ||
+      i.status === "rehashed_mismatch" ||
+      i.status === "malformed_side" ||
       i.status === "run_link_broken" ||
       i.status === "cohort_link_broken" ||
       i.status === "execution_link_broken" ||
@@ -535,7 +670,8 @@ export function verifyTableRow(row: TableRow): PairVerifyResult {
 }
 
 export function verifySaved(evidenceDir: string): EvidenceVerifyResult {
-  const tablePath = path.join(evidenceDir, "per-stage-commitments.json");
+  const resolvedEvidenceDir = path.resolve(evidenceDir);
+  const tablePath = path.join(resolvedEvidenceDir, "per-stage-commitments.json");
   if (!existsSync(tablePath)) {
     return {
       ok: false,
@@ -562,7 +698,7 @@ export function verifySaved(evidenceDir: string): EvidenceVerifyResult {
       failures: [`empty table ${tablePath}`],
     };
   }
-  const pairs = table.map(verifyTableRow);
+  const pairs = table.map((row) => verifyTableRow(row, resolvedEvidenceDir));
   const failures = pairs
     .filter((p) => !p.ok)
     .map(

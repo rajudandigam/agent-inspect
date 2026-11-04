@@ -7,6 +7,7 @@ import {
   uniqueSelectIds,
 } from "../src/check.js";
 import {
+  alignCheckResultsAggregateStatus,
   parseEvidenceFormat,
   parseEvidenceProfile,
   residualStatusToEvidenceSafe,
@@ -190,6 +191,28 @@ describe("residualStatusToEvidenceSafe", () => {
     expect(residualStatusToEvidenceSafe("SAFE_WITH_WARNINGS")).toBe("SAFE WITH WARNINGS");
     expect(residualStatusToEvidenceSafe("UNSAFE")).toBe("UNSAFE");
     expect(residualStatusToEvidenceSafe("UNKNOWN")).toBe("UNKNOWN");
+  });
+});
+
+describe("alignCheckResultsAggregateStatus", () => {
+  it("overwrites aggregateStatus with residual assessment (#529)", () => {
+    const aligned = JSON.parse(
+      alignCheckResultsAggregateStatus(
+        JSON.stringify({
+          aggregateStatus: "SAFE",
+          gateStatus: "fail",
+          gate: { ok: false },
+        }),
+        "UNSAFE",
+      ),
+    ) as {
+      aggregateStatus: string;
+      gateStatus: string;
+      gate: { ok: boolean };
+    };
+    expect(aligned.aggregateStatus).toBe("UNSAFE");
+    expect(aligned.gateStatus).toBe("fail");
+    expect(aligned.gate.ok).toBe(false);
   });
 });
 

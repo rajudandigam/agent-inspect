@@ -795,6 +795,18 @@ describe("check command", () => {
     ) as { assessment?: { status?: string } };
     expect(passAssessment.assessment?.status).toBe("UNSAFE");
     expect(readFileSync(path.join(passEvidenceDir, "trace.jsonl"), "utf-8")).toContain(glued);
+
+    // #529: check-results aggregateStatus matches residual assessment, not check pass/fail.
+    const failChecks = JSON.parse(
+      readFileSync(path.join(failEvidenceDir, "check-results.json"), "utf-8"),
+    ) as { aggregateStatus?: string; checkStatus?: string };
+    expect(failChecks.aggregateStatus).toBe("SAFE");
+    expect(failChecks.checkStatus).toBe("fail");
+    const passChecks = JSON.parse(
+      readFileSync(path.join(passEvidenceDir, "check-results.json"), "utf-8"),
+    ) as { aggregateStatus?: string; checkStatus?: string };
+    expect(passChecks.aggregateStatus).toBe("UNSAFE");
+    expect(passChecks.checkStatus).toBe("pass");
   });
 
   it("respects --evidence-dir and keeps failure exit code", async () => {

@@ -68,6 +68,31 @@ function stableJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+/**
+ * Make check-results.json `aggregateStatus` match the residual artifact
+ * assessment written into evidence.json (#529). Gate/check pass-fail stay in
+ * nested result fields (`gate`, findings, runs), not in aggregateStatus.
+ * Must run before hashing so digests cover the final bytes.
+ */
+export function alignCheckResultsAggregateStatus(
+  checkResultsJson: string,
+  assessmentStatus: EvidenceSafeStatus,
+): string {
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(checkResultsJson) as Record<string, unknown>;
+  } catch {
+    return stableJson({
+      aggregateStatus: assessmentStatus,
+      raw: checkResultsJson,
+    });
+  }
+  return stableJson({
+    ...parsed,
+    aggregateStatus: assessmentStatus,
+  });
+}
+
 export interface WriteLocalEvidenceInput {
   /** Destination directory (or base path) for Evidence v2 files. */
   outputDir: string;
@@ -143,6 +168,11 @@ export async function writeLocalEvidence(
     format: "agent-inspect-jsonl",
   });
   const assessmentStatus = residualStatusToEvidenceSafe(residual.status);
+  // Align check-results aggregateStatus before hashing (#529).
+  const checkResultsJson = alignCheckResultsAggregateStatus(
+    input.checkResultsJson,
+    assessmentStatus,
+  );
   const evidencePackage = buildEvidenceCiPackage({
     generatorVersion: packageVersion,
     runIds: input.runIds,
@@ -150,7 +180,7 @@ export async function writeLocalEvidence(
     redactedTraceJsonl: combined,
     redactionProfile: profile,
     assessmentStatus,
-    checkResultsJson: input.checkResultsJson,
+    checkResultsJson,
     ...(input.summaryText !== undefined ? { summaryText: input.summaryText } : {}),
     ...(input.contractPackage !== undefined
       ? { contractPackage: input.contractPackage }
@@ -220,21 +250,22 @@ export async function writeLocalEvidence(
   return baseDir;
 }
 
+/**
+ * Serialize check outcomes for Evidence check-results.json.
+ * `aggregateStatus` is a provisional placeholder; `writeLocalEvidence`
+ * overwrites it with residual artifact assessment before hashing (#529).
+ * Check pass/fail remains in findings / ruleExecutions / per-run checkStatus.
+ */
 export function checkResultToEvidenceJson(
   result: TraceCheckResult,
   runIds: readonly string[],
 ): string {
-  const status: EvidenceSafeStatus =
-    result.status === "pass"
-      ? "SAFE"
-      : result.status === "fail"
-        ? "UNSAFE"
-        : "UNKNOWN";
   return stableJson({
-    aggregateStatus: status,
+    aggregateStatus: "UNKNOWN",
+    checkStatus: result.status,
     runs: runIds.map((runId) => ({
       runId,
-      status,
+      checkStatus: result.status,
       errors: result.summary.errors,
       warnings: result.summary.warnings,
       findings: result.findings.length,

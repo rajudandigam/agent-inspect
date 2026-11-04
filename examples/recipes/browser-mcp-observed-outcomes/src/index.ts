@@ -200,6 +200,9 @@ const ablation = evaluateScenario(
   { skipResourceBindingAssertion: true },
 );
 
+/** Retained wait facts from the comparison step — printed later, not re-run. */
+let retainedWaitObservations: Record<string, WaitObservation> | null = null;
+
 await inspectRun(
   "browser-mcp-observed-outcome-matrix",
   async () => {
@@ -388,6 +391,7 @@ await inspectRun(
           note: "Controlled synthetic page/locator; not a claim a real browser supplied these values",
         },
       });
+      retainedWaitObservations = waitObservations;
       return { cmp, waitObservations };
     });
   },
@@ -423,10 +427,16 @@ console.log(
 );
 
 {
-  // Derive printed wait diagnostics from the same synthetic schedule records.
-  console.log("om-wait-diagnostics: clock=injected-synthetic");
+  // Print retained waitObservations from the executed comparison step (do not re-run).
+  if (!retainedWaitObservations) {
+    throw new Error("waitObservations were not retained from om-attempt-comparison");
+  }
+  console.log("om-wait-diagnostics: clock=injected-synthetic retained=true");
   for (const scenario of OM_WAIT_SCENARIOS) {
-    const o = runWaitScenario(scenario);
+    const o = retainedWaitObservations[scenario.id];
+    if (!o) {
+      throw new Error(`missing retained waitObservation for ${scenario.id}`);
+    }
     console.log(
       `  ${scenario.id}: ready=${o.ready} doc=${o.documentLoading} inFlight=${o.inFlight} obstruction=${o.obstruction} elapsed=${o.elapsedMs}ms budget=${o.budgetMs}ms remaining=${o.remainingMs}ms stop=${o.stopReason}`,
     );

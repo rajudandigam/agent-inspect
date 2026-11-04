@@ -22,10 +22,12 @@ import { createRequire } from "node:module";
 import { inspectRun, step } from "agent-inspect";
 
 import {
+  BOUNDARY_COMMITMENTS_FILENAME,
   comparePair,
   commitmentsToSide,
   sha256,
   stageCommitmentsFromMeasured,
+  toPacketRelativeTraceDir,
   verifySaved,
   type PairClass,
   type StageCommitments,
@@ -198,6 +200,20 @@ async function executeStubWorkflow(
     throw new Error(`stub model consumption digest missing or mismatched for ${label}`);
   }
 
+  writeFileSync(
+    path.join(traceDir, BOUNDARY_COMMITMENTS_FILENAME),
+    `${JSON.stringify(
+      {
+        executionId,
+        runId,
+        toolOutputCommitment: measured.toolOutputCommitment,
+        llmInputCommitment: measured.llmInputCommitment,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
   return measured;
 }
 
@@ -292,14 +308,36 @@ if (physicalExecutions !== 13) {
   throw new Error(`expected 13 physical executions, got ${physicalExecutions}`);
 }
 
-const stageTable: TableRow[] = pairResults.map((row) => ({
-  pair: row.name,
-  class: row.class,
-  note: row.note,
-  changedStage: row.changedStage,
-  left: commitmentsToSide(row.left),
-  right: row.right ? commitmentsToSide(row.right) : null,
-}));
+function embedTraceInPacket(absoluteTraceDir: string): string {
+  const name = path.basename(absoluteTraceDir);
+  const packetTraceDir = path.join(evidenceDir, "traces", name);
+  rmSync(packetTraceDir, { recursive: true, force: true });
+  mkdirSync(path.dirname(packetTraceDir), { recursive: true });
+  cpSync(absoluteTraceDir, packetTraceDir, { recursive: true });
+  return toPacketRelativeTraceDir(evidenceDir, packetTraceDir);
+}
+
+const stageTable: TableRow[] = pairResults.map((row) => {
+  const left = commitmentsToSide(row.left);
+  if (left.traceDir) {
+    left.traceDir = embedTraceInPacket(left.traceDir);
+  }
+  let right: TableRow["right"] = null;
+  if (row.right) {
+    right = commitmentsToSide(row.right);
+    if (right.traceDir) {
+      right.traceDir = embedTraceInPacket(right.traceDir);
+    }
+  }
+  return {
+    pair: row.name,
+    class: row.class,
+    note: row.note,
+    changedStage: row.changedStage,
+    left,
+    right,
+  };
+});
 
 const tablePath = path.join(evidenceDir, "per-stage-commitments.json");
 writeFileSync(tablePath, `${JSON.stringify(stageTable, null, 2)}\n`);
@@ -372,6 +410,10 @@ function tamperCopy(
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
   cpSync(tablePath, path.join(dir, "per-stage-commitments.json"));
+  const tracesSrc = path.join(evidenceDir, "traces");
+  if (existsSync(tracesSrc)) {
+    cpSync(tracesSrc, path.join(dir, "traces"), { recursive: true });
+  }
   const table = JSON.parse(
     readFileSync(path.join(dir, "per-stage-commitments.json"), "utf8"),
   ) as TableRow[];
@@ -456,11 +498,26 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
   rmSync(corruptDir, { recursive: true, force: true });
   mkdirSync(corruptDir, { recursive: true });
   const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
-  const row = table.find((r) => r.pair === "G01-matching-stages")!;
-  const badTrace = path.join(corruptDir, "trace");
+  const row = structuredClone(
+    table.find((r) => r.pair === "G01-matching-stages")!,
+  );
+  const badTrace = path.join(corruptDir, "traces", "corrupt");
   mkdirSync(badTrace, { recursive: true });
   writeFileSync(path.join(badTrace, "run_corrupt.jsonl"), "{not-json\n");
-  row.left.traceDir = badTrace;
+  writeFileSync(
+    path.join(badTrace, BOUNDARY_COMMITMENTS_FILENAME),
+    `${JSON.stringify(
+      {
+        executionId: row.left.executionId,
+        runId: row.left.runId,
+        toolOutputCommitment: row.left.toolOutputDigest,
+        llmInputCommitment: row.left.llmInputDigest,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  row.left.traceDir = "traces/corrupt";
   writeFileSync(
     path.join(corruptDir, "per-stage-commitments.json"),
     `${JSON.stringify([row], null, 2)}\n`,
@@ -488,7 +545,7 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
   const row = structuredClone(
     table.find((r) => r.pair === "G01-matching-stages")!,
   );
-  const fakeTrace = path.join(subDir, "trace");
+  const fakeTrace = path.join(subDir, "traces", "decoy");
   mkdirSync(fakeTrace, { recursive: true });
   const decoy = `prefix-${row.left.runId}-suffix`;
   writeFileSync(
@@ -506,7 +563,20 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
       },
     })}\n`,
   );
-  row.left.traceDir = fakeTrace;
+  writeFileSync(
+    path.join(fakeTrace, BOUNDARY_COMMITMENTS_FILENAME),
+    `${JSON.stringify(
+      {
+        executionId: row.left.executionId,
+        runId: row.left.runId,
+        toolOutputCommitment: row.left.toolOutputDigest,
+        llmInputCommitment: row.left.llmInputDigest,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  row.left.traceDir = "traces/decoy";
   writeFileSync(
     path.join(subDir, "per-stage-commitments.json"),
     `${JSON.stringify([row], null, 2)}\n`,
@@ -519,6 +589,46 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
     id: "substring-run",
     ok: true,
     detail: subVerdict.failures[0] ?? "rejected",
+  });
+}
+tampers.push(
+  tamperCopy("rehashed", (table) => {
+    const row = table.find((r) => r.pair === "G01-matching-stages")!;
+    const forged = `${row.left.toolOutputBytes}-rehashed`;
+    row.left.toolOutputBytes = forged;
+    row.left.toolOutputDigest = sha256(forged);
+  }),
+);
+{
+  const malformedDir = path.join(evidenceDir, "tampers", "malformed-side");
+  rmSync(malformedDir, { recursive: true, force: true });
+  mkdirSync(malformedDir, { recursive: true });
+  if (existsSync(path.join(evidenceDir, "traces"))) {
+    cpSync(path.join(evidenceDir, "traces"), path.join(malformedDir, "traces"), {
+      recursive: true,
+    });
+  }
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = structuredClone(
+    table.find((r) => r.pair === "G01-matching-stages")!,
+  );
+  (row.left as { toolOutputDigest?: string }).toolOutputDigest = "";
+  writeFileSync(
+    path.join(malformedDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  const malformedVerdict = verifySaved(malformedDir);
+  if (malformedVerdict.ok) {
+    throw new Error("malformed side unexpectedly verified");
+  }
+  const malformedStatus = malformedVerdict.pairs[0]?.integrity[0]?.status;
+  if (malformedStatus !== "commitment_missing" && malformedStatus !== "malformed_side") {
+    throw new Error(`malformed expected commitment_missing, got ${malformedStatus}`);
+  }
+  tampers.push({
+    id: "malformed-side",
+    ok: true,
+    detail: malformedVerdict.failures[0] ?? "rejected",
   });
 }
 

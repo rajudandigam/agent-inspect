@@ -60,8 +60,12 @@ function readRows(traceDirOrFile: string): Row[] {
   return rows;
 }
 
+function outcomesNamed(rows: Row[], name: string): Row[] {
+  return rows.filter((r) => r.event === "outcome_observed" && r.name === name);
+}
+
 function outcome(rows: Row[], name: string): Row | undefined {
-  return rows.find((r) => r.event === "outcome_observed" && r.name === name);
+  return outcomesNamed(rows, name)[0];
 }
 
 function orderIndex(rows: Row[], row: Row | undefined): number {
@@ -93,9 +97,12 @@ function fail(
  */
 export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
   const rows = readRows(traceDirOrFile);
-  const declared = outcome(rows, "declared-tenant-context");
-  const retrieved = outcome(rows, "policy-retrieval");
-  const consumed = outcome(rows, "policy-consumption");
+  const declaredRows = outcomesNamed(rows, "declared-tenant-context");
+  const retrievedRows = outcomesNamed(rows, "policy-retrieval");
+  const consumedRows = outcomesNamed(rows, "policy-consumption");
+  const declared = declaredRows[0];
+  const retrieved = retrievedRows[0];
+  const consumed = consumedRows[0];
 
   const declaredTenantRef = text(declared?.evidence?.requestedTenantRef);
   const retrievedTenantRef = text(retrieved?.evidence?.policyTenantRef);
@@ -126,6 +133,29 @@ export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
     consumptionPresent,
     commitmentMatch,
   };
+
+  // Ambiguous joins: more than one outcome of a required name cannot be uniquely bound.
+  for (const [label, named] of [
+    ["declared-tenant-context", declaredRows],
+    ["policy-retrieval", retrievedRows],
+    ["policy-consumption", consumedRows],
+  ] as const) {
+    if (named.length > 1) {
+      const runIds = new Set(named.map((r) => r.runId).filter(Boolean));
+      const ops = new Set(
+        named
+          .map((r) => text(r.evidence?.operationId))
+          .filter((id): id is string => id !== undefined),
+      );
+      return fail({
+        ...base,
+        detail:
+          runIds.size > 1 || ops.size > 1
+            ? `ambiguous ${label} outcomes across multiple run/operation identities`
+            : `ambiguous ${label} outcomes; consumption join requires a unique row`,
+      });
+    }
+  }
 
   if (!declaredTenantRef) {
     return {

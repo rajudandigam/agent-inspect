@@ -330,10 +330,11 @@ const credentialDetectors: readonly RedactionDetector[] = [
     severity: "error",
   }),
   // Stripe secret/restricted keys (underscore form). Keep in sync with
-  // packages/core/src/safety/credential-value-patterns.ts + checks DEFAULT_SECRET_PATTERNS (#520).
+  // packages/core/src/safety/credential-value-patterns.ts + checks DEFAULT_SECRET_PATTERNS (#520/#528).
+  // Non-alnum lookarounds so underscore-adjacent forms (acct_sk_live_…, …_eu) match.
   patternDetector({
     id: "value.stripeSecretKey",
-    pattern: /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}\b/,
+    pattern: /(?<![A-Za-z0-9])(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}(?![A-Za-z0-9])/,
     severity: "error",
   }),
   patternDetector({

@@ -207,10 +207,12 @@ export async function gateCommand(options: GateCommandOptions = {}): Promise<voi
           runIds: runIds.length > 0 ? runIds : ["gate"],
           sourceContents,
           ...(gateOptions.traceDir !== undefined ? { dir: gateOptions.traceDir } : {}),
-          failed,
+          // aggregateStatus is filled from residual assessment before hashing (#529).
+          // Gate pass/fail stays in `gate` / process.exitCode, not aggregateStatus.
           checkResultsJson: `${JSON.stringify(
             {
-              aggregateStatus: failed ? "UNSAFE" : "SAFE",
+              aggregateStatus: "UNKNOWN",
+              gateStatus: failed ? "fail" : "pass",
               gate: result,
             },
             null,

@@ -157,4 +157,56 @@ describe("presentLifecycleJoinedTree", () => {
     expect(presented.children.some((n) => n.event.status === "ok")).toBe(true);
     expect(presented.children.some((n) => n.event.status === "running")).toBe(true);
   });
+
+  it("refuses join when siblings share stepId but conflict on operationId", () => {
+    const presented = presentLifecycleJoinedTree(
+      tree([
+        node({
+          eventId: "e1",
+          name: "echo",
+          status: "running",
+          timestamp: 10,
+          attributes: { stepId: "s1", operationId: "op-a" },
+        }),
+        node({
+          eventId: "e2",
+          name: "echo",
+          status: "ok",
+          timestamp: 20,
+          attributes: { stepId: "s1", operationId: "op-b" },
+        }),
+      ]),
+    );
+    // Different operationIds → different lifecycle keys; both remain visible.
+    expect(presented.children).toHaveLength(2);
+  });
+
+  it("refuses ambiguous join when multiple unmatched runnings lack attemptId", () => {
+    const presented = presentLifecycleJoinedTree(
+      tree([
+        node({
+          eventId: "e1",
+          name: "echo",
+          status: "running",
+          timestamp: 10,
+          attributes: { stepId: "s1" },
+        }),
+        node({
+          eventId: "e2",
+          name: "echo",
+          status: "running",
+          timestamp: 11,
+          attributes: { stepId: "s1" },
+        }),
+        node({
+          eventId: "e3",
+          name: "echo",
+          status: "ok",
+          timestamp: 20,
+          attributes: { stepId: "s1" },
+        }),
+      ]),
+    );
+    expect(presented.children).toHaveLength(3);
+  });
 });

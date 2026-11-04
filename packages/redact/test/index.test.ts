@@ -245,6 +245,16 @@ describe("@agent-inspect/redact", () => {
     }
   });
 
+  it("redacts Stripe keys glued to underscores (#528)", () => {
+    const key = ["sk", "live", "SYNTHETIC0EVAL0NOT0A0KEY0000"].join("_");
+    for (const value of [`acct_${key}`, `${key}_eu`, `acct_${key}_eu`] as const) {
+      const result = redact({ paymentRef: value }, { profile: "share" });
+      expect(JSON.stringify(result.value)).not.toContain(key);
+      expect(result.findings.some((f) => f.detector === "value.stripeSecretKey")).toBe(true);
+      expect(JSON.stringify(result.findings)).not.toContain(key);
+    }
+  });
+
   it("does not redact invalid credit-card-like strings that fail Luhn", () => {
     const result = redact({ value: "4242 4242 4242 4241" }, { profile: "share" });
     expect(result.value).toEqual({ value: "4242 4242 4242 4241" });

@@ -772,10 +772,11 @@ const SAFE_USAGE_LEAF_KEYS = new Set([
 const DEFAULT_SECRET_PATTERNS: readonly SafetySecretPattern[] = [
   { id: "bearer-token", pattern: /Bearer\s+[A-Za-z0-9._~+/-]{12,}=*/ },
   { id: "openai-key", pattern: /sk-[A-Za-z0-9_-]{16,}/ },
-  // Stripe + Slack: keep in sync with packages/redact + credential-value-patterns (#520).
+  // Stripe + Slack: keep in sync with packages/redact + credential-value-patterns (#520/#528).
+  // Non-alnum lookarounds so underscore-adjacent forms (acct_sk_live_…, …_eu) match.
   {
     id: "stripe-key",
-    pattern: /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}\b/,
+    pattern: /(?<![A-Za-z0-9])(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}(?![A-Za-z0-9])/,
   },
   { id: "slack-token", pattern: /\bxox[abposr]-[A-Za-z0-9-]{10,}\b/ },
   { id: "aws-access-key", pattern: /AKIA[0-9A-Z]{16}/ },
@@ -2135,10 +2136,20 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
           event.status === "running" &&
           stepEndpointName(event, options.before.kind) === options.before.name,
       );
+      const afterRunning = semanticEvents(context).filter(
+        (event) =>
+          event.kind === options.after.kind &&
+          event.status === "running" &&
+          stepEndpointName(event, options.after.kind) === options.after.name,
+      );
+      // After has started when a finished or still-running occurrence exists.
+      const afterStarted = afterEvents.length > 0 || afterRunning.length > 0;
+      const afterEvidenceEvent = afterEvents[0] ?? afterRunning[0];
 
-      // Started-but-never-finished before + finished after: unfinished interval,
-      // not a missing endpoint (presence still counts the running invocation) (#521).
-      if (beforeEvents.length === 0 && afterEvents.length > 0 && beforeRunning.length > 0) {
+      // Started-but-never-finished before while after has started: unfinished
+      // interval. A completed peer must not mask another unfinished occurrence,
+      // and a started-but-unterminated after still counts as after-start (#521).
+      if (beforeRunning.length > 0 && afterStarted && afterEvidenceEvent !== undefined) {
         const endpointExpected = bothTools
           ? { before: options.before.name, after: options.after.name }
           : { before: options.before, after: options.after };
@@ -2148,7 +2159,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             `${subject} ${beforeLabel} started but never finished before ${afterLabel} ran.`,
             [
               ...beforeRunning.map((event) => eventEvidence(event)),
-              eventEvidence(afterEvents[0]!),
+              eventEvidence(afterEvidenceEvent),
             ],
             { ...endpointExpected, mode },
             {
@@ -2157,12 +2168,14 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
                 : "step.order.interval-unresolved",
               unfinishedBefore: true,
               beforeStatus: "running",
+              ...(beforeEvents.length > 0 ? { finishedBeforeMasked: true } : {}),
+              ...(afterEvents.length === 0 ? { afterStatus: "running" } : {}),
             },
           ),
         ];
       }
 
-      if (beforeEvents.length === 0 || afterEvents.length === 0) {
+      if (beforeEvents.length === 0 || !afterStarted) {
         if (!requireEndpoints) return [];
         const findings: TraceCheckFinding[] = [];
         if (beforeEvents.length === 0) {
@@ -2189,7 +2202,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             ),
           );
         }
-        if (afterEvents.length === 0) {
+        if (!afterStarted) {
           const otherKinds = otherKindsForStepName(
             context,
             options.after.kind,
@@ -2216,13 +2229,25 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
         return findings;
       }
 
-      const encounter = finishedEvents(context).filter(
-        (event) =>
-          (event.kind === options.before.kind &&
-            stepEndpointName(event, options.before.kind) === options.before.name) ||
-          (event.kind === options.after.kind &&
-            stepEndpointName(event, options.after.kind) === options.after.name),
-      );
+      // Finished after endpoints for encounter order; when after is only
+      // running, include those starts so after-start without a terminal still
+      // participates in ordering.
+      const afterForOrder = afterEvents.length > 0 ? afterEvents : afterRunning;
+      const encounter = [
+        ...finishedEvents(context).filter(
+          (event) =>
+            (event.kind === options.before.kind &&
+              stepEndpointName(event, options.before.kind) === options.before.name) ||
+            (event.kind === options.after.kind &&
+              stepEndpointName(event, options.after.kind) === options.after.name),
+        ),
+        ...(afterEvents.length === 0
+          ? afterRunning.filter(
+              (event) =>
+                !finishedEvents(context).some((finished) => finished.eventId === event.eventId),
+            )
+          : []),
+      ];
       let beforeIndex: number | undefined;
       let afterIndex: number | undefined;
       for (const [position, event] of encounter.entries()) {
@@ -2269,7 +2294,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
       }
 
       const beforeEvent = beforeEvents[0]!;
-      const afterEvent = afterEvents[0]!;
+      const afterEvent = afterForOrder[0]!;
       const beforeEnd = eventEndMs(beforeEvent);
       const afterStart = eventStartMs(afterEvent);
       const endpointExpected = bothTools
@@ -2372,7 +2397,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             latestBefore = { event, end };
           }
         }
-        for (const event of afterEvents) {
+        for (const event of afterForOrder) {
           const start = eventStartMs(event);
           if (start === undefined) {
             missingAfterStarts += 1;
@@ -2413,7 +2438,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             ? recordedTieOrder(
                 context,
                 beforeEvents.filter((event) => eventEndMs(event) === tiedEnd),
-                afterEvents.filter((event) => eventStartMs(event) === tiedStart),
+                afterForOrder.filter((event) => eventStartMs(event) === tiedStart),
               )
             : undefined;
         if (latestBefore.end > earliestAfter.start || (tie !== undefined && tie.inOrder !== true)) {

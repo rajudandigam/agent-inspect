@@ -23,11 +23,30 @@ function attemptIdOf(event: InspectEvent): string | undefined {
   return undefined;
 }
 
+function operationIdOf(event: InspectEvent): string | undefined {
+  const direct = event.attributes?.operationId;
+  if (typeof direct === "string" && direct.trim() !== "") return direct;
+  const meta = event.attributes?.metadata;
+  if (meta && typeof meta === "object" && !Array.isArray(meta)) {
+    const nested = (meta as Record<string, unknown>).operationId;
+    if (typeof nested === "string" && nested.trim() !== "") return nested;
+  }
+  return undefined;
+}
+
+/**
+ * Group by step identity, then attempt (or operation) when present so distinct
+ * attempts never share a join bucket. Bare stepId remains for legacy pairs.
+ */
 function lifecycleKey(event: InspectEvent): string {
   if (event.kind === "RUN") return `run:${event.runId}`;
   const stepId = stepIdOf(event);
-  if (stepId !== undefined) return `step:${stepId}`;
-  return `event:${event.eventId}`;
+  if (stepId === undefined) return `event:${event.eventId}`;
+  const attemptId = attemptIdOf(event);
+  if (attemptId !== undefined) return `step:${stepId}:attempt:${attemptId}`;
+  const operationId = operationIdOf(event);
+  if (operationId !== undefined) return `step:${stepId}:op:${operationId}`;
+  return `step:${stepId}`;
 }
 
 function isTerminal(status: InspectEvent["status"]): boolean {
@@ -98,6 +117,16 @@ function joinSiblingGroup(group: InspectNode[]): InspectNode[] {
     (n) => !isTerminal(n.event.status) && n.event.status !== "running",
   );
 
+  const operationIds = new Set(
+    group
+      .map((n) => operationIdOf(n.event))
+      .filter((id): id is string => id !== undefined),
+  );
+  // Conflicting operationIds in one bucket → refuse join (do not guess).
+  if (operationIds.size > 1) {
+    return group;
+  }
+
   const terminalStatuses = new Set(terminals.map((n) => n.event.status));
   if (terminalStatuses.size > 1) {
     return group;
@@ -116,20 +145,28 @@ function joinSiblingGroup(group: InspectNode[]): InspectNode[] {
 
   for (const terminal of terminals) {
     const terminalAttempt = attemptIdOf(terminal.event);
+    const terminalOp = operationIdOf(terminal.event);
     const terminalTs = eventTime(terminal.event);
-    const candidate = runnings.find((r) => {
+    const candidates = runnings.filter((r) => {
       if (usedRunning.has(r.event.eventId)) return false;
       if (eventTime(r.event) > terminalTs) return false;
+      const runningOp = operationIdOf(r.event);
+      if (
+        terminalOp !== undefined &&
+        runningOp !== undefined &&
+        terminalOp !== runningOp
+      ) {
+        return false;
+      }
       const runningAttempt = attemptIdOf(r.event);
       if (terminalAttempt !== undefined) {
         return runningAttempt === terminalAttempt;
       }
-      if (runningAttempt !== undefined) {
-        // Complete rows often omit attempt metadata; pair with the prior unmatched attempt.
-        return true;
-      }
-      return true;
+      // Ambiguous: terminal has no attemptId but multiple unmatched runnings remain.
+      return runningAttempt === undefined;
     });
+    // Refuse ambiguous joins when more than one running could pair.
+    const candidate = candidates.length === 1 ? candidates[0] : undefined;
     if (candidate) {
       usedRunning.add(candidate.event.eventId);
       out.push(joinOnePair(candidate, terminal));

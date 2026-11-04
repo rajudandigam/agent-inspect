@@ -89,6 +89,45 @@ if (caseB.expected.controlAttribution !== "ATTRIBUTABLE") {
   fail("B control expected attribution must be ATTRIBUTABLE");
 }
 
+// Positive controls must be evaluated — not merely present in the fixture.
+const controlDup = scoreDuplicate({
+  ...caseA,
+  deliveries: [
+    {
+      deliveryId: "control-delivery",
+      receiptId: control.receiptId,
+      endpoint: caseA.receiptScope?.endpoint,
+      target: caseA.receiptScope?.target,
+    },
+  ],
+});
+if (controlDup.billableAttribution !== "ATTRIBUTABLE") {
+  fail(
+    `A positive control scored ${controlDup.billableAttribution}, expected ATTRIBUTABLE`,
+  );
+}
+
+const emptyAttempt = scoreAttempt({ probe: { attemptId: "" } });
+if (emptyAttempt.probeAttribution !== "UNPROVABLE") {
+  fail(
+    `empty attemptId scored ${emptyAttempt.probeAttribution}, expected UNPROVABLE (nonzero guard)`,
+  );
+}
+const nullAttempt = scoreAttempt({ probe: { attemptId: null } });
+if (nullAttempt.probeAttribution !== "UNPROVABLE") {
+  fail(
+    `null attemptId scored ${nullAttempt.probeAttribution}, expected UNPROVABLE`,
+  );
+}
+const controlAttempt = scoreAttempt({ probe: caseB.controlCompleteIdentity });
+if (controlAttempt.probeAttribution !== "ATTRIBUTABLE") {
+  fail(
+    `B positive control scored ${controlAttempt.probeAttribution}, expected ATTRIBUTABLE`,
+  );
+}
+
 console.log("[roy-437-unprovable] OK");
 console.log("  A-duplicate-receipt-delivery: UNPROVABLE (both deliveries retained)");
-console.log("  B-missing-attempt-identity: UNPROVABLE (control ATTRIBUTABLE)");
+console.log("  A-control-distinct-receipt: ATTRIBUTABLE (evaluated)");
+console.log("  B-missing-attempt-identity: UNPROVABLE (empty/null → UNPROVABLE)");
+console.log("  B-control-complete-identity: ATTRIBUTABLE (evaluated)");

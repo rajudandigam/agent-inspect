@@ -777,6 +777,129 @@ describe("built-in run, tool, and LLM checks", () => {
     }
   });
 
+  it("does not let a finished before peer mask an unfinished occurrence", () => {
+    const finishedLookup = persisted("finished-lookup", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:00.500Z",
+    });
+    const runningLookup = persisted("running-lookup-peer", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      status: "running",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.600Z",
+      startedAt: "2026-06-26T00:00:00.600Z",
+    });
+    const refund = persisted("finished-refund-peer", {
+      kind: "TOOL",
+      name: "tool:issue_refund",
+      attributes: { toolName: "issue_refund" },
+      timestamp: "2026-06-26T00:00:01.000Z",
+      startedAt: "2026-06-26T00:00:01.000Z",
+      endedAt: "2026-06-26T00:00:02.000Z",
+    });
+
+    for (const mode of ["first-occurrence", "happens-before", "all-occurrences"] as const) {
+      const result = runTraceChecks(
+        { read: readResult([finishedLookup, runningLookup, refund]) },
+        {
+          rules: [
+            createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+          ],
+        },
+      );
+      expect(result.status).toBe("fail");
+      expect(result.findings[0]).toMatchObject({
+        ruleId: "tool.order",
+        actual: expect.objectContaining({
+          code: "tool.order.interval-unresolved",
+          unfinishedBefore: true,
+          finishedBeforeMasked: true,
+        }),
+      });
+    }
+  });
+
+  it("fails order when after has started but never terminated", () => {
+    const finishedLookup = persisted("lookup-before-running-after", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:00.500Z",
+    });
+    const runningRefund = persisted("running-refund-after", {
+      kind: "TOOL",
+      name: "tool:issue_refund",
+      status: "running",
+      attributes: { toolName: "issue_refund" },
+      timestamp: "2026-06-26T00:00:01.000Z",
+      startedAt: "2026-06-26T00:00:01.000Z",
+    });
+    const overlappingLookup = persisted("lookup-overlaps-running-after", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:01.500Z",
+    });
+
+    // Unfinished before + running after still fails in every mode.
+    const runningBefore = persisted("running-lookup-with-running-after", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      status: "running",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+    });
+    for (const mode of ["first-occurrence", "happens-before", "all-occurrences"] as const) {
+      const unfinished = runTraceChecks(
+        { read: readResult([runningBefore, runningRefund]) },
+        {
+          rules: [
+            createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+          ],
+        },
+      );
+      expect(unfinished.status).toBe("fail");
+      expect(unfinished.findings[0]?.actual).toMatchObject({
+        code: "tool.order.interval-unresolved",
+        unfinishedBefore: true,
+        afterStatus: "running",
+      });
+    }
+
+    // Causal modes still enforce before.end <= after.start when after is only running.
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const ok = runTraceChecks(
+        { read: readResult([finishedLookup, runningRefund]) },
+        {
+          rules: [
+            createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+          ],
+        },
+      );
+      expect(ok.status).toBe("pass");
+
+      const overlap = runTraceChecks(
+        { read: readResult([overlappingLookup, runningRefund]) },
+        {
+          rules: [
+            createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+          ],
+        },
+      );
+      expect(overlap.status).toBe("fail");
+    }
+  });
+
   it("escapes mixed-script tool names in allowlist findings (#522)", () => {
     const lookalike = "issue_r\u0435fund";
     const shadow = persisted("shadow-refund", {
@@ -1156,6 +1279,20 @@ describe("built-in structure and safety checks", () => {
     expect(result.status).toBe("fail");
     expect(result.findings.some((f) => f.ruleId === "safety.secretPattern")).toBe(true);
     expect(JSON.stringify(result.findings)).not.toContain(stripeLive);
+  });
+
+  it("flags Stripe keys glued to underscores with default secret patterns (#528)", () => {
+    const key = ["sk", "live", "SYNTHETIC0EVAL0NOT0A0KEY0000"].join("_");
+    for (const note of [`acct_${key}`, `${key}_eu`, `acct_${key}_eu`] as const) {
+      const event = persisted("event-a", { attributes: { note } });
+      const result = runTraceChecks(
+        { read: readResult([event]) },
+        { rules: [createSafetySecretPatternRule()] },
+      );
+      expect(result.status).toBe("fail");
+      expect(result.findings.some((f) => f.ruleId === "safety.secretPattern")).toBe(true);
+      expect(JSON.stringify(result.findings)).not.toContain(key);
+    }
   });
 
   it("reports redaction, raw-content, secret-pattern, and oversized-attribute findings without leaking values", () => {

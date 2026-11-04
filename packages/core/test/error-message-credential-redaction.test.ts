@@ -84,6 +84,16 @@ describe("pre-disk error message credential protection", () => {
     expect(redactHighConfidenceCredentialsInString(`note ${stripeLive}`)).toBe("[REDACTED]");
   });
 
+  it("detects Stripe keys glued to underscores (#528)", () => {
+    const key = ["sk", "live", "SYNTHETIC0EVAL0NOT0A0KEY0000"].join("_");
+    const restricted = ["rk", "test", "SYNTHETIC0EVAL0NOT0A0KEY0000"].join("_");
+    expect(stringContainsHighConfidenceCredential(`acct_${key}`)).toBe(true);
+    expect(stringContainsHighConfidenceCredential(`${key}_eu`)).toBe(true);
+    expect(stringContainsHighConfidenceCredential(`acct_${key}_eu`)).toBe(true);
+    expect(stringContainsHighConfidenceCredential(`acct_${restricted}`)).toBe(true);
+    expect(redactHighConfidenceCredentialsInString(`paymentRef=acct_${key}`)).toBe("[REDACTED]");
+  });
+
   it("preparePersistedInspectEventForWrite redacts free-text secrets in error.message", () => {
     const event = preparePersistedInspectEventForWrite(
       {

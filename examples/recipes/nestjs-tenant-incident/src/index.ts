@@ -619,6 +619,22 @@ function rewriteOutcomes(
       }),
       expectDetail: /operationId mismatch/,
     },
+    {
+      id: "N09g-ambiguous-consumption",
+      path: rewriteOutcomes(good.tracePath, "N09g-ambiguous-consumption", (rows) => {
+        const consumed = rows.find(
+          (row) => row.event === "outcome_observed" && row.name === "policy-consumption",
+        );
+        if (!consumed) return;
+        const clone = structuredClone(consumed);
+        clone.runId = "run_ambiguous_peer";
+        const evidence = (clone.evidence ?? {}) as Record<string, unknown>;
+        evidence.operationId = "op-ambiguous-peer";
+        clone.evidence = evidence;
+        rows.push(clone);
+      }),
+      expectDetail: /ambiguous policy-consumption/,
+    },
   ];
 
   for (const c of cases) {
