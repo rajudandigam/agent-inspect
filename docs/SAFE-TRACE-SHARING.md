@@ -4,7 +4,7 @@
 
 AgentInspect traces, log-ingest outputs, and exports are local files. They may still contain sensitive metadata that you attached manually, collected from logs, or included through optional preview settings. Use this checklist before sharing an artifact in a GitHub issue, Discussion, PR, support thread, or public post.
 
-This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **best-effort transformation**, not compliance-grade DLP or a safety certification. Always finish with `verify-safe` before sharing.
+This guide is practical sharing guidance, not a guarantee that any artifact is safe to publish. Redaction profiles are **best-effort transformation**, not compliance-grade DLP or a safety certification. Always finish with `verify-safe` before sharing. Passing residual safety is still only one of the [four trust-boundary questions](./LIMITATIONS.md#trust-boundary-four-independent-questions) — it does not prove capture completeness, contract truth, or independent authorization.
 
 Built-in profiles redact high-confidence credential forms (provider keys, JWTs, bearer tokens, and bounded `token=` / `api_key=` / `internal_token=` style key/value secrets). Broad or context-sensitive findings—such as private filesystem paths—may still appear under `verify-safe` and as residual status after `redact`. Org-specific patterns can use a local CLI `--policy` JSON file (`extraKeys` plus bounded literal/prefix patterns; no user regex) or programmatic custom detectors.
 

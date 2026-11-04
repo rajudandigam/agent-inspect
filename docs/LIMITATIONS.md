@@ -98,4 +98,26 @@ Visual demos: [SCREENSHOTS.md](./SCREENSHOTS.md) · [CLI.md](./CLI.md)
 
 - Designed for **developer machines** and **inner-loop debugging**, not petabyte log warehouses.
 
+## Trust boundary (four independent questions)
+
+AgentInspect answers local evidence questions. Treat these as **separate**:
+
+1. **Capture / coverage** — What events were recorded under the declared instrumentation boundary? Missing spans, uninstrumented SDK calls, and effects outside that boundary are not inventable from silence.
+2. **Trajectory contract** — Did a TraceContract / check preset pass on the selected run(s)? Pass/fail is rule evaluation over captured evidence, not proof of business correctness.
+3. **Residual artifact safety** — Do written share/strict artifacts pass the residual safety policy (`verify-safe` / Evidence assessment)? This is best-effort local policy, not a compliance certification or whole-org DLP guarantee.
+4. **Independent authorization / effect / origin** — Is there separate evidence of lawful authority, successful side effect, and trusted producer origin? AgentInspect does not supply those by default.
+
+Implications:
+
+- A recomputed **unsigned** Evidence manifest can verify **internal consistency** (listed files + hashes). It does **not** prove authenticity or producer identity.
+- A **signature** (if supplied externally) can authenticate bytes to a trusted signer. It still does **not** prove completeness, lawful authority, successful business effect, or absence of an uninstrumented side effect.
+- A recorded **approval-before-action** event is evidence that an approval was *recorded*. It is **not** proof that the approver had authority.
+- Signed receipts or durable journals (parked designs) do **not** create exactly-once side effects.
+
+Hypothetical approval evidence fields for a future recipe (not a shipped schema): distinct `decisionId`, `policyVersion`, `actorAuthorityRef`, `actionDigest`, `targetScope`, `decisionTime`, `executionId`, and a downstream `receiptId`. These are a proposed evidence set for discussion, not a banking integration.
+
+Parked larger designs (coverage registry, cross-run linkage, durable intent journal, signing/sealing, general value comparisons, data-flow causal explanations) stay out of incidental patches — see [implementation/active/PARKED-DESIGNS.md](./implementation/active/PARKED-DESIGNS.md).
+
+Related: [EVIDENCE-FORMAT.md](./EVIDENCE-FORMAT.md), [ADR-0012](./decisions/ADR-0012-evidence-contract-binding.md), [SAFE-TRACE-SHARING.md](./SAFE-TRACE-SHARING.md), [NETWORK-BEHAVIOR.md](./NETWORK-BEHAVIOR.md), [NO-EGRESS-POLICY.md](./NO-EGRESS-POLICY.md).
+
 For roadmap intent, see [ROADMAP.md](../ROADMAP.md) (direction only — not a delivery guarantee).

@@ -95,6 +95,17 @@ Canonical shape (fields may grow additively; unknown fields must be preserved by
 
 The manifest is **not** a certification.
 
+### Trust boundary (read with [LIMITATIONS.md](./LIMITATIONS.md#trust-boundary-four-independent-questions))
+
+Integrity verification answers “are these packaged bytes self-consistent?” It does **not** collapse the other questions:
+
+| Question | Evidence / verify answers? |
+|----------|----------------------------|
+| Captured events / declared coverage | Only what was packaged; silence ≠ absence of external effects |
+| Trajectory contract passed | Only when check results / contract binding are present and agreed |
+| Residual share/strict safety | Assessment + `verify-safe` — best-effort, not certification |
+| Independent authority / effect / trusted origin | **No** — not claimed by unsigned manifests or contract digests |
+
 ## Output modes (6.10-6)
 
 ```bash
