@@ -1,9 +1,10 @@
 {
   "aggregateStatus": "SAFE",
+  "checkStatus": "pass",
   "runs": [
     {
       "runId": "demo-good",
-      "status": "SAFE",
+      "checkStatus": "pass",
       "errors": 0,
       "warnings": 0,
       "findings": 0,

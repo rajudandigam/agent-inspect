@@ -3,28 +3,28 @@
     "note": "Best-effort local safety verification only; not a compliance certification.",
     "status": "SAFE"
   },
-  "createdAt": "2026-10-31T17:41:20.383Z",
+  "createdAt": "2026-11-04T18:27:57.349Z",
   "evidenceFormatVersion": "1.0",
   "files": [
     {
       "path": "check-results.json",
       "role": "checks",
-      "sha256": "56931493f50a3a96c280ce334362195489881dd2cafd6191bb4a94c355275d4a"
+      "sha256": "b1617e89a85100d867df176ea8c8f2327256b5cd1dedc3cab76a4ffc0a6fb93e"
     },
     {
       "path": "evidence.html",
       "role": "report",
-      "sha256": "2ffba3e94acc87fa9300ab5686300fc55584fe647c4bbbc593e2a3c98052ba4c"
+      "sha256": "4e73b1dace414876b6a73446ba27272cc91a79599eca150d1bb78fdf997ac26a"
     },
     {
       "path": "trace.jsonl",
       "role": "redacted-trace",
-      "sha256": "89494e430e4d34ef407b911fbdc15eb188e7d40cf649633fdd22f4133e00f62c"
+      "sha256": "74ca34cdd9a71f2885bb91513fed64baa62f3c9c29461f28863c861c4c707ac2"
     }
   ],
   "generator": {
     "name": "agent-inspect",
-    "version": "6.31.33"
+    "version": "6.31.34"
   },
   "policy": {
     "redactionProfile": "share",
@@ -37,7 +37,7 @@
     "sourceHashes": [
       {
         "algorithm": "sha256",
-        "hash": "89494e430e4d34ef407b911fbdc15eb188e7d40cf649633fdd22f4133e00f62c",
+        "hash": "74ca34cdd9a71f2885bb91513fed64baa62f3c9c29461f28863c861c4c707ac2",
         "runId": "demo-good"
       }
     ],

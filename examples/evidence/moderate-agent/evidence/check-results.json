@@ -1,9 +1,10 @@
 {
   "aggregateStatus": "SAFE",
+  "checkStatus": "pass",
   "runs": [
     {
       "runId": "pilot_anon_bridged_tool",
-      "status": "SAFE",
+      "checkStatus": "pass",
       "errors": 0,
       "warnings": 0,
       "findings": 0,
