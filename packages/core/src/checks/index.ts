@@ -999,6 +999,26 @@ function eventTimestamp(
   return eventId ? eventById.get(eventId)?.timestamp ?? "" : "";
 }
 
+/** Event-backed allowlist/denylist finding — the causal tool-policy signal (#522 follow-up). */
+function isObservedToolPolicyFinding(finding: TraceCheckFinding): boolean {
+  return finding.ruleId === "tool.usage" && finding.evidence[0]?.eventId !== undefined;
+}
+
+/**
+ * Secondary "expected tool missing" findings that often accompany a look-alike
+ * allowlist failure (required missing, unfinished argument check).
+ */
+function isMissingToolConsequenceFinding(finding: TraceCheckFinding): boolean {
+  if (finding.evidence[0]?.eventId !== undefined) return false;
+  if (finding.ruleId === "tool.usage" && /did not appear/.test(finding.message)) {
+    return true;
+  }
+  return (
+    finding.ruleId.startsWith("contract.tool.arguments") &&
+    /^No finished tool named /.test(finding.message)
+  );
+}
+
 function compareFindings(
   eventById: ReadonlyMap<string, PersistedInspectEvent>,
 ): (a: TraceCheckFinding, b: TraceCheckFinding) => number {
@@ -1006,6 +1026,14 @@ function compareFindings(
     if (SEVERITY_RANK[a.severity] !== SEVERITY_RANK[b.severity]) {
       return SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity];
     }
+    // Across rules: surface the observed allowlist/denylist cause before
+    // secondary "no finished tool" / "required missing" consequences (#522).
+    const aPolicy = isObservedToolPolicyFinding(a);
+    const bPolicy = isObservedToolPolicyFinding(b);
+    const aMissing = isMissingToolConsequenceFinding(a);
+    const bMissing = isMissingToolConsequenceFinding(b);
+    if (aPolicy && bMissing) return -1;
+    if (bPolicy && aMissing) return 1;
     const byRule = a.ruleId.localeCompare(b.ruleId);
     if (byRule !== 0) return byRule;
     if (STATUS_RANK[a.status] !== STATUS_RANK[b.status]) {
@@ -1191,21 +1219,67 @@ function toolName(event: PersistedInspectEvent): string {
   return resolveCanonicalToolName(event);
 }
 
-/** Escape non-ASCII code points in tool names so mixed-script lookalikes are visible (#522). */
+/** Max code-point annotations shown before truncation (#522 follow-up). */
+const MAX_TOOL_NAME_CODEPOINT_DETAILS = 3;
+
+function isAsciiLetterCodePoint(codePoint: number): boolean {
+  return (
+    (codePoint >= 0x41 && codePoint <= 0x5a) || (codePoint >= 0x61 && codePoint <= 0x7a)
+  );
+}
+
+/** Bidi, zero-width, and C0/C1 controls that can hide look-alikes in tool names. */
+function isRiskyToolNameCodePoint(codePoint: number): boolean {
+  if (codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f)) return true;
+  return (
+    codePoint === 0x061c ||
+    codePoint === 0x200b ||
+    codePoint === 0x200c ||
+    codePoint === 0x200d ||
+    codePoint === 0x200e ||
+    codePoint === 0x200f ||
+    (codePoint >= 0x202a && codePoint <= 0x202e) ||
+    (codePoint >= 0x2066 && codePoint <= 0x2069) ||
+    codePoint === 0xfeff
+  );
+}
+
+function formatCodePointDetail(codePoint: number, index: number): string {
+  return `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")} at index ${index}`;
+}
+
+/**
+ * Annotate tool names when mixed ASCII+non-ASCII or bidi/control risks are present
+ * so look-alikes stay visible without noise on legitimate non-Latin names (#522).
+ */
 function formatToolNameForMessage(name: string): string {
+  let hasAsciiLetter = false;
+  let hasNonAscii = false;
+  let hasRisky = false;
   const details: string[] = [];
   for (let index = 0; index < name.length; ) {
     const codePoint = name.codePointAt(index)!;
     const width = codePoint > 0xffff ? 2 : 1;
+    if (isAsciiLetterCodePoint(codePoint)) hasAsciiLetter = true;
+    const risky = isRiskyToolNameCodePoint(codePoint);
+    if (risky) hasRisky = true;
     if (codePoint > 0x7f) {
-      details.push(
-        `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")} at index ${index}`,
-      );
+      hasNonAscii = true;
+      details.push(formatCodePointDetail(codePoint, index));
+    } else if (risky) {
+      details.push(formatCodePointDetail(codePoint, index));
     }
     index += width;
   }
-  if (details.length === 0) return name;
-  return `"${name}" (contains ${details.join("; ")})`;
+  // Pure non-Latin names (e.g. Japanese) stay unescaped unless bidi/control risk.
+  if ((!hasRisky && !(hasAsciiLetter && hasNonAscii)) || details.length === 0) {
+    return name;
+  }
+  const shown = details.slice(0, MAX_TOOL_NAME_CODEPOINT_DETAILS);
+  const remaining = details.length - shown.length;
+  const detailText =
+    remaining > 0 ? `${shown.join("; ")}; and ${remaining} more` : shown.join("; ");
+  return `"${name}" (contains ${detailText})`;
 }
 
 function describeRunningEvent(event: PersistedInspectEvent): string {

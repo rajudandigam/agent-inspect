@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.34"
 publishedVersion: "6.31.34"
-pendingPublishVersion: ""
+pendingPublishVersion: "6.31.35"
 currentTrain: "nov4-audit-fix-train"
-trainStatus: "6.31.34 published; Nov4 audit train complete; 6.32 blocked"
+trainStatus: "6.31.34 published; C12 diagnostics polish for 6.31.35; 6.32 blocked"
 executionMode: "maintainer-reviewed"
 namedTrain: "nov4-audit-fix-train"
 branch: "main"
-currentChunk: "post-6.31.34 residual holds (C00 #526 unmerged; C08–C16 parked; Dependabot red)"
-lastConfirmedCommit: "cfccd2cf"
-lastValidationLevel: "Publish 41888399121 success; npm agent-inspect@6.31.34; #528/#529 closed"
-nextAction: "Partner acceptance #484/#437; #526 merge separate; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
+currentChunk: "C12 diagnostics bound/order polish — continue C13–C16"
+lastConfirmedCommit: "80c9ae07"
+lastValidationLevel: "C12 focused checks + browser recipe expected-output"
+nextAction: "C13 leave #496/#506 red + review Actions PRs; C14–C16; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -97,13 +97,13 @@ worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.33
-  PENDING_PUBLISH: none
-  ACTIVE: residual partner acceptance (#484/#494/#437); Indu v3 blocked
-  NEXT: no 6.32 without EVIDENCE_GATE; Swapnil design awaiting decision; Jan Windows PENDING
+  LAST_PUBLISHED_RELEASE: 6.31.34
+  PENDING_PUBLISH: 6.31.35 (C12+ residuals)
+  ACTIVE: C12 diagnostics polish; C13–C16 residuals; partner #484/#437
+  NEXT: leave #496/#506 red; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-10-31"
+updatedAt: "2026-11-04"
 ```
 

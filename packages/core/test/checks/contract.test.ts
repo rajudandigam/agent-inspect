@@ -425,6 +425,33 @@ describe("trace contract", () => {
       );
     });
 
+    it("sorts allowlist cause ahead of argument missing-tool consequence (#522)", () => {
+      const lookalike = "issue_r\u0435fund";
+      const read = readResult("ok", [
+        tool("lookup-1", "lookup_order", "2026-07-11T00:00:00.000Z", "2026-07-11T00:00:01.000Z"),
+        tool("shadow-1", lookalike, "2026-07-11T00:00:02.000Z", "2026-07-11T00:00:03.000Z"),
+      ]);
+      const result = evaluateTraceContract(
+        { read },
+        defineTraceContract({
+          tools: {
+            allowed: ["lookup_order", "issue_refund"],
+            required: ["issue_refund"],
+            arguments: [{ tool: "issue_refund", path: "/amount", operator: "exists" }],
+          },
+        }),
+      );
+      expect(result.status).toBe("fail");
+      const fails = failFindings(result);
+      expect(fails[0]?.ruleId).toBe("tool.usage");
+      expect(fails[0]?.message).toContain("not in the allowed tool set");
+      expect(fails[0]?.message).toContain("U+0435 at index 7");
+      expect(fails.some((finding) => finding.message.includes("No finished tool named"))).toBe(
+        true,
+      );
+      expect(fails.some((finding) => finding.message.includes("did not appear"))).toBe(true);
+    });
+
     it("does not let causal modes pass a reversed v0.1 trace whose steps share one millisecond", async () => {
       // Instant manual tool steps (scripted or mocked tools in CI) write every row
       // with the same millisecond timestamp; only row order records what happened.

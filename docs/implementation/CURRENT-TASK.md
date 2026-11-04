@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: nov4-audit-fix-train
 currentTrain: nov4-audit-fix-train
-trainStatus: "6.31.34 published; Nov4 C01–C07 + later-wave holds landed; 6.32 blocked"
-currentChunk: "post-6.31.34 residual holds"
-nextAction: "Partner acceptance #484/#437; #526 merge is separate maintainer call; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
+trainStatus: "6.31.34 published; C12 diagnostics polish staged for 6.31.35; 6.32 blocked"
+currentChunk: "C12 landed locally — continue C13–C16 residuals"
+nextAction: "C13 Dependabot leave-red review; C14–C16 follow-ups; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -21,7 +21,7 @@ worktreeIgnoreOnly:
 
 **6.31.34** — Trusted Publish [41888399121](https://github.com/rajudandigam/agent-inspect/actions/runs/41888399121) (+ republish confirm [41891912090](https://github.com/rajudandigam/agent-inspect/actions/runs/41891912090)); Version Packages [#530](https://github.com/rajudandigam/agent-inspect/pull/530). npm `agent-inspect@6.31.34` (registry confirmed).
 
-## Nov 4 audit train (done)
+## Nov 4 audit train
 
 | Chunk | Status | Notes |
 | --- | --- | --- |
@@ -37,7 +37,8 @@ worktreeIgnoreOnly:
 | C09 browser waitObservations | **shipped 6.31.34** | retained print |
 | C10 Indu v3 | **blocked** | artifact unavailable |
 | C11 private security | **hold** | no public issue |
-| C12–C16 / Dependabot | **parked / leave red** | |
+| C12 diagnostics polish | **in train for 6.31.35** | #522 follow-up bound/order + observation note |
+| C13–C16 / Dependabot | **next** | leave #496/#506 red |
 
 ## Residual queue
 

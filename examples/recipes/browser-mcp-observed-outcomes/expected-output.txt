@@ -21,6 +21,7 @@ om-attempt-comparison:
   a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100 (LocatorNotFound≠overlay)
   a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id
 om-wait-diagnostics: clock=injected-synthetic retained=true
+  note: ready/stop describe observation completion only; not business-effect success
   known-not-ready: ready=false doc=loading inFlight=navigation obstruction=unknown elapsed=40ms budget=100ms remaining=60ms stop=known-not-ready
   unknown-readiness: ready=unknown doc=unknown inFlight=unknown obstruction=unknown elapsed=50ms budget=80ms remaining=30ms stop=unknown-readiness
   successful-retry-ready: ready=true doc=complete inFlight=none obstruction=none elapsed=35ms budget=100ms remaining=65ms stop=completed-before-budget

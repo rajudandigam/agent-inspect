@@ -926,6 +926,53 @@ describe("built-in run, tool, and LLM checks", () => {
     );
   });
 
+  it("bounds long mixed-script codepoint annotations and skips pure non-Latin names (#522)", () => {
+    const longMixed = `send_${"\u0430".repeat(40)}`;
+    const japanese = "\u691C\u67FB";
+    const longShadow = persisted("long-shadow", {
+      kind: "TOOL",
+      name: `tool:${longMixed}`,
+      attributes: { toolName: longMixed },
+    });
+    const jpShadow = persisted("jp-shadow", {
+      kind: "TOOL",
+      name: `tool:${japanese}`,
+      attributes: { toolName: japanese },
+    });
+
+    const longResult = runTraceChecks(
+      { read: readResult([longShadow]) },
+      { rules: [createToolUsageRule({ allowed: ["send_order"] })] },
+    );
+    expect(longResult.status).toBe("fail");
+    expect(longResult.findings[0]?.message).toContain("U+0430 at index 5");
+    expect(longResult.findings[0]?.message).toContain("and 37 more");
+    expect(longResult.findings[0]?.message.match(/U\+[0-9A-F]+ at index/g)?.length).toBe(3);
+
+    const jpResult = runTraceChecks(
+      { read: readResult([jpShadow]) },
+      { rules: [createToolUsageRule({ allowed: ["lookup_order"] })] },
+    );
+    expect(jpResult.status).toBe("fail");
+    expect(jpResult.findings[0]?.message).toContain(`Tool ${japanese} is not in the allowed tool set`);
+    expect(jpResult.findings[0]?.message).not.toContain("U+");
+  });
+
+  it("still annotates bidi/control risks in otherwise non-Latin tool names (#522)", () => {
+    const withBidi = "\u691C\u200E\u67FB";
+    const shadow = persisted("bidi-shadow", {
+      kind: "TOOL",
+      name: `tool:${withBidi}`,
+      attributes: { toolName: withBidi },
+    });
+    const result = runTraceChecks(
+      { read: readResult([shadow]) },
+      { rules: [createToolUsageRule({ allowed: ["lookup_order"] })] },
+    );
+    expect(result.status).toBe("fail");
+    expect(result.findings[0]?.message).toContain("U+200E at index 1");
+  });
+
   it("reports required, forbidden, allowed, ordered, failed, and retried tool violations", () => {
     const forbidden = persisted("event-a", {
       kind: "TOOL",

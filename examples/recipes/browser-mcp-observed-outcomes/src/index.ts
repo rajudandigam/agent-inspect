@@ -432,6 +432,9 @@ console.log(
     throw new Error("waitObservations were not retained from om-attempt-comparison");
   }
   console.log("om-wait-diagnostics: clock=injected-synthetic retained=true");
+  console.log(
+    "  note: ready/stop describe observation completion only; not business-effect success",
+  );
   for (const scenario of OM_WAIT_SCENARIOS) {
     const o = retainedWaitObservations[scenario.id];
     if (!o) {
