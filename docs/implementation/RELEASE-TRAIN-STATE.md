@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.35"
 publishedVersion: "6.31.35"
-pendingPublishVersion: "6.31.35"
+pendingPublishVersion: ""
 currentTrain: "nov4-audit-fix-train"
-trainStatus: "6.31.34 published; C12–C16 ready for 6.31.35 Version Packages"
+trainStatus: "6.31.35 published; Nov4 residual C12–C16 complete; 6.32 blocked"
 executionMode: "maintainer-reviewed"
 namedTrain: "nov4-audit-fix-train"
 branch: "main"
-currentChunk: "C16 trust-boundary docs — await Version Packages publish"
-lastConfirmedCommit: "1459b1f7"
-lastValidationLevel: "C12–C16 landed on main; recipes validated"
-nextAction: "Merge Version Packages PR for 6.31.35; confirm npm; no 6.32 without EVIDENCE_GATE"
+currentChunk: "post-6.31.35 partner / gate holds"
+lastConfirmedCommit: "79fb6c85"
+lastValidationLevel: "Publish 41899701747 success; npm agent-inspect@6.31.35"
+nextAction: "Partner acceptance #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -97,9 +97,9 @@ worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.34
-  PENDING_PUBLISH: 6.31.35 (C12–C16)
-  ACTIVE: Version Packages for 6.31.35; partner #484/#437 hold
+  LAST_PUBLISHED_RELEASE: 6.31.35
+  PENDING_PUBLISH: none
+  ACTIVE: partner #484/#437; #526 merge separate; parked designs
   NEXT: leave #496/#506 red; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved

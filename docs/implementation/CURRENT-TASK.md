@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: nov4-audit-fix-train
 currentTrain: nov4-audit-fix-train
-trainStatus: "6.31.34 published; C12–C16 for 6.31.35; C13 leave-red recorded; 6.32 blocked"
-currentChunk: "C16 trust-boundary docs landed — await Version Packages / publish 6.31.35"
-nextAction: "Merge Version Packages when bot opens; confirm npm 6.31.35; no 6.32 without EVIDENCE_GATE"
+trainStatus: "6.31.35 published; Nov4 residual C12–C16 complete; 6.32 blocked"
+currentChunk: "post-6.31.35 partner / gate holds"
+nextAction: "Partner acceptance #484/#437; #526 merge separate; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -19,29 +19,19 @@ worktreeIgnoreOnly:
 
 ## Published baseline
 
-**6.31.34** — Trusted Publish [41888399121](https://github.com/rajudandigam/agent-inspect/actions/runs/41888399121) (+ republish confirm [41891912090](https://github.com/rajudandigam/agent-inspect/actions/runs/41891912090)); Version Packages [#530](https://github.com/rajudandigam/agent-inspect/pull/530). npm `agent-inspect@6.31.34` (registry confirmed).
+**6.31.35** — Trusted Publish [41899701747](https://github.com/rajudandigam/agent-inspect/actions/runs/41899701747); Version Packages [#531](https://github.com/rajudandigam/agent-inspect/pull/531). npm `agent-inspect@6.31.35` (registry confirmed).
 
-## Nov 4 audit train
+## Nov 4 residual train (done)
 
 | Chunk | Status | Notes |
 | --- | --- | --- |
-| C01 #528 Stripe underscore | **shipped 6.31.34** | issue closed |
-| C02 #529 gate vs safety | **shipped 6.31.34** | issue closed |
-| C03 unfinished ordering | **shipped 6.31.34** | |
-| C04 Gary verifier | **shipped 6.31.34** | |
-| C05 Nest consumption | **shipped 6.31.34** | |
-| C06 HTML lifecycle | **shipped 6.31.34** | |
-| C07 Roy controls | **shipped 6.31.34** | |
-| C00 #526 | **reviewed** | docs-only; **not merged** from this train |
-| C08 receipt-scope | **ADR-0013 hold** | |
-| C09 browser waitObservations | **shipped 6.31.34** | retained print |
-| C10 Indu v3 | **blocked** | artifact unavailable |
-| C11 private security | **hold** | no public issue |
-| C12 diagnostics polish | **on main for 6.31.35** | #522 follow-up bound/order + observation note |
+| C12 diagnostics polish | **shipped 6.31.35** | #522 follow-up bound/order + observation note |
 | C13 Dependabot / Actions | **reviewed** | #496/#506 leave red; #444/#500/#501 not merged |
-| C14 entity/value recipe | **on main for 6.31.35** | #527 recipe-local TraceCheckRule |
-| C15 RETRIEVER order | **on main for 6.31.35** | illustrative OI fixtures + recipe-local rule |
-| C16 trust-boundary docs | **on main for 6.31.35** | LIMITATIONS + PARKED-DESIGNS; no new roadmap |
+| C14 entity/value recipe | **shipped 6.31.35** | #527 recipe-local TraceCheckRule |
+| C15 RETRIEVER order | **shipped 6.31.35** | illustrative OI fixtures + recipe-local rule |
+| C16 trust-boundary docs | **shipped 6.31.35** | LIMITATIONS + PARKED-DESIGNS |
+
+Earlier C01–C11 remains as recorded for **6.31.34**.
 
 ## Residual queue
 
