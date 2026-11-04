@@ -1,9 +1,10 @@
 {
   "aggregateStatus": "SAFE",
+  "checkStatus": "pass",
   "runs": [
     {
       "runId": "swarm_anon_deep_ok",
-      "status": "SAFE",
+      "checkStatus": "pass",
       "errors": 0,
       "warnings": 0,
       "findings": 0,

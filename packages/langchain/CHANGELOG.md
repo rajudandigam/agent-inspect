@@ -1,5 +1,12 @@
 # @agent-inspect/langchain
 
+## 6.31.34
+
+### Patch Changes
+
+- Updated dependencies [c0726d8]
+  - agent-inspect@6.31.34
+
 ## 6.31.33
 
 ### Patch Changes
