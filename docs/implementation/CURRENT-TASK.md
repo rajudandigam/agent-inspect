@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: nov4-audit-fix-train
 currentTrain: nov4-audit-fix-train
-trainStatus: "6.31.34 published; C12 diagnostics polish staged for 6.31.35; 6.32 blocked"
-currentChunk: "C12 landed locally — continue C13–C16 residuals"
-nextAction: "C13 Dependabot leave-red review; C14–C16 follow-ups; no 6.32 without EVIDENCE_GATE"
+trainStatus: "6.31.34 published; C12 on main for 6.31.35; C13 leave-red recorded; 6.32 blocked"
+currentChunk: "C13 done — continue C14–C16 residuals"
+nextAction: "C14 entity/value recipe; C15 RETRIEVER; C16 trust-boundary docs; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -37,8 +37,9 @@ worktreeIgnoreOnly:
 | C09 browser waitObservations | **shipped 6.31.34** | retained print |
 | C10 Indu v3 | **blocked** | artifact unavailable |
 | C11 private security | **hold** | no public issue |
-| C12 diagnostics polish | **in train for 6.31.35** | #522 follow-up bound/order + observation note |
-| C13–C16 / Dependabot | **next** | leave #496/#506 red |
+| C12 diagnostics polish | **on main for 6.31.35** | #522 follow-up bound/order + observation note |
+| C13 Dependabot / Actions | **reviewed** | #496/#506 leave red; #444/#500/#501 not merged |
+| C14–C16 | **next** | entity recipe; RETRIEVER; trust docs |
 
 ## Residual queue
 
