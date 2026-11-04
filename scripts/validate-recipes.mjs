@@ -75,6 +75,7 @@ const RECIPES = [
   "nestjs-tenant-incident",
   "mcp-transport-retry-429",
   "refund-value-entity-checks",
+  "retriever-llm-order-otlp",
 ];
 
 const LOG_RECIPE_FILES = {

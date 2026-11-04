@@ -1,0 +1,60 @@
+{
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "illustrative-1.0",
+  "trace_id": "trace-retriever-normal",
+  "spans": [
+    {
+      "trace_id": "trace-retriever-normal",
+      "span_id": "span-root",
+      "name": "rag graph",
+      "start_time_unix_nano": "1700000000000000000",
+      "end_time_unix_nano": "1700000009000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.run_id": "run_retriever_normal",
+        "agent_inspect.kind": "RUN"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-retriever-normal",
+      "span_id": "span-retriever",
+      "parent_span_id": "span-root",
+      "name": "retrieve_docs",
+      "start_time_unix_nano": "1700000001000000000",
+      "end_time_unix_nano": "1700000003000000000",
+      "attributes": {
+        "openinference.span.kind": "RETRIEVER",
+        "retrieval.query": "policy refund window",
+        "retrieval.top_k": 3,
+        "document.ids": [
+          "doc-1",
+          "doc-2"
+        ],
+        "agent_inspect.run_id": "run_retriever_normal"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-retriever-normal",
+      "span_id": "span-llm",
+      "parent_span_id": "span-root",
+      "name": "generate_answer",
+      "start_time_unix_nano": "1700000004000000000",
+      "end_time_unix_nano": "1700000008000000000",
+      "attributes": {
+        "openinference.span.kind": "LLM",
+        "llm.model_name": "fixture-model",
+        "agent_inspect.run_id": "run_retriever_normal"
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ]
+}

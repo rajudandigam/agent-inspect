@@ -1,0 +1,12 @@
+retriever-llm-order-otlp:
+  note: illustrative OpenInference fixtures; not a native Python AgentInspect adapter
+  honesty: steps.orderRelations kinds are TOOL|LLM only; RETRIEVER preserved as RETRIEVER
+  rule: recipe.retriever.before.llm (recipe-local TraceCheckRule; no RETRIEVER→TOOL relabel)
+  normal-order: expected=pass observed=pass kinds=LLM,RETRIEVER,RUN
+  reversed-order: expected=fail observed=fail kinds=LLM,RETRIEVER,RUN
+  overlapping-order: expected=fail observed=fail kinds=LLM,RETRIEVER,RUN
+  unfinished-retriever: expected=fail observed=fail kinds=LLM,RETRIEVER,RUN
+  missing-retriever: expected=fail observed=fail kinds=LLM,RUN
+classes: normal-order:pass,reversed-order:fail,overlapping-order:fail,unfinished-retriever:fail,missing-retriever:fail
+  note: order pass does not prove semantic consumption of retrieved content
+  externalValidation: pending real Python LangGraph OTLP export (fixtures labeled illustrative)

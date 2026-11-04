@@ -1,0 +1,39 @@
+{
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "illustrative-1.0",
+  "trace_id": "trace-retriever-missing",
+  "spans": [
+    {
+      "trace_id": "trace-retriever-missing",
+      "span_id": "span-root",
+      "name": "rag graph",
+      "start_time_unix_nano": "1700000400000000000",
+      "end_time_unix_nano": "1700000409000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.run_id": "run_retriever_missing",
+        "agent_inspect.kind": "RUN"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-retriever-missing",
+      "span_id": "span-llm",
+      "parent_span_id": "span-root",
+      "name": "generate_answer",
+      "start_time_unix_nano": "1700000402000000000",
+      "end_time_unix_nano": "1700000408000000000",
+      "attributes": {
+        "openinference.span.kind": "LLM",
+        "llm.model_name": "fixture-model",
+        "agent_inspect.run_id": "run_retriever_missing"
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ]
+}

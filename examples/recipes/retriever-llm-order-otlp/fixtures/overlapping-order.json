@@ -1,0 +1,55 @@
+{
+  "format": "openinference",
+  "compatibility": "openinference-compatible",
+  "version": "illustrative-1.0",
+  "trace_id": "trace-retriever-overlap",
+  "spans": [
+    {
+      "trace_id": "trace-retriever-overlap",
+      "span_id": "span-root",
+      "name": "rag graph",
+      "start_time_unix_nano": "1700000200000000000",
+      "end_time_unix_nano": "1700000209000000000",
+      "attributes": {
+        "openinference.span.kind": "CHAIN",
+        "agent_inspect.run_id": "run_retriever_overlap",
+        "agent_inspect.kind": "RUN"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-retriever-overlap",
+      "span_id": "span-retriever",
+      "parent_span_id": "span-root",
+      "name": "retrieve_docs",
+      "start_time_unix_nano": "1700000201000000000",
+      "end_time_unix_nano": "1700000206000000000",
+      "attributes": {
+        "openinference.span.kind": "RETRIEVER",
+        "retrieval.query": "policy refund window",
+        "agent_inspect.run_id": "run_retriever_overlap"
+      },
+      "status": {
+        "code": "OK"
+      }
+    },
+    {
+      "trace_id": "trace-retriever-overlap",
+      "span_id": "span-llm",
+      "parent_span_id": "span-root",
+      "name": "generate_answer",
+      "start_time_unix_nano": "1700000203000000000",
+      "end_time_unix_nano": "1700000208000000000",
+      "attributes": {
+        "openinference.span.kind": "LLM",
+        "llm.model_name": "fixture-model",
+        "agent_inspect.run_id": "run_retriever_overlap"
+      },
+      "status": {
+        "code": "OK"
+      }
+    }
+  ]
+}
