@@ -14,5 +14,6 @@
 | [ADR-0010](./ADR-0010-structured-control-contracts.md) | Structured control contracts (6.23) |
 | [ADR-0011](./ADR-0011-bounded-safe-recovery.md) | Bounded safe recovery contracts (6.27) |
 | [ADR-0012](./ADR-0012-evidence-contract-binding.md) | Evidence contract binding (6.28) |
+| [ADR-0013](./ADR-0013-receipt-scope-policy-hold.md) | Receipt-scope policy hold (#437 / #484) |
 
 Detailed historical RFCs live in Git history after `6.16.1` proposal cleanup.

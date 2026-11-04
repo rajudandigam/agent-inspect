@@ -20,3 +20,7 @@
 3. Maintainer agreement if a new revision ID is required instead of recovering v3.
 
 Until then: no Revera acceptance claim; **EVIDENCE_GATE** remains unapproved for 6.32.0.
+
+## Reaffirmation (2026-11-04 Nov4 audit C10)
+
+Re-searched authorized paths for `scenario-01-v3-agentinspect-instrumented`. Exact artifact still unavailable. No v2 rename or rebuild performed.
