@@ -2,7 +2,7 @@
 
 **Status:** PARTIAL — evidence from maintainer CI + local smoke scripts; not a full OS×Node grid.  
 **Authority:** [implementation/ROADMAP.md](./implementation/ROADMAP.md) · [STABILITY-BASELINE.md](./STABILITY-BASELINE.md)
-**Date:** 2026-10-30 · CI primary `agent-inspect@6.31.30`; Windows dated rows below are **historical measured** runs only; first **released** Windows `--policy` drive-path fix is **6.31.17** (keep #209 open). Post-N1 packed MCP SDK Windows rerun remains **PENDING / NOT RUN** — see [PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md](./evidence/PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md).
+**Date:** 2026-10-31 · CI primary `agent-inspect@6.31.33`; Windows dated rows below are **historical measured** runs only; first **released** Windows `--policy` drive-path fix is **6.31.17** (keep #209 open). Post-N1 packed MCP SDK Windows rerun measured on native Windows 11 — see [PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md](./evidence/PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md).
 
 ## Method
 
@@ -21,7 +21,7 @@ Do **not** infer untested cells as supported.
 | Node 20 | engines `>=20` | engines field; not separately matrixed in CI | **DECLARED** / CI not multi-version |
 | Node 22 | CI primary | GHA typecheck/unit/publish | **PASS** |
 | Node 24 | Desired | 2026-09-28 native Windows packed-consumer run below; not in GHA matrix | **PASS** for the executed root/subpath slice |
-| Node 26 | Desired | Not in GHA matrix and not covered by the dated run below | **UNTESTED** |
+| Node 26 | Desired | 2026-10-31 native Windows packed MCP SDK run below; not in GHA matrix | **PASS** for the packed MCP real-SDK harness slice |
 | ESM | Supported | pack + compat smoke | **PASS** (CI Linux) |
 | CJS | Supported | pack + compat smoke | **PASS** (CI Linux) |
 | TypeScript Node16 / NodeNext | Supported | compat `ts-jest-node16`; docs recommend NodeNext/Node16 | **PASS** (fixture) |
@@ -29,7 +29,7 @@ Do **not** infer untested cells as supported.
 | pnpm consumer | Supported | monorepo + docs guide; CI uses pnpm | **PASS** (repo) / clean consumer **DOCUMENTED** |
 | Linux | Supported | GHA ubuntu | **PASS** |
 | macOS | Supported intent | Maintainer local Darwin; not GHA matrix | **PARTIAL** |
-| Windows | Supported intent | 2026-09-28 manual native Windows + Node 24 evidence below; not in GHA matrix | **PASS** for the #209 root/subpath and optional suite; broader matrix **PARTIAL** |
+| Windows | Supported intent | 2026-09-28 and 2026-10-31 manual native Windows evidence below; not in GHA matrix | **PASS** for the #209 root/subpath and packed MCP real-SDK harness; broader matrix **PARTIAL** |
 | Jest 29 / 30 | Reporters packed | pack smoke Jest reporter import | **PARTIAL** (import smoke, not full Jest version matrix) |
 | Vitest | Reporters packed | pack smoke Vitest reporter import | **PARTIAL** |
 
@@ -40,11 +40,11 @@ Do **not** infer untested cells as supported.
 | 2026-08-26 | Native Windows; registry product `Windows 10 Home`, display `25H2`, build `26200.9168` | `v24.13.0` | `pnpm 9.15.0`; `npm 11.17.0` | `agent-inspect@6.17.3` | **PASS** | **PASS** | **PASS** (10/10) | **PASS** (10/10) | `pack:smoke` + `compat:smoke` **PASS** |
 | 2026-09-13 | Native Windows 11 (NT 10.0.26200, X64) | `v24.19.0` | `pnpm 9.15.0`; `npm 12.0.2` | `agent-inspect@6.29.0` | **PASS** | **PASS** | **PASS** (10/10) | **PASS** (10/10) | `pack:smoke` + `compat:smoke` **PASS** (all 17 optional packages OK, native `better-sqlite3` rebuild OK with npm 12 allowScripts) |
 | 2026-09-28 | Native Windows 11 (NT 10.0.26200, X64) | `v24.19.0` | `pnpm 9.15.0`; `npm 12.0.2` | `agent-inspect@6.31.11` | **PASS** | **PASS** | **PASS** (10/10) | **PASS** (10/10) | `pack:smoke` + `compat:smoke` **PASS** (all 17 optional packages OK, unit suite 309/309 PASS). Historical packed-consumer evidence only — does **not** claim the later Windows `--policy` drive-path fix |
+| 2026-10-31 | Native Windows 11 (NT 10.0.26300, X64) | `v26.13.0` | `pnpm 12.16.1`; `npm 12.2.1` | `agent-inspect@6.31.33` + `@agent-inspect/mcp@6.31.33` | **PASS** | **PASS** | **PASS** (packed real `@modelcontextprotocol/sdk@1.31.0` Client ESM) | **PASS** (packed real `@modelcontextprotocol/sdk@1.31.0` Client CJS) | `pnpm run build && node scripts/packed-mcp-sdk-e2e.mjs` **PASS** (all assertions M01–M14, strict `.mts`/`.cts` consumers, zero outside warnings, saved JSONL tool list and server name). Does not close #209 |
 
 The 2026-09-28 Windows + Node 24 row re-validates the root packed-consumer,
 public-root-subpath, and full optional-package suite for issue #209 on the **6.31.11**
-baseline. The CLI `--policy` Windows drive-path fix landed on main as [#473](https://github.com/rajudandigam/agent-inspect/pull/473) and first ships in the **released** package set **6.31.17**; do not close #209 on matrix wording alone. Broader cross-OS automation remains PARTIAL, Node 26
-remains untested, and the macOS status is unchanged.
+baseline. The CLI `--policy` Windows drive-path fix landed on main as [#473](https://github.com/rajudandigam/agent-inspect/pull/473) and first ships in the **released** package set **6.31.17**; do not close #209 on matrix wording alone. The 2026-10-31 Windows + Node 26 row validates the canonical real-SDK packed harness (`scripts/packed-mcp-sdk-e2e.mjs`) on release **6.31.33** across ESM, CJS, and strict `.mts`/`.cts` consumers (resolving the pending measurement from [PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md](./evidence/PR-494-PACKED-MCP-SDK-HARNESS-RECONCILE.md)). Broader cross-OS automation remains PARTIAL, and the macOS status is unchanged.
 
 ## Retention
 
