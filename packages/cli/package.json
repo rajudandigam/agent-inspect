@@ -21,7 +21,7 @@
     "@agent-inspect/eval": "workspace:*",
     "@agent-inspect/guardrails": "workspace:*",
     "@agent-inspect/viewer": "workspace:*",
-    "commander": "^12.1.0"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@agent-inspect/index-sqlite": "workspace:*",
