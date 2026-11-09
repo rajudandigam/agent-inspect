@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "agent-inspect": "workspace:*",
-    "better-sqlite3": "^12.11.1"
+    "better-sqlite3": "^13.0.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11"
