@@ -2643,6 +2643,10 @@ export function createToolFailureRule(options: ToolFailureRuleOptions): TraceChe
   };
 }
 
+function recordsTokenUsage(event: PersistedInspectEvent): boolean {
+  return Object.values(event.tokenUsage ?? {}).some((count) => typeof count === "number");
+}
+
 /**
  * Create the experimental built-in LLM usage rule.
  *
@@ -2711,6 +2715,21 @@ export function createLlmUsageRule(options: LlmUsageRuleOptions): TraceCheckRule
         ["total", options.maxTotalTokens],
         ["cached", options.maxCachedTokens],
       ] as const;
+      const hasTokenLimit = tokenLimits.some(([, limit]) => limit !== undefined);
+      const callsWithoutUsage = llms.filter(
+        (event) => event.status !== "error" && !recordsTokenUsage(event),
+      );
+      if (hasTokenLimit && callsWithoutUsage.length > 0) {
+        findings.push(
+          failFinding(
+            "llm.usage",
+            `No token usage was read for ${callsWithoutUsage.length} of ${llms.length} LLM call(s), so the token limit cannot be verified.`,
+            callsWithoutUsage.map((event) => eventEvidence(event, "tokenUsage")),
+            "token usage on every completed LLM call",
+            { callsWithoutUsage: callsWithoutUsage.length, calls: llms.length },
+          ),
+        );
+      }
       for (const [key, limit] of tokenLimits) {
         if (limit !== undefined && tokenTotals[key] > limit) {
           findings.push(
