@@ -1139,6 +1139,190 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.findings).toHaveLength(0);
   });
 
+  it("fails a token budget when a completed LLM call records no token usage", () => {
+    const metered = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { input: 100, output: 50, total: 150 },
+    });
+    const unmetered = persisted("event-b", { kind: "LLM", name: "llm:generate-answer" });
+    const read = readResult([metered, unmetered]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.message)).toEqual([
+      "No token usage was read for 1 of 2 LLM call(s), so the token limit cannot be verified.",
+    ]);
+    expect(result.findings[0]?.evidence.map((evidence) => evidence.eventId)).toEqual(["event-b"]);
+  });
+
+  it("fails a token budget when token usage is present but holds no counts", () => {
+    const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", tokenUsage: {} });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxInputTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings).toHaveLength(1);
+  });
+
+  it("does not ask a failed LLM call for token usage", () => {
+    const failed = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", status: "error" });
+    const metered = persisted("event-b", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { input: 100, output: 50, total: 150 },
+    });
+    const read = readResult([failed, metered]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
+  it("does not ask for token usage when no token limit is set", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      attributes: { model: "gpt-4o" },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ allowedModels: ["gpt-4o"], maxCalls: 1 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
+  it("keeps a cached-token limit passing when usage is recorded without a cached count", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { input: 100, output: 50, total: 150 },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxCachedTokens: 10 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
+  it.each([
+    { maxInputTokens: 1000 },
+    { maxOutputTokens: 1000 },
+    { maxTotalTokens: 0 },
+    { maxCachedTokens: 1000 },
+  ])("asks for token usage under the token limit %j", (tokenLimit) => {
+    const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer" });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks({ read }, { rules: [createLlmUsageRule(tokenLimit)] });
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.message)).toEqual([
+      "No token usage was read for 1 of 1 LLM call(s), so the token limit cannot be verified.",
+    ]);
+  });
+
+  it.each(["unknown", undefined] as const)(
+    "asks an LLM call with status %s for token usage",
+    (status) => {
+      const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", status });
+      const read = readResult([llm]);
+
+      const result = runTraceChecks(
+        { read },
+        { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+      );
+
+      expect(result.status).toBe("fail");
+      expect(result.findings.map((finding) => finding.message)).toEqual([
+        "No token usage was read for 1 of 1 LLM call(s), so the token limit cannot be verified.",
+      ]);
+    },
+  );
+
+  it.each([{ total: 150 }, { input: 100 }, { cached: 5 }, { reasoning: 5 }])(
+    "accepts the partial token usage %j as recorded",
+    (tokenUsage) => {
+      const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", tokenUsage });
+      const read = readResult([llm]);
+
+      const result = runTraceChecks(
+        { read },
+        {
+          rules: [
+            createLlmUsageRule({
+              maxInputTokens: 1000,
+              maxOutputTokens: 1000,
+              maxTotalTokens: 1000,
+              maxCachedTokens: 1000,
+            }),
+          ],
+        },
+      );
+
+      expect(result.status).toBe("pass");
+      expect(result.findings).toHaveLength(0);
+    },
+  );
+
+  it("does not accept token usage whose counts are undefined as recorded", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { total: undefined },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings).toHaveLength(1);
+  });
+
+  it("still reports an exceeded token limit next to a call without token usage", () => {
+    const metered = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { input: 100, output: 50, total: 150 },
+    });
+    const unmetered = persisted("event-b", { kind: "LLM", name: "llm:generate-answer" });
+    const read = readResult([metered, unmetered]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 100 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.message).sort()).toEqual([
+      "LLM total token count 150 exceeded 100.",
+      "No token usage was read for 1 of 2 LLM call(s), so the token limit cannot be verified.",
+    ]);
+  });
+
   it("resolves LLM model, provider, and finish reason from nested metadata", () => {
     // v0.1 traces bridge LLM identity under attributes.metadata rather than
     // promoting it to top-level attributes, so the checks must look there.
