@@ -38,7 +38,45 @@ Failed invariants:
 
 ## Run
 
-From this directory, after `pnpm install` at the repo root (or `npm install agent-inspect` in a copy of this starter):
+### In this monorepo
+
+Keep `package.json` as published in-repo (`"agent-inspect": "workspace:*"`). From the repo root:
+
+```bash
+pnpm install
+pnpm build
+cd examples/starters/broken-agent-debugging
+```
+
+### Copied outside the monorepo (standalone)
+
+`workspace:*` only resolves inside this pnpm workspace. After copying this folder elsewhere:
+
+1. Edit `package.json` and replace the dependency with the published release:
+
+```json
+"dependencies": {
+  "agent-inspect": "6.31.35"
+}
+```
+
+2. Install from that copy (do not keep `node_modules` from the monorepo):
+
+```bash
+npm install
+```
+
+Equivalent one-liner if you prefer not to hand-edit first:
+
+```bash
+npm install agent-inspect@6.31.35
+```
+
+(`npm install agent-inspect@6.31.35` installs that release and rewrites the dependency, typically to `^6.31.35`.)
+
+### Demo
+
+From this directory (after either install path above):
 
 ```bash
 node demo-agent.mjs good
