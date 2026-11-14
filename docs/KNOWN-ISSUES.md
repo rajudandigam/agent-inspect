@@ -4,6 +4,7 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 
 ## Contracts and safety
 
+- **Manual traces omit `Error.code`:** Global `inspectRun` / `step` still persist `{ message, stack? }` only. Bounded `error.code` retention shipped for `createInspector()` in 6.29.2 (#415); the issue title said “manual instrumentation,” but the manual helpers were not changed. Prefer `createInspector()` or explicit metadata `errorCode` when codes matter. Documented in [SCHEMA.md](./SCHEMA.md) §4 / [LIMITATIONS.md](./LIMITATIONS.md).
 - **Retry / side-effect rules (6.23+; chronology fixed in 6.25.1):** `requireIdempotencyEvidenceForRetry` applies to genuine retries including `error → success`, not only retries after a prior `ok`. Ambiguous attempt identity fails closed under that rule. Write timeouts remain **unknown completion** — safe write retry is not claimed.
 - **Omitted-payload digests:** inputs larger than 1 MiB are rejected after a length preflight; oversized rejection must not be treated as a free full-buffer copy path.
 

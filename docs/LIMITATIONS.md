@@ -20,6 +20,7 @@ This document states what AgentInspect **does not** provide today. It complement
 ## Persisted event model
 
 - **Manual global tracing remains v0.1.** `inspectRun()` / `step()` still write `schemaVersion: "0.1"` JSONL for compatibility.
+- **Manual `error` omits codes.** Thrown `Error.code` values (for example `429`, `ECONNRESET`) and numeric `status` are **not** written on the manual path (`formatError` → `{ message, stack? }` only). `createInspector()` retains bounded safe codes on schema 1.0 rows. Issue #415 shipped the inspector path; the manual helpers are unchanged. See [SCHEMA.md](./SCHEMA.md) §4.
 - **Persisted writer/runtime output targets schema 1.0.** `createInspector()` with built-in writers emits schema 1.0 persisted rows; v0.1 and v0.2 remain readable.
 - **Migration is explicit, not automatic.** `agent-inspect migrate <input> --to 1.0 --dry-run` reports what would change, and `--output <file>` writes a separate file. AgentInspect does not rewrite old traces in place.
 
