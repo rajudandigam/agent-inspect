@@ -167,9 +167,29 @@ function evaluateInvariants(t: Trajectory): Array<{
     evt060.consequential_mutation.durable_retention_binding_count === 1 &&
     evt060.consequential_mutation.other_authority_mutation_count === 0;
 
+  // Presence alone is not enough: every remediation_of edge must agree with the
+  // remediating event's remediation_of.event_id (from → remediator, to → failure).
+  const remediationEdges = t.relationships.filter((r) => r.kind === "remediation_of");
+  const remediationEndpointsAgree =
+    remediationEdges.length > 0 &&
+    remediationEdges.every((r) => {
+      const from = t.events.find((e) => e.event_id === r.from_event_id);
+      return from?.remediation_of?.event_id === r.to_event_id;
+    });
+  // Named R2 edge must itself agree; a decoy matching edge cannot substitute.
+  const r2RemediationEdge = remediationEdges.find(
+    (r) => r.relationship_id === "rel_r2_remediates_r1_failure",
+  );
+  const r2EndpointsAgree =
+    r2RemediationEdge !== undefined &&
+    r2RemediationEdge.from_event_id === evt030.event_id &&
+    r2RemediationEdge.to_event_id === evt020.event_id &&
+    r2RemediationEdge.explicit === true &&
+    evt030.remediation_of?.event_id === evt020.event_id;
   const inv08 =
     t.ordering_model.timestamps === "intentionally_omitted" &&
-    t.relationships.some((r) => r.kind === "remediation_of" && r.explicit === true) &&
+    remediationEndpointsAgree &&
+    r2EndpointsAgree &&
     t.explicit_non_claims.some((c) => /ordering establishes causality/i.test(c));
 
   const inv09 =
@@ -285,6 +305,55 @@ const mutations: Mutation[] = [
       copy.relationships = copy.relationships.filter(
         (r) => r.kind !== "remediation_of",
       );
+      return copy;
+    },
+  },
+  {
+    // Relationship source only — event remediation_of fields unchanged.
+    id: "M-rel-source-only",
+    expectedFail: "INV-08",
+    apply: (t) => {
+      const copy = structuredClone(t);
+      const edge = copy.relationships.find(
+        (r) => r.relationship_id === "rel_r2_remediates_r1_failure",
+      );
+      if (!edge) throw new Error("missing remediation edge");
+      edge.from_event_id = "evt_040_r2_independent_audit_pass";
+      return copy;
+    },
+  },
+  {
+    // Relationship target only — event remediation_of fields unchanged.
+    id: "M-rel-target-only",
+    expectedFail: "INV-08",
+    apply: (t) => {
+      const copy = structuredClone(t);
+      const edge = copy.relationships.find(
+        (r) => r.relationship_id === "rel_r2_remediates_r1_failure",
+      );
+      if (!edge) throw new Error("missing remediation edge");
+      edge.to_event_id = "evt_010_r1_candidate_created";
+      return copy;
+    },
+  },
+  {
+    // Broken R2 edge cannot be hidden by another explicit remediation_of.
+    id: "M-unrelated-remediation-hides",
+    expectedFail: "INV-08",
+    apply: (t) => {
+      const copy = structuredClone(t);
+      const edge = copy.relationships.find(
+        (r) => r.relationship_id === "rel_r2_remediates_r1_failure",
+      );
+      if (!edge) throw new Error("missing remediation edge");
+      edge.to_event_id = "evt_010_r1_candidate_created";
+      copy.relationships.push({
+        relationship_id: "rel_decoy_remediation",
+        kind: "remediation_of",
+        from_event_id: "evt_030_r2_remediation_candidate_created",
+        to_event_id: "evt_020_r1_independent_audit_fail",
+        explicit: true,
+      });
       return copy;
     },
   },

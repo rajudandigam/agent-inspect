@@ -39,7 +39,7 @@ Unsupported native timing remains a **gap** — no fabricated timestamped TOOL e
 | INV-05 | true | PASS — verification kinds ≠ `authority.source_acceptance` | evt_040 vs evt_050 | no |
 | INV-06 | true | PASS — `evt_055` preflight no mutation; `evt_060` human-triggered | evt_055, evt_060 | no |
 | INV-07 | true | PASS — one authoritative transition + one retention binding in closure event | evt_060 | no |
-| INV-08 | true | PASS — relationships required; ordinal rule documented | ordering_model, relationships | no |
+| INV-08 | true | PASS — explicit R2 `remediation_of` edge exists **and** endpoints agree with `evt_030.remediation_of.event_id` | ordering_model, relationships, evt_030 | no |
 | INV-09 | true | PASS — durability/closure audit are verification, not acceptance | evt_070, evt_080 | no |
 | INV-10 | true | PASS — `explicit_non_claims` includes no replay | explicit_non_claims | representation test |
 
@@ -55,6 +55,9 @@ Unsupported native timing remains a **gap** — no fabricated timestamped TOOL e
 | Preparer performs mutation / remove acceptance link | FAIL INV-06 |
 | Change mutation counts | FAIL INV-07 |
 | Remove causal relationship, keep order | FAIL INV-08 |
+| Mutate only remediation relationship `from_event_id` | FAIL INV-08 (endpoint cross-check) |
+| Mutate only remediation relationship `to_event_id` | FAIL INV-08 (endpoint cross-check) |
+| Break R2 remediation endpoints but add a decoy matching edge | FAIL INV-08 (R2 edge must agree; decoy does not hide) |
 | Second acceptance at durability | FAIL INV-09 |
 | Fabricate replay claim | FAIL INV-10 |
 

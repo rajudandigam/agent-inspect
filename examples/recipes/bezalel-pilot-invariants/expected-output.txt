@@ -16,11 +16,14 @@ mutation-controls:
   M-accept-candidate: expectFail=INV-01 failed=[INV-01] PASS
   M-audit-as-authority: expectFail=INV-02 failed=[INV-02] PASS
   M-r1-authority: expectFail=INV-03 failed=[INV-03] PASS
-  M-rewrite-lineage: expectFail=INV-04 failed=[INV-04] PASS
+  M-rewrite-lineage: expectFail=INV-04 failed=[INV-04,INV-08] PASS
   M-collapse-acceptance: expectFail=INV-05 failed=[INV-05] PASS
   M-preparer-mutates: expectFail=INV-06 failed=[INV-06] PASS
   M-mutation-counts: expectFail=INV-07 failed=[INV-07] PASS
   M-drop-relationship: expectFail=INV-08 failed=[INV-08] PASS
+  M-rel-source-only: expectFail=INV-08 failed=[INV-08] PASS
+  M-rel-target-only: expectFail=INV-08 failed=[INV-08] PASS
+  M-unrelated-remediation-hides: expectFail=INV-08 failed=[INV-08] PASS
   M-second-acceptance: expectFail=INV-09 failed=[INV-09] PASS
   M-fabricate-replay: expectFail=INV-10 failed=[INV-10] PASS
 classes: INV-01:pass,INV-02:pass,INV-03:pass,INV-04:pass,INV-05:pass,INV-06:pass,INV-07:pass,INV-08:pass,INV-09:pass,INV-10:pass
