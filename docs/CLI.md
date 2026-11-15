@@ -332,6 +332,7 @@ Options:
 - `--max-duration-ms <number>`: add `run.duration`
 - `--required-tool <name>` / `--forbidden-tool <name>` / `--forbid-tool <name>` (alias): add `tool.usage`
 - `--allowed-model <model>` / `--max-total-tokens <number>`: add `llm.usage`
+  - A token limit fails when no token usage is read for a completed LLM call, because the limit cannot be verified. A failed LLM call does not need to record usage.
 - `--session <id>`: check all runs in a workflow session (uses `--dir`; target may be `.`)
 - `--group <id>`: check all runs sharing a `groupId` metadata value
 - `--correlate-group`: when using `--session`, also match synthetic `group:` session keys
