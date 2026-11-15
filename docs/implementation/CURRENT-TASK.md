@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: nov14-followups-release
 currentTrain: nov14-followups-release
-trainStatus: "merged Nov14 PRs on main; changeset queued for 6.31.36; 6.32 blocked"
-currentChunk: "changeset → Version Packages → Trusted Publish 6.31.36"
-nextAction: "Merge Version Packages PR when green; confirm npm 6.31.36; leave #496/#506 red; partner #484/#437 hold"
+trainStatus: "6.31.36 published; Nov14 follow-ups landed; 6.32 blocked"
+currentChunk: "post-6.31.36 partner / gate holds + #543/#544 follow-ups"
+nextAction: "Partner acceptance #484/#437; leave #496/#506 red; optional #543/#544 contributor follow-ups; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -20,7 +20,7 @@ worktreeIgnoreOnly:
 
 ## Published baseline
 
-**6.31.35** — Trusted Publish [41899701747](https://github.com/rajudandigam/agent-inspect/actions/runs/41899701747); Version Packages [#531](https://github.com/rajudandigam/agent-inspect/pull/531). npm `agent-inspect@6.31.35` (registry confirmed). **6.31.36** in flight (Nov 14 follow-ups: #535/#538/#539/#540/#542/#526).
+**6.31.36** — Trusted Publish [43735681865](https://github.com/rajudandigam/agent-inspect/actions/runs/43735681865); Version Packages [#545](https://github.com/rajudandigam/agent-inspect/pull/545). npm `agent-inspect@6.31.36` (registry confirmed). Nov 14 follow-ups: #535/#538/#539/#540/#542/#526. Open follow-ups: #543 (eval maxTotalTokens), #544 (per-budget matrix).
 
 ## Nov 4 residual train (done)
 
