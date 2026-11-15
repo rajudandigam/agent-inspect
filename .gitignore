@@ -46,3 +46,6 @@ fixtures/studio/.agent-inspect/*.db-wal
 # Scratch external checkouts / local evidence
 .tmp-plumbline/
 /tmp/
+
+# Local maintainer worktrees (Nov14+)
+.worktrees/
