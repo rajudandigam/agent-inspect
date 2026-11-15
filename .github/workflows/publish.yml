@@ -1,8 +1,11 @@
-name: Publish
+# PROPOSED — do not deploy without maintainer review (#536)
+# Goal: keep release-train verification from holding npm OIDC / contents:write.
+# Preserves: pinned actions, Trusted Publishing (OIDC), Version Packages trigger conditions.
+#
+# Limitations: splitting jobs reduces privilege window; it does not remove every
+# supply-chain risk (compromised publish step, malicious prepack, etc.).
 
-# Publishes only. Does not open Version Packages PRs (see version-packages.yml).
-# Triggers after a Version Packages merge (commit message contains "Version Packages")
-# or via manual workflow_dispatch.
+name: Publish
 
 on:
   push:
@@ -11,19 +14,48 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+# Default: read-only. Publish job elevates only when needed.
 permissions:
-  # contents: write — changeset publish creates and pushes git tags / GitHub releases
-  contents: write
-  id-token: write
+  contents: read
 
 jobs:
-  publish:
+  verify:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
       startsWith(github.event.head_commit.message, 'Version Packages') ||
       (contains(github.event.head_commit.message, 'Merge pull request') &&
       contains(github.event.head_commit.message, 'changeset-release/main'))
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Verify (release-train gates)
+        run: |
+          pnpm run linked-versions:check
+          pnpm run test:all
+          pnpm run fixtures:check
+          pnpm run recipes:check
+          pnpm run pack:smoke
+          pnpm run compat:smoke
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -42,26 +74,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Verify (release-train gates)
-        run: |
-          pnpm run linked-versions:check
-          pnpm run test:all
-          pnpm run fixtures:check
-          pnpm run recipes:check
-          pnpm run pack:smoke
-          pnpm run compat:smoke
-
-      # npm Trusted Publishing (OIDC): configure on npmjs.com for EACH of the 18 fixed-group packages.
-      # Package → Settings → Trusted Publisher → GitHub Actions:
-      #   owner: rajudandigam, repo: agent-inspect, workflow: publish.yml
-      # See docs/community/MAINTAINER-GUIDE.md#npm-trusted-publishing
-      # and docs/implementation/MAINTAINER-SETTINGS-CHECKLIST-6191.md
-      #
-      # Break-glass (OIDC failure / first-publish recovery only):
-      #   Temporarily set repo secret NPM_TOKEN with publish access on every package,
-      #   re-run this workflow, then remove the secret. Do not keep NPM_TOKEN for routine releases.
-      # Verify already ran release-train gates. Skip root prepublishOnly re-runs during
-      # parallel changeset publish (repo-wide clean/prepublish races deleted dist mid-test).
+      # Trusted Publisher on npmjs.com must still name workflow: publish.yml
       - name: Publish to npm (OIDC)
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
         with:
@@ -70,5 +83,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
           AGENT_INSPECT_SKIP_PREPUBLISH_CHECKS: "1"
-          # Break-glass only — omit from routine path; OIDC Trusted Publishing is the default.
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
