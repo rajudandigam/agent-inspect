@@ -193,7 +193,21 @@ npx agent-inspect redact ./.agent-inspect/<trace-file>.jsonl --profile share --j
 3. **Parent mapping** — LangChain `parentRunId` maps to AgentInspect `parentId` when the parent step was persisted; unknown parents stay at run root.
 4. **Step types** — `LLM` → `llm`, `TOOL` → `tool`, `DECISION` → `decision`, other kinds → `logic`.
 
-Written events use `schemaVersion: "0.1"` manual trace names.
+Written events use `schemaVersion: "0.1"` manual trace names, with one exception: the completion of an LLM step.
+
+**LLM completion row:**
+
+- The LLM `step_started` row is written before the model call, so a call that never ends still leaves its start on disk.
+- When the call ends, the adapter writes the completion as a `schemaVersion: "0.2"` persisted event, the shape `@agent-inspect/ai-sdk` uses for its completions. The row repeats the name and parent of the start row and carries `tokenUsage` and the completion attributes. `attributes.legacyEvent: "step_completed"` and `attributes.stepId` link it to the start row.
+- The row carries `model` only when the start row has none. When the LLM start supplied a model, that name stays the model of the step, so `--allowed-model` gives the same result as before.
+- With `capture: "preview"`, the row also carries the bounded, redacted `outputPreview`.
+- The attributes go through the callback's `redact`, `redactionProfile` and `maxPreviewChars`. Attributes that exceed the event size limit are replaced by a truncation marker; the link to the start row and `tokenUsage` are kept.
+- `check --max-total-tokens`, `createLlmUsageRule`, `eval --max-total-tokens`, and the OTLP and OpenInference exports read the token usage from that row.
+- A trace with such a row reads as `agent-inspect-mixed-jsonl`. `scan`, `verify-safe`, `bundle` and `redact` report `SAFE WITH WARNINGS` (`mixed_agent_inspect_jsonl`). Commands that normalize a trace directory (`stats`, `search`, `sessions`, `bundle`, `index`) print one normalization warning per mixed file. Exit codes do not change.
+- `what` and `report` build their token line from `step_started` metadata, so they show LLM token totals only for `stream: true` traces.
+- Readers that count raw rows, such as `explain`, count the start row and the completion row as two LLM rows.
+- If the writer rejects the persisted row, the adapter writes the `schemaVersion: "0.1"` `step_completed` row instead. That row closes the step and carries no token usage.
+- With `stream: true` the LLM start is still deferred to completion and carries the completion attributes in its metadata; that trace stays `schemaVersion: "0.1"` only.
 
 ### LangGraph through LangChain callbacks
 

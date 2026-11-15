@@ -23,7 +23,7 @@ Running only inside `examples/08-langchain-adapter` without the parent workspace
 - **No cost calculation** (cost fields are ignored for the token summary).
 - **Parent attribution** uses LangChain `parentRunId` → `parentId` on `InspectEvent`.
 - **In-memory by default** (`getEvents()` / `clear()`).
-- **Optional disk persistence** — pass `persist: true` to write schemaVersion `"0.1"` JSONL runs inspectable by `agent-inspect list` / `view` / `export` / `diff`.
+- **Optional disk persistence** — pass `persist: true` to write schemaVersion `"0.1"` JSONL runs inspectable by `agent-inspect list` / `view` / `export` / `diff`. The completion of an LLM step is a schemaVersion `"0.2"` row that carries its token usage.
 
 ![LangChain callback with persist true](../../docs/assets/demos/langchain-persistence.gif)
 

@@ -39,7 +39,8 @@ export interface AgentInspectCallbackOptions extends LangChainStreamingOptions {
    */
   onDiagnostic?: AdapterDiagnosticListener;
   /**
-   * Persist callback lifecycle as schemaVersion "0.1" JSONL.
+   * Persist callback lifecycle as schemaVersion "0.1" JSONL. The completion of an
+   * LLM step is a schemaVersion "0.2" persisted event that carries its token usage.
    * When omitted: enabled if `traceDir` is set, otherwise in-memory only.
    * Explicit `false` forces in-memory even when `traceDir` is set.
    */
