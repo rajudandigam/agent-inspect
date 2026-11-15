@@ -23,7 +23,7 @@ Both run from `pnpm pack:smoke` after `pnpm run build`. Maintainers should treat
 | `await wrapped.ping()` receiver-binding probe | **Retained (N1, 2026-10-30)** in M01/M02 on `packed-mcp-sdk-e2e.mjs`. |
 | Zero `outside inspectRun` warnings for the intended real-SDK run | **Retained (N1, 2026-10-30)** — scoped `console.warn` capture + unconditional fail if any match. |
 | Saved JSONL asserts `mcp:tools/list` + configured `mcpServerName` under the physical M01/M02 `runId` | **Retained (N1, 2026-10-30)** — reopened traces; not satisfied from in-memory `appResult` or other runs. |
-| Contributor **native Windows** run | **Evidence intent retained** — rerun against **`node scripts/packed-mcp-sdk-e2e.mjs`** post-N1; matrix below stays **PENDING** until measured. |
+| Contributor **native Windows** run | **Measured (2026-10-31)** — rerun against canonical **`scripts/packed-mcp-sdk-e2e.mjs`** post-N1 on native Windows 11 (Node `v26.13.0`); all assertions M01–M14 + `.mts`/`.cts` PASS. |
 | Mock-client regression | **Retained** in unchanged `scripts/packed-mcp-e2e.mjs` on `main`. |
 
 ## Residual real-SDK packed controls (optional follow-up)
@@ -43,12 +43,12 @@ node scripts/packed-mcp-sdk-e2e.mjs
 pnpm pack:smoke
 ```
 
-## Windows matrix row (post-reconcile / post-N1 — unmeasured)
+## Windows matrix row (post-reconcile / post-N1 — measured)
 
 | Date | OS | Node | Package managers | Packages / SDK | ESM | CJS | Command / result |
 |------|----|------|------------------|----------------|-----|-----|------------------|
-| PENDING | Native Windows (offered: NT 10.0.26200, X64) | PENDING (offered: `v24.22.1`) | PENDING (`pnpm 9.15.0`; `npm 12.0.2`) | PENDING pin after N1 land (do not invent PASS) | **NOT RUN** | **NOT RUN** | `pnpm run build && node scripts/packed-mcp-sdk-e2e.mjs` → **PENDING** |
+| 2026-10-31 | Native Windows 11 (NT 10.0.26300, X64) | `v26.13.0` | `pnpm 12.16.1`; `npm 12.2.1` | `agent-inspect@6.31.33` + `@agent-inspect/mcp@6.31.33` (pin `@modelcontextprotocol/sdk@1.31.0`) | **PASS** | **PASS** | `pnpm run build && node scripts/packed-mcp-sdk-e2e.mjs` → **PASS** (commit `8b5cb4ad`; M01–M14 + `.mts`/`.cts`) |
 
-Jan’s offered environment (6.31.27 / Node v24.22.1 / npm 12.0.2 / pnpm 9.15.0) is a **proposed** matrix, not a measured result. Pin mutually agreed package + harness SHA after N1 before recording PASS.
+Measured on native Windows 11 against canonical `scripts/packed-mcp-sdk-e2e.mjs` at commit `8b5cb4ad` (release `6.31.33`). Verified real SDK client operations in both ESM and CJS sandboxes: M01b zero-outside-warnings, M01/M02 real-client probe and `wrapped.ping()`, M01c saved JSONL tool list and server name, M07 error preservation, M13 tool-error persistence, M08 bounded close, M03 retry boundary, M04 cancellation on close, M05 distinct request IDs under overlap, M06 readiness, M09–M12 options forwarding/metadata composition, M13 malformed result handling, M14 instrumentation isolation, plus strict TypeScript declaration consumers (`.mts` and `.cts`).
 
 *Harness reconciliation + N1 assertion port — no merge of #494; no schema or runtime API change.*
