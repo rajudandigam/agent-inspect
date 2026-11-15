@@ -56,4 +56,6 @@ These values are **hints**, not authorization or attestation. Clients must still
 
 `@agent-inspect/mcp` (`wrapMcpClient`) records each list/call as its own tool step. It cannot reconstruct retry relationships or HTTP rate-limit facts that an SDK already collapsed into a single error. Supply `operationId` / `attemptId` / `retryOf` / delay fields at the application or transport boundary when you need AgentInspect to evaluate retries. See [RUN-COMPARABILITY.md](./RUN-COMPARABILITY.md) and `examples/recipes/mcp-transport-retry-429/`.
 
+Read-only MCP tools surface whatever the local trace already stored. Manual `inspectRun` / `step` JSONL omits thrown `Error.code` (message/stack only); `createInspector()` schema 1.0 rows may include bounded `error.code`. MCP cannot invent missing codes. See [SCHEMA.md](./SCHEMA.md) §4.
+
 See [MCP-WORKFLOW-V6.3.md](./proposals/MCP-WORKFLOW-V6.3.md) and [READ-ONLY-MCP-SERVER.md](./proposals/READ-ONLY-MCP-SERVER.md).

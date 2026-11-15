@@ -71,7 +71,7 @@ import {
 } from "agent-inspect";
 ```
 
-- **`inspectRun(name, fn, options?)`**: wraps a workflow in a local JSONL trace (`run_started` / `run_completed`), prints terminal progress, and swallows instrumentation failures (user errors are re-thrown). **Traces by default** when `enabled` is omitted or `true`. Pass **`enabled: false`** to run `fn` with no trace file, no execution context, and no terminal output.
+- **`inspectRun(name, fn, options?)`**: wraps a workflow in a local JSONL trace (`run_started` / `run_completed`), prints terminal progress, and swallows instrumentation failures (user errors are re-thrown). **Traces by default** when `enabled` is omitted or `true`. Pass **`enabled: false`** to run `fn` with no trace file, no execution context, and no terminal output. On failure, persisted `error` is `{ message, stack? }` only — thrown `Error.code` / numeric `status` are **not** retained on this manual v0.1 path (use `createInspector()` when bounded `error.code` persistence matters; see §19 and [SCHEMA.md](./SCHEMA.md) §4).
   - **`redact`**: default `true` — redacts sensitive metadata keys before disk (`authorization`, `cookie`, `token`, `apiKey`, `password`, `secret`, `email`). Pass `false` to persist metadata as-is. Pass `{ rules?: RedactionRule[] }` for custom rules (defaults still apply). **`redact: false` wins** over `redactionProfile` for trace writing.
   - **`redactionProfile`**: optional preset — `local` (default), `share`, or `strict`. Adds extra key-based redaction and tighter metadata string bounds for trace writing. Key-based only — not compliance-grade DLP.
   - **`maxMetadataValueLength`**: max string length for metadata values (default `2000`).
@@ -474,7 +474,7 @@ Public methods:
 
 `capture` is explicit and metadata-only. `onSuccess: "metadata-only"` records safe type/length/key-count summaries in `outputSummary`; `onError: "metadata-only"` records thrown-value type/name summaries. It does not store raw return values, prompts, outputs, or thrown objects. Use `"none"` to disable a capture side.
 
-Persisted step/run errors keep `name` and `message`. When present, a **bounded safe** `code` is also retained: finite numeric `code`/`status` values (for example HTTP `404`) or short strings matching letters, digits, underscore, hyphen, dot, and colon (max 128 characters). Response bodies, headers, multiline values, and arbitrary enumerable error properties are not persisted.
+Persisted step/run errors keep `name` and `message`. When present, a **bounded safe** `code` is also retained: finite numeric `code`/`status` values (for example HTTP `404` / `429`) or short strings matching letters, digits, underscore, hyphen, dot, and colon (max 128 characters, for example `ECONNRESET`). Response bodies, headers, multiline values, and arbitrary enumerable error properties are not persisted. This `code` retention applies to **`createInspector()`** schema 1.0 writers only — not to global `inspectRun` / `step` (those still omit codes; see [SCHEMA.md](./SCHEMA.md) §4).
 
 Pass structured tool arguments for contracts via step `metadata.arguments` / `metadata.input` / `metadata.toolArguments` (or top-level attributes with the same keys). TraceContract tool-argument checks read those locations; they do not enable default raw capture.
 

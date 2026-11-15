@@ -139,8 +139,17 @@ Records whether an external side effect matched expectations. Distinct from step
 
 ## 4. Error representation
 
-- Errors are structured as `{ message, stack? }`.
+Writer paths differ; this is intentional compatibility, **not** a claim that manual tracing preserves `Error.code`:
+
+| Writer path | Schema | Persisted `error` shape | `Error.code` / numeric `status` |
+| ----------- | ------ | ----------------------- | -------------------------------- |
+| Manual global helpers (`inspectRun` / `step` / `maybeInspectRun`) | `"0.1"` | `{ message, stack? }` (`ErrorInfo`) | **Omitted.** `formatError()` keeps message and optional stack only. |
+| `createInspector()` + built-in persisted writers | `"1.0"` (also readable as v0.2 shape) | `{ name?, message, code? }` (`PersistedInspectError`) | **Bounded safe codes retained** when present (finite numeric `code`/`status`, or short alphanumeric strings). See [API.md](./API.md) §19. |
+
+- Manual JSONL examples above use `{ message, stack? }` because that is what the v0.1 writer still emits.
+- Persisted schema 1.0 rows may include `error.code` (for example `"429"` or `"ECONNRESET"`). Migrating a manual v0.1 file to 1.0 does **not** invent codes that were never written.
 - AgentInspect prints short human errors by default; verbose modes may include stack strings.
+- Recovery / retry checks that need codes should prefer `createInspector()` traces, or place an explicit `errorCode` / `code` in start metadata when using the manual path (see recovery-operations notes in core).
 
 ## 5. Status representation
 
