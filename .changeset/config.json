@@ -52,6 +52,7 @@
     "agent-inspect-recipe-bounded-read-recovery",
     "agent-inspect-vscode",
     "agent-inspect-recipe-comparable-cohort-runs",
-    "agent-inspect-recipe-mcp-transport-retry-429"
+    "agent-inspect-recipe-mcp-transport-retry-429",
+    "agent-inspect-recipe-webmcp-native-evidence"
   ]
 }

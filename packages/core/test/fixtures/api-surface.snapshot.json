@@ -445,6 +445,7 @@
     "checks": [
       "ATTRIBUTION_CONFIDENCES",
       "ATTRIBUTION_CONFIDENCE_RANK",
+      "GEN_AI_TOOL_NAME_ATTRIBUTE",
       "PROGRAMMATIC_DIAGNOSTIC_SPECS",
       "buildTraceFacts",
       "createBaselineRegressionRule",
@@ -482,6 +483,7 @@
       "explainTraceContract",
       "extractToolArgumentPayload",
       "formatProgrammaticDiagnostic",
+      "getCanonicalToolNameConflict",
       "isAttributionConfidence",
       "lintTraceContract",
       "projectLogicalEvents",

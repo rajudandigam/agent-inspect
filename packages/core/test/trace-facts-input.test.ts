@@ -44,4 +44,26 @@ describe("6.15-5 buildTraceFacts input ergonomics", () => {
     const facts = buildTraceFacts(read);
     expect(facts.summary.finishedToolCount).toBeGreaterThan(0);
   });
+
+  it("lists finishedToolNames from gen_ai.tool.name when no explicit toolName exists", () => {
+    const facts = buildTraceFacts([
+      {
+        schemaVersion: "0.2" as const,
+        eventId: "otlp-1",
+        runId: "run-otlp",
+        kind: "TOOL" as const,
+        name: "execute_tool update_trip_draft",
+        status: "ok" as const,
+        timestamp: "2026-11-16T00:00:01.000Z",
+        confidence: "explicit" as const,
+        source: { type: "manual" as const, name: "otlp-json-fixture" },
+        attributes: {
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "update_trip_draft",
+        },
+      },
+    ]);
+    expect(facts.summary.finishedToolNames).toEqual(["update_trip_draft"]);
+    expect([...facts.toolsByName.keys()]).toContain("update_trip_draft");
+  });
 });

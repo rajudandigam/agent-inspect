@@ -25,6 +25,7 @@ import {
   createToolFailureRule,
   createToolOrderingRule,
   createToolUsageRule,
+  GEN_AI_TOOL_NAME_ATTRIBUTE,
   runTraceChecks,
   type TraceCheckRule,
 } from "../src/checks/index.js";
@@ -1052,6 +1053,98 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.status).toBe("fail");
     expect(result.findings[0]?.message).toContain("non-TOOL kind");
     expect(result.findings[0]?.message).toContain("LLM");
+  });
+
+  it("matches required and forbidden tools via gen_ai.tool.name (OTLP semantic)", () => {
+    const tool = persisted("otlp-update", {
+      kind: "TOOL",
+      name: "execute_tool update_trip_draft",
+      attributes: {
+        "gen_ai.operation.name": "execute_tool",
+        [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft",
+      },
+    });
+    const requiredPass = runTraceChecks(
+      { read: readResult([tool]) },
+      { rules: [createToolUsageRule({ required: ["update_trip_draft"] })] },
+    );
+    expect(requiredPass.status).toBe("pass");
+
+    const displayNameStillFails = runTraceChecks(
+      { read: readResult([tool]) },
+      {
+        rules: [
+          createToolUsageRule({ required: ["execute_tool update_trip_draft"] }),
+        ],
+      },
+    );
+    expect(displayNameStillFails.status).toBe("fail");
+
+    const forbiddenFail = runTraceChecks(
+      { read: readResult([tool]) },
+      { rules: [createToolUsageRule({ forbidden: ["update_trip_draft"] })] },
+    );
+    expect(forbiddenFail.status).toBe("fail");
+    expect(forbiddenFail.findings.some((f) => f.message.includes("Forbidden tool"))).toBe(
+      true,
+    );
+
+    const displayForbiddenPass = runTraceChecks(
+      { read: readResult([tool]) },
+      {
+        rules: [
+          createToolUsageRule({ forbidden: ["execute_tool update_trip_draft"] }),
+        ],
+      },
+    );
+    expect(displayForbiddenPass.status).toBe("pass");
+  });
+
+  it("warns when explicit toolName conflicts with gen_ai.tool.name without erasing either", () => {
+    const tool = persisted("conflict", {
+      kind: "TOOL",
+      name: "execute_tool update_trip_draft",
+      attributes: {
+        toolName: "explicit_tool",
+        [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft",
+      },
+    });
+    const result = runTraceChecks(
+      { read: readResult([tool]) },
+      {
+        rules: [
+          createToolUsageRule({
+            required: ["explicit_tool"],
+            forbidden: ["update_trip_draft"],
+          }),
+        ],
+      },
+    );
+    // Explicit name wins for matching: required passes; forbidden semantic does not fire.
+    const conflictWarning = result.findings.find(
+      (f) => f.status === "warning" && f.message.includes("gen_ai.tool.name"),
+    );
+    expect(conflictWarning).toBeDefined();
+    expect(conflictWarning?.expected).toBe("explicit_tool");
+    expect(conflictWarning?.actual).toBe("update_trip_draft");
+    expect(result.findings.some((f) => f.message.includes("Required tool"))).toBe(false);
+    expect(result.findings.some((f) => f.message.includes("Forbidden tool"))).toBe(false);
+    expect(tool.attributes?.toolName).toBe("explicit_tool");
+    expect(tool.attributes?.[GEN_AI_TOOL_NAME_ATTRIBUTE]).toBe("update_trip_draft");
+  });
+
+  it("does not satisfy required tools from gen_ai.tool.name on non-TOOL spans", () => {
+    const llm = persisted("llm-semantic", {
+      kind: "LLM",
+      name: "execute_tool update_trip_draft",
+      attributes: { [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft" },
+    });
+    const result = runTraceChecks(
+      { read: readResult([llm]) },
+      { rules: [createToolUsageRule({ required: ["update_trip_draft"] })] },
+    );
+    expect(result.status).toBe("fail");
+    expect(result.findings[0]?.message).toContain("non-TOOL kind");
   });
 
   it("reports LLM model, provider, finish reason, call count, and token-budget violations", () => {

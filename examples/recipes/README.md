@@ -150,6 +150,7 @@ each package README's `**Support level:**` line, except where a recipe uses a fe
 | [mcp-behavioral-session](mcp-behavioral-session) | Dual-axis MCP behavioral session: tool error vs outcome pass/fail (#362) | `agent-inspect` | No | Synthetic fixtures only | Beta <sup>TraceContract API</sup> | `pnpm --filter agent-inspect-recipe-mcp-behavioral-session start` |
 | [mcp-client-tracing](mcp-client-tracing) | v2.4 MCP client wrap with mock client | `@agent-inspect/mcp`, `inspectRun`, `sessions` / `session` CLI | yes | no |
 | [browser-mcp-observed-outcomes](browser-mcp-observed-outcomes) | Successful Browser/MCP-style action with a failed independent state observation | `step.tool`, `observeOutcome`, observation CLI filters | yes | no |
+| [webmcp-native-evidence](webmcp-native-evidence) | Synthetic WebMCP operation evidence → check → Evidence v2 (native lane documented, not claimed here) | `createInspector`, `observeOutcome`, required-tool + observation gate | yes | no |
 | [guardrails-basic](guardrails-basic) | v2.5 deterministic guardrail samples | `@agent-inspect/guardrails`, phrase/PII/injection rules | yes | no |
 | [circuit-breaker-basic](circuit-breaker-basic) | v2.5 circuit repetition analysis | `@agent-inspect/circuit`, tool/args repetition | yes | no |
 | [read-only-mcp-server](read-only-mcp-server) | v2.6 read-only MCP trace tools | `@agent-inspect/mcp-server`, list/search/check tools | yes | no |

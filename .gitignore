@@ -49,3 +49,6 @@ fixtures/studio/.agent-inspect/*.db-wal
 
 # Local maintainer worktrees (Nov14+)
 .worktrees/
+
+# Local WebMCP integration work (untracked)
+.webmcp-integration-work/

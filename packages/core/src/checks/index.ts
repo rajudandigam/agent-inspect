@@ -23,12 +23,18 @@ import {
 import {
   projectLogicalEvents,
   resolveCanonicalToolName,
+  getCanonicalToolNameConflict,
   type LogicalProjectionDiagnostic,
   type LogicalTraceEvent,
 } from "./logical-events.js";
 
 export type { LogicalProjectionDiagnostic, LogicalTraceEvent } from "./logical-events.js";
-export { projectLogicalEvents, resolveCanonicalToolName } from "./logical-events.js";
+export {
+  projectLogicalEvents,
+  resolveCanonicalToolName,
+  getCanonicalToolNameConflict,
+  GEN_AI_TOOL_NAME_ATTRIBUTE,
+} from "./logical-events.js";
 export type {
   DerivedFailureConfidence,
   DerivedFailureFact,
@@ -2096,6 +2102,19 @@ export function createToolUsageRule(options: ToolUsageRuleOptions): TraceCheckRu
       for (const event of tools) {
         const name = toolName(event);
         const display = formatToolNameForMessage(name);
+        const nameConflict = getCanonicalToolNameConflict(event);
+        if (nameConflict) {
+          findings.push(
+            failFinding(
+              "tool.usage",
+              `Explicit tool name ${formatToolNameForMessage(nameConflict.explicit)} takes precedence over gen_ai.tool.name ${formatToolNameForMessage(nameConflict.semantic)}; both attributes were retained.`,
+              [eventEvidence(event)],
+              nameConflict.explicit,
+              nameConflict.semantic,
+              { severity: "warning", status: "warning" },
+            ),
+          );
+        }
         if (forbidden.has(name)) {
           findings.push(
             failFinding(

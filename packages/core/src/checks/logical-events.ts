@@ -401,8 +401,32 @@ export function projectLogicalEvents(
 }
 
 /**
+ * GenAI semantic convention attribute for the tool name (OTLP / GenAI).
+ * Used only as a fallback after explicit AgentInspect name fields.
+ */
+export const GEN_AI_TOOL_NAME_ATTRIBUTE = "gen_ai.tool.name" as const;
+
+/**
  * Resolve a human-meaningful tool name from a (logical or raw) event.
- * Precedence: toolName → tool → metadata.toolName → metadata.tool → name prefixes.
+ *
+ * Precedence (first nonblank string wins):
+ * 1. `attributes.toolName` / `attributes.tool` (explicit AgentInspect fields)
+ * 2. `attributes.metadata.toolName` / `attributes.metadata.tool`
+ * 3. `attributes["gen_ai.tool.name"]` (semantic GenAI / OTLP)
+ * 4. strip `tool:` / `function:` / `mcp-tools:` from `event.name`
+ * 5. else `event.name`
+ *
+ * Does not mutate the event. Original `event.name` and attributes are preserved
+ * for display, import/export, and evidence. Does not infer TOOL kind.
+ *
+ * When an explicit name (1–2) and a semantic name (3) both exist and disagree,
+ * the explicit name remains authoritative; use
+ * {@link getCanonicalToolNameConflict} so the disagreement is not erased.
+ *
+ * Compatibility: inputs without `gen_ai.tool.name` keep prior behavior. When the
+ * attribute is present and no explicit name exists, matching uses the semantic
+ * name instead of the full display name (intentional correction for OTLP spans
+ * such as `execute_tool update_trip_draft`).
  *
  * @experimental
  */
@@ -417,10 +441,37 @@ export function resolveCanonicalToolName(event: PersistedInspectEvent): string {
     if (nested) return nested;
   }
 
+  const semantic = pickString(attrs, [GEN_AI_TOOL_NAME_ATTRIBUTE]);
+  if (semantic) return semantic;
+
   for (const prefix of ["tool:", "function:", "mcp-tools:"] as const) {
     if (event.name.startsWith(prefix)) return event.name.slice(prefix.length);
   }
   return event.name;
+}
+
+/**
+ * When both an explicit tool name and `gen_ai.tool.name` are nonblank and differ,
+ * return both values. Callers should keep matching on the explicit name
+ * ({@link resolveCanonicalToolName}) and surface the conflict as a diagnostic
+ * rather than silently dropping either attribute.
+ *
+ * @experimental
+ */
+export function getCanonicalToolNameConflict(
+  event: PersistedInspectEvent,
+): { explicit: string; semantic: string } | undefined {
+  const attrs = event.attributes;
+  let explicit = pickString(attrs, ["toolName", "tool"]);
+  if (!explicit) {
+    const metadata = attrs?.metadata;
+    if (isRecord(metadata)) {
+      explicit = pickString(metadata, ["toolName", "tool"]);
+    }
+  }
+  const semantic = pickString(attrs, [GEN_AI_TOOL_NAME_ATTRIBUTE]);
+  if (!explicit || !semantic || explicit === semantic) return undefined;
+  return { explicit, semantic };
 }
 
 function pickString(

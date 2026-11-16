@@ -131,6 +131,8 @@ export {
   deriveRelationshipFacts,
   projectLogicalEvents,
   resolveCanonicalToolName,
+  getCanonicalToolNameConflict,
+  GEN_AI_TOOL_NAME_ATTRIBUTE,
   runTraceChecks,
   summarizeSemanticParity,
   PROGRAMMATIC_DIAGNOSTIC_SPECS,

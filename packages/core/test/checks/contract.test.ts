@@ -527,6 +527,49 @@ describe("trace contract", () => {
         true,
       );
     });
+
+    it("matches requiredTools and requiredOrder via gen_ai.tool.name", () => {
+      const update = persisted("otlp-update", {
+        kind: "TOOL",
+        name: "execute_tool update_trip_draft",
+        timestamp: "2026-07-11T00:00:00.000Z",
+        startedAt: "2026-07-11T00:00:00.000Z",
+        endedAt: "2026-07-11T00:00:01.000Z",
+        attributes: {
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "update_trip_draft",
+        },
+      });
+      const recheck = persisted("otlp-recheck", {
+        kind: "TOOL",
+        name: "execute_tool recheck_trip_update",
+        timestamp: "2026-07-11T00:00:02.000Z",
+        startedAt: "2026-07-11T00:00:02.000Z",
+        endedAt: "2026-07-11T00:00:03.000Z",
+        attributes: {
+          "gen_ai.operation.name": "execute_tool",
+          "gen_ai.tool.name": "recheck_trip_update",
+        },
+      });
+      const pass = evaluateTraceContract(
+        { read: readResult("ok", [update, recheck]) },
+        defineTraceContract({
+          tools: {
+            requiredTools: ["update_trip_draft", "recheck_trip_update"],
+            requiredOrder: ["update_trip_draft", "recheck_trip_update"],
+          },
+        }),
+      );
+      expect(pass.status).toBe("pass");
+
+      const missingSemantic = evaluateTraceContract(
+        { read: readResult("ok", [update, recheck]) },
+        defineTraceContract({
+          tools: { requiredTools: ["execute_tool update_trip_draft"] },
+        }),
+      );
+      expect(missingSemantic.status).toBe("fail");
+    });
   });
 
   describe("steps.orderRelations cross-kind ordering", () => {

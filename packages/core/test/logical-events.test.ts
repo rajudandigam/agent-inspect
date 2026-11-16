@@ -6,6 +6,8 @@ import {
   createStructureIncompleteRule,
   createStructureOrphanRule,
   createToolUsageRule,
+  GEN_AI_TOOL_NAME_ATTRIBUTE,
+  getCanonicalToolNameConflict,
   projectLogicalEvents,
   resolveCanonicalToolName,
   runTraceChecks,
@@ -180,6 +182,108 @@ describe("resolveCanonicalToolName", () => {
         }),
       ),
     ).toBe("lookup_orders");
+  });
+
+  it("prefers gen_ai.tool.name over display name for OTLP-style TOOL spans", () => {
+    const event = persisted("otlp-tool", {
+      kind: "TOOL",
+      name: "execute_tool update_trip_draft",
+      attributes: {
+        "gen_ai.operation.name": "execute_tool",
+        [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft",
+      },
+    });
+    expect(resolveCanonicalToolName(event)).toBe("update_trip_draft");
+    // Display name and semantic attribute remain intact.
+    expect(event.name).toBe("execute_tool update_trip_draft");
+    expect(event.attributes?.[GEN_AI_TOOL_NAME_ATTRIBUTE]).toBe("update_trip_draft");
+  });
+
+  it("keeps explicit toolName ahead of gen_ai.tool.name", () => {
+    const event = persisted("explicit-wins", {
+      kind: "TOOL",
+      name: "execute_tool update_trip_draft",
+      attributes: {
+        toolName: "explicit_tool",
+        [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft",
+      },
+    });
+    expect(resolveCanonicalToolName(event)).toBe("explicit_tool");
+    expect(getCanonicalToolNameConflict(event)).toEqual({
+      explicit: "explicit_tool",
+      semantic: "update_trip_draft",
+    });
+    expect(event.attributes?.toolName).toBe("explicit_tool");
+    expect(event.attributes?.[GEN_AI_TOOL_NAME_ATTRIBUTE]).toBe("update_trip_draft");
+  });
+
+  it("keeps nested metadata ahead of gen_ai.tool.name", () => {
+    expect(
+      resolveCanonicalToolName(
+        persisted("meta-wins", {
+          kind: "TOOL",
+          name: "execute_tool other",
+          attributes: {
+            metadata: { toolName: "nested_tool" },
+            [GEN_AI_TOOL_NAME_ATTRIBUTE]: "semantic_tool",
+          },
+        }),
+      ),
+    ).toBe("nested_tool");
+  });
+
+  it("falls back safely for blank, whitespace, and non-string gen_ai.tool.name", () => {
+    expect(
+      resolveCanonicalToolName(
+        persisted("blank", {
+          kind: "TOOL",
+          name: "tool:from_prefix",
+          attributes: { [GEN_AI_TOOL_NAME_ATTRIBUTE]: "   " },
+        }),
+      ),
+    ).toBe("from_prefix");
+    expect(
+      resolveCanonicalToolName(
+        persisted("nonstring", {
+          kind: "TOOL",
+          name: "tool:from_prefix",
+          attributes: { [GEN_AI_TOOL_NAME_ATTRIBUTE]: 42 },
+        }),
+      ),
+    ).toBe("from_prefix");
+    expect(
+      resolveCanonicalToolName(
+        persisted("absent", {
+          kind: "TOOL",
+          name: "function:legacy_fn",
+        }),
+      ),
+    ).toBe("legacy_fn");
+  });
+
+  it("does not treat gen_ai.tool.name on non-TOOL events as a kind change", () => {
+    const event = persisted("llm-control", {
+      kind: "LLM",
+      name: "execute_tool update_trip_draft",
+      attributes: { [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft" },
+    });
+    expect(event.kind).toBe("LLM");
+    expect(resolveCanonicalToolName(event)).toBe("update_trip_draft");
+  });
+
+  it("reports no conflict when explicit and semantic names agree", () => {
+    expect(
+      getCanonicalToolNameConflict(
+        persisted("agree", {
+          kind: "TOOL",
+          name: "tool:update_trip_draft",
+          attributes: {
+            toolName: "update_trip_draft",
+            [GEN_AI_TOOL_NAME_ATTRIBUTE]: "update_trip_draft",
+          },
+        }),
+      ),
+    ).toBeUndefined();
   });
 });
 

@@ -28,6 +28,8 @@ Contracts compile to deterministic check rules for common cases:
 
 `requiredOrder` / `orderRules` match **TOOL** events only (via canonical tool names). LLM / LOGIC / other kinds with the same display name do not satisfy the order and are not relabeled as tools. When a required name exists only under another kind, `tool.usage` reports that kind in the finding message.
 
+Canonical tool names resolve in this order: explicit `toolName`/`tool` (including nested `metadata`), then semantic `gen_ai.tool.name`, then `tool:`/`function:`/`mcp-tools:` name prefixes, then raw `event.name`. When an explicit name and `gen_ai.tool.name` both exist and disagree, the explicit name wins for matching; both attributes are retained and `tool.usage` emits a warning. OTLP spans whose display name is `execute_tool <name>` therefore match `--required-tool <name>` via the semantic attribute once present — matching the full display string is no longer required and is not equivalent.
+
 `requiredOrder` is expanded into **adjacent pair** ordering rules with unique ids:
 
 ```text

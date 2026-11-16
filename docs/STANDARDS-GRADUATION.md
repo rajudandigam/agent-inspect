@@ -21,6 +21,7 @@ Both formats are **compatibility-oriented** and **experimental until verified** 
 - Attributes are bounded and metadata-only by default; raw prompts/outputs appear only if you opted into capturing them
 - Chain-of-thought is never captured, so it is never exported
 - The export is a snapshot, not a live pipeline: later trace changes do not propagate
+- On **import**, OTLP/GenAI `gen_ai.tool.name` is retained as an attribute and participates in canonical tool-name matching (after explicit `toolName`/`tool` fields). Matching no longer requires the full span display name when the semantic attribute is present. Explicit names still win on conflict; both values are retained. Autotel or other producers are not validated by attribute presence alone — lifecycle, binding, and effect facts remain separate.
 
 ## Step 2 — Redact and review
 
