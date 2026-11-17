@@ -6,11 +6,90 @@ import type { Serialized } from "@langchain/core/load/serializable";
 import type { LLMResult } from "@langchain/core/outputs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { extractMetadata, readTraceEvents } from "agent-inspect/advanced";
+import { readFile } from "node:fs/promises";
+
+import {
+  extractMetadata,
+  parseTraceJsonl,
+  readTraceEvents,
+} from "agent-inspect/advanced";
+import {
+  createLlmUsageRule,
+  projectLogicalEvents,
+  runTraceChecks,
+} from "agent-inspect/checks";
+import type { PersistedInspectEvent } from "agent-inspect/persisted";
 import { list } from "../../cli/src/list.js";
 import { view } from "../../cli/src/view.js";
 
 import { AgentInspectCallback } from "../src/agent-inspect-callback.js";
+
+async function readPersisted(runId: string, dir: string) {
+  const raw = await readFile(path.join(dir, `${runId}.jsonl`), "utf8");
+  return parseTraceJsonl(raw);
+}
+
+function checkRead(events: readonly PersistedInspectEvent[]) {
+  const projection = projectLogicalEvents(events);
+  const children = projection.logicalEvents
+    .filter((e) => e.kind !== "RUN")
+    .map((event) => ({
+      event: {
+        eventId: event.eventId,
+        runId: event.runId,
+        parentId: event.parentId,
+        kind: event.kind,
+        name: event.name,
+        status: event.status === "unknown" ? undefined : event.status,
+        timestamp: Date.parse(event.timestamp),
+        durationMs: event.durationMs,
+        attributes: event.attributes,
+        confidence: event.confidence,
+        source: { type: "adapter" as const },
+      },
+      children: [],
+      depth: 1,
+    }));
+  const runId = events[0]?.runId ?? "run";
+  return {
+    format: "agent-inspect-jsonl" as const,
+    events: [...events],
+    runs: [
+      {
+        runId,
+        name: runId,
+        status: "ok" as const,
+        children,
+        metadata: {
+          totalEvents: children.length,
+          confidenceBreakdown: {
+            explicit: children.length,
+            correlated: 0,
+            heuristic: 0,
+            unknown: 0,
+          },
+          kinds: {
+            RUN: 0,
+            AGENT: 0,
+            LLM: children.filter((c) => c.event.kind === "LLM").length,
+            TOOL: 0,
+            CHAIN: 0,
+            RETRIEVER: 0,
+            DECISION: 0,
+            RESULT: 0,
+            ERROR: 0,
+            LOGIC: children.filter((c) => c.event.kind === "LOGIC").length,
+            LOG: 0,
+            OUTCOME: 0,
+          },
+        },
+      },
+    ],
+    warnings: [],
+    unsupportedFields: [],
+    sourceFiles: [],
+  };
+}
 
 function mockSerialized(name: string): Serialized {
   return {
@@ -91,6 +170,180 @@ describe("AgentInspectCallback persistence", () => {
     if (stepDone?.event === "step_completed") {
       expect(stepDone.durationMs).toBeGreaterThanOrEqual(0);
     }
+  });
+
+  it("non-stream persist writes tokenUsage on the LLM completion row (#533)", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      runId: "run_tokens_nonstream",
+      // stream omitted / false — early start, usage only known at end
+    });
+    await cb.handleChainStart(mockSerialized("chain"), {}, "chain-1");
+    await cb.handleLLMStart(mockSerialized("chat"), ["synthetic prompt"], "llm-1", "chain-1");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          tokenUsage: { promptTokens: 1200, completionTokens: 300, totalTokens: 1500 },
+        },
+      } as unknown as LLMResult,
+      "llm-1",
+      "chain-1",
+    );
+    await cb.handleChainEnd({}, "chain-1");
+    await cb.close();
+
+    const parsed = await readPersisted("run_tokens_nonstream", traceDir);
+    expect(parsed.format).toBe("0.2");
+    const llmComplete = parsed.persisted.find(
+      (e) =>
+        e.kind === "LLM" &&
+        e.attributes?.legacyEvent === "step_completed" &&
+        e.status === "ok",
+    );
+    expect(llmComplete?.tokenUsage).toEqual({
+      input: 1200,
+      output: 300,
+      total: 1500,
+    });
+
+    const llmStart = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.attributes?.legacyEvent === "step_started",
+    );
+    expect(llmStart).toBeDefined();
+    expect(llmStart?.tokenUsage).toBeUndefined();
+    // Early start is written before completion (non-stream preserves step_started).
+    const startIdx = parsed.persisted.indexOf(llmStart!);
+    const completeIdx = parsed.persisted.indexOf(llmComplete!);
+    expect(startIdx).toBeGreaterThanOrEqual(0);
+    expect(completeIdx).toBeGreaterThan(startIdx);
+  });
+
+  it("stream persist also writes tokenUsage on the LLM completion row (#533)", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      stream: true,
+      runId: "run_tokens_stream",
+    });
+    await cb.handleChainStart(mockSerialized("chain"), {}, "chain-1");
+    await cb.handleLLMStart(mockSerialized("chat"), ["synthetic prompt"], "llm-1", "chain-1");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          tokenUsage: { promptTokens: 1200, completionTokens: 300, totalTokens: 1500 },
+        },
+      } as unknown as LLMResult,
+      "llm-1",
+      "chain-1",
+    );
+    await cb.handleChainEnd({}, "chain-1");
+    await cb.close();
+
+    const parsed = await readPersisted("run_tokens_stream", traceDir);
+    const llmComplete = parsed.persisted.find(
+      (e) =>
+        e.kind === "LLM" &&
+        e.attributes?.legacyEvent === "step_completed" &&
+        e.status === "ok",
+    );
+    expect(llmComplete?.tokenUsage).toEqual({
+      input: 1200,
+      output: 300,
+      total: 1500,
+    });
+  });
+
+  it("persists model metadata available only on the LLM result", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      runId: "run_model_at_end",
+    });
+    // Serialized constructor has no model kwargs — model arrives only on the result.
+    await cb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-model");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          model_name: "gpt-4o-mini",
+          tokenUsage: { promptTokens: 2, completionTokens: 3, totalTokens: 5 },
+        },
+      } as unknown as LLMResult,
+      "llm-model",
+    );
+    await cb.close();
+
+    const parsed = await readPersisted("run_model_at_end", traceDir);
+    const llmComplete = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.attributes?.legacyEvent === "step_completed",
+    );
+    expect(llmComplete?.attributes?.model).toBe("gpt-4o-mini");
+    expect(
+      (llmComplete?.attributes?.metadata as { model?: string } | undefined)?.model,
+    ).toBe("gpt-4o-mini");
+    expect(llmComplete?.tokenUsage?.total).toBe(5);
+  });
+
+  it("createLlmUsageRule reads persisted LangChain tokenUsage (#535)", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      runId: "run_budget_tokens",
+    });
+    await cb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-1");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          tokenUsage: { promptTokens: 10, completionTokens: 5, totalTokens: 15 },
+        },
+      } as unknown as LLMResult,
+      "llm-1",
+    );
+    await cb.close();
+
+    const parsed = await readPersisted("run_budget_tokens", traceDir);
+    const projection = projectLogicalEvents(parsed.persisted);
+    const logicalLlm = projection.logicalEvents.find(
+      (e) => e.kind === "LLM" && e.status === "ok",
+    );
+    expect(logicalLlm?.tokenUsage).toEqual({
+      input: 10,
+      output: 5,
+      total: 15,
+    });
+
+    const exceeded = runTraceChecks(
+      { read: checkRead(parsed.persisted) },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 5 })] },
+    );
+    expect(exceeded.status).toBe("fail");
+    expect(
+      exceeded.findings.some((f) => String(f.message).includes("exceeded")),
+    ).toBe(true);
+
+    const missingCb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      runId: "run_budget_missing",
+    });
+    await missingCb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-miss");
+    await missingCb.handleLLMEnd({ generations: [] } as unknown as LLMResult, "llm-miss");
+    await missingCb.close();
+    const missingParsed = await readPersisted("run_budget_missing", traceDir);
+    const missing = runTraceChecks(
+      { read: checkRead(missingParsed.persisted) },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 5 })] },
+    );
+    expect(missing.status).toBe("fail");
+    expect(
+      missing.findings.some((f) =>
+        String(f.message).includes("No token usage was read"),
+      ),
+    ).toBe(true);
   });
 
   it("handleToolStart/End writes tool steps", async () => {
@@ -207,10 +460,12 @@ describe("AgentInspectCallback persistence", () => {
   });
 
   it("persistence errors do not throw into callback user flow", async () => {
-    const core = await import("agent-inspect/advanced");
-    vi.spyOn(core, "writeTraceEvent").mockImplementation(() =>
-      Promise.reject(new Error("disk unavailable")),
-    );
+    const writers = await import("agent-inspect/writers");
+    vi.spyOn(writers, "fileWriter").mockReturnValue({
+      write: () => Promise.reject(new Error("disk unavailable")),
+      flush: async () => {},
+      close: async () => {},
+    });
 
     const cb = new AgentInspectCallback({ traceDir, persist: true, silent: true });
     await expect(
