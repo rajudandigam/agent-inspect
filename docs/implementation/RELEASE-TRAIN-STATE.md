@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.36"
-publishedVersion: "6.31.36"
+baselineVersion: "6.31.37"
+publishedVersion: "6.31.37"
 pendingPublishVersion: ""
 currentTrain: "nov14-followups-release"
 trainStatus: "6.31.36 published; local WebMCP operation-evidence prep in progress; 6.32 blocked"
