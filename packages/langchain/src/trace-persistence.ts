@@ -5,17 +5,22 @@ import {
   getTraceDirFromContext,
   hasActiveContext,
   initializeTraceFile,
-  prepareTraceEventForDisk,
+  prepareMetadataForDisk,
   resolveTraceDir,
   resolveTraceSafetyOptions,
-  writeTraceEvent,
+  type AttributionConfidence,
   type InspectKind,
   type RedactionProfile,
   type StepMetadata,
   type StepType,
-  type TraceEvent,
 } from "agent-inspect/advanced";
+import type {
+  PersistedInspectEvent,
+  PersistedTokenUsage,
+} from "agent-inspect/persisted";
 import type { RedactionRule } from "agent-inspect/logs";
+import { fileWriter } from "agent-inspect/writers";
+import type { TraceWriter } from "agent-inspect/writers";
 import {
   beginCallbackRun,
   bumpCompletionGeneration,
@@ -71,6 +76,12 @@ export interface AdapterPersistenceDiagnostics {
   readonly hasTerminalError: boolean;
 }
 
+const LANGCHAIN_SOURCE = {
+  type: "adapter",
+  name: "@agent-inspect/langchain",
+  version: "experimental",
+} as const;
+
 function kindToStepType(kind: InspectKind): StepType {
   switch (kind) {
     case "LLM":
@@ -95,9 +106,76 @@ function toStepMetadata(attrs: Record<string, unknown>): StepMetadata {
   return out;
 }
 
+function msToIso(ms: number): string {
+  if (typeof ms !== "number" || !Number.isFinite(ms)) {
+    return new Date(0).toISOString();
+  }
+  return new Date(ms).toISOString();
+}
+
+function asTokenUsage(value: unknown): PersistedTokenUsage | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const record = value as Record<string, unknown>;
+  const out: PersistedTokenUsage = {};
+  for (const key of [
+    "input",
+    "output",
+    "total",
+    "cached",
+    "cacheWrite",
+    "reasoning",
+  ] as const) {
+    const n = record[key];
+    if (typeof n === "number" && Number.isFinite(n)) {
+      out[key] = n;
+    }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+function stripHelperKeys(
+  attrs: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(attrs)) {
+    if (key === "tokens" || key === "name" || key === "kind") continue;
+    out[key] = value;
+  }
+  return out;
+}
+
 /**
- * Maps LangChain callback lifecycle to schemaVersion "0.1" manual JSONL events.
- * One callback session creates one standalone run; inside inspectRun, steps append to the active run.
+ * PersistedInspectEvent.confidence only accepts AttributionConfidence
+ * (`explicit` | `correlated` | `heuristic` | `unknown`). LangChain parent
+ * vocabulary (`synthetic` / `unresolved`) stays in attributes.metadata.
+ */
+function confidenceFromMetadata(
+  metadata: Record<string, unknown>,
+): AttributionConfidence {
+  const value = metadata.confidence;
+  if (value === "explicit" || value === "correlated") return value;
+  if (value === "synthetic" || value === "inferred") return "heuristic";
+  if (value === "unresolved") return "unknown";
+  if (value === "heuristic" || value === "unknown") return value;
+  return "explicit";
+}
+
+function toPersistedStatus(
+  status: "success" | "error",
+): "ok" | "error" {
+  return status === "error" ? "error" : "ok";
+}
+
+/**
+ * Maps LangChain callback lifecycle to PersistedInspectEvent schemaVersion "0.2"
+ * (same shape as `@agent-inspect/ai-sdk`). Completion rows carry top-level
+ * `tokenUsage` so stream and non-stream LLM calls persist usage without changing
+ * global/manual v0.1 contracts.
+ *
+ * One callback session creates one standalone run; inside inspectRun, steps append
+ * to the active run.
  *
  * Standalone envelope completion is driven by {@link AdapterInvocationState}
  * (activeRuns / completionGeneration / finalized) — not by empty parentRunId heuristics.
@@ -109,8 +187,11 @@ export class LangChainTracePersistence {
   readonly #standalone: boolean;
   readonly #silent: boolean;
   readonly #safety: ReturnType<typeof resolveTraceSafetyOptions>;
+  readonly #writer: TraceWriter;
   readonly #lifecycle: AdapterInvocationState;
   readonly #lcToStepId = new Map<string, string>();
+  /** lcRunId → display name from the matching start (for completion rows). */
+  readonly #lcToStepName = new Map<string, string>();
   /** `${field}\0${value}` → stepId, or null when ambiguous. */
   readonly #langGraphIndex = new Map<string, string | null>();
   /** Semantic / display label → stepId, or null when ambiguous. */
@@ -140,6 +221,7 @@ export class LangChainTracePersistence {
         ? { redactionProfile: options.redactionProfile }
         : {}),
     });
+    this.#writer = fileWriter({ dir: this.#traceDir });
     this.#lifecycle = createInvocationState(this.#runId);
   }
 
@@ -234,6 +316,7 @@ export class LangChainTracePersistence {
 
   #clearStepIndexes(): void {
     this.#lcToStepId.clear();
+    this.#lcToStepName.clear();
     this.#langGraphIndex.clear();
     this.#semanticLabelIndex.clear();
     this.#syntheticByLabel.clear();
@@ -362,18 +445,25 @@ export class LangChainTracePersistence {
       semanticParentLabel: label,
       unresolvedParentRunId: label,
     };
-    const event: TraceEvent = {
-      schemaVersion: "0.1",
-      event: "step_started",
-      timestamp: startTime,
+    const startedAt = msToIso(startTime);
+    await this.#write({
+      schemaVersion: "0.2",
+      eventId: syntheticStepId,
       runId: this.#runId,
-      stepId: syntheticStepId,
+      kind: "LOGIC",
       name: `synthetic:${label}`,
-      type: "logic",
-      startTime,
-      metadata,
-    };
-    await this.#write(event);
+      status: "running",
+      timestamp: startedAt,
+      startedAt,
+      confidence: "heuristic",
+      source: LANGCHAIN_SOURCE,
+      attributes: {
+        legacyEvent: "step_started",
+        stepId: syntheticStepId,
+        stepType: "logic",
+        metadata,
+      },
+    });
 
     return {
       parentStepId: syntheticStepId,
@@ -402,6 +492,25 @@ export class LangChainTracePersistence {
   resolveParentId(lcParentRunId?: string): string | undefined {
     if (!lcParentRunId) return undefined;
     return this.#lcToStepId.get(lcParentRunId);
+  }
+
+  #buildStepAttributes(
+    stepId: string,
+    kind: InspectKind,
+    legacyEvent: "step_started" | "step_completed",
+    metadata: Record<string, unknown>,
+  ): Record<string, unknown> {
+    const cleaned = stripHelperKeys(metadata);
+    const attributes: Record<string, unknown> = {
+      legacyEvent,
+      stepId,
+      stepType: kindToStepType(kind),
+      metadata: cleaned,
+    };
+    if (typeof cleaned.model === "string" && cleaned.model.trim()) {
+      attributes.model = cleaned.model;
+    }
+    return attributes;
   }
 
   async onStepStart(params: {
@@ -442,22 +551,31 @@ export class LangChainTracePersistence {
         params.lcParentRunId,
       );
 
-      const event: TraceEvent = {
-        schemaVersion: "0.1",
-        event: "step_started",
-        timestamp: params.startTime,
+      const startedAt = msToIso(params.startTime);
+      const event: PersistedInspectEvent = {
+        schemaVersion: "0.2",
+        eventId: stepId,
         runId: this.#runId,
-        stepId,
         ...(parentId ? { parentId } : {}),
+        kind: params.kind,
         name: params.name,
-        type: kindToStepType(params.kind),
-        startTime: params.startTime,
-        metadata,
+        status: "running",
+        timestamp: startedAt,
+        startedAt,
+        confidence: confidenceFromMetadata(metadata),
+        source: LANGCHAIN_SOURCE,
+        attributes: this.#buildStepAttributes(
+          stepId,
+          params.kind,
+          "step_started",
+          metadata,
+        ),
       };
 
       // Exact run-id map after parent resolve so end events can correlate; semantic /
       // LangGraph indexes wait until after persist so the child cannot parent itself.
       this.#lcToStepId.set(params.lcRunId, stepId);
+      this.#lcToStepName.set(params.lcRunId, params.name);
       await this.#write(event);
       this.#registerStepIndexes(stepId, params.name, params.attributes);
     } catch (err) {
@@ -485,6 +603,13 @@ export class LangChainTracePersistence {
       }
 
       let stepId = this.#lcToStepId.get(params.lcRunId);
+      let stepKind: InspectKind =
+        (params.completionAttributes?.kind as InspectKind | undefined) ?? "LOGIC";
+      let stepName =
+        typeof params.completionAttributes?.name === "string"
+          ? params.completionAttributes.name
+          : this.#lcToStepName.get(params.lcRunId);
+
       if (!stepId && params.completionAttributes) {
         if (this.#lifecycle.finalized) {
           this.#lateEventCount += 1;
@@ -492,6 +617,9 @@ export class LangChainTracePersistence {
         }
         stepId = createStepId();
         const synthName = String(params.completionAttributes.name ?? "llm:llm");
+        stepName = synthName;
+        stepKind =
+          (params.completionAttributes.kind as InspectKind | undefined) ?? "LLM";
         const startTime = params.endTime - (params.durationMs ?? 0);
         const resolution = await this.#maybeAttachSyntheticGroup(
           this.#resolveParent(
@@ -505,11 +633,12 @@ export class LangChainTracePersistence {
           lcRunId: params.lcRunId,
           parentLcRunId: params.lcParentRunId,
           startedAt: startTime,
-          kind:
-            (params.completionAttributes.kind as InspectKind | undefined) ?? "LLM",
+          kind: stepKind,
           stepId,
         });
-        const metadata = toStepMetadata(params.completionAttributes);
+        const metadata = toStepMetadata(
+          stripHelperKeys(params.completionAttributes),
+        );
         applyParentResolutionMetadata(metadata, resolution);
         const parentId = this.#parentIdForPersist(
           stepId,
@@ -517,28 +646,40 @@ export class LangChainTracePersistence {
           metadata,
           params.lcParentRunId,
         );
-        const started: TraceEvent = {
-          schemaVersion: "0.1",
-          event: "step_started",
-          timestamp: startTime,
+        const startedAt = msToIso(startTime);
+        const started: PersistedInspectEvent = {
+          schemaVersion: "0.2",
+          eventId: stepId,
           runId: this.#runId,
-          stepId,
           ...(parentId ? { parentId } : {}),
+          kind: stepKind,
           name: synthName,
-          type: kindToStepType(
-            (params.completionAttributes.kind as InspectKind | undefined) ?? "LLM",
+          status: "running",
+          timestamp: startedAt,
+          startedAt,
+          confidence: confidenceFromMetadata(metadata),
+          source: LANGCHAIN_SOURCE,
+          attributes: this.#buildStepAttributes(
+            stepId,
+            stepKind,
+            "step_started",
+            metadata,
           ),
-          startTime,
-          metadata,
         };
         if (this.#standalone && !this.#lifecycle.envelopeStarted) {
           await this.#ensureRunStarted(startTime, params.completionAttributes);
         }
         this.#lcToStepId.set(params.lcRunId, stepId);
+        this.#lcToStepName.set(params.lcRunId, synthName);
         await this.#write(started);
         this.#registerStepIndexes(stepId, synthName, params.completionAttributes);
       }
       if (!stepId) return;
+
+      const active = this.#lifecycle.activeRuns.get(params.lcRunId);
+      if (active?.kind === "LLM" || active?.kind === "TOOL" || active?.kind === "DECISION" || active?.kind === "LOGIC" || active?.kind === "RUN" || active?.kind === "OUTCOME") {
+        stepKind = active.kind;
+      }
 
       const durationMs =
         typeof params.durationMs === "number" && Number.isFinite(params.durationMs)
@@ -548,21 +689,40 @@ export class LangChainTracePersistence {
               params.endTime - (this.#lifecycle.runStartTime ?? params.endTime),
             );
 
-      const event: TraceEvent = {
-        schemaVersion: "0.1",
-        event: "step_completed",
-        timestamp: params.endTime,
+      const completionMeta = params.completionAttributes
+        ? toStepMetadata(stripHelperKeys(params.completionAttributes))
+        : { adapter: "langchain", confidence: "explicit" as const };
+      const tokenUsage = asTokenUsage(params.completionAttributes?.tokens);
+      const endedAt = msToIso(params.endTime);
+      const startedAtMs =
+        active?.startedAt ?? params.endTime - durationMs;
+      const completed: PersistedInspectEvent = {
+        schemaVersion: "0.2",
+        eventId: createStepId(),
         runId: this.#runId,
-        stepId,
-        status: params.status,
-        endTime: params.endTime,
+        kind: stepKind,
+        name: stepName ?? stepId,
+        status: toPersistedStatus(params.status),
+        timestamp: endedAt,
+        startedAt: msToIso(startedAtMs),
+        endedAt,
         durationMs,
+        confidence: confidenceFromMetadata(completionMeta),
+        source: LANGCHAIN_SOURCE,
+        attributes: this.#buildStepAttributes(
+          stepId,
+          stepKind,
+          "step_completed",
+          completionMeta,
+        ),
+        ...(tokenUsage ? { tokenUsage } : {}),
         ...(params.status === "error" && params.errorMessage
           ? { error: { message: params.errorMessage } }
           : {}),
       };
 
-      await this.#write(event);
+      await this.#write(completed);
+      this.#lcToStepName.delete(params.lcRunId);
 
       if (params.status === "error") {
         noteTerminalError(
@@ -616,31 +776,50 @@ export class LangChainTracePersistence {
         params.lcParentRunId,
       );
 
-      const started: TraceEvent = {
-        schemaVersion: "0.1",
-        event: "step_started",
-        timestamp: params.timestamp,
+      const at = msToIso(params.timestamp);
+      const started: PersistedInspectEvent = {
+        schemaVersion: "0.2",
+        eventId: stepId,
         runId: this.#runId,
-        stepId,
         ...(parentId ? { parentId } : {}),
+        kind: params.kind,
         name: params.name,
-        type: kindToStepType(params.kind),
-        startTime: params.timestamp,
-        metadata,
+        status: "running",
+        timestamp: at,
+        startedAt: at,
+        confidence: confidenceFromMetadata(metadata),
+        source: LANGCHAIN_SOURCE,
+        attributes: this.#buildStepAttributes(
+          stepId,
+          params.kind,
+          "step_started",
+          metadata,
+        ),
       };
       this.#lcToStepId.set(params.lcRunId, stepId);
+      this.#lcToStepName.set(params.lcRunId, params.name);
       await this.#write(started);
       this.#registerStepIndexes(stepId, params.name, params.attributes);
 
-      const completed: TraceEvent = {
-        schemaVersion: "0.1",
-        event: "step_completed",
-        timestamp: params.timestamp,
+      const completed: PersistedInspectEvent = {
+        schemaVersion: "0.2",
+        eventId: createStepId(),
         runId: this.#runId,
-        stepId,
-        status: params.status,
-        endTime: params.timestamp,
+        kind: params.kind,
+        name: params.name,
+        status: toPersistedStatus(params.status),
+        timestamp: at,
+        startedAt: at,
+        endedAt: at,
         durationMs: 0,
+        confidence: confidenceFromMetadata(metadata),
+        source: LANGCHAIN_SOURCE,
+        attributes: this.#buildStepAttributes(
+          stepId,
+          params.kind,
+          "step_completed",
+          metadata,
+        ),
         ...(params.status === "error" && params.errorMessage
           ? { error: { message: params.errorMessage } }
           : {}),
@@ -668,6 +847,7 @@ export class LangChainTracePersistence {
     try {
       await Promise.resolve();
       await Promise.resolve();
+      await this.#writer.flush?.();
     } catch (err) {
       this.#warn(err);
     }
@@ -722,6 +902,7 @@ export class LangChainTracePersistence {
     try {
       await this.flush();
       await this.finalize();
+      await this.#writer.close?.();
     } catch (err) {
       this.#warn(err);
     }
@@ -764,16 +945,23 @@ export class LangChainTracePersistence {
     if (attrs.langchainRunId) metadata.langchainRunId = attrs.langchainRunId;
     if (attrs.adapterRunName) metadata.adapterRunName = attrs.adapterRunName;
 
-    const event: TraceEvent = {
-      schemaVersion: "0.1",
-      event: "run_started",
-      timestamp: startTime,
+    const startedAt = msToIso(startTime);
+    await this.#write({
+      schemaVersion: "0.2",
+      eventId: this.#runId,
       runId: this.#runId,
+      kind: "RUN",
       name: this.#runName,
-      startTime,
-      metadata,
-    };
-    await this.#write(event);
+      status: "running",
+      timestamp: startedAt,
+      startedAt,
+      confidence: "explicit",
+      source: LANGCHAIN_SOURCE,
+      attributes: {
+        legacyEvent: "run_started",
+        metadata,
+      },
+    });
   }
 
   async #ensureRunCompleted(
@@ -784,41 +972,71 @@ export class LangChainTracePersistence {
     if (!markFinalized(this.#lifecycle)) return;
 
     for (const [, syntheticStepId] of this.#syntheticByLabel) {
-      const completed: TraceEvent = {
-        schemaVersion: "0.1",
-        event: "step_completed",
-        timestamp: endTime,
+      const endedAt = msToIso(endTime);
+      const durationMs = Math.max(
+        0,
+        endTime - (this.#lifecycle.runStartTime ?? endTime),
+      );
+      await this.#write({
+        schemaVersion: "0.2",
+        eventId: createStepId(),
         runId: this.#runId,
-        stepId: syntheticStepId,
-        status: "success",
-        endTime,
-        durationMs: Math.max(0, endTime - (this.#lifecycle.runStartTime ?? endTime)),
-      };
-      await this.#write(completed);
+        kind: "LOGIC",
+        name: syntheticStepId,
+        status: "ok",
+        timestamp: endedAt,
+        endedAt,
+        durationMs,
+        confidence: "heuristic",
+        source: LANGCHAIN_SOURCE,
+        attributes: {
+          legacyEvent: "step_completed",
+          stepId: syntheticStepId,
+          stepType: "logic",
+        },
+      });
     }
 
     const startTime = this.#lifecycle.runStartTime ?? endTime;
     const durationMs = Math.max(0, endTime - startTime);
-    const runStatus = stepStatus === "error" ? "error" : "success";
+    const endedAt = msToIso(endTime);
+    const runStatus = toPersistedStatus(stepStatus);
 
-    const event: TraceEvent = {
-      schemaVersion: "0.1",
-      event: "run_completed",
-      timestamp: endTime,
+    await this.#write({
+      schemaVersion: "0.2",
+      eventId: createStepId(),
       runId: this.#runId,
+      kind: "RUN",
+      name: this.#runName,
       status: runStatus,
-      endTime,
+      timestamp: endedAt,
+      startedAt: msToIso(startTime),
+      endedAt,
       durationMs,
+      confidence: "explicit",
+      source: LANGCHAIN_SOURCE,
+      attributes: {
+        legacyEvent: "run_completed",
+      },
       ...(runStatus === "error" && errorMessage
         ? { error: { message: errorMessage } }
         : {}),
-    };
-    await this.#write(event);
+    });
   }
 
-  async #write(event: TraceEvent): Promise<void> {
-    const safe = prepareTraceEventForDisk(event, this.#safety);
-    await writeTraceEvent(safe, this.#traceDir);
+  async #write(event: PersistedInspectEvent): Promise<void> {
+    // Apply adapter-specific redaction/bounds before the shared writer safety pass.
+    const attributes = event.attributes
+      ? prepareMetadataForDisk(event.attributes, this.#safety)
+      : undefined;
+    const prepared: PersistedInspectEvent = {
+      ...event,
+      ...(attributes ? { attributes } : {}),
+    };
+    if (!attributes) {
+      delete (prepared as { attributes?: unknown }).attributes;
+    }
+    await this.#writer.write(prepared);
   }
 
   #warn(err: unknown): void {

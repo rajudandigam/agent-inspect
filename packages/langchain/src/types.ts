@@ -39,7 +39,9 @@ export interface AgentInspectCallbackOptions extends LangChainStreamingOptions {
    */
   onDiagnostic?: AdapterDiagnosticListener;
   /**
-   * Persist callback lifecycle as schemaVersion "0.1" JSONL.
+   * Persist callback lifecycle as PersistedInspectEvent schemaVersion "0.2"
+   * JSONL (same adapter writer shape as `@agent-inspect/ai-sdk`). Completion
+   * rows carry top-level `tokenUsage` and end-time model metadata.
    * When omitted: enabled if `traceDir` is set, otherwise in-memory only.
    * Explicit `false` forces in-memory even when `traceDir` is set.
    */
