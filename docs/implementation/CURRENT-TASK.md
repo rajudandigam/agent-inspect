@@ -5,8 +5,8 @@ executionMode: maintainer-reviewed
 namedTrain: nov14-followups-release
 currentTrain: nov14-followups-release
 trainStatus: "6.31.36 published; Nov14 follow-ups landed; 6.32 blocked"
-currentChunk: "webmcp gen_ai.tool.name + recipe — changeset queued for patch publish"
-nextAction: "Push changeset; merge Version Packages PR; confirm Trusted Publish; partner acceptance #484/#437 unchanged; no 6.32 without EVIDENCE_GATE"
+currentChunk: "webmcp evidence-defect C4 — recipe claim verify + packed-main gen_ai.tool.name probe (uncommitted)"
+nextAction: "Maintainer review Trip C1–C6 + AgentInspect recipe/probe; then push changeset; merge Version Packages PR; Trusted Publish; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"

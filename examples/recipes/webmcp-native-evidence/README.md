@@ -32,6 +32,24 @@ pnpm --filter agent-inspect-recipe-webmcp-native-evidence start
 pnpm --filter agent-inspect-recipe-webmcp-native-evidence verify
 ```
 
+`verify` parses `check --json`, asserts required observation names/statuses per
+case (including the named `mutation_succeeded=failed` for business-rejected),
+and runs `bundle verify` on Evidence v2 for the good case. Negative controls
+must fail on binding/missing-observer findings — not on unrelated missing-tool
+or parser errors.
+
+### Packed-main `gen_ai.tool.name` probe
+
+```bash
+pnpm build
+pnpm --filter agent-inspect-recipe-webmcp-native-evidence probe:packed-genai-tool-name
+```
+
+Installs a tarball from the **current git SHA** (not npm registry `6.31.36`) and
+checks that `--required-tool update_trip_draft` matches an OTLP-style span via
+`gen_ai.tool.name`. The report prints `gitSha` and `tarballSha256` separately
+from any registry version.
+
 ## Privacy / network
 
 - Metadata-only synthetic facts; no prompts, cookies, or provider payloads

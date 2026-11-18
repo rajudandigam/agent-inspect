@@ -143,9 +143,9 @@ export async function captureCase(caseId: RecipeCaseId): Promise<RecipeCaseResul
     expectedCheckExit,
     note:
       caseId === "business-rejected"
-        ? "Strict observation gate allows failed mutation_succeeded when configured only for unknown/skipped; recipe verify uses case-specific flags."
+        ? "Verify asserts named mutation_succeeded=failed plus passed binding/no-write; does not use blanket --fail-on unknown,skipped."
         : caseId === "good"
-          ? "All required observations passed"
-          : "Strict gate must fail for wrong-resource / missing-observer",
+          ? "All required observations passed; Evidence v2 must verify"
+          : "Strict gate must fail for wrong-resource / missing-observer on specific observation findings",
   };
 }

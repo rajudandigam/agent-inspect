@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
-    "verify": "tsx src/verify.ts"
+    "verify": "tsx src/verify.ts",
+    "probe:packed-genai-tool-name": "tsx src/probe-packed-genai-tool-name.ts"
   },
   "dependencies": {
     "agent-inspect": "workspace:*",
