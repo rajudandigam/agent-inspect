@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.36"
-publishedVersion: "6.31.36"
+baselineVersion: "6.31.37"
+publishedVersion: "6.31.37"
 pendingPublishVersion: ""
 currentTrain: "nov14-followups-release"
 trainStatus: "6.31.36 published; evidence-defect C4 recipe/probe ready (uncommitted); Trip C1–C6 harness fixes; no new AI package; 6.32 blocked"
