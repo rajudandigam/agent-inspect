@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: nov14-followups-release
 currentTrain: nov14-followups-release
-trainStatus: "6.31.36 published; Nov14 follow-ups landed; 6.32 blocked"
-currentChunk: "webmcp evidence-defect C4 — recipe claim verify + packed-main gen_ai.tool.name probe (uncommitted)"
-nextAction: "Maintainer review Trip C1–C6 + AgentInspect recipe/probe; then push changeset; merge Version Packages PR; Trusted Publish; no 6.32 without EVIDENCE_GATE"
+trainStatus: "6.31.37 published; WebMCP evidence-defect train complete; 6.32 blocked"
+currentChunk: "6.31.37 published — gen_ai.tool.name + recipe claim verify"
+nextAction: "Partner acceptance #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -21,7 +21,7 @@ worktreeIgnoreOnly:
 
 ## Published baseline
 
-**6.31.36** — Trusted Publish [43735681865](https://github.com/rajudandigam/agent-inspect/actions/runs/43735681865); Version Packages [#545](https://github.com/rajudandigam/agent-inspect/pull/545). npm `agent-inspect@6.31.36` (registry confirmed). Nov 14 follow-ups: #535/#538/#539/#540/#542/#526. Open follow-ups: #543 (eval maxTotalTokens), #544 (per-budget matrix).
+**6.31.37** — Trusted Publish [44215415755](https://github.com/rajudandigam/agent-inspect/actions/runs/44215415755); Version Packages [#546](https://github.com/rajudandigam/agent-inspect/pull/546). npm `agent-inspect@6.31.37` (registry confirmed). Includes `gen_ai.tool.name` matching + strengthened `webmcp-native-evidence` recipe. Prior **6.31.36**: [43735681865](https://github.com/rajudandigam/agent-inspect/actions/runs/43735681865) / [#545](https://github.com/rajudandigam/agent-inspect/pull/545). Open follow-ups: #543 (eval maxTotalTokens), #544 (per-budget matrix).
 
 ## Nov 4 residual train (done)
 
