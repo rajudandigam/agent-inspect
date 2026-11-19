@@ -1,6 +1,6 @@
 /**
  * Focused C0P tests for inventory / empty-tarball rejection.
- * Picked up by root vitest (`scripts/**/*.test.mjs`).
+ * Picked up by root vitest (scripts/*.test.mjs include).
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
