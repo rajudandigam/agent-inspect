@@ -1,5 +1,15 @@
 # @agent-inspect/eval
 
+## 6.31.39
+
+### Patch Changes
+
+- 3eaa52c: Fail closed on token budgets when usage is not measurable: `createLlmUsageRule` is per-budget (partial `{ cached }` / `{ reasoning }` no longer clears other limits; errored LLM calls without usage are unverifiable), and `eval --max-total-tokens` no longer treats missing usage as zero (#544, #543).
+- Updated dependencies [3eaa52c]
+  - agent-inspect@6.31.39
+  - @agent-inspect/guardrails@6.31.39
+  - @agent-inspect/circuit@6.31.39
+
 ## 6.31.38
 
 ### Patch Changes

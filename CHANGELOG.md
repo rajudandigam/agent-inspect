@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.39
+
+### Patch Changes
+
+- 3eaa52c: Fail closed on token budgets when usage is not measurable: `createLlmUsageRule` is per-budget (partial `{ cached }` / `{ reasoning }` no longer clears other limits; errored LLM calls without usage are unverifiable), and `eval --max-total-tokens` no longer treats missing usage as zero (#544, #543).
+
 ## 6.31.38
 
 ### Patch Changes
