@@ -1,5 +1,12 @@
 # @agent-inspect/index-sqlite
 
+## 6.31.38
+
+### Patch Changes
+
+- Updated dependencies [61f139b]
+  - agent-inspect@6.31.38
+
 ## 6.31.37
 
 ### Patch Changes
