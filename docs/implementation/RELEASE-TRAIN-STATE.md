@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.37"
-publishedVersion: "6.31.37"
+baselineVersion: "6.31.38"
+publishedVersion: "6.31.38"
 pendingPublishVersion: ""
 currentTrain: "c0p-packaging-repair"
 trainStatus: "6.31.37 published but scoped npm tarballs empty (no dist); C0P local pack+qualify validated on 504db32 — not merged/published yet"
