@@ -149,7 +149,15 @@ describe("AgentInspectCallback streaming", () => {
     await cb.handleChainStart(mockSerialized("chain"), {}, "root-chain");
     await cb.handleLLMStart(mockSerialized("m"), ["p"], "lc-stream-1", "root-chain");
     cb.handleLLMNewToken("hi", { prompt: 0, completion: 0 }, "lc-stream-1");
-    await cb.handleLLMEnd({ llmOutput: {} } as unknown as LLMResult, "lc-stream-1", "root-chain");
+    await cb.handleLLMEnd(
+      {
+        llmOutput: {
+          tokenUsage: { promptTokens: 4, completionTokens: 6, totalTokens: 10 },
+        },
+      } as unknown as LLMResult,
+      "lc-stream-1",
+      "root-chain",
+    );
     await cb.handleChainEnd({}, "root-chain");
 
     const files = await readdir(traceDir);
@@ -162,6 +170,19 @@ describe("AgentInspectCallback streaming", () => {
       expect(stepStart.metadata?.chunkCount).toBe(1);
       expect(JSON.stringify(stepStart.metadata)).not.toContain('"hi"');
     }
+
+    const { readFile } = await import("node:fs/promises");
+    const { parseTraceJsonl } = await import("agent-inspect/advanced");
+    const raw = await readFile(path.join(traceDir, "run_lc_stream.jsonl"), "utf8");
+    const parsed = parseTraceJsonl(raw);
+    const llmComplete = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.attributes?.legacyEvent === "step_completed",
+    );
+    expect(llmComplete?.tokenUsage).toEqual({
+      input: 4,
+      output: 6,
+      total: 10,
+    });
   });
 
   it("getEvents and clear still work with streaming", async () => {
