@@ -2662,12 +2662,45 @@ export function createToolFailureRule(options: ToolFailureRuleOptions): TraceChe
   };
 }
 
-function recordsTokenUsage(event: PersistedInspectEvent): boolean {
-  return Object.values(event.tokenUsage ?? {}).some((count) => typeof count === "number");
+type LlmTokenBudgetKey = "input" | "output" | "total" | "cached";
+
+/**
+ * Measured value for a budget key on one LLM call.
+ * `total` may be synthesized from finite `input`+`output` only — never invents
+ * a missing component. `cached` is optional: absent means unmeasured (caller
+ * treats as 0 for the limit comparison, not as a missing-usage failure).
+ */
+function measuredTokenCount(
+  usage: PersistedInspectEvent["tokenUsage"],
+  key: LlmTokenBudgetKey,
+): number | undefined {
+  if (!usage) return undefined;
+  const direct = usage[key];
+  if (typeof direct === "number" && Number.isFinite(direct)) return direct;
+  if (key === "total") {
+    const input = usage.input;
+    const output = usage.output;
+    if (
+      typeof input === "number" &&
+      Number.isFinite(input) &&
+      typeof output === "number" &&
+      Number.isFinite(output)
+    ) {
+      return input + output;
+    }
+  }
+  return undefined;
 }
 
 /**
  * Create the experimental built-in LLM usage rule.
+ *
+ * Token budgets are **per-key**: enabling `maxTotalTokens` / `maxInputTokens` /
+ * `maxOutputTokens` requires a measured value for that key on every finished
+ * LLM call (including `status: "error"`). `maxCachedTokens` treats absent
+ * `cached` as optional (counts as 0). Partial usage such as `{ cached: 5 }` or
+ * `{ reasoning: 5 }` alone does not clear other budgets. Missing measurement
+ * fails as unverifiable (distinct from exceeded).
  *
  * @experimental  Available through `agent-inspect/checks`. Additive changes may ship in minor releases; breaking changes require a future major.
  */
@@ -2719,36 +2752,69 @@ export function createLlmUsageRule(options: LlmUsageRuleOptions): TraceCheckRule
         }
       }
 
-      const tokenTotals = llms.reduce(
-        (totals, event) => ({
-          input: totals.input + (event.tokenUsage?.input ?? 0),
-          output: totals.output + (event.tokenUsage?.output ?? 0),
-          total: totals.total + (event.tokenUsage?.total ?? 0),
-          cached: totals.cached + (event.tokenUsage?.cached ?? 0),
-        }),
-        { input: 0, output: 0, total: 0, cached: 0 },
-      );
       const tokenLimits = [
         ["input", options.maxInputTokens],
         ["output", options.maxOutputTokens],
         ["total", options.maxTotalTokens],
         ["cached", options.maxCachedTokens],
       ] as const;
-      const hasTokenLimit = tokenLimits.some(([, limit]) => limit !== undefined);
-      const callsWithoutUsage = llms.filter(
-        (event) => event.status !== "error" && !recordsTokenUsage(event),
-      );
-      if (hasTokenLimit && callsWithoutUsage.length > 0) {
-        findings.push(
-          failFinding(
-            "llm.usage",
-            `No token usage was read for ${callsWithoutUsage.length} of ${llms.length} LLM call(s), so the token limit cannot be verified.`,
-            callsWithoutUsage.map((event) => eventEvidence(event, "tokenUsage")),
-            "token usage on every completed LLM call",
-            { callsWithoutUsage: callsWithoutUsage.length, calls: llms.length },
-          ),
-        );
+
+      // Required measurement keys (cached is optional — see maxCachedTokens docs).
+      const requiredKeys = tokenLimits
+        .filter(([key, limit]) => limit !== undefined && key !== "cached")
+        .map(([key]) => key);
+
+      for (const key of requiredKeys) {
+        const missing = llms.filter((event) => measuredTokenCount(event.tokenUsage, key) === undefined);
+        if (missing.length === 0) continue;
+        const erroredMissing = missing.filter((event) => event.status === "error");
+        const otherMissing = missing.filter((event) => event.status !== "error");
+        if (erroredMissing.length > 0) {
+          findings.push(
+            failFinding(
+              "llm.usage",
+              `Unverifiable ${key} token budget: ${erroredMissing.length} of ${llms.length} LLM call(s) ended in error without measurable ${key} usage.`,
+              erroredMissing.map((event) => eventEvidence(event, `tokenUsage.${key}`)),
+              `measurable ${key} token usage on every finished LLM call`,
+              {
+                reason: "unverifiable",
+                budget: key,
+                callsWithoutUsage: erroredMissing.length,
+                calls: llms.length,
+              },
+            ),
+          );
+        }
+        if (otherMissing.length > 0) {
+          findings.push(
+            failFinding(
+              "llm.usage",
+              `No measurable ${key} token usage was read for ${otherMissing.length} of ${llms.length} LLM call(s), so the ${key} token limit cannot be verified.`,
+              otherMissing.map((event) => eventEvidence(event, `tokenUsage.${key}`)),
+              `measurable ${key} token usage on every finished LLM call`,
+              {
+                reason: "unverifiable",
+                budget: key,
+                callsWithoutUsage: otherMissing.length,
+                calls: llms.length,
+              },
+            ),
+          );
+        }
       }
+
+      const tokenTotals = {
+        input: 0,
+        output: 0,
+        total: 0,
+        cached: 0,
+      };
+      for (const event of llms) {
+        for (const key of ["input", "output", "total", "cached"] as const) {
+          tokenTotals[key] += measuredTokenCount(event.tokenUsage, key) ?? 0;
+        }
+      }
+
       for (const [key, limit] of tokenLimits) {
         if (limit !== undefined && tokenTotals[key] > limit) {
           findings.push(

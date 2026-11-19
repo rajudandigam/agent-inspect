@@ -120,6 +120,28 @@ describe("eval command", () => {
     expect(output).toContain("eval.forbiddenTools");
   });
 
+  it("fails --max-total-tokens when the trace records no LLM token usage", async () => {
+    const file = await writeTrace(tmp, "no-usage.jsonl", [
+      event("event-llm", {
+        kind: "LLM",
+        name: "llm:x",
+        status: "ok",
+      }),
+    ]);
+
+    const result = await runEval(file, { maxTotalTokens: "5" });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(
+      result.findings?.some(
+        (item) =>
+          item.ruleId === "eval.maxTotalTokens" &&
+          String(item.message).includes("measurable total token usage"),
+      ),
+    ).toBe(true);
+  });
+
   it("supports run-id lookup, explicit format, and JSON config", async () => {
     await writeTrace(tmp, "run-eval-cli.jsonl", [
       event("event-tool", { kind: "TOOL", name: "searchDocs" }),
