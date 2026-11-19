@@ -140,10 +140,68 @@ function stripHelperKeys(
 ): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(attrs)) {
-    if (key === "tokens" || key === "name" || key === "kind") continue;
+    // Drop lifecycle helpers and error fields mirrored on top-level `error`.
+    if (
+      key === "tokens" ||
+      key === "name" ||
+      key === "kind" ||
+      key === "errorMessage" ||
+      key === "errorName"
+    ) {
+      continue;
+    }
     out[key] = value;
   }
   return out;
+}
+
+function completionErrorName(
+  attrs: Record<string, unknown> | undefined,
+): string | undefined {
+  const value = attrs?.errorName;
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
+/**
+ * Apply callback safety options to a top-level PersistedInspectError.
+ * Accepts both `name` and `errorName` keys so custom redact rules for either
+ * form still scrub the persisted error identity.
+ */
+function pickPreparedString(
+  ...candidates: unknown[]
+): string | undefined {
+  const strings = candidates.filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+  // Prefer an already-redacted value when parallel keys (name/errorName) were
+  // prepared together and only one rule matched.
+  const redacted = strings.find((value) => value.includes("[REDACTED]"));
+  return redacted ?? strings[0];
+}
+
+function preparePersistedErrorForAdapterSafety(
+  error: NonNullable<PersistedInspectEvent["error"]>,
+  safety: ReturnType<typeof resolveTraceSafetyOptions>,
+): NonNullable<PersistedInspectEvent["error"]> {
+  const prepared = prepareMetadataForDisk(
+    {
+      message: error.message,
+      ...(error.name !== undefined
+        ? { name: error.name, errorName: error.name }
+        : {}),
+      ...(error.code !== undefined ? { code: error.code } : {}),
+    },
+    safety,
+  );
+  const message =
+    pickPreparedString(prepared.message) ?? "Unknown error";
+  const name = pickPreparedString(prepared.errorName, prepared.name);
+  const code = pickPreparedString(prepared.code);
+  return {
+    message,
+    ...(name !== undefined ? { name } : {}),
+    ...(code !== undefined ? { code } : {}),
+  };
 }
 
 /**
@@ -696,6 +754,7 @@ export class LangChainTracePersistence {
       const endedAt = msToIso(params.endTime);
       const startedAtMs =
         active?.startedAt ?? params.endTime - durationMs;
+      const errorName = completionErrorName(params.completionAttributes);
       const completed: PersistedInspectEvent = {
         schemaVersion: "0.2",
         eventId: createStepId(),
@@ -717,7 +776,12 @@ export class LangChainTracePersistence {
         ),
         ...(tokenUsage ? { tokenUsage } : {}),
         ...(params.status === "error" && params.errorMessage
-          ? { error: { message: params.errorMessage } }
+          ? {
+              error: {
+                message: params.errorMessage,
+                ...(errorName !== undefined ? { name: errorName } : {}),
+              },
+            }
           : {}),
       };
 
@@ -1026,12 +1090,19 @@ export class LangChainTracePersistence {
 
   async #write(event: PersistedInspectEvent): Promise<void> {
     // Apply adapter-specific redaction/bounds before the shared writer safety pass.
+    // Attributes and top-level error must both see this.#safety — fileWriter only
+    // re-applies DEFAULT_TRACE_SAFETY and would miss custom redact rules on error.
     const attributes = event.attributes
       ? prepareMetadataForDisk(event.attributes, this.#safety)
       : undefined;
+    const error =
+      event.error !== undefined
+        ? preparePersistedErrorForAdapterSafety(event.error, this.#safety)
+        : undefined;
     const prepared: PersistedInspectEvent = {
       ...event,
       ...(attributes ? { attributes } : {}),
+      ...(error ? { error } : {}),
     };
     if (!attributes) {
       delete (prepared as { attributes?: unknown }).attributes;
