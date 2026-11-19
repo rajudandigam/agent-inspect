@@ -459,6 +459,122 @@ describe("AgentInspectCallback persistence", () => {
     expect(meta).toMatchObject({ apiKey: "[REDACTED]" });
   });
 
+  it("applies callback redaction rules to top-level LLM error before disk (#548 privacy)", async () => {
+    // Port of #548 disk repro: custom { key: "message", strategy: "full" } must
+    // scrub PersistedInspectEvent.error, not only attributes.
+    const canaryMessage = "synthetic-llm-private-uduak";
+    const canaryName = "SyntheticProviderErrorName";
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      silent: true,
+      redact: [
+        { key: "message", strategy: "full" },
+        { key: "errorName", strategy: "full" },
+      ],
+      runId: "run_redact_llm_error",
+    });
+    const failure = new Error(canaryMessage);
+    failure.name = canaryName;
+    await cb.handleChainStart(mockSerialized("chain"), {}, "chain-1");
+    await cb.handleLLMStart(mockSerialized("chat"), ["synthetic prompt"], "llm-1", "chain-1");
+    await cb.handleLLMError(failure, "llm-1", "chain-1");
+    await cb.handleChainError(new Error(canaryMessage), "chain-1");
+    await cb.close();
+
+    const raw = await readFile(path.join(traceDir, "run_redact_llm_error.jsonl"), "utf8");
+    expect(raw).not.toContain(canaryMessage);
+    expect(raw).not.toContain(canaryName);
+
+    const parsed = await readPersisted("run_redact_llm_error", traceDir);
+    const llmError = parsed.persisted.find(
+      (e) =>
+        e.kind === "LLM" &&
+        e.attributes?.legacyEvent === "step_completed" &&
+        e.status === "error",
+    );
+    expect(llmError?.error?.message).toBe("[REDACTED]");
+    expect(llmError?.error?.name).toBe("[REDACTED]");
+  });
+
+  it("default safety still persists synthetic LLM error messages", async () => {
+    const canaryMessage = "synthetic-llm-visible-default";
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      silent: true,
+      runId: "run_error_default",
+    });
+    await cb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-err");
+    await cb.handleLLMError(new Error(canaryMessage), "llm-err");
+    await cb.close();
+
+    const raw = await readFile(path.join(traceDir, "run_error_default.jsonl"), "utf8");
+    expect(raw).toContain(canaryMessage);
+    const parsed = await readPersisted("run_error_default", traceDir);
+    const llmError = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.status === "error",
+    );
+    expect(llmError?.error?.message).toBe(canaryMessage);
+  });
+
+  it("capture none omits token usage from the persisted LLM completion", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      capture: "none",
+      runId: "run_capture_none",
+    });
+    await cb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-1");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          tokenUsage: { promptTokens: 9, completionTokens: 1, totalTokens: 10 },
+        },
+      } as unknown as LLMResult,
+      "llm-1",
+    );
+    await cb.close();
+
+    const parsed = await readPersisted("run_capture_none", traceDir);
+    const llmComplete = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.attributes?.legacyEvent === "step_completed",
+    );
+    expect(llmComplete?.tokenUsage).toBeUndefined();
+  });
+
+  it("close after a completed LLM call finalizes the envelope once", async () => {
+    const cb = new AgentInspectCallback({
+      traceDir,
+      persist: true,
+      silent: true,
+      runId: "run_close_after_llm",
+    });
+    await cb.handleLLMStart(mockSerialized("chat"), ["p"], "llm-1");
+    await cb.handleLLMEnd(
+      {
+        generations: [],
+        llmOutput: {
+          tokenUsage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+        },
+      } as unknown as LLMResult,
+      "llm-1",
+    );
+    await cb.close();
+    await cb.close();
+
+    const parsed = await readPersisted("run_close_after_llm", traceDir);
+    const runCompleted = parsed.persisted.filter(
+      (e) => e.kind === "RUN" && e.attributes?.legacyEvent === "run_completed",
+    );
+    expect(runCompleted).toHaveLength(1);
+    const llmComplete = parsed.persisted.find(
+      (e) => e.kind === "LLM" && e.attributes?.legacyEvent === "step_completed",
+    );
+    expect(llmComplete?.tokenUsage?.total).toBe(2);
+  });
+
   it("persistence errors do not throw into callback user flow", async () => {
     const writers = await import("agent-inspect/writers");
     vi.spyOn(writers, "fileWriter").mockReturnValue({
