@@ -51,8 +51,8 @@ jobs:
 
       - name: Pack and qualify release artifacts
         run: |
-          node --test scripts/release-artifacts.test.mjs
-          # test:all already built; pack sequentially with prepack build skipped
+          pnpm exec vitest run scripts/release-artifacts.test.mjs
+          # test:all / pack:smoke already built; pack sequentially with prepack build skipped
           export AGENT_INSPECT_SKIP_PREPACK_BUILD=1
           node scripts/release-artifacts.mjs pack --out ./release-artifacts
           node scripts/release-artifacts.mjs validate --dir ./release-artifacts --expect-sha "${GITHUB_SHA}"
