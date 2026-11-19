@@ -799,7 +799,11 @@ export function publishVerifiedArtifacts(artifactsDir, { dryRun = false } = {}) 
   }
 
   for (const pkg of inventory.packages) {
-    const tgzPath = path.join(artifactsDir, pkg.tarball);
+    // Absolute path required: npm treats relative "dir/foo.tgz" as a GitHub shorthand.
+    const tgzPath = path.resolve(artifactsDir, pkg.tarball);
+    if (!existsSync(tgzPath)) {
+      throw new Error(`${pkg.name}: missing tarball at ${tgzPath}`);
+    }
     // Idempotent re-run: skip versions already on the registry (partial publish recovery).
     if (!dryRun) {
       const viewed = spawnSync(
