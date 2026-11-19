@@ -52,3 +52,6 @@ fixtures/studio/.agent-inspect/*.db-wal
 
 # Local WebMCP integration work (untracked)
 .webmcp-integration-work/
+
+# Local / CI release artifact staging (C0P)
+release-artifacts/
