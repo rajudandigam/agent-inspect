@@ -587,7 +587,22 @@ const CONSUMER_SMOKES = {
 function tarballPathFor(artifactsDir, inventory, name) {
   const pkg = inventory.packages.find((p) => p.name === name);
   if (!pkg) throw new Error(`inventory missing ${name}`);
-  return path.join(artifactsDir, pkg.tarball);
+  // Absolute path required: from a temp cwd, relative "dir/foo.tgz" is parsed as a GitHub shorthand.
+  return path.resolve(artifactsDir, pkg.tarball);
+}
+
+/** Convert local tarball paths to absolute file: specs for npm install. */
+export function toNpmInstallSpec(spec) {
+  if (typeof spec !== "string") return spec;
+  if (spec.endsWith(".tgz") || spec.endsWith(".tar.gz")) {
+    const abs = path.resolve(spec);
+    if (!existsSync(abs)) {
+      throw new Error(`tarball missing for npm install: ${abs}`);
+    }
+    // file: avoids npm treating path segments as github.com/org/repo
+    return `file:${abs}`;
+  }
+  return spec;
 }
 
 function npmInstall(cwd, packages, { allowScripts = [] } = {}) {
@@ -595,7 +610,7 @@ function npmInstall(cwd, packages, { allowScripts = [] } = {}) {
   if (allowScripts.length === 0) {
     args.push("--ignore-scripts");
   }
-  args.push(...packages);
+  args.push(...packages.map(toNpmInstallSpec));
   run("npm install", "npm", args, {
     cwd,
     env: {
