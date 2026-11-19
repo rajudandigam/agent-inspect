@@ -19,6 +19,8 @@ import {
   collectEntryTargets,
   expectedPublishableNames,
   sha256File,
+  collectSiblingTarballSpecs,
+  readPackedPublishableDeps,
   toNpmInstallSpec,
   validateInventory,
 } from "./release-artifacts-lib.mjs";
@@ -135,6 +137,30 @@ describe("release-artifacts", () => {
       expect(() => validateInventory(tmp)).toThrow(
         /must be 18|does not match changeset|sha256/,
       );
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("readPackedPublishableDeps finds scoped siblings in the archive", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "ai-deps-"));
+    try {
+      const pkgDir = path.join(tmp, "package");
+      mkdirSync(pkgDir, { recursive: true });
+      writeFileSync(
+        path.join(pkgDir, "package.json"),
+        JSON.stringify({
+          name: "@agent-inspect/guardrails",
+          version: "9.9.9",
+          dependencies: {
+            "@agent-inspect/redact": "9.9.9",
+            lodash: "4.17.21",
+          },
+        }),
+      );
+      const tgz = path.join(tmp, "guardrails.tgz");
+      execFileSync("tar", ["-czf", tgz, "-C", tmp, "package"]);
+      expect(readPackedPublishableDeps(tgz)).toEqual(["@agent-inspect/redact"]);
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }

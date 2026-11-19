@@ -591,6 +591,51 @@ function tarballPathFor(artifactsDir, inventory, name) {
   return path.resolve(artifactsDir, pkg.tarball);
 }
 
+function isPublishableDepName(name) {
+  return name === "agent-inspect" || name.startsWith("@agent-inspect/");
+}
+
+/** Read dependency names from a packed package.json inside a .tgz. */
+export function readPackedPublishableDeps(tgzPath) {
+  const tmp = path.join(os.tmpdir(), `ai-deps-${process.pid}-${Date.now()}`);
+  mkdirSync(tmp, { recursive: true });
+  try {
+    execFileSync("tar", ["-xzf", tgzPath, "-C", tmp], { stdio: "ignore" });
+    const manifest = JSON.parse(
+      readFileSync(path.join(tmp, "package", "package.json"), "utf8"),
+    );
+    const names = new Set();
+    for (const field of ["dependencies", "optionalDependencies", "peerDependencies"]) {
+      const block = manifest[field];
+      if (!block || typeof block !== "object") continue;
+      for (const name of Object.keys(block)) {
+        if (isPublishableDepName(name)) names.add(name);
+      }
+    }
+    return [...names].sort();
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Collect inventory tarballs for publishable deps (transitive), so qualify
+ * does not hit the registry for unpublished repair-release versions.
+ */
+export function collectSiblingTarballSpecs(artifactsDir, inventory, name, seen = new Set()) {
+  if (seen.has(name)) return [];
+  seen.add(name);
+  const tgz = tarballPathFor(artifactsDir, inventory, name);
+  const deps = readPackedPublishableDeps(tgz);
+  const specs = [];
+  for (const dep of deps) {
+    if (!inventory.packages.some((p) => p.name === dep)) continue;
+    specs.push(...collectSiblingTarballSpecs(artifactsDir, inventory, dep, seen));
+    specs.push(tarballPathFor(artifactsDir, inventory, dep));
+  }
+  return specs;
+}
+
 /** Convert local tarball paths to absolute file: specs for npm install. */
 export function toNpmInstallSpec(spec) {
   if (typeof spec !== "string") return spec;
@@ -649,11 +694,11 @@ export function qualifyConsumers(artifactsDir, { keep = false } = {}) {
         type: "module",
       });
 
-      const installs = [];
-      const rootTgz = tarballPathFor(artifactsDir, inventory, "agent-inspect");
-      if (name !== "agent-inspect" && smoke.needsRoot !== false) {
-        installs.push(rootTgz);
-      }
+      // Install transitive publishable siblings from packed manifests as file:
+      // tarballs first — required when the release version is not yet on npm.
+      const installs = [
+        ...collectSiblingTarballSpecs(artifactsDir, inventory, name),
+      ];
       if (Array.isArray(smoke.bundled)) {
         for (const dep of smoke.bundled) {
           installs.push(tarballPathFor(artifactsDir, inventory, dep));
@@ -661,8 +706,10 @@ export function qualifyConsumers(artifactsDir, { keep = false } = {}) {
       }
       installs.push(tarballPathFor(artifactsDir, inventory, name));
       if (Array.isArray(smoke.peers)) installs.push(...smoke.peers);
+      // Deduplicate while preserving order (siblings before the package under test).
+      const uniqueInstalls = [...new Set(installs)];
 
-      npmInstall(dir, installs, { allowScripts: smoke.allowScripts ?? [] });
+      npmInstall(dir, uniqueInstalls, { allowScripts: smoke.allowScripts ?? [] });
 
       if (smoke.esm) {
         writeFileSync(path.join(dir, "esm-smoke.mjs"), smoke.esm);
