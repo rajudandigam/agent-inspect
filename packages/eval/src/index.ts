@@ -434,12 +434,31 @@ function numericAttribute(node: EvalNode, keys: readonly string[]): number | und
   return undefined;
 }
 
-function totalTokenCount(events: readonly TraceReadResult["events"][number][]): number {
-  return events.reduce((total, event) => {
-    const usage = event.tokenUsage;
-    if (usage?.total !== undefined) return total + usage.total;
-    return total + (usage?.input ?? 0) + (usage?.output ?? 0);
-  }, 0);
+type EvalTraceEvent = TraceReadResult["events"][number];
+
+/**
+ * Measurable total for one event. Prefer explicit `total`; otherwise synthesize
+ * from finite `input`+`output` only. Never invents a missing component as 0.
+ */
+function measuredTotalTokens(event: EvalTraceEvent): number | undefined {
+  const usage = event.tokenUsage;
+  if (!usage) return undefined;
+  if (typeof usage.total === "number" && Number.isFinite(usage.total)) return usage.total;
+  const input = usage.input;
+  const output = usage.output;
+  if (
+    typeof input === "number" &&
+    Number.isFinite(input) &&
+    typeof output === "number" &&
+    Number.isFinite(output)
+  ) {
+    return input + output;
+  }
+  return undefined;
+}
+
+function llmEventsForTokenBudget(events: readonly EvalTraceEvent[]): EvalTraceEvent[] {
+  return events.filter((event) => event.kind === "LLM");
 }
 
 function createRule(
@@ -752,18 +771,64 @@ export const checks = {
 
   maxTotalTokens(maxTotalTokens: number): EvalRule {
     return createRule("eval.maxTotalTokens", "llm", (context) => {
-      const total = totalTokenCount(context.events);
-      return total > maxTotalTokens
-        ? [
+      const llms = llmEventsForTokenBudget(context.events);
+      const findings: EvalFinding[] = [];
+      const missing = llms.filter((event) => measuredTotalTokens(event) === undefined);
+      if (missing.length > 0) {
+        const errored = missing.filter((event) => event.status === "error");
+        const other = missing.filter((event) => event.status !== "error");
+        const evidenceForPersisted = (events: readonly EvalTraceEvent[]): EvalEvidence[] =>
+          events.map((event) => ({
+            runId: event.runId,
+            eventId: event.eventId,
+            kind: event.kind,
+            name: event.name,
+            path: "tokenUsage.total",
+          }));
+        if (errored.length > 0) {
+          findings.push(
             fail(
               "eval.maxTotalTokens",
-              `Total token usage exceeded ${maxTotalTokens}.`,
-              evidenceForRun(context.run, "tokenUsage.total"),
-              { maxTotalTokens },
-              total,
+              `Unverifiable total token budget: ${errored.length} of ${llms.length} LLM call(s) ended in error without measurable total usage.`,
+              evidenceForPersisted(errored),
+              "measurable total token usage on every LLM call",
+              {
+                reason: "unverifiable",
+                callsWithoutUsage: errored.length,
+                calls: llms.length,
+              },
             ),
-          ]
-        : [];
+          );
+        }
+        if (other.length > 0) {
+          findings.push(
+            fail(
+              "eval.maxTotalTokens",
+              `No measurable total token usage was read for ${other.length} of ${llms.length} LLM call(s), so the total token limit cannot be verified.`,
+              evidenceForPersisted(other),
+              "measurable total token usage on every LLM call",
+              {
+                reason: "unverifiable",
+                callsWithoutUsage: other.length,
+                calls: llms.length,
+              },
+            ),
+          );
+        }
+      }
+      const total = llms.reduce((sum, event) => sum + (measuredTotalTokens(event) ?? 0), 0);
+      if (total > maxTotalTokens) {
+        findings.push(
+          fail(
+            "eval.maxTotalTokens",
+            `Total token usage exceeded ${maxTotalTokens}.`,
+            evidenceForRun(context.run, "tokenUsage.total"),
+            { maxTotalTokens },
+            total,
+          ),
+        );
+      }
+      return findings;
     });
   },
 

@@ -669,6 +669,33 @@ describe("check command", () => {
     expect(tokenResult.findings?.some((item) => item.ruleId === "llm.usage")).toBe(true);
   });
 
+  it("fails --max-total-tokens when the only recorded usage is cached tokens", async () => {
+    const file = await writeTrace(tmp, "llm-cached-only.jsonl", [
+      event("event-run"),
+      event("event-llm", {
+        kind: "LLM",
+        name: "llm:gpt-4.1-mini",
+        attributes: { model: "gpt-4.1-mini" },
+        tokenUsage: { cached: 5 },
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      preset: "trajectory",
+      maxTotalTokens: "1000",
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(
+      result.findings?.some(
+        (item) =>
+          item.ruleId === "llm.usage" &&
+          String(item.message).includes("measurable total token usage"),
+      ),
+    ).toBe(true);
+  });
+
   it("executes --max-duration-ms with --preset trajectory", async () => {
     const file = await writeTrace(tmp, "slow.jsonl", [
       event("event-a", {

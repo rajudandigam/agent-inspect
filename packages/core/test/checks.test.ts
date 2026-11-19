@@ -1248,8 +1248,9 @@ describe("built-in run, tool, and LLM checks", () => {
 
     expect(result.status).toBe("fail");
     expect(result.findings.map((finding) => finding.message)).toEqual([
-      "No token usage was read for 1 of 2 LLM call(s), so the token limit cannot be verified.",
+      "No measurable total token usage was read for 1 of 2 LLM call(s), so the total token limit cannot be verified.",
     ]);
+    expect(result.findings[0]?.actual).toMatchObject({ reason: "unverifiable", budget: "total" });
     expect(result.findings[0]?.evidence.map((evidence) => evidence.eventId)).toEqual(["event-b"]);
   });
 
@@ -1266,7 +1267,7 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.findings).toHaveLength(1);
   });
 
-  it("does not ask a failed LLM call for token usage", () => {
+  it("treats an errored LLM call without measurable usage as unverifiable for the budget", () => {
     const failed = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", status: "error" });
     const metered = persisted("event-b", {
       kind: "LLM",
@@ -1280,8 +1281,11 @@ describe("built-in run, tool, and LLM checks", () => {
       { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
     );
 
-    expect(result.status).toBe("pass");
-    expect(result.findings).toHaveLength(0);
+    expect(result.status).toBe("fail");
+    expect(result.findings.map((finding) => finding.message)).toEqual([
+      "Unverifiable total token budget: 1 of 2 LLM call(s) ended in error without measurable total usage.",
+    ]);
+    expect(result.findings[0]?.actual).toMatchObject({ reason: "unverifiable", budget: "total" });
   });
 
   it("does not ask for token usage when no token limit is set", () => {
@@ -1318,20 +1322,33 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.findings).toHaveLength(0);
   });
 
+  it("treats absent cached usage as optional zero when only maxCachedTokens is set", () => {
+    const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer" });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxCachedTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
   it.each([
     { maxInputTokens: 1000 },
     { maxOutputTokens: 1000 },
     { maxTotalTokens: 0 },
-    { maxCachedTokens: 1000 },
-  ])("asks for token usage under the token limit %j", (tokenLimit) => {
+  ])("asks for measurable usage under the token limit %j", (tokenLimit) => {
     const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer" });
     const read = readResult([llm]);
+    const budget = Object.keys(tokenLimit)[0]!.replace(/^max/, "").replace(/Tokens$/, "").toLowerCase();
 
     const result = runTraceChecks({ read }, { rules: [createLlmUsageRule(tokenLimit)] });
 
     expect(result.status).toBe("fail");
     expect(result.findings.map((finding) => finding.message)).toEqual([
-      "No token usage was read for 1 of 1 LLM call(s), so the token limit cannot be verified.",
+      `No measurable ${budget} token usage was read for 1 of 1 LLM call(s), so the ${budget} token limit cannot be verified.`,
     ]);
   });
 
@@ -1348,35 +1365,77 @@ describe("built-in run, tool, and LLM checks", () => {
 
       expect(result.status).toBe("fail");
       expect(result.findings.map((finding) => finding.message)).toEqual([
-        "No token usage was read for 1 of 1 LLM call(s), so the token limit cannot be verified.",
+        "No measurable total token usage was read for 1 of 1 LLM call(s), so the total token limit cannot be verified.",
       ]);
     },
   );
 
-  it.each([{ total: 150 }, { input: 100 }, { cached: 5 }, { reasoning: 5 }])(
-    "accepts the partial token usage %j as recorded",
+  it("accepts explicit total usage for a total budget", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { total: 150 },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
+  it("synthesizes total from finite input+output when total is absent", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { input: 100, output: 50 },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("pass");
+    expect(result.findings).toHaveLength(0);
+  });
+
+  it.each([{ cached: 5 }, { reasoning: 5 }, { input: 100 }])(
+    "does not clear maxTotalTokens with partial usage %j",
     (tokenUsage) => {
       const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", tokenUsage });
       const read = readResult([llm]);
 
       const result = runTraceChecks(
         { read },
-        {
-          rules: [
-            createLlmUsageRule({
-              maxInputTokens: 1000,
-              maxOutputTokens: 1000,
-              maxTotalTokens: 1000,
-              maxCachedTokens: 1000,
-            }),
-          ],
-        },
+        { rules: [createLlmUsageRule({ maxTotalTokens: 1000 })] },
       );
 
-      expect(result.status).toBe("pass");
-      expect(result.findings).toHaveLength(0);
+      expect(result.status).toBe("fail");
+      expect(result.findings[0]?.actual).toMatchObject({ reason: "unverifiable", budget: "total" });
     },
   );
+
+  it("does not clear maxInputTokens with only cached usage", () => {
+    const llm = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:generate-answer",
+      tokenUsage: { cached: 5 },
+    });
+    const read = readResult([llm]);
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxInputTokens: 1000 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings[0]?.actual).toMatchObject({ reason: "unverifiable", budget: "input" });
+  });
 
   it("does not accept token usage whose counts are undefined as recorded", () => {
     const llm = persisted("event-a", {
@@ -1412,7 +1471,7 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.status).toBe("fail");
     expect(result.findings.map((finding) => finding.message).sort()).toEqual([
       "LLM total token count 150 exceeded 100.",
-      "No token usage was read for 1 of 2 LLM call(s), so the token limit cannot be verified.",
+      "No measurable total token usage was read for 1 of 2 LLM call(s), so the total token limit cannot be verified.",
     ]);
   });
 

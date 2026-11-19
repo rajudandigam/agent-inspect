@@ -332,7 +332,7 @@ Options:
 - `--max-duration-ms <number>`: add `run.duration`
 - `--required-tool <name>` / `--forbidden-tool <name>` / `--forbid-tool <name>` (alias): add `tool.usage`
 - `--allowed-model <model>` / `--max-total-tokens <number>`: add `llm.usage`
-  - A token limit fails when no token usage is read for a completed LLM call, because the limit cannot be verified. A failed LLM call does not need to record usage.
+  - Token budgets are **per key**. `maxTotalTokens` / `maxInputTokens` / `maxOutputTokens` require a measurable value for that key on every finished LLM call (including `status: "error"`). Missing measurement fails as unverifiable (distinct from exceeded). `total` may be synthesized from finite `input`+`output` only. Partial usage such as `{ cached: 5 }` or `{ reasoning: 5 }` alone does not clear other budgets. `maxCachedTokens` treats absent `cached` as optional (counts as 0).
 - `--session <id>`: check all runs in a workflow session (uses `--dir`; target may be `.`)
 - `--group <id>`: check all runs sharing a `groupId` metadata value
 - `--correlate-group`: when using `--session`, also match synthetic `group:` session keys
@@ -466,6 +466,7 @@ Options:
 - `--required-tool <name>`: require a tool name (repeatable)
 - `--forbid-tool <name>` / `--forbidden-tool <name>`: forbid a tool name (repeatable)
 - `--max-duration-ms <number>`, `--max-depth <number>`, `--max-retries <number>`, `--max-total-tokens <number>`
+  - `eval --max-total-tokens` is fail-closed: LLM calls without measurable total usage (or synthesizable `input`+`output`) do not silently pass as under budget. Missing measurement is unverifiable; measured totals still pass/fail against the limit.
 - `--require-retrieval-before-generation`
 - `--required-decision-metadata <key>`: require decision metadata (repeatable)
 - `--context-overlap`, `--min-context-overlap <number>`, `--min-shared-terms <number>`

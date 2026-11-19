@@ -200,6 +200,59 @@ describe("@agent-inspect/eval", () => {
     expect(result.summary.failed).toBe(5);
   });
 
+  it("fails maxTotalTokens when LLM events record no measurable usage", async () => {
+    const result = await evalRun(
+      {
+        ...read(),
+        events: [
+          {
+            schemaVersion: "1.0",
+            eventId: "event-llm",
+            runId: "run-eval",
+            kind: "LLM",
+            name: "generateAnswer",
+            timestamp: "2026-06-27T00:00:00.000Z",
+            confidence: "explicit",
+            source: { type: "manual" },
+          },
+        ],
+      },
+      { checks: [checks.maxTotalTokens(5)] },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.status).toBe("fail");
+    expect(findingIds(result)).toEqual(["eval.maxTotalTokens"]);
+    expect(result.findings[0]?.actual).toMatchObject({ reason: "unverifiable" });
+    expect(result.findings[0]?.message).toContain("measurable total token usage");
+  });
+
+  it("passes maxTotalTokens when synthesized input+output stays under the limit", async () => {
+    const result = await evalRun(
+      {
+        ...read(),
+        events: [
+          {
+            schemaVersion: "1.0",
+            eventId: "event-llm",
+            runId: "run-eval",
+            kind: "LLM",
+            name: "generateAnswer",
+            timestamp: "2026-06-27T00:00:00.000Z",
+            confidence: "explicit",
+            source: { type: "manual" },
+            tokenUsage: { input: 2, output: 2 },
+          },
+        ],
+      },
+      { checks: [checks.maxTotalTokens(5)] },
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe("pass");
+    expect(result.findings).toEqual([]);
+  });
+
   it("passes deterministic grounding heuristics over local trace attributes", async () => {
     const result = await evalRun(
       read({
