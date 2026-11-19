@@ -19,6 +19,7 @@ import {
   collectEntryTargets,
   expectedPublishableNames,
   sha256File,
+  toNpmInstallSpec,
   validateInventory,
 } from "./release-artifacts-lib.mjs";
 
@@ -134,6 +135,28 @@ describe("release-artifacts", () => {
       expect(() => validateInventory(tmp)).toThrow(
         /must be 18|does not match changeset|sha256/,
       );
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("toNpmInstallSpec uses absolute file: for local tarballs", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "ai-file-"));
+    try {
+      const tgz = path.join(tmp, "release-artifacts", "pkg-1.0.0.tgz");
+      mkdirSync(path.dirname(tgz), { recursive: true });
+      writeFileSync(tgz, "not-a-real-tarball");
+      const cwd = process.cwd();
+      try {
+        process.chdir(tmp);
+        const spec = toNpmInstallSpec("release-artifacts/pkg-1.0.0.tgz");
+        expect(spec.startsWith("file:")).toBe(true);
+        expect(spec).toContain(path.resolve(tgz));
+        expect(spec.includes("github.com")).toBe(false);
+      } finally {
+        process.chdir(cwd);
+      }
+      expect(toNpmInstallSpec("ai@6.0.210")).toBe("ai@6.0.210");
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }
