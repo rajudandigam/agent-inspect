@@ -91,8 +91,8 @@ Class E requires nested LLM and tool visibility, no persisted self-parent, and c
 | 3 | Terminal status is correct for observed success/error |
 | 4 | Every started callback run is terminal **or** explicitly incomplete |
 | 5 | Tool identity is human-meaningful (`runName` / `metadata.toolName` before class names) |
-| 6 | Model identity is preserved when supplied |
-| 7 | Token metadata is preserved when supplied |
+| 6 | Model identity is preserved when supplied, at LLM start or only in the LLM result, with or without `stream` |
+| 7 | Token metadata is preserved when supplied, with or without `stream` |
 | 8 | Parent relationships are explicit, correlated, or visibly unresolved |
 | 9 | No relationship is invented from timestamps alone |
 | 10 | Callback handler reuse does not mix two invocations |

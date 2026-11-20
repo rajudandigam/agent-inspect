@@ -53,4 +53,4 @@ before attaching any trace or report to an issue, PR, or support thread.
 
 - This recipe is for local inspection and adapter validation; it is not a replay, hosted trace export, LangSmith, or provider execution example.
 - There is no separate `@agent-inspect/langgraph` package in v2.3; LangGraph-shaped data is supported through `@agent-inspect/langchain` first.
-- The recipe keeps version ownership explicit: AgentInspect writes local v0.1 events, and framework callback shapes are treated as adapter-owned input.
+- The recipe keeps version ownership explicit: AgentInspect writes local v0.1 events, plus a v0.2 completion row for each LLM step, and framework callback shapes are treated as adapter-owned input.

@@ -315,9 +315,9 @@ export class AgentInspectCallback extends BaseCallbackHandler {
   async #flushDeferredPersistStart(
     lcRunId: string,
     completionAttributes: Record<string, unknown>,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const pending = this.#deferredPersistStart.get(lcRunId);
-    if (!pending || !this.#opts.persist) return;
+    if (!pending || !this.#opts.persist) return false;
     const merged = {
       ...pending.attributes,
       ...completionAttributes,
@@ -331,6 +331,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       pending.startTime,
     );
     this.#deferredPersistStart.delete(lcRunId);
+    return true;
   }
 
   #ensureRoot(lcRunId: string, parentRunId?: string): void {
@@ -447,6 +448,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
     durationMs: number | undefined,
     errorMessage?: string,
     completionAttributes?: Record<string, unknown>,
+    completionAttributesOnStart?: boolean,
   ): Promise<void> {
     await this.#persistence?.onStepEnd({
       lcRunId,
@@ -456,6 +458,7 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       status,
       errorMessage,
       completionAttributes,
+      completionAttributesOnStart,
     });
   }
 
@@ -741,12 +744,17 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       confidence: "explicit",
       source: { type: "adapter" },
     });
-    await this.#flushDeferredPersistStart(runId, attrs);
-    await this.#persistStepEnd(runId, parentRunId, "success", ts, durationMs, undefined, {
-      ...attrs,
-      name: `llm:${model ?? "llm"}`,
-      kind: "LLM",
-    });
+    const startCarriesCompletion = await this.#flushDeferredPersistStart(runId, attrs);
+    await this.#persistStepEnd(
+      runId,
+      parentRunId,
+      "success",
+      ts,
+      durationMs,
+      undefined,
+      { ...attrs, name: `llm:${model ?? "llm"}`, kind: "LLM" },
+      startCarriesCompletion,
+    );
     this.#clearStreamState(runId);
   }
 
@@ -783,12 +791,17 @@ export class AgentInspectCallback extends BaseCallbackHandler {
       confidence: "explicit",
       source: { type: "adapter" },
     });
-    await this.#flushDeferredPersistStart(runId, attrs);
-    await this.#persistStepEnd(runId, parentRunId, "error", ts, durationMs, errorMessage, {
-      ...attrs,
-      name: "llm:error",
-      kind: "LLM",
-    });
+    const startCarriesCompletion = await this.#flushDeferredPersistStart(runId, attrs);
+    await this.#persistStepEnd(
+      runId,
+      parentRunId,
+      "error",
+      ts,
+      durationMs,
+      errorMessage,
+      { ...attrs, name: "llm:error", kind: "LLM" },
+      startCarriesCompletion,
+    );
     this.#clearStreamState(runId);
   }
 

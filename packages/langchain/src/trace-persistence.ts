@@ -5,6 +5,7 @@ import {
   getTraceDirFromContext,
   hasActiveContext,
   initializeTraceFile,
+  prepareMetadataForDisk,
   prepareTraceEventForDisk,
   resolveTraceDir,
   resolveTraceSafetyOptions,
@@ -16,6 +17,11 @@ import {
   type TraceEvent,
 } from "agent-inspect/advanced";
 import type { RedactionRule } from "agent-inspect/logs";
+import type {
+  PersistedInspectEvent,
+  PersistedTokenUsage,
+} from "agent-inspect/persisted";
+import { fileWriter } from "agent-inspect/writers";
 import {
   beginCallbackRun,
   bumpCompletionGeneration,
@@ -84,6 +90,17 @@ function kindToStepType(kind: InspectKind): StepType {
   }
 }
 
+interface EarlyStepStart {
+  name: string;
+  startTime: number;
+  parentId?: string;
+  suppliedModel: boolean;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function toStepMetadata(attrs: Record<string, unknown>): StepMetadata {
   const out: StepMetadata = {
     adapter: "langchain",
@@ -97,6 +114,8 @@ function toStepMetadata(attrs: Record<string, unknown>): StepMetadata {
 
 /**
  * Maps LangChain callback lifecycle to schemaVersion "0.1" manual JSONL events.
+ * The completion of an LLM step is a schemaVersion "0.2" persisted event that carries
+ * its token usage and completion attributes.
  * One callback session creates one standalone run; inside inspectRun, steps append to the active run.
  *
  * Standalone envelope completion is driven by {@link AdapterInvocationState}
@@ -119,6 +138,7 @@ export class LangChainTracePersistence {
   readonly #syntheticByLabel = new Map<string, string>();
   /** Count of unresolved semantic-parent children seen per label (this invocation). */
   readonly #semanticParentCounts = new Map<string, number>();
+  readonly #earlyStartByStepId = new Map<string, EarlyStepStart>();
   #lateEventCount = 0;
   #selfParentRejectedCount = 0;
   #ambiguousRelationshipCount = 0;
@@ -238,6 +258,7 @@ export class LangChainTracePersistence {
     this.#semanticLabelIndex.clear();
     this.#syntheticByLabel.clear();
     this.#semanticParentCounts.clear();
+    this.#earlyStartByStepId.clear();
   }
 
   #registerUnique(
@@ -458,6 +479,12 @@ export class LangChainTracePersistence {
       // Exact run-id map after parent resolve so end events can correlate; semantic /
       // LangGraph indexes wait until after persist so the child cannot parent itself.
       this.#lcToStepId.set(params.lcRunId, stepId);
+      this.#earlyStartByStepId.set(stepId, {
+        name: params.name,
+        startTime: params.startTime,
+        ...(parentId ? { parentId } : {}),
+        suppliedModel: params.attributes.model !== undefined,
+      });
       await this.#write(event);
       this.#registerStepIndexes(stepId, params.name, params.attributes);
     } catch (err) {
@@ -473,6 +500,7 @@ export class LangChainTracePersistence {
     status: "success" | "error";
     errorMessage?: string;
     completionAttributes?: Record<string, unknown>;
+    completionAttributesOnStart?: boolean;
   }): Promise<void> {
     try {
       if (
@@ -485,6 +513,10 @@ export class LangChainTracePersistence {
       }
 
       let stepId = this.#lcToStepId.get(params.lcRunId);
+      const earlyStart =
+        stepId && !params.completionAttributesOnStart
+          ? this.#earlyStartByStepId.get(stepId)
+          : undefined;
       if (!stepId && params.completionAttributes) {
         if (this.#lifecycle.finalized) {
           this.#lateEventCount += 1;
@@ -562,7 +594,16 @@ export class LangChainTracePersistence {
           : {}),
       };
 
-      await this.#write(event);
+      const persistedWithAttributes =
+        earlyStart !== undefined &&
+        params.completionAttributes !== undefined &&
+        (await this.#writePersistedRow(
+          this.#completionRow(stepId, event, params.completionAttributes, earlyStart),
+        ));
+      if (!persistedWithAttributes) {
+        await this.#write(event);
+      }
+      this.#earlyStartByStepId.delete(stepId);
 
       if (params.status === "error") {
         noteTerminalError(
@@ -819,6 +860,72 @@ export class LangChainTracePersistence {
   async #write(event: TraceEvent): Promise<void> {
     const safe = prepareTraceEventForDisk(event, this.#safety);
     await writeTraceEvent(safe, this.#traceDir);
+  }
+
+  #completionRow(
+    stepId: string,
+    completed: Extract<TraceEvent, { event: "step_completed" }>,
+    completionAttributes: Record<string, unknown>,
+    earlyStart: EarlyStepStart,
+  ): PersistedInspectEvent {
+    const {
+      name: _nameAtCompletion,
+      kind,
+      model,
+      errorMessage: _inErrorField,
+      ...attributes
+    } = completionAttributes;
+    const { errorName, ...safeAttributes } = prepareMetadataForDisk(
+      {
+        ...attributes,
+        ...(model !== undefined && !earlyStart.suppliedModel ? { model } : {}),
+      },
+      this.#safety,
+    );
+    const safeCompleted = prepareTraceEventForDisk(completed, this.#safety);
+    const error = safeCompleted.event === "step_completed" ? safeCompleted.error : undefined;
+    const endedAt = new Date(completed.endTime).toISOString();
+    const linkToStart = { legacyEvent: "step_completed", stepId };
+    const row: PersistedInspectEvent = {
+      schemaVersion: "0.2",
+      eventId: `${stepId}:completed`,
+      runId: this.#runId,
+      ...(earlyStart.parentId ? { parentId: earlyStart.parentId } : {}),
+      kind: (kind as InspectKind | undefined) ?? "LLM",
+      name: earlyStart.name,
+      status: completed.status === "error" ? "error" : "ok",
+      timestamp: endedAt,
+      startedAt: new Date(earlyStart.startTime).toISOString(),
+      endedAt,
+      durationMs: completed.durationMs,
+      confidence: "explicit",
+      source: { type: "adapter", name: "langchain" },
+      attributes: { ...safeAttributes, ...linkToStart },
+      ...(isRecord(attributes.tokens)
+        ? { tokenUsage: attributes.tokens as PersistedTokenUsage }
+        : {}),
+      ...(error
+        ? {
+            error: {
+              message: error.message,
+              ...(typeof errorName === "string" ? { name: errorName } : {}),
+            },
+          }
+        : {}),
+    };
+    if (Buffer.byteLength(JSON.stringify(row), "utf8") <= this.#safety.maxEventBytes) {
+      return row;
+    }
+    return {
+      ...row,
+      attributes: { truncated: true, reason: "maxEventBytes", ...linkToStart },
+    };
+  }
+
+  async #writePersistedRow(row: PersistedInspectEvent): Promise<boolean> {
+    const writer = fileWriter({ dir: this.#traceDir });
+    await writer.write(row);
+    return (writer.getStats?.().droppedEvents ?? 0) === 0;
   }
 
   #warn(err: unknown): void {

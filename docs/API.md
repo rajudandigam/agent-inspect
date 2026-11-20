@@ -169,7 +169,7 @@ Diff is local and read-only. Programmatic diff surfaces are experimental until t
 `@agent-inspect/langchain` is an optional adapter package.
 
 - **`AgentInspectCallback`** (experimental)
-  - **`persist`**: default `false` — when `true`, maps callback lifecycle to schemaVersion `"0.1"` JSONL (`run_started` / `step_started` / `step_completed` / `run_completed`)
+  - **`persist`**: default `false` — when `true`, maps callback lifecycle to schemaVersion `"0.1"` JSONL (`run_started` / `step_started` / `step_completed` / `run_completed`); the completion of an LLM step is a schemaVersion `"0.2"` persisted event that carries its token usage (see [ADAPTERS.md](./ADAPTERS.md))
   - **`runName`**: default `"langchain-agent"` for standalone persisted runs
   - **`traceDir`**: defaults via `resolveTraceDir` / `AGENT_INSPECT_TRACE_DIR`
   - **`capture`**: `"none"` | `"metadata-only"` (default) | `"preview"` (truncated previews, opt-in)
