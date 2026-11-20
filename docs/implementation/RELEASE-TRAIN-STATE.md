@@ -5,18 +5,18 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.38"
-publishedVersion: "6.31.38"
+baselineVersion: "6.31.39"
+publishedVersion: "6.31.39"
 pendingPublishVersion: ""
 currentTrain: "c1-token-budget-fail-closed"
-trainStatus: "C0P 6.31.38 published; C1a #544 + C1b #543 token-budget fail-closed ready for release"
+trainStatus: "6.31.39 published — C1a #544 + C1b #543 token-budget fail-closed; C0P packaging repair remains on 6.31.38+"
 executionMode: "maintainer-reviewed"
 namedTrain: "c1-token-budget-fail-closed"
 branch: "main"
-currentChunk: "C1a+C1b implement → PR → Version Packages → Trusted Publish"
-lastConfirmedCommit: "a35a533b"
-lastValidationLevel: "local typecheck + focused vitest for checks/eval/cli; C0P registry still 6.31.38"
-nextAction: "Merge C1 PR; Version Packages; Trusted Publish; close #544/#543; leave #496/#506 red"
+currentChunk: "C1 complete"
+lastConfirmedCommit: "18e27565068cb5d0ee1aa041aac4a91c5674438a"
+lastValidationLevel: "Trusted Publish 44652555068; npm agent-inspect@6.31.39"
+nextAction: "Partner acceptance #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
