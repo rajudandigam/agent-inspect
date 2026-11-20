@@ -4,9 +4,9 @@
 executionMode: maintainer-reviewed
 namedTrain: c1-token-budget-fail-closed
 currentTrain: c1-token-budget-fail-closed
-trainStatus: "C1a #544 + C1b #543 local implementation ready for PR → Version Packages → Trusted Publish"
-currentChunk: "C1a+C1b token budget fail-closed"
-nextAction: "Merge C1 PR; Version Packages; Trusted Publish; close #544/#543"
+trainStatus: "C1a #544 + C1b #543 shipped in 6.31.39; handoff C0→C1 complete"
+currentChunk: "C1 complete"
+nextAction: "Handoff residuals only (partner #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE)"
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
 pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
@@ -20,16 +20,14 @@ worktreeIgnoreOnly:
   - release-artifacts/
 ```
 
-## C0 / C0P (done)
+## Completed this train
 
-**6.31.38** Trusted Publish with verified tarballs — all 18 registry packs include `dist/`.
+| Chunk | Release | Notes |
+| --- | --- | --- |
+| C0+C0P packaging | **6.31.38** | Verified-tarball Trusted Publish; all 18 packs include `dist/` |
+| C1a #544 + C1b #543 | **6.31.39** | Per-budget `createLlmUsageRule`; eval `--max-total-tokens` fail-closed |
 
-## C1a + C1b (in progress)
-
-| Item | Status |
-| --- | --- |
-| #544 per-budget `createLlmUsageRule` | implemented + tests |
-| #543 eval `maxTotalTokens` fail-closed | implemented + tests |
+Publish: [44652555068](https://github.com/rajudandigam/agent-inspect/actions/runs/44652555068). Issues #544/#543 closed.
 
 ## Residual queue
 
@@ -38,3 +36,9 @@ worktreeIgnoreOnly:
 | #484 / #437 | **open** | ADR-0013 hold; partner acceptance |
 | #496 / #506 | **leave red** | do not merge |
 | 6.32 / v7 | **blocked** | EVIDENCE_GATE |
+
+## Honesty
+
+- Partner issues stay open for acceptance.
+- Indu exact v3 artifact remains unavailable (no v2 rename).
+- EVIDENCE_GATE / v7 unchanged.
