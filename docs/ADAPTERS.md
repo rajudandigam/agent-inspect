@@ -193,7 +193,7 @@ npx agent-inspect redact ./.agent-inspect/<trace-file>.jsonl --profile share --j
 3. **Parent mapping** — LangChain `parentRunId` maps to AgentInspect `parentId` when the parent step was persisted; unknown parents stay at run root.
 4. **Step types** — `LLM` → `llm`, `TOOL` → `tool`, `DECISION` → `decision`, other kinds → `logic`.
 
-Written events use `schemaVersion: "0.1"` manual trace names.
+Written events use PersistedInspectEvent `schemaVersion: "0.2"` (same adapter writer shape as `@agent-inspect/ai-sdk`). Global/manual `inspectRun` traces remain schema `0.1`. Under default `metadata-only` capture, LLM **completion** rows carry top-level `tokenUsage` and end-time model metadata for both `stream: false` (early `step_started`, then completion with usage) and `stream: true` (deferred start merge for streaming stats, plus usage on the completion row). Nested `inspectRun` sessions may therefore mix `0.1` and `0.2` rows in one file; readers already normalize mixed AgentInspect JSONL.
 
 ### LangGraph through LangChain callbacks
 
@@ -210,7 +210,7 @@ LangGraph-shaped callback metadata is covered through the existing `@agent-inspe
 | `capture` | Behavior |
 | --------- | -------- |
 | `none` | Minimal metadata |
-| `metadata-only` | **Default** — model names, token usage, timing; no full text |
+| `metadata-only` | **Default** — model names, token usage (persisted on LLM completion for stream and non-stream), timing; no full text |
 | `preview` | Truncated previews via `maxPreviewChars` — review before sharing |
 
 ### Streaming metadata (v1.3.0+)
@@ -229,7 +229,7 @@ When `stream: true`:
 - On LLM end/error: `chunkCount`, `firstChunkAt`, `lastChunkAt`, `streamDurationMs`, `streamedCharCount`.
 - **`capture: "metadata-only"`** does **not** store raw token text.
 - **`capture: "preview"`** may include bounded `streamPreview` via `maxStreamPreviewChars`.
-- With **`persist: true`**, streaming metadata is written on the LLM step at completion (deferred write for streaming LLM steps).
+- With **`persist: true`**, streaming metadata is written on the LLM step at completion (deferred start write for streaming LLM steps). Token usage and model-at-end still land on the completion row for both stream modes — `stream: true` is not required to persist usage.
 
 Streaming metadata is for **local inspection and timing** — not replay or cassette playback.
 

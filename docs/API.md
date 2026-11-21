@@ -169,13 +169,13 @@ Diff is local and read-only. Programmatic diff surfaces are experimental until t
 `@agent-inspect/langchain` is an optional adapter package.
 
 - **`AgentInspectCallback`** (experimental)
-  - **`persist`**: default `false` — when `true`, maps callback lifecycle to schemaVersion `"0.1"` JSONL (`run_started` / `step_started` / `step_completed` / `run_completed`)
+  - **`persist`**: default `false` — when `true`, maps callback lifecycle to PersistedInspectEvent schemaVersion `"0.2"` JSONL (same adapter writer shape as `@agent-inspect/ai-sdk`). LLM completion rows carry top-level `tokenUsage` for both `stream: false` and `stream: true` (see [ADAPTERS.md](./ADAPTERS.md))
   - **`runName`**: default `"langchain-agent"` for standalone persisted runs
   - **`traceDir`**: defaults via `resolveTraceDir` / `AGENT_INSPECT_TRACE_DIR`
   - **`capture`**: `"none"` | `"metadata-only"` (default) | `"preview"` (truncated previews, opt-in)
-  - **`stream`**: default `false` — when `true`, records streaming lifecycle metadata (`chunkCount`, `streamDurationMs`, etc.) on LLM end/error; does **not** capture full token text by default
+  - **`stream`**: default `false` — when `true`, records streaming lifecycle metadata (`chunkCount`, `streamDurationMs`, etc.) on LLM end/error; does **not** capture full token text by default. Token usage persistence does **not** require `stream: true`
   - **`maxStreamPreviewChars`**: bounds `streamPreview` when `capture: "preview"` and `stream: true` (defaults to `maxPreviewChars`)
-  - **`redact`**: custom `RedactionRule[]` applied before disk (core defaults still apply via shared redactor)
+  - **`redact`**: custom `RedactionRule[]` applied before disk to attributes **and** top-level `error` fields (core defaults still apply via shared redactor)
   - **`runId`**: optional id for standalone persisted runs
   - In-memory **`getEvents()`** / **`clear()`** unchanged when `persist` is false
 - Metadata helpers: `extractModelName`, `extractTokenUsage`, `safePreview`, `toPlainMetadata`
