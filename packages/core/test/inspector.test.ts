@@ -1,7 +1,22 @@
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { createInspector } from "../src/inspector.js";
-import { memoryWriter, type TraceWriter } from "../src/writers/index.js";
+import {
+  resolveTraceSafetyOptions,
+  type TraceSafetyOptions,
+} from "../src/trace-event-safety.js";
+import type { PersistedInspectEvent } from "../src/types/persisted-inspect-event.js";
+import {
+  bufferedFileWriter,
+  compositeWriter,
+  fileWriter,
+  memoryWriter,
+  type TraceWriter,
+} from "../src/writers/index.js";
 
 describe("createInspector", () => {
   it("records run lifecycle events and preserves return values", async () => {
@@ -478,6 +493,225 @@ describe("createInspector", () => {
       droppedEvents: 0,
       flushCount: 1,
       lastFlushAt: expect.any(String),
+    });
+  });
+});
+
+describe("createInspector trace safety with built-in writers", () => {
+  const unredactedRunId = "run_unredacted";
+  const sensitiveMetadata = {
+    email: "ada@example.com",
+    apiKey: "sk-demo-not-a-real-key",
+  };
+
+  async function recordSensitiveStep(writer: TraceWriter): Promise<void> {
+    const inspector = createInspector({
+      writer,
+      traceSafety: resolveTraceSafetyOptions({ redact: false }),
+    });
+
+    await inspector.run(
+      "unredacted-run",
+      async () => {
+        await inspector.step("load-customer", async () => "ok", {
+          metadata: sensitiveMetadata,
+        });
+      },
+      { runId: unredactedRunId },
+    );
+    await inspector.flush();
+  }
+
+  function stepStartedMetadata(events: PersistedInspectEvent[]): unknown {
+    return events.find(
+      (event) => event.attributes?.legacyEvent === "step_started",
+    )?.attributes?.metadata;
+  }
+
+  async function readTraceFile(dir: string): Promise<PersistedInspectEvent[]> {
+    const raw = await readFile(path.join(dir, `${unredactedRunId}.jsonl`), "utf-8");
+    return raw
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .map((line) => JSON.parse(line) as PersistedInspectEvent);
+  }
+
+  it("keeps metadata as provided in memoryWriter when redaction is opted out", async () => {
+    const writer = memoryWriter();
+
+    await recordSensitiveStep(writer);
+
+    expect(stepStartedMetadata(writer.getEvents())).toMatchObject(sensitiveMetadata);
+  });
+
+  it.each([
+    ["fileWriter", (dir: string) => fileWriter({ dir })],
+    ["bufferedFileWriter", (dir: string) => bufferedFileWriter({ dir })],
+  ])(
+    "persists metadata as provided through %s when redaction is opted out",
+    async (_name, createWriter) => {
+      const dir = await mkdtemp(path.join(os.tmpdir(), "agent-inspect-unredacted-"));
+
+      try {
+        await recordSensitiveStep(createWriter(dir));
+
+        const events = await readTraceFile(dir);
+
+        expect(stepStartedMetadata(events)).toMatchObject(sensitiveMetadata);
+        expect(JSON.stringify(events)).not.toContain("redactEnabled");
+      } finally {
+        await rm(dir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it("hands metadata as provided to compositeWriter children when redaction is opted out", async () => {
+    const child = memoryWriter();
+
+    await recordSensitiveStep(compositeWriter([child]));
+
+    expect(stepStartedMetadata(child.getEvents())).toMatchObject(sensitiveMetadata);
+  });
+
+  it("keeps a metadata value longer than the default limit when the limit is raised", async () => {
+    const writer = memoryWriter();
+    const longValue = "x".repeat(3000);
+    const inspector = createInspector({
+      writer,
+      traceSafety: resolveTraceSafetyOptions({ maxMetadataValueLength: 4000 }),
+    });
+
+    await inspector.run(
+      "long-metadata-run",
+      async () => {
+        await inspector.step("load-document", async () => "ok", {
+          metadata: { note: longValue },
+        });
+      },
+      { runId: "run_long_metadata" },
+    );
+    await inspector.flush();
+
+    expect(stepStartedMetadata(writer.getEvents())).toMatchObject({ note: longValue });
+  });
+
+  it("falls back to the default redaction when traceSafety is incomplete", async () => {
+    const writer = memoryWriter();
+    const inspector = createInspector({
+      writer,
+      traceSafety: {
+        ...resolveTraceSafetyOptions(),
+        redactEnabled: undefined,
+      } as unknown as TraceSafetyOptions,
+    });
+
+    await inspector.run(
+      "incomplete-safety-run",
+      async () => {
+        await inspector.step("load-customer", async () => "ok", {
+          metadata: sensitiveMetadata,
+        });
+      },
+      { runId: "run_incomplete_safety" },
+    );
+    await inspector.flush();
+
+    expect(stepStartedMetadata(writer.getEvents())).toMatchObject({
+      email: "[REDACTED]",
+      apiKey: "[REDACTED]",
+    });
+  });
+
+  it("redacts what a custom writer adds to an inspector event before forwarding it", async () => {
+    const inner = memoryWriter();
+    const enriching: TraceWriter = {
+      async write(event) {
+        event.attributes = { ...event.attributes, apiKey: "sk-demo-not-a-real-key" };
+        await inner.write(event);
+      },
+    };
+    const inspector = createInspector({ writer: enriching });
+
+    await inspector.run("enriched-run", async () => "ok", { runId: "run_enriched" });
+    await inspector.flush();
+
+    expect(inner.getEvents().map((event) => event.attributes?.apiKey)).toEqual([
+      "[REDACTED]",
+      "[REDACTED]",
+    ]);
+  });
+
+  it("stores its own copy of an inspector event a custom writer mutates later", async () => {
+    const inner = memoryWriter();
+    const forwarded: PersistedInspectEvent[] = [];
+    const forwarding: TraceWriter = {
+      async write(event) {
+        forwarded.push(event);
+        await inner.write(event);
+      },
+    };
+    const inspector = createInspector({ writer: forwarding });
+
+    await inspector.run("forwarded-run", async () => "ok", { runId: "run_forwarded" });
+    await inspector.flush();
+    for (const event of forwarded) {
+      event.name = "mutated-after-write";
+    }
+
+    expect(inner.getEvents().map((event) => event.name)).toEqual([
+      "forwarded-run",
+      "forwarded-run",
+    ]);
+  });
+
+  it("still hands a redacted event to a custom child when written straight to compositeWriter", async () => {
+    const received: PersistedInspectEvent[] = [];
+    const child: TraceWriter = {
+      async write(event) {
+        received.push(event);
+      },
+    };
+
+    await compositeWriter([child]).write({
+      schemaVersion: "1.0",
+      eventId: "direct_composite_event",
+      runId: "run_direct_composite",
+      kind: "TOOL",
+      name: "direct-write",
+      status: "ok",
+      timestamp: "2026-06-24T00:00:00.000Z",
+      confidence: "explicit",
+      source: { type: "manual" },
+      attributes: { metadata: sensitiveMetadata },
+    });
+
+    expect(received[0]?.attributes?.metadata).toMatchObject({
+      email: "[REDACTED]",
+      apiKey: "[REDACTED]",
+    });
+  });
+
+  it("still redacts an event written straight to a writer the inspector also uses", async () => {
+    const writer = memoryWriter();
+    await recordSensitiveStep(writer);
+    writer.clear();
+
+    await writer.write({
+      schemaVersion: "1.0",
+      eventId: "direct_event",
+      runId: "run_direct",
+      kind: "TOOL",
+      name: "direct-write",
+      status: "ok",
+      timestamp: "2026-06-24T00:00:00.000Z",
+      confidence: "explicit",
+      source: { type: "manual" },
+      attributes: { metadata: sensitiveMetadata },
+    });
+
+    expect(writer.getEvents()[0]?.attributes?.metadata).toMatchObject({
+      email: "[REDACTED]",
+      apiKey: "[REDACTED]",
     });
   });
 });

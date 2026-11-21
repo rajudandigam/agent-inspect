@@ -480,6 +480,8 @@ Pass structured tool arguments for contracts via step `metadata.arguments` / `me
 
 `traceDir` and `silent` on `createInspector()` are context metadata for compatibility with existing helpers. They do not configure persistence or terminal output. Prefer writer-owned output configuration such as `fileWriter({ dir })` or `fileWriter({ filePath })`.
 
+`traceSafety` on `createInspector()` is the write policy for that inspector's events: redaction, redaction profile, and size bounds. A built-in writer prepares the event object it receives from the inspector under that policy, so `resolveTraceSafetyOptions({ redact: false })` or a raised `maxMetadataValueLength` takes effect. `redact: false` also turns off the credential detectors for error messages. A copy of the event (for example `{ ...event }` in a custom writer), an event passed straight to a built-in writer, and an incomplete `traceSafety` object are prepared with the default safety settings.
+
 `createInspectorRuntime()` is available from `agent-inspect/advanced` as the low-level isolation primitive. Most users should prefer `createInspector()` and `inspector.getDiagnostics()`.
 
 The low-level runtime helpers remain on `agent-inspect/advanced`. These APIs do not add a default network writer or vendor sink.

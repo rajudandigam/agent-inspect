@@ -9,6 +9,7 @@ import {
 } from "./trace-event-safety.js";
 import type { PersistedInspectEvent } from "./types/persisted-inspect-event.js";
 import type { TraceWriter, TraceWriterStats } from "./writers/index.js";
+import { withWriteTraceSafety } from "./writers/write-trace-safety.js";
 
 export interface InspectorRuntimeOptions {
   enabled?: boolean;
@@ -188,7 +189,7 @@ export function createInspectorRuntime(
           recordInstrumentationError("Invalid persisted inspect event");
           return;
         }
-        await options.writer.write(safe);
+        await options.writer.write(withWriteTraceSafety(safe, traceSafety));
       } catch (error) {
         recordInstrumentationError(error);
       }
