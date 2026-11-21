@@ -8,14 +8,14 @@
 baselineVersion: "6.31.40"
 publishedVersion: "6.31.40"
 pendingPublishVersion: ""
-currentTrain: "c1-token-budget-fail-closed"
-trainStatus: "6.31.39 published — C1a #544 + C1b #543 token-budget fail-closed; C0P packaging repair remains on 6.31.38+"
+currentTrain: "open-pr-triage-6.31.40"
+trainStatus: "6.31.40 published — #559 traceSafety writers + #547 LangChain tokenUsage; leave #496/#506 red"
 executionMode: "maintainer-reviewed"
-namedTrain: "c1-token-budget-fail-closed"
+namedTrain: "open-pr-triage-6.31.40"
 branch: "main"
-currentChunk: "C1 complete"
-lastConfirmedCommit: "18e27565068cb5d0ee1aa041aac4a91c5674438a"
-lastValidationLevel: "Trusted Publish 44652555068; npm agent-inspect@6.31.39"
+currentChunk: "triage ship complete"
+lastConfirmedCommit: "63b1ecb5fc739f7213ad79df665ac82d26a4cee9"
+lastValidationLevel: "Trusted Publish 44942237531; npm agent-inspect@6.31.40"
 nextAction: "Partner acceptance #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
@@ -69,6 +69,9 @@ completedChunks:
   - "chunk 10 Indu v3 BLOCKED — exact artifact missing"
   - "chunk 11 #487 dependency decision — no safe slice"
   - "chunk 12A #491 audit — ready for maintainer closure review"
+  - "6.31.38 C0+C0P verified-tarball Trusted Publish"
+  - "6.31.39 C1a #544 + C1b #543 token-budget fail-closed"
+  - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
 queuedChunks:
   - "W04/#484 partner acceptance of -003 packet"
   - "W05/#485 residual if any after Om diagnostics"
@@ -93,17 +96,19 @@ amendments:
   - "2026-10-31 6.31.31 published (Trusted Publish 41174039799)"
   - "2026-10-31 6.31.32 published (Trusted Publish 41220820360)"
   - "2026-10-31 6.31.33 published (Trusted Publish 41226295704)"
+  - "2026-11-19 6.31.39 published (Trusted Publish 44652555068)"
+  - "2026-11-21 6.31.40 published (Trusted Publish 44942237531); #548 superseded; leave #496/#506 red"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.35
+  LAST_PUBLISHED_RELEASE: 6.31.40
   PENDING_PUBLISH: none
-  ACTIVE: partner #484/#437; #526 merge separate; parked designs
-  NEXT: leave #496/#506 red; no 6.32 without EVIDENCE_GATE
+  ACTIVE: partner #484/#437/#450; leave #496/#506 red
+  NEXT: no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-11-04"
+updatedAt: "2026-11-21"
 ```
 
