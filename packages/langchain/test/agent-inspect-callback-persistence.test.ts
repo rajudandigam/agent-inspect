@@ -341,7 +341,7 @@ describe("AgentInspectCallback persistence", () => {
     expect(missing.status).toBe("fail");
     expect(
       missing.findings.some((f) =>
-        String(f.message).includes("No token usage was read"),
+        String(f.message).includes("No measurable total token usage was read"),
       ),
     ).toBe(true);
   });
