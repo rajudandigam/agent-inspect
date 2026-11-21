@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.39"
-publishedVersion: "6.31.39"
+baselineVersion: "6.31.40"
+publishedVersion: "6.31.40"
 pendingPublishVersion: ""
 currentTrain: "c1-token-budget-fail-closed"
 trainStatus: "6.31.39 published — C1a #544 + C1b #543 token-budget fail-closed; C0P packaging repair remains on 6.31.38+"
