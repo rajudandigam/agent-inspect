@@ -1,5 +1,12 @@
 # @agent-inspect/tui
 
+## 6.31.40
+
+### Patch Changes
+
+- Updated dependencies [f77a892]
+  - agent-inspect@6.31.40
+
 ## 6.31.39
 
 ### Patch Changes
