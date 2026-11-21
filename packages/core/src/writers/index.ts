@@ -3,10 +3,12 @@ import path from "node:path";
 import {
   preparePersistedInspectEventForWrite,
   resolveTraceSafetyOptions,
+  type TraceSafetyOptions,
 } from "../trace-event-safety.js";
 import { appendTraceFile, mkdirTraceDir } from "../trace-filesystem.js";
 import type { PersistedInspectEvent } from "../types/persisted-inspect-event.js";
 import { getTraceFilePath } from "../utils.js";
+import { withWriteTraceSafety, writeTraceSafetyOf } from "./write-trace-safety.js";
 
 export interface TraceWriterStats {
   writtenEvents: number;
@@ -104,7 +106,18 @@ function recordDropped(stats: TraceWriterStats, error: unknown): void {
 function prepareWriterEvent(
   event: PersistedInspectEvent,
 ): PersistedInspectEvent | undefined {
-  return preparePersistedInspectEventForWrite(event, DEFAULT_TRACE_SAFETY);
+  return preparePersistedInspectEventForWrite(
+    event,
+    writeTraceSafetyOf(event) ?? DEFAULT_TRACE_SAFETY,
+  );
+}
+
+function cloneForChildWriter(
+  safe: PersistedInspectEvent,
+  traceSafety: TraceSafetyOptions | undefined,
+): PersistedInspectEvent {
+  const clone = structuredClone(safe);
+  return traceSafety === undefined ? clone : withWriteTraceSafety(clone, traceSafety);
 }
 
 function resolveFilePath(
@@ -418,6 +431,7 @@ export function compositeWriter(
         return;
       }
 
+      const traceSafety = writeTraceSafetyOf(event);
       const safe = prepareWriterEvent(event);
       if (safe === undefined) {
         recordDropped(stats, "Invalid persisted inspect event");
@@ -427,7 +441,7 @@ export function compositeWriter(
       const childResults = await Promise.all(
         writers.map(async (writer) => {
           try {
-            await writer.write(structuredClone(safe));
+            await writer.write(cloneForChildWriter(safe, traceSafety));
             return true;
           } catch (error) {
             recordChildFailure(error);
