@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.42"
 publishedVersion: "6.31.42"
-pendingPublishVersion: "6.31.42"
+pendingPublishVersion: ""
 currentTrain: "n2-eval-check-lifecycle-parity"
-trainStatus: "N2 pushed — awaiting Version Packages → Trusted Publish 6.31.42"
+trainStatus: "N2 published — 6.31.42 Trusted Publish 45259714561; next N3"
 executionMode: "maintainer-reviewed"
 namedTrain: "n2-eval-check-lifecycle-parity"
 branch: "main"
-currentChunk: "N2 release in flight"
-lastConfirmedCommit: "2561eb3b8259b7df494862820d0aa76ec6f47400"
-lastValidationLevel: "Core chunk gate green; changeset queued for 6.31.42"
-nextAction: "Merge Version Packages PR; confirm Trusted Publish 6.31.42; then N3; leave #496/#506 red"
+currentChunk: "N2 complete — published"
+lastConfirmedCommit: "0d7e6ae217495eb00f071d9c4c65386ab05415b3"
+lastValidationLevel: "Trusted Publish success; all 18 packs on npm 6.31.42; pack smoke OK"
+nextAction: "N3 ordering/refund; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -73,7 +73,7 @@ completedChunks:
   - "6.31.39 C1a #544 + C1b #543 token-budget fail-closed"
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
   - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
-  - "N2 eval/check logical-call token-budget parity (pending 6.31.42)"
+  - "N2 eval/check logical-call token-budget parity (6.31.42 Publish 45259714561)"
 queuedChunks:
   - "N3 ordering/refund + Frank cases"
   - "N4 older evidence promises"
@@ -106,14 +106,15 @@ amendments:
   - "2026-11-19 6.31.39 published (Trusted Publish 44652555068)"
   - "2026-11-21 6.31.40 published (Trusted Publish 44942237531); #548 superseded; leave #496/#506 red"
   - "2026-11-22 6.31.41 published (Trusted Publish 45112687091); N1 malformed budget fail-closed"
+  - "2026-11-23 6.31.42 published (Trusted Publish 45259714561); N2 eval/check logical-call token-budget parity"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.41
-  PENDING_PUBLISH: 6.31.42
-  ACTIVE: N2 Version Packages / Trusted Publish; partner #484/#437/#450; leave #496/#506 red
-  NEXT: N3 after 6.31.42; no 6.32 without EVIDENCE_GATE
+  LAST_PUBLISHED_RELEASE: 6.31.42
+  PENDING_PUBLISH: none
+  ACTIVE: N3 next; partner #484/#437/#450; leave #496/#506 red
+  NEXT: no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
