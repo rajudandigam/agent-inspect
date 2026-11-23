@@ -9,14 +9,14 @@ baselineVersion: "6.31.41"
 publishedVersion: "6.31.41"
 pendingPublishVersion: ""
 currentTrain: "n1-malformed-token-budget"
-trainStatus: "N1 shipping — discard warnings + budget fail-closed; Version Packages / Trusted Publish for 6.31.41"
+trainStatus: "6.31.41 published — N1 discard warnings + token-budget fail-closed"
 executionMode: "maintainer-reviewed"
 namedTrain: "n1-malformed-token-budget"
 branch: "main"
-currentChunk: "N1 release"
-lastConfirmedCommit: "70dcf1e9ae21b45025986e47a3e4caaad9a0d43d"
-lastValidationLevel: "Focused vitest + rebuilt CLI against N1 saved fixture; npm still 6.31.40 pending publish"
-nextAction: "Merge Version Packages; confirm npm 6.31.41; then N2; leave #496/#506 red"
+currentChunk: "N1 complete"
+lastConfirmedCommit: "55486dd22faf67e4a307f9a440e2526a05c809ff"
+lastValidationLevel: "Trusted Publish 45112687091; npm agent-inspect@6.31.41"
+nextAction: "N2 check/eval lifecycle parity; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -72,7 +72,7 @@ completedChunks:
   - "6.31.38 C0+C0P verified-tarball Trusted Publish"
   - "6.31.39 C1a #544 + C1b #543 token-budget fail-closed"
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
-  - "N1 malformed token-budget fail-closed (local; awaiting review)"
+  - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
 queuedChunks:
   - "N2 check/eval lifecycle parity"
   - "N3 ordering/refund + Frank cases"
@@ -105,14 +105,15 @@ amendments:
   - "2026-10-31 6.31.33 published (Trusted Publish 41226295704)"
   - "2026-11-19 6.31.39 published (Trusted Publish 44652555068)"
   - "2026-11-21 6.31.40 published (Trusted Publish 44942237531); #548 superseded; leave #496/#506 red"
+  - "2026-11-22 6.31.41 published (Trusted Publish 45112687091); N1 malformed budget fail-closed"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.40
+  LAST_PUBLISHED_RELEASE: 6.31.41
   PENDING_PUBLISH: none
-  ACTIVE: N1 local review; partner #484/#437/#450; leave #496/#506 red
-  NEXT: N2 after N1 merge; no 6.32 without EVIDENCE_GATE
+  ACTIVE: N2 next; partner #484/#437/#450; leave #496/#506 red
+  NEXT: no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
