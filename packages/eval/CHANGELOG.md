@@ -1,5 +1,15 @@
 # @agent-inspect/eval
 
+## 6.31.42
+
+### Patch Changes
+
+- 5cba94f: Align `eval --max-total-tokens` with `check` by projecting finished logical LLM calls via `projectLogicalEvents`, so LangChain start+completion pairs (e.g. total 1500) count as one call instead of failing on the start row (N2).
+- Updated dependencies [5cba94f]
+  - agent-inspect@6.31.42
+  - @agent-inspect/guardrails@6.31.42
+  - @agent-inspect/circuit@6.31.42
+
 ## 6.31.41
 
 ### Patch Changes

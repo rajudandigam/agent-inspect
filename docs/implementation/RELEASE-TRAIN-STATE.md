@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.41"
-publishedVersion: "6.31.41"
+baselineVersion: "6.31.42"
+publishedVersion: "6.31.42"
 pendingPublishVersion: "6.31.42"
 currentTrain: "n2-eval-check-lifecycle-parity"
 trainStatus: "N2 pushed — awaiting Version Packages → Trusted Publish 6.31.42"
