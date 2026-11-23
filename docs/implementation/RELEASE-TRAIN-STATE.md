@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.40"
-publishedVersion: "6.31.40"
+baselineVersion: "6.31.41"
+publishedVersion: "6.31.41"
 pendingPublishVersion: ""
 currentTrain: "n1-malformed-token-budget"
 trainStatus: "N1 shipping — discard warnings + budget fail-closed; Version Packages / Trusted Publish for 6.31.41"

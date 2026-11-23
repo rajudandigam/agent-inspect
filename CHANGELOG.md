@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.41
+
+### Patch Changes
+
+- 101a610: Fail closed on configured token budgets when malformed or invalid AgentInspect JSONL rows were discarded while reading (`invalid_persisted_event_rows` and related codes). `check`/`eval --max-total-tokens` no longer pass incomplete evidence after a silent drop (N1).
+
 ## 6.31.40
 
 ### Patch Changes
