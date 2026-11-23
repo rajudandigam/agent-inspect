@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.41"
 publishedVersion: "6.31.41"
-pendingPublishVersion: ""
-currentTrain: "n1-malformed-token-budget"
-trainStatus: "6.31.41 published — N1 discard warnings + token-budget fail-closed"
+pendingPublishVersion: "6.31.42"
+currentTrain: "n2-eval-check-lifecycle-parity"
+trainStatus: "N2 pushed — awaiting Version Packages → Trusted Publish 6.31.42"
 executionMode: "maintainer-reviewed"
-namedTrain: "n1-malformed-token-budget"
+namedTrain: "n2-eval-check-lifecycle-parity"
 branch: "main"
-currentChunk: "N1 complete"
-lastConfirmedCommit: "55486dd22faf67e4a307f9a440e2526a05c809ff"
-lastValidationLevel: "Trusted Publish 45112687091; npm agent-inspect@6.31.41"
-nextAction: "N2 check/eval lifecycle parity; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
+currentChunk: "N2 release in flight"
+lastConfirmedCommit: "2561eb3b8259b7df494862820d0aa76ec6f47400"
+lastValidationLevel: "Core chunk gate green; changeset queued for 6.31.42"
+nextAction: "Merge Version Packages PR; confirm Trusted Publish 6.31.42; then N3; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -73,8 +73,8 @@ completedChunks:
   - "6.31.39 C1a #544 + C1b #543 token-budget fail-closed"
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
   - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
+  - "N2 eval/check logical-call token-budget parity (pending 6.31.42)"
 queuedChunks:
-  - "N2 check/eval lifecycle parity"
   - "N3 ordering/refund + Frank cases"
   - "N4 older evidence promises"
   - "N5 Kyle timeout correlated read-back"
@@ -111,12 +111,12 @@ worktreeIgnoreOnly:
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
   LAST_PUBLISHED_RELEASE: 6.31.41
-  PENDING_PUBLISH: none
-  ACTIVE: N2 next; partner #484/#437/#450; leave #496/#506 red
-  NEXT: no 6.32 without EVIDENCE_GATE
+  PENDING_PUBLISH: 6.31.42
+  ACTIVE: N2 Version Packages / Trusted Publish; partner #484/#437/#450; leave #496/#506 red
+  NEXT: N3 after 6.31.42; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-11-22"
+updatedAt: "2026-11-23"
 ```
 

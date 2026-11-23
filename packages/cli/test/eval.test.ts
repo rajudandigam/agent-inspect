@@ -167,6 +167,35 @@ describe("eval command", () => {
     ).toBe(true);
   });
 
+  it("passes --max-total-tokens for a paired LLM start+complete at the exact total (N2)", async () => {
+    const file = await writeTrace(tmp, "lifecycle.jsonl", [
+      event("llm-start", {
+        kind: "LLM",
+        name: "llm:chat",
+        status: "running",
+        attributes: { legacyEvent: "step_started", stepId: "step-llm" },
+      }),
+      event("llm-complete", {
+        kind: "LLM",
+        name: "llm:chat",
+        status: "ok",
+        tokenUsage: { input: 1200, output: 300, total: 1500 },
+        attributes: { legacyEvent: "step_completed", stepId: "step-llm" },
+      }),
+    ]);
+
+    process.exitCode = 0;
+    const under = await runEval(file, { maxTotalTokens: "1499" });
+    expect(process.exitCode).toBe(1);
+    expect(under.status).toBe("fail");
+
+    process.exitCode = 0;
+    const exact = await runEval(file, { maxTotalTokens: "1500" });
+    expect(process.exitCode).toBe(0);
+    expect(exact.status).toBe("pass");
+    expect(exact.findings).toEqual([]);
+  });
+
   it("supports run-id lookup, explicit format, and JSON config", async () => {
     await writeTrace(tmp, "run-eval-cli.jsonl", [
       event("event-tool", { kind: "TOOL", name: "searchDocs" }),

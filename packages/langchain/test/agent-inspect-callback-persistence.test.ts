@@ -18,6 +18,7 @@ import {
   projectLogicalEvents,
   runTraceChecks,
 } from "agent-inspect/checks";
+import { checks as evalChecks, evalRun } from "@agent-inspect/eval";
 import type { PersistedInspectEvent } from "agent-inspect/persisted";
 import { list } from "../../cli/src/list.js";
 import { view } from "../../cli/src/view.js";
@@ -218,6 +219,30 @@ describe("AgentInspectCallback persistence", () => {
     const completeIdx = parsed.persisted.indexOf(llmComplete!);
     expect(startIdx).toBeGreaterThanOrEqual(0);
     expect(completeIdx).toBeGreaterThan(startIdx);
+
+    // N2: check and eval must agree on one logical 1500-token call.
+    const file = path.join(traceDir, "run_tokens_nonstream.jsonl");
+    const { openTraceFile } = await import("agent-inspect/readers");
+    const read = await openTraceFile(file);
+    for (const [limit, expected] of [
+      [1499, "fail"],
+      [1500, "pass"],
+      [1501, "pass"],
+    ] as const) {
+      const check = runTraceChecks(
+        { read },
+        {
+          runId: "run_tokens_nonstream",
+          rules: [createLlmUsageRule({ maxTotalTokens: limit })],
+        },
+      );
+      const ev = await evalRun(
+        { trace: read, runId: "run_tokens_nonstream" },
+        { checks: [evalChecks.maxTotalTokens(limit)] },
+      );
+      expect(check.status, `check @ ${limit}`).toBe(expected);
+      expect(ev.status, `eval @ ${limit}`).toBe(expected);
+    }
   });
 
   it("stream persist also writes tokenUsage on the LLM completion row (#533)", async () => {
@@ -254,6 +279,23 @@ describe("AgentInspectCallback persistence", () => {
       output: 300,
       total: 1500,
     });
+
+    // N2: stream path also agrees between check and eval at exact 1500.
+    const { openTraceFile } = await import("agent-inspect/readers");
+    const read = await openTraceFile(path.join(traceDir, "run_tokens_stream.jsonl"));
+    const check = runTraceChecks(
+      { read },
+      {
+        runId: "run_tokens_stream",
+        rules: [createLlmUsageRule({ maxTotalTokens: 1500 })],
+      },
+    );
+    const ev = await evalRun(
+      { trace: read, runId: "run_tokens_stream" },
+      { checks: [evalChecks.maxTotalTokens(1500)] },
+    );
+    expect(check.status).toBe("pass");
+    expect(ev.status).toBe("pass");
   });
 
   it("persists model metadata available only on the LLM result", async () => {

@@ -267,6 +267,153 @@ describe("@agent-inspect/eval", () => {
     expect(result.findings[0]?.message).toContain("discarded while reading");
   });
 
+  it("counts a paired LLM start+complete as one logical call for maxTotalTokens (N2)", async () => {
+    const start = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-start",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "running" as const,
+      timestamp: "2026-01-01T00:00:00.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      attributes: { legacyEvent: "step_started", stepId: "step-llm" },
+    };
+    const complete = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-complete",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "ok" as const,
+      timestamp: "2026-01-01T00:00:01.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      tokenUsage: { input: 1200, output: 300, total: 1500 },
+      attributes: { legacyEvent: "step_completed", stepId: "step-llm" },
+    };
+
+    for (const [limit, expected] of [
+      [1499, "fail"],
+      [1500, "pass"],
+      [1501, "pass"],
+    ] as const) {
+      const result = await evalRun(
+        { ...read(), events: [start, complete] },
+        { checks: [checks.maxTotalTokens(limit)] },
+      );
+      expect(result.status, `limit ${limit}`).toBe(expected);
+    }
+  });
+
+  it("does not double-count when start and complete both carry the same total (N2)", async () => {
+    const start = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-start",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "running" as const,
+      timestamp: "2026-01-01T00:00:00.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      tokenUsage: { total: 4 },
+      attributes: { legacyEvent: "step_started", stepId: "step-x" },
+    };
+    const complete = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-complete",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "ok" as const,
+      timestamp: "2026-01-01T00:00:01.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      tokenUsage: { total: 4 },
+      attributes: { legacyEvent: "step_completed", stepId: "step-x" },
+    };
+
+    const result = await evalRun(
+      { ...read(), events: [start, complete] },
+      { checks: [checks.maxTotalTokens(5)] },
+    );
+    expect(result.status).toBe("pass");
+    expect(result.findings).toEqual([]);
+  });
+
+  it("ignores unpaired running LLM starts for maxTotalTokens (N2 pin)", async () => {
+    const result = await evalRun(
+      {
+        ...read(),
+        events: [
+          {
+            schemaVersion: "0.2",
+            eventId: "llm-running",
+            runId: "run-eval",
+            kind: "LLM",
+            name: "llm:chat",
+            status: "running",
+            timestamp: "2026-01-01T00:00:00.000Z",
+            confidence: "explicit",
+            source: { type: "manual" },
+            attributes: { legacyEvent: "step_started", stepId: "open" },
+          },
+        ],
+      },
+      { checks: [checks.maxTotalTokens(5)] },
+    );
+    // Matches createLlmUsageRule: unfinished LLM rows are not finishedEvents.
+    expect(result.status).toBe("pass");
+  });
+
+  it("preserves raw EvalContext.events for custom rules after N2 projection", async () => {
+    const start = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-start",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "running" as const,
+      timestamp: "2026-01-01T00:00:00.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      attributes: { legacyEvent: "step_started", stepId: "step-llm" },
+    };
+    const complete = {
+      schemaVersion: "0.2" as const,
+      eventId: "llm-complete",
+      runId: "run-eval",
+      kind: "LLM" as const,
+      name: "llm:chat",
+      status: "ok" as const,
+      timestamp: "2026-01-01T00:00:01.000Z",
+      confidence: "explicit" as const,
+      source: { type: "manual" as const },
+      tokenUsage: { total: 10 },
+      attributes: { legacyEvent: "step_completed", stepId: "step-llm" },
+    };
+
+    let rawLlmCount = -1;
+    const custom = {
+      id: "custom.rawLlmCount",
+      category: "custom" as const,
+      severity: "error" as const,
+      evaluate(context: { events: readonly { kind: string }[] }) {
+        rawLlmCount = context.events.filter((e) => e.kind === "LLM").length;
+        return [];
+      },
+    };
+
+    const result = await evalRun(
+      { ...read(), events: [start, complete] },
+      { checks: [checks.maxTotalTokens(10), custom] },
+    );
+    expect(result.status).toBe("pass");
+    expect(rawLlmCount).toBe(2);
+  });
+
   it("passes maxTotalTokens when synthesized input+output stays under the limit", async () => {
     const result = await evalRun(
       {

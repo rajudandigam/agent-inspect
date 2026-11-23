@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 
+import { projectLogicalEvents } from "agent-inspect/checks";
 import {
   openTrace,
   TraceReadError,
@@ -465,8 +466,18 @@ function measuredTotalTokens(event: EvalTraceEvent): number | undefined {
   return undefined;
 }
 
+/**
+ * LLM events for token budgets — same finished logical set as
+ * `createLlmUsageRule` / `finishedEvents(context, "LLM")`.
+ * Pairs LangChain `step_started`/`step_completed` so start rows without
+ * usage do not falsely fail `maxTotalTokens` (N2). Raw `EvalContext.events`
+ * stay unprojected for custom rules.
+ */
 function llmEventsForTokenBudget(events: readonly EvalTraceEvent[]): EvalTraceEvent[] {
-  return events.filter((event) => event.kind === "LLM");
+  const { logicalEvents } = projectLogicalEvents(events);
+  return logicalEvents.filter(
+    (event) => event.kind === "LLM" && event.status !== "running",
+  );
 }
 
 function createRule(
