@@ -161,6 +161,8 @@ export type {
   TraceJsonlFormat,
   ParseTraceJsonlResult,
   ParseTraceJsonlOptions,
+  ParseTraceJsonlSkipReason,
+  ParseTraceJsonlSkippedRow,
 } from "../read-trace.js";
 
 export { parseTraceJsonl, unknownTraceFormatMessage } from "../read-trace.js";

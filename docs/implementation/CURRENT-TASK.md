@@ -2,14 +2,14 @@
 
 ```yaml
 executionMode: maintainer-reviewed
-namedTrain: open-pr-triage-6.31.40
-currentTrain: open-pr-triage-6.31.40
-trainStatus: "6.31.40 published — #559 traceSafety writers + #547 LangChain tokenUsage; open-PR triage complete"
-currentChunk: "triage ship complete"
-nextAction: "Handoff residuals only (partner #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE)"
+namedTrain: n1-malformed-token-budget
+currentTrain: n1-malformed-token-budget
+trainStatus: "N1 shipping — changeset queued for 6.31.41; Trusted Publish pending"
+currentChunk: "N1 release"
+nextAction: "Version Packages → Trusted Publish → npm confirm; then N2. Leave #496/#506 red."
 canonicalRoadmap: docs/implementation/ROADMAP.md
 activePlan: docs/implementation/active/NEXT-RELEASES.md
-pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437"
+pendingManualGate: "EVIDENCE_GATE not approved — blocks 6.32.0; Indu v3 artifact missing; partner acceptance #484/#437; Frank acceptance design before public API"
 worktreeIgnoreOnly:
   - .redstamp/
   - redstamp-proposal-issue-body.md
@@ -26,18 +26,21 @@ worktreeIgnoreOnly:
 | --- | --- | --- |
 | C0+C0P packaging | **6.31.38** | Verified-tarball Trusted Publish; all 18 packs include `dist/` |
 | C1a #544 + C1b #543 | **6.31.39** | Per-budget `createLlmUsageRule`; eval `--max-total-tokens` fail-closed |
-| Open PR triage | **6.31.40** | #559/`#558` `createInspector({ traceSafety })` → writers; #547/`#533` LangChain `tokenUsage` on `0.2` completions; #548 closed superseded |
-
-Publish: [44942237531](https://github.com/rajudandigam/agent-inspect/actions/runs/44942237531). Issues #558/#533 closed; #548 superseded.
+| Open PR triage | **6.31.40** | #559/`#558` traceSafety writers; #547/`#533` LangChain tokenUsage; #548 superseded |
+| N1 malformed budget | **6.31.41 (pending)** | Reader discard warnings; check/eval token budgets fail unverifiable |
 
 ## Residual queue
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| #484 / #437 | **open** | ADR-0013 hold; partner acceptance |
+| N2 check/eval lifecycle parity | **next** | exact-1500 LangChain start/completion double-count |
+| N3 ordering / refund | **queued** | unfinished action; Frank cases |
+| N4 older evidence promises | **queued** | Gary / Uduak / Roy / Om |
+| N5 Kyle timeout | **queued** | correlated read-back evidence |
+| N6 Frank acceptance design | **manual** | define semantics before public API |
+| N7 docs / Dependabot | **queued** | keep #496/#506 red while checks fail |
+| #484 / #437 / #450 | **open** | partner / EVIDENCE_GATE |
 | #496 / #506 | **leave red** | do not merge |
-| #450 | **open** | partner Revera / EVIDENCE_GATE |
-| Optional #548 edges | **park** | start-model-wins / writer-reject fallback / size-trunc keep usage — tiny follow-up only |
 | 6.32 / v7 | **blocked** | EVIDENCE_GATE |
 
 ## Honesty
@@ -45,4 +48,3 @@ Publish: [44942237531](https://github.com/rajudandigam/agent-inspect/actions/run
 - Partner issues stay open for acceptance.
 - Indu exact v3 artifact remains unavailable (no v2 rename).
 - EVIDENCE_GATE / v7 unchanged.
-- Dependabot majors (#532/#501/#500/#444) deferred; draft #513 parked.

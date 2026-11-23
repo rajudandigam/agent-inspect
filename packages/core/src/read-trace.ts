@@ -12,6 +12,23 @@ export type ParsedTraceJsonlRow =
   | { format: "0.2"; event: PersistedInspectEvent; sourceLine: number }
   | { format: "1.0"; event: PersistedInspectEvent; sourceLine: number };
 
+/**
+ * Why a JSONL line was not retained as a valid AgentInspect event.
+ *
+ * Readers map these into structured read warnings so token budgets can
+ * fail closed when evidence was discarded.
+ */
+export type ParseTraceJsonlSkipReason =
+  | "invalid_json"
+  | "invalid_trace_event"
+  | "invalid_persisted_event"
+  | "unknown_schema";
+
+export interface ParseTraceJsonlSkippedRow {
+  line: number;
+  reason: ParseTraceJsonlSkipReason;
+}
+
 export interface ParseTraceJsonlResult {
   format: TraceJsonlFormat;
   /** Count of valid source JSONL rows before any one-to-many normalization. */
@@ -20,6 +37,11 @@ export interface ParseTraceJsonlResult {
   persisted: PersistedInspectEvent[];
   /** Valid source rows in JSONL order, before cross-version normalization. */
   rows: ParsedTraceJsonlRow[];
+  /**
+   * Invalid / unparseable source lines that were skipped (not retained).
+   * Empty when every non-blank line was accepted.
+   */
+  skippedRows: readonly ParseTraceJsonlSkippedRow[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -55,11 +77,17 @@ export function parseTraceJsonl(
   const persisted: PersistedInspectEvent[] = [];
   const traceEvents: TraceEvent[] = [];
   const rows: ParsedTraceJsonlRow[] = [];
+  const skippedRows: ParseTraceJsonlSkippedRow[] = [];
   let sourceEventCount = 0;
   let saw01 = false;
   let saw02 = false;
   let saw10 = false;
   let lineNumber = 0;
+
+  const skip = (line: number, reason: ParseTraceJsonlSkipReason, message: string): void => {
+    skippedRows.push({ line, reason });
+    emitWarning(message);
+  };
 
   for (const line of raw.split(/\r?\n/)) {
     lineNumber += 1;
@@ -70,7 +98,7 @@ export function parseTraceJsonl(
     try {
       parsed = JSON.parse(trimmed) as unknown;
     } catch {
-      emitWarning("Skipped invalid JSON line in trace file");
+      skip(lineNumber, "invalid_json", "Skipped invalid JSON line in trace file");
       continue;
     }
 
@@ -82,7 +110,11 @@ export function parseTraceJsonl(
         traceEvents.push(parsed);
         rows.push({ format: "0.1", event: parsed, sourceLine: lineNumber });
       } else {
-        emitWarning("Skipped invalid trace event line in trace file");
+        skip(
+          lineNumber,
+          "invalid_trace_event",
+          "Skipped invalid trace event line in trace file",
+        );
       }
       continue;
     }
@@ -96,12 +128,16 @@ export function parseTraceJsonl(
         rows.push({ format, event: parsed, sourceLine: lineNumber });
         traceEvents.push(...persistedInspectEventToTraceEvents(parsed));
       } else {
-        emitWarning("Skipped invalid persisted inspect event line in trace file");
+        skip(
+          lineNumber,
+          "invalid_persisted_event",
+          "Skipped invalid persisted inspect event line in trace file",
+        );
       }
       continue;
     }
 
-    emitWarning("Skipped trace line with unknown schemaVersion");
+    skip(lineNumber, "unknown_schema", "Skipped trace line with unknown schemaVersion");
   }
 
   const seenFormats = [saw01, saw02, saw10].filter(Boolean).length;
@@ -117,7 +153,14 @@ export function parseTraceJsonl(
   else if (saw02) format = "0.2";
   else if (saw10) format = "1.0";
 
-  return { format, sourceEventCount, events: traceEvents, persisted, rows };
+  return {
+    format,
+    sourceEventCount,
+    events: traceEvents,
+    persisted,
+    rows,
+    skippedRows,
+  };
 }
 
 /**

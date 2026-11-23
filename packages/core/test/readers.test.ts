@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -252,6 +252,41 @@ describe("trace reader contract", () => {
     await writeFile(copyPath, await readFile(filePath));
     const fromDir = await openTraceDirectory(dir);
     expect(fromDir.events.length).toBeGreaterThan(0);
+  });
+
+  it("surfaces invalid_persisted_event_rows when a same-run malformed LLM row is discarded (N1)", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "ai-n1-malformed-"));
+    try {
+      const valid = {
+        schemaVersion: "0.2",
+        eventId: "valid",
+        runId: "r",
+        kind: "LLM",
+        name: "llm:model",
+        status: "ok",
+        timestamp: "2026-01-01T00:00:00.000Z",
+        confidence: "explicit",
+        source: { type: "manual" },
+        tokenUsage: { total: 1 },
+      };
+      const file = path.join(dir, "r.jsonl");
+      await writeFile(
+        file,
+        `${JSON.stringify(valid)}\n${JSON.stringify({ ...valid, eventId: "invalid", tokenUsage: { total: -100 } })}\n`,
+      );
+
+      const read = await openTraceFile(file);
+      expect(read.events).toHaveLength(1);
+      expect(read.events[0]?.tokenUsage).toEqual({ total: 1 });
+      expect(
+        read.warnings.some(
+          (warning) =>
+            warning.code === "invalid_persisted_event_rows" && warning.line === 2,
+        ),
+      ).toBe(true);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 
   it("rejects bare path strings without WeakMap errors", async () => {

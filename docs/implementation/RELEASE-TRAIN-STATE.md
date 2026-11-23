@@ -8,15 +8,15 @@
 baselineVersion: "6.31.40"
 publishedVersion: "6.31.40"
 pendingPublishVersion: ""
-currentTrain: "open-pr-triage-6.31.40"
-trainStatus: "6.31.40 published — #559 traceSafety writers + #547 LangChain tokenUsage; leave #496/#506 red"
+currentTrain: "n1-malformed-token-budget"
+trainStatus: "N1 shipping — discard warnings + budget fail-closed; Version Packages / Trusted Publish for 6.31.41"
 executionMode: "maintainer-reviewed"
-namedTrain: "open-pr-triage-6.31.40"
+namedTrain: "n1-malformed-token-budget"
 branch: "main"
-currentChunk: "triage ship complete"
-lastConfirmedCommit: "63b1ecb5fc739f7213ad79df665ac82d26a4cee9"
-lastValidationLevel: "Trusted Publish 44942237531; npm agent-inspect@6.31.40"
-nextAction: "Partner acceptance #484/#437; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
+currentChunk: "N1 release"
+lastConfirmedCommit: "70dcf1e9ae21b45025986e47a3e4caaad9a0d43d"
+lastValidationLevel: "Focused vitest + rebuilt CLI against N1 saved fixture; npm still 6.31.40 pending publish"
+nextAction: "Merge Version Packages; confirm npm 6.31.41; then N2; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -72,7 +72,14 @@ completedChunks:
   - "6.31.38 C0+C0P verified-tarball Trusted Publish"
   - "6.31.39 C1a #544 + C1b #543 token-budget fail-closed"
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
+  - "N1 malformed token-budget fail-closed (local; awaiting review)"
 queuedChunks:
+  - "N2 check/eval lifecycle parity"
+  - "N3 ordering/refund + Frank cases"
+  - "N4 older evidence promises"
+  - "N5 Kyle timeout correlated read-back"
+  - "N6 Frank acceptance design (manual)"
+  - "N7 docs; keep #496/#506 red"
   - "W04/#484 partner acceptance of -003 packet"
   - "W05/#485 residual if any after Om diagnostics"
   - "W22 C10 Elastic / Collector Docker when credentials"
@@ -104,11 +111,11 @@ worktreeIgnoreOnly:
 stopMarker: |
   LAST_PUBLISHED_RELEASE: 6.31.40
   PENDING_PUBLISH: none
-  ACTIVE: partner #484/#437/#450; leave #496/#506 red
-  NEXT: no 6.32 without EVIDENCE_GATE
+  ACTIVE: N1 local review; partner #484/#437/#450; leave #496/#506 red
+  NEXT: N2 after N1 merge; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-11-21"
+updatedAt: "2026-11-22"
 ```
 

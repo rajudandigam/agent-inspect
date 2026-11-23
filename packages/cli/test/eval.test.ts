@@ -142,6 +142,31 @@ describe("eval command", () => {
     ).toBe(true);
   });
 
+  it("fails --max-total-tokens when a same-run malformed LLM row was discarded (N1)", async () => {
+    const valid = event("valid", {
+      kind: "LLM",
+      name: "llm:model",
+      status: "ok",
+      tokenUsage: { total: 1 },
+    });
+    const file = await writeTrace(tmp, "r.jsonl", [
+      valid,
+      { ...valid, eventId: "invalid", tokenUsage: { total: -100 } },
+    ]);
+
+    const result = await runEval(file, { maxTotalTokens: "5" });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(
+      result.findings?.some(
+        (item) =>
+          item.ruleId === "eval.maxTotalTokens" &&
+          String(item.message).includes("discarded while reading"),
+      ),
+    ).toBe(true);
+  });
+
   it("supports run-id lookup, explicit format, and JSON config", async () => {
     await writeTrace(tmp, "run-eval-cli.jsonl", [
       event("event-tool", { kind: "TOOL", name: "searchDocs" }),

@@ -1,4 +1,5 @@
 export type {
+  TraceEvidenceDiscardWarningCode,
   TraceFormatCandidate,
   TraceFormatDetectionResult,
   TraceFormatDetectionStatus,
@@ -15,10 +16,12 @@ export type {
 
 export {
   DEFAULT_TRACE_READERS,
+  TRACE_EVIDENCE_DISCARD_WARNING_CODES,
   TraceReadError,
   agentInspectJsonlReader,
   assertTraceInput,
   detectTraceFormat,
+  isTraceEvidenceDiscardWarning,
   openInferenceJsonReader,
   openTrace,
   openTraceDirectory,

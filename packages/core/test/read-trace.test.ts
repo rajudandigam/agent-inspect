@@ -171,7 +171,7 @@ describe("parseTraceJsonl", () => {
       '{"schemaVersion":"0.2","eventId":"middle","runId":"r","kind":"TOOL","name":"middle","status":"running","timestamp":"2023-11-14T22:13:20.000Z","confidence":"explicit","source":{"type":"manual"}}',
       '{"schemaVersion":"0.1","event":"run_completed","timestamp":3,"runId":"r","status":"success","endTime":3,"durationMs":2}',
     ].join("\n");
-    const { sourceEventCount, events } = parseTraceJsonl(raw, {
+    const { sourceEventCount, events, skippedRows } = parseTraceJsonl(raw, {
       validate: validateEvent,
       warnings: false,
     });
@@ -182,5 +182,31 @@ describe("parseTraceJsonl", () => {
       "step_started",
       "run_completed",
     ]);
+    expect(skippedRows).toEqual([{ line: 2, reason: "invalid_json" }]);
+  });
+
+  it("records skippedRows for an invalid persisted tokenUsage without dropping valid siblings (N1)", () => {
+    const valid = {
+      schemaVersion: "0.2",
+      eventId: "valid",
+      runId: "r",
+      kind: "LLM",
+      name: "llm:model",
+      status: "ok",
+      timestamp: "2026-01-01T00:00:00.000Z",
+      confidence: "explicit",
+      source: { type: "manual" },
+      tokenUsage: { total: 1 },
+    };
+    const invalid = { ...valid, eventId: "invalid", tokenUsage: { total: -100 } };
+    const raw = `${JSON.stringify(valid)}\n${JSON.stringify(invalid)}\n`;
+    const { sourceEventCount, persisted, skippedRows } = parseTraceJsonl(raw, {
+      warnings: false,
+    });
+
+    expect(sourceEventCount).toBe(1);
+    expect(persisted.map((event) => event.eventId)).toEqual(["valid"]);
+    expect(persisted[0]?.tokenUsage).toEqual({ total: 1 });
+    expect(skippedRows).toEqual([{ line: 2, reason: "invalid_persisted_event" }]);
   });
 });

@@ -696,6 +696,50 @@ describe("check command", () => {
     ).toBe(true);
   });
 
+  it("fails --max-total-tokens when a same-run malformed LLM row was discarded (N1)", async () => {
+    const valid = event("valid", {
+      kind: "LLM",
+      name: "llm:model",
+      tokenUsage: { total: 1 },
+    });
+    const file = await writeTrace(tmp, "r.jsonl", [
+      valid,
+      { ...valid, eventId: "invalid", tokenUsage: { total: -100 } },
+    ]);
+
+    const result = await runCheck(file, {
+      maxTotalTokens: "5",
+    });
+
+    expect(process.exitCode).toBe(1);
+    expect(result.status).toBe("fail");
+    expect(
+      result.findings?.some(
+        (item) =>
+          item.ruleId === "llm.usage" &&
+          String(item.message).includes("discarded while reading"),
+      ),
+    ).toBe(true);
+  });
+
+  it("passes --max-total-tokens for a healthy under-budget LLM without discards (N1 control)", async () => {
+    const file = await writeTrace(tmp, "healthy.jsonl", [
+      event("valid", {
+        kind: "LLM",
+        name: "llm:model",
+        tokenUsage: { total: 1 },
+      }),
+    ]);
+
+    const result = await runCheck(file, {
+      maxTotalTokens: "5",
+    });
+
+    expect(process.exitCode).toBe(0);
+    expect(result.status).toBe("pass");
+    expect(result.findings?.some((item) => item.ruleId === "llm.usage")).toBeFalsy();
+  });
+
   it("executes --max-duration-ms with --preset trajectory", async () => {
     const file = await writeTrace(tmp, "slow.jsonl", [
       event("event-a", {

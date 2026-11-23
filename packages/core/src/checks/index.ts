@@ -1,4 +1,5 @@
 import type { TraceReadResult, TraceReadWarning } from "../readers/index.js";
+import { isTraceEvidenceDiscardWarning } from "../readers/index.js";
 import type {
   AttributionConfidence,
   InspectNode,
@@ -2700,7 +2701,9 @@ function measuredTokenCount(
  * LLM call (including `status: "error"`). `maxCachedTokens` treats absent
  * `cached` as optional (counts as 0). Partial usage such as `{ cached: 5 }` or
  * `{ reasoning: 5 }` alone does not clear other budgets. Missing measurement
- * fails as unverifiable (distinct from exceeded).
+ * fails as unverifiable (distinct from exceeded). When the reader discarded
+ * malformed or invalid rows (`invalid_persisted_event_rows` and related codes),
+ * configured input/output/total budgets also fail as unverifiable.
  *
  * @experimental  Available through `agent-inspect/checks`. Additive changes may ship in minor releases; breaking changes require a future major.
  */
@@ -2763,6 +2766,28 @@ export function createLlmUsageRule(options: LlmUsageRuleOptions): TraceCheckRule
       const requiredKeys = tokenLimits
         .filter(([key, limit]) => limit !== undefined && key !== "cached")
         .map(([key]) => key);
+
+      // N1: when a strict token budget is configured and the reader discarded
+      // malformed/invalid rows, remaining totals are incomplete evidence.
+      const discardedEvidence = context.readerWarnings.some(isTraceEvidenceDiscardWarning);
+      if (discardedEvidence && requiredKeys.length > 0) {
+        for (const key of requiredKeys) {
+          findings.push(
+            failFinding(
+              "llm.usage",
+              `Unverifiable ${key} token budget: malformed or invalid trace evidence was discarded while reading, so the ${key} token limit cannot be verified.`,
+              [],
+              `complete measurable ${key} token evidence with no discarded rows`,
+              {
+                reason: "unverifiable",
+                budget: key,
+                discardedEvidence: true,
+                calls: llms.length,
+              },
+            ),
+          );
+        }
+      }
 
       for (const key of requiredKeys) {
         const missing = llms.filter((event) => measuredTokenCount(event.tokenUsage, key) === undefined);

@@ -227,6 +227,46 @@ describe("@agent-inspect/eval", () => {
     expect(result.findings[0]?.message).toContain("measurable total token usage");
   });
 
+  it("fails maxTotalTokens when reader discarded malformed evidence (N1)", async () => {
+    const result = await evalRun(
+      {
+        ...read(),
+        events: [
+          {
+            schemaVersion: "1.0",
+            eventId: "event-llm",
+            runId: "run-eval",
+            kind: "LLM",
+            name: "generateAnswer",
+            timestamp: "2026-06-27T00:00:00.000Z",
+            confidence: "explicit",
+            source: { type: "manual" },
+            tokenUsage: { total: 1 },
+          },
+        ],
+        warnings: [
+          {
+            code: "invalid_persisted_event_rows",
+            message:
+              "Skipped 1 invalid persisted inspect event row(s) while reading AgentInspect JSONL.",
+            severity: "warning",
+            line: 2,
+          },
+        ],
+      },
+      { checks: [checks.maxTotalTokens(5)] },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.status).toBe("fail");
+    expect(findingIds(result)).toEqual(["eval.maxTotalTokens"]);
+    expect(result.findings[0]?.actual).toMatchObject({
+      reason: "unverifiable",
+      discardedEvidence: true,
+    });
+    expect(result.findings[0]?.message).toContain("discarded while reading");
+  });
+
   it("passes maxTotalTokens when synthesized input+output stays under the limit", async () => {
     const result = await evalRun(
       {

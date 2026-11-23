@@ -1,7 +1,11 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { parseTraceJsonl, type TraceJsonlFormat } from "../read-trace.js";
+import {
+  parseTraceJsonl,
+  type ParseTraceJsonlSkippedRow,
+  type TraceJsonlFormat,
+} from "../read-trace.js";
 import {
   traceEventToPersistedInspectEvent,
   traceEventsToPersistedInspectEvents,
@@ -31,6 +35,80 @@ export interface TraceReadWarning {
   sourceFile?: string;
   line?: number;
   field?: string;
+}
+
+/**
+ * Structured warning codes emitted when AgentInspect JSONL rows are skipped
+ * during read. Token-budget rules fail closed when any of these are present.
+ */
+export const TRACE_EVIDENCE_DISCARD_WARNING_CODES = Object.freeze([
+  "invalid_persisted_event_rows",
+  "invalid_trace_event_rows",
+  "invalid_jsonl_rows",
+  "unknown_schema_rows",
+] as const);
+
+export type TraceEvidenceDiscardWarningCode =
+  (typeof TRACE_EVIDENCE_DISCARD_WARNING_CODES)[number];
+
+const DISCARD_WARNING_CODE_SET = new Set<string>(TRACE_EVIDENCE_DISCARD_WARNING_CODES);
+
+/**
+ * True when a reader warning indicates malformed/invalid evidence was discarded.
+ */
+export function isTraceEvidenceDiscardWarning(
+  warning: Pick<TraceReadWarning, "code">,
+): boolean {
+  return DISCARD_WARNING_CODE_SET.has(warning.code);
+}
+
+function warningsFromSkippedRows(
+  skippedRows: readonly ParseTraceJsonlSkippedRow[],
+): TraceReadWarning[] {
+  if (skippedRows.length === 0) return [];
+
+  const groups: Record<
+    ParseTraceJsonlSkippedRow["reason"],
+    { code: TraceEvidenceDiscardWarningCode; label: string; lines: number[] }
+  > = {
+    invalid_json: {
+      code: "invalid_jsonl_rows",
+      label: "invalid JSON",
+      lines: [],
+    },
+    invalid_trace_event: {
+      code: "invalid_trace_event_rows",
+      label: "invalid schemaVersion 0.1 trace event",
+      lines: [],
+    },
+    invalid_persisted_event: {
+      code: "invalid_persisted_event_rows",
+      label: "invalid persisted inspect event",
+      lines: [],
+    },
+    unknown_schema: {
+      code: "unknown_schema_rows",
+      label: "unknown schemaVersion",
+      lines: [],
+    },
+  };
+
+  for (const skipped of skippedRows) {
+    groups[skipped.reason].lines.push(skipped.line);
+  }
+
+  const warnings: TraceReadWarning[] = [];
+  for (const group of Object.values(groups)) {
+    if (group.lines.length === 0) continue;
+    const firstLine = group.lines[0];
+    warnings.push({
+      code: group.code,
+      message: `Skipped ${group.lines.length} ${group.label} row(s) while reading AgentInspect JSONL.`,
+      severity: "warning",
+      ...(firstLine !== undefined ? { line: firstLine } : {}),
+    });
+  }
+  return warnings;
 }
 
 export interface TraceReadResult {
@@ -2110,24 +2188,22 @@ export const agentInspectJsonlReader: TraceReader = {
     }
 
     const events = persistedEventsForParsedTrace(parsed);
+    const warnings: TraceReadWarning[] = [
+      ...warningsFromSkippedRows(parsed.skippedRows),
+    ];
+    if (parsed.format === "mixed") {
+      warnings.push({
+        code: "mixed_agent_inspect_jsonl",
+        message:
+          "Trace input mixes schemaVersion 0.1 and 0.2 rows; events were normalized for reading.",
+        severity: "warning",
+      });
+    }
     return {
       format: agentInspectFormatLabel(parsed.format),
       events,
       runs: persistedInspectEventsToRunTrees(events, { skipInvalid: true }),
-      warnings:
-        parsed.format === "mixed"
-          ? attachSingleSourceFile(
-              [
-                {
-                  code: "mixed_agent_inspect_jsonl",
-                  message:
-                    "Trace input mixes schemaVersion 0.1 and 0.2 rows; events were normalized for reading.",
-                  severity: "warning",
-                },
-              ],
-              resolved,
-            )
-          : [],
+      warnings: attachSingleSourceFile(warnings, resolved),
       unsupportedFields: [],
       sourceFiles: resolved.sourceFiles,
     };

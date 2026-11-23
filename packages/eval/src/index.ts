@@ -3,8 +3,10 @@ import { fileURLToPath } from "node:url";
 import {
   openTrace,
   TraceReadError,
+  isTraceEvidenceDiscardWarning,
   type TraceInput,
   type TraceReadResult,
+  type TraceReadWarning,
 } from "agent-inspect/readers";
 
 export type EvalStatus = "pass" | "fail" | "error";
@@ -145,6 +147,11 @@ export interface EvalContext {
   run: EvalRunTree;
   nodes: readonly EvalNode[];
   events: readonly TraceReadResult["events"][number][];
+  /**
+   * Reader warnings from the underlying {@link TraceReadResult}.
+   * Token budgets fail closed when evidence-discard warnings are present.
+   */
+  readerWarnings: readonly TraceReadWarning[];
 }
 
 function isTraceReadResult(value: unknown): value is TraceReadResult {
@@ -338,6 +345,7 @@ export async function evalRun(
     run: selected.run,
     nodes: flatten(selected.run.children),
     events: resolved.read.events.filter((event) => event.runId === selected.run?.runId),
+    readerWarnings: resolved.read.warnings,
   };
 
   const diagnostics: EvalDiagnostic[] = [];
@@ -773,6 +781,21 @@ export const checks = {
     return createRule("eval.maxTotalTokens", "llm", (context) => {
       const llms = llmEventsForTokenBudget(context.events);
       const findings: EvalFinding[] = [];
+      if (context.readerWarnings.some(isTraceEvidenceDiscardWarning)) {
+        findings.push(
+          fail(
+            "eval.maxTotalTokens",
+            `Unverifiable total token budget: malformed or invalid trace evidence was discarded while reading, so the total token limit cannot be verified.`,
+            evidenceForRun(context.run, "tokenUsage.total"),
+            "complete measurable total token evidence with no discarded rows",
+            {
+              reason: "unverifiable",
+              discardedEvidence: true,
+              calls: llms.length,
+            },
+          ),
+        );
+      }
       const missing = llms.filter((event) => measuredTotalTokens(event) === undefined);
       if (missing.length > 0) {
         const errored = missing.filter((event) => event.status === "error");

@@ -1254,6 +1254,52 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.findings[0]?.evidence.map((evidence) => evidence.eventId)).toEqual(["event-b"]);
   });
 
+  it("fails a configured token budget when reader discarded malformed evidence (N1)", () => {
+    const kept = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:model",
+      tokenUsage: { total: 1 },
+    });
+    const read = {
+      ...readResult([kept]),
+      warnings: [
+        {
+          code: "invalid_persisted_event_rows",
+          message: "Skipped 1 invalid persisted inspect event row(s) while reading AgentInspect JSONL.",
+          severity: "warning" as const,
+          line: 2,
+        },
+      ],
+    };
+
+    const result = runTraceChecks(
+      { read },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 5 })] },
+    );
+
+    expect(result.status).toBe("fail");
+    expect(result.findings[0]?.message).toContain("discarded while reading");
+    expect(result.findings[0]?.actual).toMatchObject({
+      reason: "unverifiable",
+      budget: "total",
+      discardedEvidence: true,
+    });
+  });
+
+  it("still passes a healthy under-budget LLM when no evidence was discarded (N1 control)", () => {
+    const kept = persisted("event-a", {
+      kind: "LLM",
+      name: "llm:model",
+      tokenUsage: { total: 1 },
+    });
+    const result = runTraceChecks(
+      { read: readResult([kept]) },
+      { rules: [createLlmUsageRule({ maxTotalTokens: 5 })] },
+    );
+    expect(result.status).toBe("pass");
+    expect(result.findings).toEqual([]);
+  });
+
   it("fails a token budget when token usage is present but holds no counts", () => {
     const llm = persisted("event-a", { kind: "LLM", name: "llm:generate-answer", tokenUsage: {} });
     const read = readResult([llm]);
