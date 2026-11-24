@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.44"
-publishedVersion: "6.31.44"
+baselineVersion: "6.31.45"
+publishedVersion: "6.31.45"
 pendingPublishVersion: "6.31.45"
 currentTrain: "n5-kyle-timeout-readback"
 trainStatus: "N4 published 6.31.44; N5 local — Kyle read-back; awaiting gate/publish"
