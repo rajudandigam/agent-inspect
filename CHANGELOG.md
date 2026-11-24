@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.45
+
+### Patch Changes
+
+- 563664e: Extend timeout-ledger-effects with Kyle pre-call request/idempotency identity and separately correlated effect read-back (landed / did-not-land / stale / foreign / conflicting / retry reuse), keeping observation execution status distinct from external state (N5).
+
 ## 6.31.44
 
 ### Patch Changes
