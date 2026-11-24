@@ -1,8 +1,8 @@
 # AgentInspect Canonical Roadmap (permanent)
 
-**Baseline:** `agent-inspect@6.31.45` (published)
-**Roadmap horizon:** **6.31.45** published (N1–N5 residuals); N6 design + N7 docs/diagnostics in flight; partner acceptance; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
-**Status:** **6.31.45 published**; named train residual N6–N7; next = partner acceptance (#484/#437/#450; Jan Windows PENDING); leave #496/#506 red; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
+**Baseline:** `agent-inspect@6.31.46` (published)
+**Roadmap horizon:** **6.31.46** published (N1–N7 residuals complete); partner acceptance; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
+**Status:** **6.31.46 published**; residual plan N1–N7 done; next = partner acceptance (#484/#437/#450; Jan Windows PENDING); leave #496/#506 red; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
 **Primary objective:** Finish verifier/SDK/timing/transport correctness and consumer evidence milestones—without schema 1.1, hosted SaaS, or fabricated external evidence
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
@@ -114,7 +114,7 @@ The canonical release sequence is:
 6.31.43 N3 unfinished-after order + refund identity joins  (published)
 6.31.44 N4 Gary/Uduak/Roy/Om saved-evidence repairs  (published)
 6.31.45 N5 Kyle timeout correlated read-back  (published)
-6.31.46 N6 Frank acceptance design + N7 docs/diagnostics  (in flight)
+6.31.46 N6 Frank acceptance design + N7 docs/diagnostics  (published)
 6.31.x Conditional public defect only (omit empty slots)
 
 recipes   Collector roundtrip; executable Promptfoo; Elastic indexed readback (no root vendor deps)
@@ -263,7 +263,7 @@ Fail-closed deterministic gate hardening:
 | **6.31.43** | N3 unfinished-after order + refund identity | published | Done |
 | **6.31.44** | N4 Gary/Uduak/Roy/Om saved-evidence | published | Done |
 | **6.31.45** | N5 Kyle timeout correlated read-back | published | Done |
-| **6.31.46** | N6 Frank design + N7 docs/diagnostics | in flight | Leave #496/#506 red |
+| **6.31.46** | N6 Frank design + N7 docs/diagnostics | published | Leave #496/#506 red |
 | **6.31.x** | Conditional public defect only | omit if empty | Skip unless defect reproduces |
 | **6.32.0** | External conformance + compact review | conditional | **BLOCKED_ON_EXTERNAL_EVIDENCE** |
 | **6.33.0** | Additive usability when justified | recipes / APIs | Conditional minor |

@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.46"
 publishedVersion: "6.31.46"
-pendingPublishVersion: "6.31.46"
-currentTrain: "n6-n7-docs-diagnostics"
-trainStatus: "N5 published 6.31.45; N6+N7 gated — Frank design + finding preview/docs"
+pendingPublishVersion: null
+currentTrain: "residual-n1-n7-complete"
+trainStatus: "N1–N7 complete — published through 6.31.46; #496/#506 left red"
 executionMode: "maintainer-reviewed"
-namedTrain: "n6-n7-docs-diagnostics"
+namedTrain: "residual-n1-n7-complete"
 branch: "main"
-currentChunk: "N6 design + N7 docs/diagnostics"
-lastConfirmedCommit: "ee7944cb9692efc4f04e24cc210391c658857372"
-lastValidationLevel: "N5 Trusted Publish 45304159487; npm 6.31.45; N7 typecheck+focused tests+build"
-nextAction: "Push N6+N7; merge Version Packages; verify npm 6.31.46; leave #496/#506 red"
+currentChunk: "none"
+lastConfirmedCommit: "be071c57665dffc7563c2fb098aef59f519b5170"
+lastValidationLevel: "N7 Trusted Publish 45307089586; npm 6.31.46"
+nextAction: "Partner acceptance; no 6.32 without EVIDENCE_GATE; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -78,8 +78,8 @@ completedChunks:
   - "N4 Gary/Uduak/Roy/Om saved-evidence repairs (6.31.44 Publish 45300605347)"
   - "N5 Kyle timeout correlated read-back (6.31.45 Publish 45304159487)"
   - "N6 Frank acceptance design (PROPOSED-527; no public API)"
+  - "N7 docs/diagnostics + finding preview bounds (6.31.46 Publish 45307089586)"
 queuedChunks:
-  - "N7 docs/diagnostics (pending 6.31.46)"
   - "W04/#484 partner acceptance of -003 packet"
   - "W05/#485 residual if any after Om diagnostics"
   - "W22 C10 Elastic / Collector Docker when credentials"
@@ -95,13 +95,14 @@ amendments:
   - "2026-11-23 6.31.43 published (Trusted Publish 45294868131); N3 unfinished-after order + refund identity joins"
   - "2026-11-24 6.31.44 published (Trusted Publish 45300605347); N4 Gary/Uduak/Roy/Om saved-evidence repairs"
   - "2026-11-24 6.31.45 published (Trusted Publish 45304159487); N5 Kyle timeout correlated read-back"
+  - "2026-11-24 6.31.46 published (Trusted Publish 45307089586); N6 design + N7 docs/diagnostics"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.45
-  PENDING_PUBLISH: 6.31.46
-  ACTIVE: N6+N7 push → Version Packages → Trusted Publish; leave #496/#506 red
+  LAST_PUBLISHED_RELEASE: 6.31.46
+  PENDING_PUBLISH: none
+  ACTIVE: residual partner acceptance; leave #496/#506 red
   NEXT: no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved

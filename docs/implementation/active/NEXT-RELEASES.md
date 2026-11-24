@@ -40,10 +40,10 @@
 ## External stop marker
 
 ```text
-LAST_PUBLISHED_RELEASE: 6.31.45
-PENDING_PUBLISH: 6.31.46 (N6 design + N7 docs/diagnostics)
-ACTIVE: N6+N7; partner #484/#437/#450; leave #496/#506 red
-NEXT: no 6.32 without EVIDENCE_GATE; Indu v3 blocked; Frank acceptance API awaiting decisions; Jan Windows PENDING
+LAST_PUBLISHED_RELEASE: 6.31.46
+PENDING_PUBLISH: none
+ACTIVE: residual partner acceptance; leave #496/#506 red
+NEXT: no 6.32 without EVIDENCE_GATE; Indu v3 blocked; Frank acceptance API awaiting decisions (PROPOSED-527); Jan Windows PENDING
 V7_DECISION: NO-GO
 EVIDENCE_GATE: not approved
 ADOPTION_FREEZE: excluded
