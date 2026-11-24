@@ -20,6 +20,10 @@ classes: valid-transition:passed,wrong-tab-binding-only:failed,forged-caller-lab
 om-attempt-comparison:
   a1: LocatorNotFound matchCount=0 ready=false waitBudgetMs=100 (LocatorNotFound≠overlay)
   a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id
+  attempt-bound waits: a1 stop=known-not-ready a2 stop=ready (injected clock; not live browser)
+om-attempt-bound-wait-reopen: ok detail=a1/a2 attempt-bound wait/readiness facts present on reopen
+  a1: elapsed=100 remaining=0 ready=false stop=known-not-ready
+  a2: elapsed=25 remaining=75 ready=true stop=ready
 om-wait-diagnostics: clock=injected-synthetic retained=true
   note: ready/stop describe observation completion only; not business-effect success
   known-not-ready: ready=false doc=loading inFlight=navigation obstruction=unknown elapsed=40ms budget=100ms remaining=60ms stop=known-not-ready

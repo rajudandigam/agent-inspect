@@ -215,13 +215,21 @@ export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
     });
   }
 
-  // Successful retrieval status required when present.
+  // Successful retrieval + consumption status required.
   if (retrieved!.status !== "passed" && retrieved!.status !== "ok") {
     return fail({
       ...base,
       runId,
       operationId: declaredOp,
       detail: `policy retrieval status is not success (${retrieved!.status ?? "missing"})`,
+    });
+  }
+  if (consumed!.status !== "passed" && consumed!.status !== "ok") {
+    return fail({
+      ...base,
+      runId,
+      operationId: declaredOp,
+      detail: `policy consumption status is not success (${consumed!.status ?? "missing"})`,
     });
   }
 
@@ -251,8 +259,16 @@ export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
     });
   }
 
-  // resultRef must join declared ↔ retrieved ↔ consumed when all present.
-  if (declaredResultRef && resultRef && declaredResultRef !== resultRef) {
+  // All three resultRefs are required and must agree (N4 / Uduak).
+  if (!declaredResultRef || !retrievedResultRef || !resultRef) {
+    return fail({
+      ...base,
+      runId,
+      operationId: declaredOp,
+      detail: "missing declared/retrieved/consumed resultRef join evidence",
+    });
+  }
+  if (declaredResultRef !== resultRef) {
     return fail({
       ...base,
       runId,
@@ -260,7 +276,7 @@ export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
       detail: "resultRef does not match declared result reference",
     });
   }
-  if (retrievedResultRef && resultRef && retrievedResultRef !== resultRef) {
+  if (retrievedResultRef !== resultRef) {
     return fail({
       ...base,
       runId,
@@ -268,16 +284,57 @@ export function verifyConsumption(traceDirOrFile: string): ConsumptionVerdict {
       detail: "consumed resultRef does not match retrieved result reference",
     });
   }
-  if (
-    declaredResultRef &&
-    retrievedResultRef &&
-    declaredResultRef !== retrievedResultRef
-  ) {
+  if (declaredResultRef !== retrievedResultRef) {
     return fail({
       ...base,
       runId,
       operationId: declaredOp,
       detail: "declared and retrieved resultRef disagree",
+    });
+  }
+
+  // Commitment body must carry the actual policy tenant (label alone is not enough).
+  const parseCommitmentTenant = (raw: string | undefined): string | undefined => {
+    if (!raw) return undefined;
+    try {
+      const parsed = JSON.parse(raw) as { tenantRef?: unknown; policyTenantRef?: unknown };
+      const tenant =
+        typeof parsed.tenantRef === "string"
+          ? parsed.tenantRef
+          : typeof parsed.policyTenantRef === "string"
+            ? parsed.policyTenantRef
+            : undefined;
+      return tenant && tenant.trim() !== "" ? tenant : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const retrievedBodyTenant = parseCommitmentTenant(retrievedCommitment);
+  const consumedBodyTenant = parseCommitmentTenant(consumedCommitment);
+  if (
+    retrievedBodyTenant !== undefined &&
+    declaredTenantRef !== undefined &&
+    retrievedBodyTenant !== declaredTenantRef
+  ) {
+    return fail({
+      ...base,
+      runId,
+      operationId: declaredOp,
+      join: "mismatch",
+      detail: `retrieved policy commitment tenant ${retrievedBodyTenant} contradicts declared ${declaredTenantRef}`,
+    });
+  }
+  if (
+    consumedBodyTenant !== undefined &&
+    declaredTenantRef !== undefined &&
+    consumedBodyTenant !== declaredTenantRef
+  ) {
+    return fail({
+      ...base,
+      runId,
+      operationId: declaredOp,
+      join: "mismatch",
+      detail: `consumed policy commitment tenant ${consumedBodyTenant} contradicts declared ${declaredTenantRef}`,
     });
   }
 

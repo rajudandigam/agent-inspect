@@ -402,6 +402,28 @@ if (!reopened.ok) {
 }
 
 // Tamper copies of saved artifacts — never mutate the original packet.
+function writeTamperManifest(dir: string, table: TableRow[]): void {
+  writeFileSync(
+    path.join(dir, "manifest.json"),
+    `${JSON.stringify(
+      {
+        pairs: table.map((row) => ({
+          pair: row.pair,
+          class: row.class,
+          leftRunId: row.left?.runId ?? null,
+          rightRunId: row.right?.runId ?? null,
+          leftExecutionId: row.left?.executionId,
+          rightExecutionId: row.right?.executionId ?? null,
+          leftTraceDir: row.left?.traceDir ?? null,
+          rightTraceDir: row.right?.traceDir ?? null,
+        })),
+      },
+      null,
+      2,
+    )}\n`,
+  );
+}
+
 function tamperCopy(
   id: string,
   mutate: (table: TableRow[]) => void,
@@ -422,6 +444,7 @@ function tamperCopy(
     path.join(dir, "per-stage-commitments.json"),
     `${JSON.stringify(table, null, 2)}\n`,
   );
+  writeTamperManifest(dir, table);
   const verdict = verifySaved(dir);
   return {
     id,
@@ -483,6 +506,7 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
   rmSync(emptyDir, { recursive: true, force: true });
   mkdirSync(emptyDir, { recursive: true });
   writeFileSync(path.join(emptyDir, "per-stage-commitments.json"), "[]\n");
+  writeTamperManifest(emptyDir, []);
   const emptyVerdict = verifySaved(emptyDir);
   if (emptyVerdict.ok) {
     throw new Error("empty table unexpectedly verified");
@@ -491,6 +515,42 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
     id: "empty-table",
     ok: true,
     detail: emptyVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  const missingManifestDir = path.join(evidenceDir, "tampers", "missing-manifest");
+  rmSync(missingManifestDir, { recursive: true, force: true });
+  mkdirSync(missingManifestDir, { recursive: true });
+  cpSync(tablePath, path.join(missingManifestDir, "per-stage-commitments.json"));
+  const missingManifest = verifySaved(missingManifestDir);
+  if (missingManifest.ok || !missingManifest.failures.some((f) => f.includes("manifest_missing"))) {
+    throw new Error("missing manifest unexpectedly verified");
+  }
+  tampers.push({
+    id: "missing-manifest",
+    ok: true,
+    detail: missingManifest.failures[0] ?? "rejected",
+  });
+}
+{
+  const arrayRowDir = path.join(evidenceDir, "tampers", "array-object-row");
+  rmSync(arrayRowDir, { recursive: true, force: true });
+  mkdirSync(arrayRowDir, { recursive: true });
+  writeFileSync(path.join(arrayRowDir, "per-stage-commitments.json"), "[{}]\n");
+  writeTamperManifest(arrayRowDir, [{ pair: "bad", class: "partial_unknown", note: "", left: undefined as never, right: null }]);
+  const arrayRow = verifySaved(arrayRowDir);
+  if (arrayRow.ok) {
+    throw new Error("malformed [{}] row unexpectedly verified");
+  }
+  if (arrayRow.pairs[0]?.integrity[0]?.status !== "malformed_side") {
+    throw new Error(
+      `[{}] expected malformed_side, got ${arrayRow.pairs[0]?.integrity[0]?.status}`,
+    );
+  }
+  tampers.push({
+    id: "array-object-row",
+    ok: true,
+    detail: arrayRow.failures[0] ?? "rejected",
   });
 }
 {
@@ -522,6 +582,7 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
     path.join(corruptDir, "per-stage-commitments.json"),
     `${JSON.stringify([row], null, 2)}\n`,
   );
+  writeTamperManifest(corruptDir, [row]);
   const corruptVerdict = verifySaved(corruptDir);
   if (corruptVerdict.ok) {
     throw new Error("corrupt JSONL unexpectedly verified");
@@ -561,7 +622,13 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
         executionId: row.left.executionId,
         note: decoy,
       },
-    })}\n`,
+    })}\n` +
+      `${JSON.stringify({
+        schemaVersion: "0.1",
+        event: "step_completed",
+        runId: "run_unrelated_physical",
+        name: "tool:lookup",
+      })}\n`,
   );
   writeFileSync(
     path.join(fakeTrace, BOUNDARY_COMMITMENTS_FILENAME),
@@ -581,6 +648,7 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
     path.join(subDir, "per-stage-commitments.json"),
     `${JSON.stringify([row], null, 2)}\n`,
   );
+  writeTamperManifest(subDir, [row]);
   const subVerdict = verifySaved(subDir);
   if (subVerdict.ok) {
     throw new Error("substring runId hit unexpectedly verified");
@@ -589,6 +657,127 @@ const tampers: Array<{ id: string; ok: boolean; detail: string }> = [
     id: "substring-run",
     ok: true,
     detail: subVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  const headerOnlyDir = path.join(evidenceDir, "tampers", "header-only");
+  rmSync(headerOnlyDir, { recursive: true, force: true });
+  mkdirSync(headerOnlyDir, { recursive: true });
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = structuredClone(table.find((r) => r.pair === "G01-matching-stages")!);
+  const headerTrace = path.join(headerOnlyDir, "traces", "header");
+  mkdirSync(headerTrace, { recursive: true });
+  writeFileSync(
+    path.join(headerTrace, "run_header.jsonl"),
+    `${JSON.stringify({
+      schemaVersion: "0.1",
+      event: "run_started",
+      runId: row.left.runId,
+      name: "header-only",
+      metadata: {
+        cohortId: row.left.cohortId,
+        testCaseId: row.left.testCaseId,
+        executionId: row.left.executionId,
+      },
+    })}\n`,
+  );
+  writeFileSync(
+    path.join(headerTrace, BOUNDARY_COMMITMENTS_FILENAME),
+    `${JSON.stringify(
+      {
+        executionId: row.left.executionId,
+        runId: row.left.runId,
+        toolOutputCommitment: row.left.toolOutputDigest,
+        llmInputCommitment: row.left.llmInputDigest,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  row.left.traceDir = "traces/header";
+  writeFileSync(
+    path.join(headerOnlyDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  writeTamperManifest(headerOnlyDir, [row]);
+  const headerVerdict = verifySaved(headerOnlyDir);
+  if (headerVerdict.ok || headerVerdict.pairs[0]?.integrity[0]?.status !== "header_only_trace") {
+    throw new Error(
+      `header-only expected header_only_trace, got ${headerVerdict.pairs[0]?.integrity[0]?.status}`,
+    );
+  }
+  tampers.push({
+    id: "header-only",
+    ok: true,
+    detail: headerVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  const absoluteDir = path.join(evidenceDir, "tampers", "absolute-trace");
+  rmSync(absoluteDir, { recursive: true, force: true });
+  mkdirSync(absoluteDir, { recursive: true });
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = structuredClone(table.find((r) => r.pair === "G01-matching-stages")!);
+  row.left.traceDir = path.resolve(evidenceDir, row.left.traceDir!);
+  writeFileSync(
+    path.join(absoluteDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  writeTamperManifest(absoluteDir, [row]);
+  const absoluteVerdict = verifySaved(absoluteDir);
+  if (
+    absoluteVerdict.ok ||
+    absoluteVerdict.pairs[0]?.integrity[0]?.status !== "external_trace_ref"
+  ) {
+    throw new Error(
+      `absolute trace expected external_trace_ref, got ${absoluteVerdict.pairs[0]?.integrity[0]?.status}`,
+    );
+  }
+  tampers.push({
+    id: "absolute-trace",
+    ok: true,
+    detail: absoluteVerdict.failures[0] ?? "rejected",
+  });
+}
+{
+  const foreignDir = path.join(evidenceDir, "tampers", "foreign-sidecar");
+  rmSync(foreignDir, { recursive: true, force: true });
+  mkdirSync(foreignDir, { recursive: true });
+  if (existsSync(path.join(evidenceDir, "traces"))) {
+    cpSync(path.join(evidenceDir, "traces"), path.join(foreignDir, "traces"), {
+      recursive: true,
+    });
+  }
+  const table = JSON.parse(readFileSync(tablePath, "utf8")) as TableRow[];
+  const row = structuredClone(table.find((r) => r.pair === "G01-matching-stages")!);
+  const sideTrace = path.join(foreignDir, row.left.traceDir!);
+  const boundaryPath = path.join(sideTrace, BOUNDARY_COMMITMENTS_FILENAME);
+  const boundary = JSON.parse(readFileSync(boundaryPath, "utf8")) as {
+    executionId: string;
+    runId: string | null;
+    toolOutputCommitment: string;
+    llmInputCommitment: string;
+  };
+  boundary.runId = "run_foreign_sidecar";
+  writeFileSync(boundaryPath, `${JSON.stringify(boundary, null, 2)}\n`);
+  writeFileSync(
+    path.join(foreignDir, "per-stage-commitments.json"),
+    `${JSON.stringify([row], null, 2)}\n`,
+  );
+  writeTamperManifest(foreignDir, [row]);
+  const foreignVerdict = verifySaved(foreignDir);
+  if (
+    foreignVerdict.ok ||
+    foreignVerdict.pairs[0]?.integrity[0]?.status !== "foreign_sidecar_run"
+  ) {
+    throw new Error(
+      `foreign sidecar expected foreign_sidecar_run, got ${foreignVerdict.pairs[0]?.integrity[0]?.status}`,
+    );
+  }
+  tampers.push({
+    id: "foreign-sidecar",
+    ok: true,
+    detail: foreignVerdict.failures[0] ?? "rejected",
   });
 }
 tampers.push(
@@ -617,6 +806,7 @@ tampers.push(
     path.join(malformedDir, "per-stage-commitments.json"),
     `${JSON.stringify([row], null, 2)}\n`,
   );
+  writeTamperManifest(malformedDir, [row]);
   const malformedVerdict = verifySaved(malformedDir);
   if (malformedVerdict.ok) {
     throw new Error("malformed side unexpectedly verified");

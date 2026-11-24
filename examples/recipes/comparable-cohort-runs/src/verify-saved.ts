@@ -84,7 +84,12 @@ export type IntegrityStatus =
   | "empty_table"
   | "missing_right"
   | "class_mismatch"
-  | "unverifiable";
+  | "unverifiable"
+  | "external_trace_ref"
+  | "header_only_trace"
+  | "foreign_sidecar_run"
+  | "manifest_missing"
+  | "manifest_mismatch";
 
 /** Sidecar written beside each physical capture; digests must match the table. */
 export const BOUNDARY_COMMITMENTS_FILENAME = "boundary-commitments.json";
@@ -327,17 +332,22 @@ function metaString(
 
 /**
  * Resolve a saved traceDir against the evidence packet root.
- * Packet-relative paths (preferred) resolve under evidenceDir; absolute paths
- * are accepted only when they already exist (legacy packets).
+ * Only packet-relative paths are accepted — absolute/external refs fail closed.
  */
 export function resolvePacketTraceDir(
   evidenceDir: string,
   traceDir: string,
 ): string {
   if (path.isAbsolute(traceDir)) {
-    return traceDir;
+    throw new Error(`external_trace_ref: absolute traceDir rejected (${traceDir})`);
   }
-  return path.resolve(evidenceDir, traceDir);
+  const resolved = path.resolve(evidenceDir, traceDir);
+  const root = path.resolve(evidenceDir);
+  const relative = path.relative(root, resolved);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`external_trace_ref: traceDir escapes packet (${traceDir})`);
+  }
+  return resolved;
 }
 
 /** Store traces as paths relative to the evidence packet (portable reopen). */
@@ -497,10 +507,26 @@ export function checkSideIntegrity(
     return { side: which, status: "ok", detail: "digests hold (no traceDir claimed)" };
   }
 
-  const resolvedTraceDir =
-    evidenceDir !== undefined
-      ? resolvePacketTraceDir(evidenceDir, side.traceDir)
-      : side.traceDir;
+  let resolvedTraceDir: string;
+  try {
+    resolvedTraceDir =
+      evidenceDir !== undefined
+        ? resolvePacketTraceDir(evidenceDir, side.traceDir)
+        : side.traceDir;
+  } catch (error) {
+    return {
+      side: which,
+      status: "external_trace_ref",
+      detail: error instanceof Error ? error.message : String(error),
+    };
+  }
+  if (evidenceDir === undefined && path.isAbsolute(side.traceDir)) {
+    return {
+      side: which,
+      status: "external_trace_ref",
+      detail: `absolute traceDir rejected without packet root (${side.traceDir})`,
+    };
+  }
 
   const parsed = parseTraceDir(resolvedTraceDir);
   if (!parsed.ok) {
@@ -511,6 +537,16 @@ export function checkSideIntegrity(
       side: which,
       status: "unverifiable",
       detail: parsed.detail,
+    };
+  }
+
+  // Header-only traces (run_started alone) are not completed stage evidence.
+  const nonHeader = parsed.events.filter((event) => event.event !== "run_started");
+  if (nonHeader.length === 0) {
+    return {
+      side: which,
+      status: "header_only_trace",
+      detail: "trace contains only run_started header — completed stage evidence missing",
     };
   }
 
@@ -538,6 +574,18 @@ export function checkSideIntegrity(
       side: which,
       status: "execution_link_broken",
       detail: `boundary executionId mismatch (saved=${side.executionId} boundary=${boundary.value.executionId})`,
+    };
+  }
+  if (
+    side.runId &&
+    boundary.value.runId !== null &&
+    boundary.value.runId !== undefined &&
+    boundary.value.runId !== side.runId
+  ) {
+    return {
+      side: which,
+      status: "foreign_sidecar_run",
+      detail: `boundary runId ${boundary.value.runId} does not match side runId ${side.runId}`,
     };
   }
 
@@ -603,10 +651,33 @@ export function loadTable(tablePath: string): TableRow[] {
   return raw as TableRow[];
 }
 
+function isSideRecord(value: unknown): value is SideRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export function verifyTableRow(
   row: TableRow,
   evidenceDir?: string,
 ): PairVerifyResult {
+  if (!isSideRecord(row.left)) {
+    return {
+      pair: typeof row.pair === "string" ? row.pair : "unknown",
+      savedClass: typeof row.class === "string" ? row.class : "partial_unknown",
+      recomputedClass: "partial_unknown",
+      note: "malformed table row: left side missing",
+      classMatches: false,
+      leftRunId: null,
+      rightRunId: null,
+      integrity: [
+        {
+          side: "left",
+          status: "malformed_side",
+          detail: "left side missing or not an object",
+        },
+      ],
+      ok: false,
+    };
+  }
   const integrity: SideIntegrity[] = [
     checkSideIntegrity(row.left, "left", evidenceDir),
   ];
@@ -653,7 +724,12 @@ export function verifyTableRow(
       i.status === "missing_trace_ref" ||
       i.status === "corrupt_jsonl" ||
       i.status === "empty_table" ||
-      i.status === "unverifiable",
+      i.status === "unverifiable" ||
+      i.status === "external_trace_ref" ||
+      i.status === "header_only_trace" ||
+      i.status === "foreign_sidecar_run" ||
+      i.status === "manifest_missing" ||
+      i.status === "manifest_mismatch",
   );
   const classMatches = compared.class === row.class;
   return {
@@ -669,8 +745,50 @@ export function verifyTableRow(
   };
 }
 
+interface EvidenceManifest {
+  pairs?: Array<{
+    pair?: string;
+    leftRunId?: string | null;
+    rightRunId?: string | null;
+    leftExecutionId?: string;
+    rightExecutionId?: string | null;
+    leftTraceDir?: string | null;
+    rightTraceDir?: string | null;
+  }>;
+}
+
 export function verifySaved(evidenceDir: string): EvidenceVerifyResult {
   const resolvedEvidenceDir = path.resolve(evidenceDir);
+  const failures: string[] = [];
+  const manifestPath = path.join(resolvedEvidenceDir, "manifest.json");
+  if (!existsSync(manifestPath)) {
+    return {
+      ok: false,
+      pairs: [],
+      failures: [`manifest_missing: ${manifestPath}`],
+    };
+  }
+  let manifest: EvidenceManifest;
+  try {
+    const raw = JSON.parse(readFileSync(manifestPath, "utf8")) as unknown;
+    if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+      return {
+        ok: false,
+        pairs: [],
+        failures: [`manifest_mismatch: manifest.json is not an object`],
+      };
+    }
+    manifest = raw as EvidenceManifest;
+  } catch (error) {
+    return {
+      ok: false,
+      pairs: [],
+      failures: [
+        `manifest_mismatch: corrupt manifest.json (${error instanceof Error ? error.message : String(error)})`,
+      ],
+    };
+  }
+
   const tablePath = path.join(resolvedEvidenceDir, "per-stage-commitments.json");
   if (!existsSync(tablePath)) {
     return {
@@ -698,12 +816,71 @@ export function verifySaved(evidenceDir: string): EvidenceVerifyResult {
       failures: [`empty table ${tablePath}`],
     };
   }
+
+  if (Array.isArray(manifest.pairs)) {
+    for (const row of table) {
+      if (!isSideRecord(row.left)) continue;
+      const declared = manifest.pairs.find((entry) => entry.pair === row.pair);
+      if (!declared) {
+        failures.push(`manifest_mismatch: table pair ${row.pair} missing from manifest`);
+        continue;
+      }
+      if (
+        declared.leftExecutionId !== undefined &&
+        declared.leftExecutionId !== row.left.executionId
+      ) {
+        failures.push(
+          `manifest_mismatch: ${row.pair} left executionId (${row.left.executionId} vs ${declared.leftExecutionId})`,
+        );
+      }
+      if (
+        declared.leftRunId !== undefined &&
+        declared.leftRunId !== row.left.runId
+      ) {
+        failures.push(
+          `manifest_mismatch: ${row.pair} left runId (${row.left.runId} vs ${declared.leftRunId})`,
+        );
+      }
+      if (
+        declared.leftTraceDir !== undefined &&
+        declared.leftTraceDir !== null &&
+        row.left.traceDir !== undefined &&
+        declared.leftTraceDir !== row.left.traceDir
+      ) {
+        failures.push(
+          `manifest_mismatch: ${row.pair} left traceDir does not match manifest`,
+        );
+      }
+      if (row.right && isSideRecord(row.right)) {
+        if (
+          declared.rightExecutionId !== undefined &&
+          declared.rightExecutionId !== null &&
+          declared.rightExecutionId !== row.right.executionId
+        ) {
+          failures.push(
+            `manifest_mismatch: ${row.pair} right executionId mismatch`,
+          );
+        }
+        if (
+          declared.rightRunId !== undefined &&
+          declared.rightRunId !== row.right.runId
+        ) {
+          failures.push(`manifest_mismatch: ${row.pair} right runId mismatch`);
+        }
+      }
+    }
+  } else {
+    failures.push("manifest_mismatch: manifest.pairs missing or not an array");
+  }
+
   const pairs = table.map((row) => verifyTableRow(row, resolvedEvidenceDir));
-  const failures = pairs
-    .filter((p) => !p.ok)
-    .map(
-      (p) =>
-        `${p.pair}: saved=${p.savedClass} recomputed=${p.recomputedClass} integrity=${p.integrity.map((i) => `${i.side}:${i.status}`).join(",")}`,
-    );
+  failures.push(
+    ...pairs
+      .filter((p) => !p.ok)
+      .map(
+        (p) =>
+          `${p.pair}: saved=${p.savedClass} recomputed=${p.recomputedClass} integrity=${p.integrity.map((i) => `${i.side}:${i.status}`).join(",")}`,
+      ),
+  );
   return { ok: failures.length === 0, pairs, failures };
 }

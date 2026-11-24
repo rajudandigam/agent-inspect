@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.43"
 publishedVersion: "6.31.43"
-pendingPublishVersion: "6.31.43"
-currentTrain: "n3-ordering-refund-parity"
-trainStatus: "N3 local — unfinished-after ordering + refund identity/approval; awaiting gate/publish"
+pendingPublishVersion: "6.31.44"
+currentTrain: "n4-saved-evidence-repairs"
+trainStatus: "N4 gated — commit/push for Version Packages → Trusted Publish"
 executionMode: "maintainer-reviewed"
-namedTrain: "n3-ordering-refund-parity"
+namedTrain: "n4-saved-evidence-repairs"
 branch: "main"
-currentChunk: "N3 validate → release"
-lastConfirmedCommit: "9f803561c22ce2edcad1fc711fd7be8064d3e2d7"
-lastValidationLevel: "N3 focused checks+recipe green; chunk gate pending"
-nextAction: "Gate + Version Packages → Trusted Publish 6.31.43; then N4; leave #496/#506 red"
+currentChunk: "N4 commit/push/Version Packages"
+lastConfirmedCommit: "3379f0a6a8ec2dce8457c7abaf540ef30a1d72a4"
+lastValidationLevel: "build+typecheck+test+size+recipes+fixtures+pack:smoke green"
+nextAction: "Push N4; merge Version Packages; verify npm 6.31.44; then N5–N7; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -74,9 +74,9 @@ completedChunks:
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
   - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
   - "N2 eval/check logical-call token-budget parity (6.31.42 Publish 45259714561)"
-  - "N3 ordering/refund + Frank cases (pending 6.31.43)"
+  - "N3 ordering/refund + Frank cases (6.31.43 Publish 45294868131)"
+  - "N4 Gary/Uduak/Roy/Om saved-evidence repairs (gated; pending 6.31.44 publish)"
 queuedChunks:
-  - "N4 older evidence promises"
   - "N5 Kyle timeout correlated read-back"
   - "N6 Frank acceptance design (manual)"
   - "N7 docs; keep #496/#506 red"
@@ -107,14 +107,15 @@ amendments:
   - "2026-11-21 6.31.40 published (Trusted Publish 44942237531); #548 superseded; leave #496/#506 red"
   - "2026-11-22 6.31.41 published (Trusted Publish 45112687091); N1 malformed budget fail-closed"
   - "2026-11-23 6.31.42 published (Trusted Publish 45259714561); N2 eval/check logical-call token-budget parity"
+  - "2026-11-23 6.31.43 published (Trusted Publish 45294868131); N3 unfinished-after order + refund identity joins"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.42
-  PENDING_PUBLISH: 6.31.43
-  ACTIVE: N3 Version Packages / Trusted Publish; partner #484/#437/#450; leave #496/#506 red
-  NEXT: N4 after 6.31.43; no 6.32 without EVIDENCE_GATE
+  LAST_PUBLISHED_RELEASE: 6.31.43
+  PENDING_PUBLISH: 6.31.44
+  ACTIVE: N4 gated — push → Version Packages → Trusted Publish; leave #496/#506 red
+  NEXT: N5 after 6.31.44; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded

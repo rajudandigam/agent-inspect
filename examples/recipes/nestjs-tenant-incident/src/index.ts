@@ -635,6 +635,50 @@ function rewriteOutcomes(
       }),
       expectDetail: /ambiguous policy-consumption/,
     },
+    {
+      id: "N09h-missing-declared-resultRef",
+      path: rewriteOutcomes(good.tracePath, "N09h-missing-declared-resultRef", (rows) => {
+        const declared = rows.find(
+          (row) => row.event === "outcome_observed" && row.name === "declared-tenant-context",
+        );
+        if (!declared?.evidence) return;
+        delete (declared.evidence as Record<string, unknown>).resultRef;
+      }),
+      expectDetail: /missing declared\/retrieved\/consumed resultRef/,
+    },
+    {
+      id: "N09i-failed-consumption",
+      path: rewriteOutcomes(good.tracePath, "N09i-failed-consumption", (rows) => {
+        const consumed = rows.find(
+          (row) => row.event === "outcome_observed" && row.name === "policy-consumption",
+        );
+        if (!consumed) return;
+        consumed.status = "failed";
+      }),
+      expectDetail: /policy consumption status is not success/,
+    },
+    {
+      id: "N09j-beta-body-under-alpha-label",
+      path: rewriteOutcomes(good.tracePath, "N09j-beta-body-under-alpha-label", (rows) => {
+        const retrieved = rows.find(
+          (row) => row.event === "outcome_observed" && row.name === "policy-retrieval",
+        );
+        const consumed = rows.find(
+          (row) => row.event === "outcome_observed" && row.name === "policy-consumption",
+        );
+        if (!retrieved?.evidence || !consumed?.evidence) return;
+        const betaBody = policyCommitment({
+          policyId: "policy-beta",
+          tenantRef: TENANT_BETA,
+          text: "beta policy body under alpha labels",
+        });
+        (retrieved.evidence as Record<string, unknown>).policyCommitment = betaBody;
+        (retrieved.evidence as Record<string, unknown>).policyTenantRef = TENANT_ALPHA;
+        (consumed.evidence as Record<string, unknown>).consumedPolicyCommitment = betaBody;
+        (consumed.evidence as Record<string, unknown>).policyTenantRef = TENANT_ALPHA;
+      }),
+      expectDetail: /commitment tenant .* contradicts declared/,
+    },
   ];
 
   for (const c of cases) {

@@ -21,6 +21,7 @@ import {
   runWaitScenario,
   type WaitObservation,
 } from "./wait-diagnostics.js";
+import { verifySavedAttemptWaits } from "./verify-saved.js";
 
 const URL_REDACTION_OPTS = {
   sensitiveKeys: ["token", "key", "password", "secret", "authorization"],
@@ -357,6 +358,35 @@ await inspectRun(
         });
       }
 
+      // Per-attempt wait/readiness facts bound to a1/a2 (N4 / Om). Scenario
+      // matrix remains separate; unknown when a fact is unavailable.
+      const a1Wait: WaitObservation = {
+        clock: "injected-synthetic",
+        documentLoading: "unknown",
+        inFlight: "unknown",
+        obstruction: "unknown",
+        elapsedMs: a1.locator.waitBudgetMs,
+        budgetMs: a1.locator.waitBudgetMs,
+        remainingMs: 0,
+        stopReason: "known-not-ready",
+        ready: a1.locator.ready,
+      };
+      const a2Wait: WaitObservation = {
+        clock: "injected-synthetic",
+        documentLoading: "complete",
+        inFlight: "none",
+        obstruction: "none",
+        elapsedMs: Math.min(25, a2.locator.waitBudgetMs),
+        budgetMs: a2.locator.waitBudgetMs,
+        remainingMs: Math.max(0, a2.locator.waitBudgetMs - 25),
+        stopReason: "ready",
+        ready: a2.locator.ready,
+      };
+      const attemptBoundWaits = {
+        a1: { ...a1Wait },
+        a2: { ...a2Wait },
+      };
+
       await observeOutcome("om.attemptComparison", {
         expectation: "failed a1 then successful a2 with retryOf and observed transition",
         status:
@@ -373,6 +403,7 @@ await inspectRun(
             frame: a1.locator.frame,
             shadow: a1.locator.shadow,
             waitBudgetMs: a1.locator.waitBudgetMs,
+            wait: a1Wait,
             note: "LocatorNotFound is not evidence of overlay/obstruction",
           },
           a2: {
@@ -381,9 +412,11 @@ await inspectRun(
             matchCount: a2.locator.matchCount,
             ready: a2.locator.ready,
             observedTransition: a2.observedTransition,
+            wait: a2Wait,
           },
           comparison: cmp,
           waitObservations,
+          attemptBoundWaits,
         },
         evidence: {
           routeTemplate: a2.routeTemplate,
@@ -392,7 +425,7 @@ await inspectRun(
         },
       });
       retainedWaitObservations = waitObservations;
-      return { cmp, waitObservations };
+      return { cmp, waitObservations, attemptBoundWaits };
     });
   },
   { silent, traceDir, metadata: { recipe: "browser-mcp-observed-outcomes" } },
@@ -425,6 +458,23 @@ console.log(
 console.log(
   "  a2: retryOf=a1 matchCount=1 ready=true observed cart→checkout routeTemplate=/orders/:id",
 );
+console.log(
+  "  attempt-bound waits: a1 stop=known-not-ready a2 stop=ready (injected clock; not live browser)",
+);
+
+{
+  const reopen = verifySavedAttemptWaits(traceDir);
+  if (!reopen.ok) {
+    throw new Error(`om attempt-bound wait reopen failed: ${reopen.detail}`);
+  }
+  console.log(`om-attempt-bound-wait-reopen: ok detail=${reopen.detail}`);
+  console.log(
+    `  a1: elapsed=${reopen.a1?.elapsedMs} remaining=${reopen.a1?.remainingMs} ready=${reopen.a1?.ready} stop=${reopen.a1?.stopReason}`,
+  );
+  console.log(
+    `  a2: elapsed=${reopen.a2?.elapsedMs} remaining=${reopen.a2?.remainingMs} ready=${reopen.a2?.ready} stop=${reopen.a2?.stopReason}`,
+  );
+}
 
 {
   // Print retained waitObservations from the executed comparison step (do not re-run).
