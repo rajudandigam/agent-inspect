@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.45"
-publishedVersion: "6.31.45"
+baselineVersion: "6.31.46"
+publishedVersion: "6.31.46"
 pendingPublishVersion: "6.31.46"
 currentTrain: "n6-n7-docs-diagnostics"
 trainStatus: "N5 published 6.31.45; N6+N7 gated — Frank design + finding preview/docs"

@@ -1,5 +1,12 @@
 # @agent-inspect/openai-agents
 
+## 6.31.46
+
+### Patch Changes
+
+- Updated dependencies [a9f3fc9]
+  - agent-inspect@6.31.46
+
 ## 6.31.45
 
 ### Patch Changes
