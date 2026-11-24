@@ -825,6 +825,71 @@ describe("built-in run, tool, and LLM checks", () => {
     }
   });
 
+  it("does not let a finished after peer mask an unfinished after (R1/N3)", () => {
+    // Start lookup → start unfinished refund → complete lookup → complete second refund.
+    const lookup = persisted("r1-lookup", {
+      kind: "TOOL",
+      name: "tool:lookup_order",
+      attributes: { toolName: "lookup_order" },
+      timestamp: "2026-06-26T00:00:00.000Z",
+      startedAt: "2026-06-26T00:00:00.000Z",
+      endedAt: "2026-06-26T00:00:02.000Z",
+    });
+    const unfinishedRefund = persisted("r1-refund-running", {
+      kind: "TOOL",
+      name: "tool:issue_refund",
+      status: "running",
+      attributes: { toolName: "issue_refund" },
+      timestamp: "2026-06-26T00:00:01.000Z",
+      startedAt: "2026-06-26T00:00:01.000Z",
+    });
+    const finishedRefund = persisted("r1-refund-finished", {
+      kind: "TOOL",
+      name: "tool:issue_refund",
+      attributes: { toolName: "issue_refund" },
+      timestamp: "2026-06-26T00:00:03.000Z",
+      startedAt: "2026-06-26T00:00:03.000Z",
+      endedAt: "2026-06-26T00:00:04.000Z",
+    });
+
+    for (const mode of ["happens-before", "all-occurrences"] as const) {
+      const orderOnly = runTraceChecks(
+        { read: readResult([lookup, unfinishedRefund, finishedRefund]) },
+        {
+          rules: [
+            createToolOrderingRule({ before: "lookup_order", after: "issue_refund", mode }),
+          ],
+        },
+      );
+      expect(orderOnly.status).toBe("fail");
+      expect(orderOnly.findings[0]).toMatchObject({
+        ruleId: "tool.order",
+        actual: expect.objectContaining({ unfinishedAfter: true }),
+      });
+      expect(orderOnly.findings[0]?.evidence.map((item) => item.eventId)).toEqual(
+        expect.arrayContaining(["r1-lookup", "r1-refund-running"]),
+      );
+    }
+
+    const withRunStatus = runTraceChecks(
+      { read: readResult([lookup, unfinishedRefund, finishedRefund]) },
+      {
+        rules: [
+          createToolOrderingRule({
+            before: "lookup_order",
+            after: "issue_refund",
+            mode: "all-occurrences",
+          }),
+          createRunStatusRule(),
+        ],
+      },
+    );
+    expect(withRunStatus.status).toBe("fail");
+    expect(withRunStatus.findings.map((finding) => finding.ruleId)).toEqual(
+      expect.arrayContaining(["tool.order", "run.status"]),
+    );
+  });
+
   it("fails order when after has started but never terminated", () => {
     const finishedLookup = persisted("lookup-before-running-after", {
       kind: "TOOL",

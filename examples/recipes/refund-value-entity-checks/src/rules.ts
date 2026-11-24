@@ -1,6 +1,16 @@
 /**
  * Recipe-local TraceCheckRules — public extension API only.
  * Not registered in CLI check --config.
+ *
+ * N3 / Frank policy (recipe-local, not universal TraceContract operators):
+ * - Bind refund → lookup by orderId (and operationId when declared); refuse
+ *   ambiguous conflicting candidates; never use global first-lookup.
+ * - Above-threshold refunds need a successful approval completed before the
+ *   refund starts (same order / operation identity when declared).
+ * - Ceiling inspects finished and attempted (running) refund amounts.
+ * - Exact tool-name matching. Duplicate same-orderId retrieval is allowed.
+ * - Per-call vs cumulative ceilings and negative-amount domains stay recipe
+ *   policy; this file does not invent universal rules for those.
  */
 import {
   extractToolArgumentPayload,
@@ -12,7 +22,7 @@ import {
 } from "agent-inspect/checks";
 import type { PersistedInspectEvent } from "agent-inspect/readers";
 
-/** Ceiling in USD (finite number; no string coercion). */
+/** Ceiling in USD (finite number; no string coercion). Per-call, not cumulative. */
 export const REFUND_CEILING_USD = 100;
 /** Amounts above this USD value require authorized approval evidence. */
 export const APPROVAL_THRESHOLD_USD = 50;
@@ -25,17 +35,25 @@ function toolName(event: PersistedInspectEvent): string {
   return name.startsWith("tool:") ? name.slice("tool:".length) : name;
 }
 
+function toolsNamed(
+  context: TraceCheckContext,
+  name: string,
+  options?: { includeRunning?: boolean },
+): PersistedInspectEvent[] {
+  const events = context.logicalEvents ?? context.events;
+  return events.filter((event) => {
+    if (event.kind !== "TOOL") return false;
+    if (toolName(event) !== name) return false;
+    if (options?.includeRunning) return true;
+    return event.status !== "running";
+  });
+}
+
 function finishedTools(
   context: TraceCheckContext,
   name: string,
 ): PersistedInspectEvent[] {
-  const events = context.logicalEvents ?? context.events;
-  return events.filter(
-    (event) =>
-      event.kind === "TOOL" &&
-      event.status !== "running" &&
-      toolName(event) === name,
-  );
+  return toolsNamed(context, name, { includeRunning: false });
 }
 
 function argAt(
@@ -47,6 +65,30 @@ function argAt(
   const resolved = resolveJsonPointer(payload.value, pointer);
   if (!resolved.found) return { present: false, value: undefined };
   return { present: true, value: resolved.value };
+}
+
+function stringArg(
+  event: PersistedInspectEvent,
+  pointer: string,
+): string | undefined {
+  const got = argAt(event, pointer);
+  if (!got.present || typeof got.value !== "string" || got.value.length === 0) {
+    return undefined;
+  }
+  return got.value;
+}
+
+function eventStartMs(event: PersistedInspectEvent): number | undefined {
+  const raw = event.startedAt ?? event.timestamp;
+  if (typeof raw !== "string" || raw.length === 0) return undefined;
+  const ms = Date.parse(raw);
+  return Number.isFinite(ms) ? ms : undefined;
+}
+
+function eventEndMs(event: PersistedInspectEvent): number | undefined {
+  if (typeof event.endedAt !== "string" || event.endedAt.length === 0) return undefined;
+  const ms = Date.parse(event.endedAt);
+  return Number.isFinite(ms) ? ms : undefined;
 }
 
 function evidenceFor(event: PersistedInspectEvent, path?: string): TraceCheckEvidence {
@@ -96,7 +138,48 @@ function readUsdAmount(
 }
 
 /**
- * Refund amount ≤ ceiling (USD number).
+ * Select lookup candidates for a refund by orderId (+ operationId when declared).
+ * Returns ambiguous when multiple conflicting identities match.
+ */
+function selectLookupForRefund(
+  refund: PersistedInspectEvent,
+  lookups: readonly PersistedInspectEvent[],
+):
+  | { status: "ok"; lookup: PersistedInspectEvent }
+  | { status: "missing" }
+  | { status: "ambiguous"; candidates: PersistedInspectEvent[] }
+  | { status: "lookup-order-missing"; lookup: PersistedInspectEvent } {
+  const orderId = stringArg(refund, "/orderId");
+  if (!orderId) return { status: "missing" };
+
+  const sameOrder = lookups.filter((event) => stringArg(event, "/orderId") === orderId);
+  if (sameOrder.length === 0) return { status: "missing" };
+
+  const refundOp = stringArg(refund, "/operationId");
+  if (refundOp !== undefined) {
+    const byOp = sameOrder.filter((event) => stringArg(event, "/operationId") === refundOp);
+    if (byOp.length === 1) return { status: "ok", lookup: byOp[0]! };
+    if (byOp.length === 0) return { status: "missing" };
+    return { status: "ambiguous", candidates: byOp };
+  }
+
+  const distinctOps = new Set(
+    sameOrder
+      .map((event) => stringArg(event, "/operationId"))
+      .filter((value): value is string => value !== undefined),
+  );
+  if (distinctOps.size > 1) {
+    return { status: "ambiguous", candidates: [...sameOrder] };
+  }
+
+  const lookup = sameOrder[0]!;
+  const lookupOrder = stringArg(lookup, "/orderId");
+  if (!lookupOrder) return { status: "lookup-order-missing", lookup };
+  return { status: "ok", lookup };
+}
+
+/**
+ * Refund amount ≤ ceiling (USD number). Inspects finished and running attempts.
  */
 export function createRefundAmountCeilingRule(): TraceCheckRule {
   return {
@@ -105,7 +188,7 @@ export function createRefundAmountCeilingRule(): TraceCheckRule {
     defaultSeverity: "error",
     evaluate(context) {
       const findings: TraceCheckFinding[] = [];
-      for (const event of finishedTools(context, "issue_refund")) {
+      for (const event of toolsNamed(context, "issue_refund", { includeRunning: true })) {
         const amount = readUsdAmount(event);
         if (!amount.ok) {
           findings.push(
@@ -126,7 +209,10 @@ export function createRefundAmountCeilingRule(): TraceCheckRule {
               `issue_refund amount ${amount.amount} USD exceeds ceiling ${REFUND_CEILING_USD} USD.`,
               [evidenceFor(event, "arguments.amount")],
               { unit: "USD", ceiling: REFUND_CEILING_USD },
-              amount.amount,
+              {
+                amount: amount.amount,
+                ...(event.status === "running" ? { attempted: true } : {}),
+              },
             ),
           );
         }
@@ -137,8 +223,8 @@ export function createRefundAmountCeilingRule(): TraceCheckRule {
 }
 
 /**
- * Bind refund orderId to the first lookup_order in the same physical run.
- * Does not grab a global "last lookup" across runs.
+ * Bind refund orderId to a same-run lookup_order with matching identity.
+ * Unrelated earlier lookups for other orders do not steal the bind.
  */
 export function createRefundEntityBindRule(): TraceCheckRule {
   return {
@@ -165,46 +251,61 @@ export function createRefundEntityBindRule(): TraceCheckRule {
         const lookups = finishedTools(context, "lookup_order").filter(
           (event) => event.runId === refund.runId,
         );
-        if (lookups.length === 0) {
+        const selected = selectLookupForRefund(refund, lookups);
+        if (selected.status === "missing") {
           findings.push(
             fail(
               "recipe.refund.entity-bind",
-              `No finished lookup_order in run ${refund.runId} to bind refund orderId.`,
+              `No finished lookup_order in run ${refund.runId} matching refund identity.`,
               [evidenceFor(refund, "arguments.orderId")],
-              { runId: refund.runId, orderId: order.value },
-              { lookupCount: 0 },
+              {
+                runId: refund.runId,
+                orderId: order.value,
+                operationId: stringArg(refund, "/operationId"),
+              },
+              { lookupCount: lookups.length },
             ),
           );
           continue;
         }
-        const firstLookup = lookups[0]!;
-        const lookupOrder = argAt(firstLookup, "/orderId");
-        if (
-          !lookupOrder.present ||
-          typeof lookupOrder.value !== "string" ||
-          lookupOrder.value.length === 0
-        ) {
+        if (selected.status === "ambiguous") {
+          findings.push(
+            fail(
+              "recipe.refund.entity-bind",
+              `Ambiguous lookup_order join for refund orderId ${order.value}; refuse conflicting candidates.`,
+              [
+                evidenceFor(refund, "arguments.orderId"),
+                ...selected.candidates.map((event) => evidenceFor(event, "arguments.orderId")),
+              ],
+              { orderId: order.value, uniqueJoin: true },
+              { candidateCount: selected.candidates.length },
+            ),
+          );
+          continue;
+        }
+        if (selected.status === "lookup-order-missing") {
           findings.push(
             fail(
               "recipe.refund.entity-bind",
               "lookup_order orderId evidence missing or not a string.",
-              [evidenceFor(firstLookup, "arguments.orderId"), evidenceFor(refund)],
+              [evidenceFor(selected.lookup, "arguments.orderId"), evidenceFor(refund)],
               "string orderId",
-              lookupOrder.value,
+              argAt(selected.lookup, "/orderId").value,
             ),
           );
           continue;
         }
-        if (lookupOrder.value !== order.value) {
+        const lookupOrder = stringArg(selected.lookup, "/orderId");
+        if (lookupOrder !== order.value) {
           findings.push(
             fail(
               "recipe.refund.entity-bind",
-              `Refund orderId ${order.value} does not match first lookup_order ${lookupOrder.value} in run ${refund.runId}.`,
+              `Refund orderId ${order.value} does not match bound lookup_order ${lookupOrder} in run ${refund.runId}.`,
               [
-                evidenceFor(firstLookup, "arguments.orderId"),
+                evidenceFor(selected.lookup, "arguments.orderId"),
                 evidenceFor(refund, "arguments.orderId"),
               ],
-              lookupOrder.value,
+              lookupOrder,
               order.value,
             ),
           );
@@ -216,9 +317,8 @@ export function createRefundEntityBindRule(): TraceCheckRule {
 }
 
 /**
- * Amounts above APPROVAL_THRESHOLD_USD require authorized approval for the same order.
- * Below-threshold refunds may omit approval. An unconstrained "no approval" branch
- * does not satisfy above-threshold cases.
+ * Amounts above APPROVAL_THRESHOLD_USD require a successful approval completed
+ * before the refund starts, for the same order (and operationId when declared).
  */
 export function createRefundApprovalGateRule(): TraceCheckRule {
   return {
@@ -235,9 +335,7 @@ export function createRefundApprovalGateRule(): TraceCheckRule {
         }
         if (amount.amount <= APPROVAL_THRESHOLD_USD) continue;
 
-        const order = argAt(refund, "/orderId");
-        const orderId =
-          order.present && typeof order.value === "string" ? order.value : undefined;
+        const orderId = stringArg(refund, "/orderId");
         if (!orderId) {
           findings.push(
             fail(
@@ -251,25 +349,38 @@ export function createRefundApprovalGateRule(): TraceCheckRule {
           continue;
         }
 
+        const refundStart = eventStartMs(refund);
+        const refundOp = stringArg(refund, "/operationId");
         const approvals = finishedTools(context, "record_approval").filter((event) => {
           if (event.runId !== refund.runId) return false;
-          const approvedOrder = argAt(event, "/orderId");
+          if (event.status !== "ok") return false;
+          if (stringArg(event, "/orderId") !== orderId) return false;
           const authorized = argAt(event, "/authorized");
-          return (
-            approvedOrder.present &&
-            approvedOrder.value === orderId &&
-            authorized.present &&
-            authorized.value === true
-          );
+          if (!authorized.present || authorized.value !== true) return false;
+          if (refundOp !== undefined && stringArg(event, "/operationId") !== refundOp) {
+            return false;
+          }
+          const approvalEnd = eventEndMs(event);
+          if (refundStart === undefined || approvalEnd === undefined) return false;
+          // Successful approval must complete before the refund starts.
+          return approvalEnd <= refundStart;
         });
 
         if (approvals.length === 0) {
           findings.push(
             fail(
               "recipe.refund.approval-gate",
-              `Refund ${amount.amount} USD for ${orderId} exceeds threshold ${APPROVAL_THRESHOLD_USD} USD without authorized record_approval in the same run.`,
+              `Refund ${amount.amount} USD for ${orderId} exceeds threshold ${APPROVAL_THRESHOLD_USD} USD without a successful record_approval completed before the refund.`,
               [evidenceFor(refund, "arguments.amount")],
-              { unit: "USD", threshold: APPROVAL_THRESHOLD_USD, orderId, authorized: true },
+              {
+                unit: "USD",
+                threshold: APPROVAL_THRESHOLD_USD,
+                orderId,
+                authorized: true,
+                status: "ok",
+                completedBeforeRefund: true,
+                operationId: refundOp,
+              },
               { approvalCount: 0 },
             ),
           );

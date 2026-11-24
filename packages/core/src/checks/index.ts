@@ -2323,10 +2323,15 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
         return findings;
       }
 
-      // Finished after endpoints for encounter order; when after is only
-      // running, include those starts so after-start without a terminal still
-      // participates in ordering.
-      const afterForOrder = afterEvents.length > 0 ? afterEvents : afterRunning;
+      // Causal after set always includes unfinished after starts. A finished
+      // peer after must not mask an earlier unfinished after (R1 / N3).
+      const afterForOrder: PersistedInspectEvent[] = [];
+      const afterForOrderIds = new Set<string>();
+      for (const event of [...afterEvents, ...afterRunning]) {
+        if (afterForOrderIds.has(event.eventId)) continue;
+        afterForOrderIds.add(event.eventId);
+        afterForOrder.push(event);
+      }
       const encounter = [
         ...finishedEvents(context).filter(
           (event) =>
@@ -2335,12 +2340,10 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
             (event.kind === options.after.kind &&
               stepEndpointName(event, options.after.kind) === options.after.name),
         ),
-        ...(afterEvents.length === 0
-          ? afterRunning.filter(
-              (event) =>
-                !finishedEvents(context).some((finished) => finished.eventId === event.eventId),
-            )
-          : []),
+        ...afterRunning.filter(
+          (event) =>
+            !finishedEvents(context).some((finished) => finished.eventId === event.eventId),
+        ),
       ];
       let beforeIndex: number | undefined;
       let afterIndex: number | undefined;
@@ -2388,9 +2391,21 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
       }
 
       const beforeEvent = beforeEvents[0]!;
-      const afterEvent = afterForOrder[0]!;
+      // Earliest after start among finished and unfinished afters.
+      let afterEvent = afterForOrder[0]!;
+      let afterStart = eventStartMs(afterEvent);
+      for (const candidate of afterForOrder) {
+        const start = eventStartMs(candidate);
+        if (start === undefined) continue;
+        if (afterStart === undefined || start < afterStart) {
+          afterEvent = candidate;
+          afterStart = start;
+        }
+      }
       const beforeEnd = eventEndMs(beforeEvent);
-      const afterStart = eventStartMs(afterEvent);
+      const unfinishedAfterInvolved = afterRunning.some(
+        (event) => event.eventId === afterEvent.eventId,
+      );
       const endpointExpected = bothTools
         ? { before: options.before.name, after: options.after.name }
         : { before: options.before, after: options.after };
@@ -2428,6 +2443,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
                   : "step.order.interval-unresolved",
                 beforeEndResolved: beforeEnd !== undefined,
                 afterStartResolved: afterStart !== undefined,
+                ...(unfinishedAfterInvolved ? { unfinishedAfter: true } : {}),
               },
             ),
           ];
@@ -2447,6 +2463,7 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
                 beforeEndedAt: new Date(beforeEnd).toISOString(),
                 afterStartedAt: new Date(afterStart).toISOString(),
                 ...(tie !== undefined ? { resolvedBy: tieResolution(tie) } : {}),
+                ...(unfinishedAfterInvolved ? { unfinishedAfter: true } : {}),
               },
             ),
           ];
@@ -2536,6 +2553,10 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
               )
             : undefined;
         if (latestBefore.end > earliestAfter.start || (tie !== undefined && tie.inOrder !== true)) {
+          const earliestAfterEvent = tie?.firstStartedAfter ?? earliestAfter.event;
+          const unfinishedAfter =
+            earliestAfterEvent.status === "running" ||
+            afterRunning.some((event) => event.eventId === earliestAfterEvent.eventId);
           return [
             failFinding(
               ruleId,
@@ -2545,13 +2566,14 @@ export function createStepOrderingRule(options: StepOrderingRuleOptions): TraceC
                 tieMessage(tie, beforeLabel, afterLabel),
               [
                 eventEvidence(tie?.lastFinishedBefore ?? latestBefore.event),
-                eventEvidence(tie?.firstStartedAfter ?? earliestAfter.event),
+                eventEvidence(earliestAfterEvent),
               ],
               expected,
               {
                 latestBeforeEndedAt: new Date(latestBefore.end).toISOString(),
                 earliestAfterStartedAt: new Date(earliestAfter.start).toISOString(),
                 ...(tie !== undefined ? { resolvedBy: tieResolution(tie) } : {}),
+                ...(unfinishedAfter ? { unfinishedAfter: true } : {}),
               },
             ),
           ];

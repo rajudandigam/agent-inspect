@@ -12,9 +12,11 @@ Amounts are finite **USD numbers** (`typeof number`). Strings are never coerced 
 
 | Rule | Meaning |
 | --- | --- |
-| `recipe.refund.amount-ceiling` | `issue_refund.amount` ≤ 100 USD |
-| `recipe.refund.entity-bind` | refund `orderId` equals **first** `lookup_order.orderId` in the **same** `runId` |
-| `recipe.refund.approval-gate` | amount > 50 USD requires finished `record_approval` for that order with `authorized: true` |
+| `recipe.refund.amount-ceiling` | Each finished or **attempted (running)** `issue_refund.amount` ≤ 100 USD (per-call, not cumulative) |
+| `recipe.refund.entity-bind` | refund `orderId` binds to a same-`runId` `lookup_order` with matching `orderId` (and `operationId` when declared); refuse ambiguous conflicting candidates; unrelated earlier lookups do not steal the join |
+| `recipe.refund.approval-gate` | amount > 50 USD requires `record_approval` with `status=ok`, `authorized=true`, matching identity, **completed before** the refund starts |
+
+Negative-amount domains and cumulative ceilings are deliberately not universalized here.
 
 ## Run
 

@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.42"
 publishedVersion: "6.31.42"
-pendingPublishVersion: ""
-currentTrain: "n2-eval-check-lifecycle-parity"
-trainStatus: "N2 published — 6.31.42 Trusted Publish 45259714561; next N3"
+pendingPublishVersion: "6.31.43"
+currentTrain: "n3-ordering-refund-parity"
+trainStatus: "N3 local — unfinished-after ordering + refund identity/approval; awaiting gate/publish"
 executionMode: "maintainer-reviewed"
-namedTrain: "n2-eval-check-lifecycle-parity"
+namedTrain: "n3-ordering-refund-parity"
 branch: "main"
-currentChunk: "N2 complete — published"
-lastConfirmedCommit: "0d7e6ae217495eb00f071d9c4c65386ab05415b3"
-lastValidationLevel: "Trusted Publish success; all 18 packs on npm 6.31.42; pack smoke OK"
-nextAction: "N3 ordering/refund; leave #496/#506 red; no 6.32 without EVIDENCE_GATE"
+currentChunk: "N3 validate → release"
+lastConfirmedCommit: "9f803561c22ce2edcad1fc711fd7be8064d3e2d7"
+lastValidationLevel: "N3 focused checks+recipe green; chunk gate pending"
+nextAction: "Gate + Version Packages → Trusted Publish 6.31.43; then N4; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -74,8 +74,8 @@ completedChunks:
   - "6.31.40 open-PR triage — #559/#558 traceSafety + #547/#533 LangChain tokenUsage (Publish 44942237531)"
   - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
   - "N2 eval/check logical-call token-budget parity (6.31.42 Publish 45259714561)"
+  - "N3 ordering/refund + Frank cases (pending 6.31.43)"
 queuedChunks:
-  - "N3 ordering/refund + Frank cases"
   - "N4 older evidence promises"
   - "N5 Kyle timeout correlated read-back"
   - "N6 Frank acceptance design (manual)"
@@ -112,9 +112,9 @@ worktreeIgnoreOnly:
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
   LAST_PUBLISHED_RELEASE: 6.31.42
-  PENDING_PUBLISH: none
-  ACTIVE: N3 next; partner #484/#437/#450; leave #496/#506 red
-  NEXT: no 6.32 without EVIDENCE_GATE
+  PENDING_PUBLISH: 6.31.43
+  ACTIVE: N3 Version Packages / Trusted Publish; partner #484/#437/#450; leave #496/#506 red
+  NEXT: N4 after 6.31.43; no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
