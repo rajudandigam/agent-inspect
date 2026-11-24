@@ -12,7 +12,7 @@
 | Optional trusted signing / sealing | Authenticate bytes; still not completeness or exactly-once | ADR-0012 assurance boundaries |
 | General conditional / value comparison operators | After recipe-local TraceCheckRule examples land | #527; `refund-value-entity-checks` |
 | Data-flow-aware causal explanations | After explicit dependency links exist | — |
-| Repeat-run contract pass-rate threshold | Explicit denominator rules before CLI flags | #527 item 3; do not reuse `gate --max-error-rate` |
+| Repeat-run contract pass-rate threshold | Explicit denominator rules before CLI flags — design record: [PROPOSED-527-repeated-run-acceptance.md](./PROPOSED-527-repeated-run-acceptance.md) | #527 item 3; do not reuse `gate --max-error-rate` |
 | RETRIEVER in `steps.orderRelations` | Additive `StepOrderingKind` design if desired | `retriever-llm-order-otlp` recipe-local rule today |
 
 ## Explicit non-claims

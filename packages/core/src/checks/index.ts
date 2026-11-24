@@ -1228,11 +1228,56 @@ function toolName(event: PersistedInspectEvent): string {
 
 /** Max code-point annotations shown before truncation (#522 follow-up). */
 const MAX_TOOL_NAME_CODEPOINT_DETAILS = 3;
+/** Max UTF-8 bytes for the escaped tool-name preview inside finding messages (N7). */
+const MAX_TOOL_NAME_PREVIEW_BYTES = 120;
 
 function isAsciiLetterCodePoint(codePoint: number): boolean {
   return (
     (codePoint >= 0x41 && codePoint <= 0x5a) || (codePoint >= 0x61 && codePoint <= 0x7a)
   );
+}
+
+/** Escape controls/newlines for finding previews; matching still uses the raw name. */
+function escapeToolNamePreviewChar(codePoint: number): string {
+  if (codePoint === 0x09) return "\\t";
+  if (codePoint === 0x0a) return "\\n";
+  if (codePoint === 0x0d) return "\\r";
+  if (codePoint < 0x20 || codePoint === 0x7f) {
+    return `\\u${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
+  }
+  if (codePoint >= 0x80 && codePoint <= 0x9f) {
+    return `\\u${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
+  }
+  return String.fromCodePoint(codePoint);
+}
+
+/**
+ * Escaped, byte-bounded preview of a tool name for finding messages.
+ * Preserves exact raw matching elsewhere; NFC/NFKC is never applied here.
+ */
+function previewToolNameForMessage(name: string): {
+  preview: string;
+  truncated: boolean;
+  originalCodePoints: number;
+  originalBytes: number;
+} {
+  const originalBytes = Buffer.byteLength(name, "utf8");
+  let originalCodePoints = 0;
+  let preview = "";
+  let truncated = false;
+  for (let index = 0; index < name.length; ) {
+    const codePoint = name.codePointAt(index)!;
+    const width = codePoint > 0xffff ? 2 : 1;
+    originalCodePoints += 1;
+    const chunk = escapeToolNamePreviewChar(codePoint);
+    if (Buffer.byteLength(preview + chunk, "utf8") > MAX_TOOL_NAME_PREVIEW_BYTES) {
+      truncated = true;
+      break;
+    }
+    preview += chunk;
+    index += width;
+  }
+  return { preview, truncated, originalCodePoints, originalBytes };
 }
 
 /** Bidi, zero-width, and C0/C1 controls that can hide look-alikes in tool names. */
@@ -1258,8 +1303,12 @@ function formatCodePointDetail(codePoint: number, index: number): string {
 /**
  * Annotate tool names when mixed ASCII+non-ASCII or bidi/control risks are present
  * so look-alikes stay visible without noise on legitimate non-Latin names (#522).
+ * Always uses an escaped, byte-bounded preview so control characters and oversized
+ * names cannot inflate finding messages (N7 / Renhua).
  */
 function formatToolNameForMessage(name: string): string {
+  const { preview, truncated, originalCodePoints, originalBytes } =
+    previewToolNameForMessage(name);
   let hasAsciiLetter = false;
   let hasNonAscii = false;
   let hasRisky = false;
@@ -1278,15 +1327,21 @@ function formatToolNameForMessage(name: string): string {
     }
     index += width;
   }
-  // Pure non-Latin names (e.g. Japanese) stay unescaped unless bidi/control risk.
+  const lengthNote = truncated
+    ? ` truncated preview; ${originalCodePoints} code points / ${originalBytes} bytes`
+    : "";
+  // Pure non-Latin names (e.g. Japanese) stay unannotated unless bidi/control risk,
+  // but still use the escaped/bounded preview.
   if ((!hasRisky && !(hasAsciiLetter && hasNonAscii)) || details.length === 0) {
-    return name;
+    if (!truncated && preview === name) return name;
+    return truncated ? `"${preview}"… (${lengthNote.trim()})` : preview;
   }
   const shown = details.slice(0, MAX_TOOL_NAME_CODEPOINT_DETAILS);
   const remaining = details.length - shown.length;
   const detailText =
     remaining > 0 ? `${shown.join("; ")}; and ${remaining} more` : shown.join("; ");
-  return `"${name}" (contains ${detailText})`;
+  const suffix = truncated ? `;${lengthNote}` : "";
+  return `"${preview}${truncated ? "…" : ""}" (contains ${detailText}${suffix})`;
 }
 
 function describeRunningEvent(event: PersistedInspectEvent): string {

@@ -7,7 +7,7 @@ Canonical keyless **Debug / Prevent / Share** showcase. Three synthetic variants
 | Variant | Run id | What it shows |
 | --- | --- | --- |
 | `good` | `demo-good` | plan → retrieve_policy → rank → generate → observed outcome passes |
-| `regression` | `demo-regression` | **same final answer**, but generate-before-retrieve, duplicate retrieve, forbidden `search_docs`, observed outcome fails |
+| `regression` | `demo-regression` | **same final answer**, but generate-before-retrieve, forbidden `search_docs`, observed outcome fails. Duplicate `retrieve_policy` alone is allowed under the order contract (see S06). |
 | `pii` | `demo-pii` | synthetic demo PII with `redact: false`; `verify-safe` reports source risk |
 
 Inbound scripts `pnpm start` / `pnpm run fixed` still work: start is the regression, fixed is the good path.
@@ -26,7 +26,7 @@ Prove divergence with shipped TraceContract APIs (`generate_answer` is an LLM st
 node prove-same-output-wrong-path.mjs
 ```
 
-Expect:
+Expect (S01–S06 from `prove-same-output-wrong-path.mjs`):
 
 ```text
 Final output equal: yes
@@ -34,7 +34,15 @@ demo-good: PASS
 demo-regression: FAIL
 Failed invariants:
 - ...
+S01 retrieve-then-answer: pass
+S02 reversed-order: fail contract.step.orderRelation.0
+S03 missing-endpoint: non-pass
+S04 forbidden-search-docs: fail
+S05 same-answer-different-path: pass
+S06 repeated-retrieve: pass
 ```
+
+S06 passes on purpose: a second `retrieve_policy` after the first is still retrieve-before-answer. Duplicate retrieval is **not** the wrong path by itself; generate-before-retrieve and forbidden `search_docs` are.
 
 ## Run
 
@@ -56,7 +64,7 @@ cd examples/starters/broken-agent-debugging
 
 ```json
 "dependencies": {
-  "agent-inspect": "6.31.35"
+  "agent-inspect": "6.31.44"
 }
 ```
 
@@ -69,10 +77,10 @@ npm install
 Equivalent one-liner if you prefer not to hand-edit first:
 
 ```bash
-npm install agent-inspect@6.31.35
+npm install agent-inspect@6.31.44
 ```
 
-(`npm install agent-inspect@6.31.35` installs that release and rewrites the dependency, typically to `^6.31.35`.)
+(`npm install agent-inspect@6.31.44` installs that release and rewrites the dependency, typically to `^6.31.44`.)
 
 ### Demo
 

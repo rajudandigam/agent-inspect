@@ -1039,6 +1039,44 @@ describe("built-in run, tool, and LLM checks", () => {
     expect(result.findings[0]?.message).toContain("U+200E at index 1");
   });
 
+  it("escapes newlines and bounds oversized tool-name previews in findings (N7)", () => {
+    const withNewline = "lookup\nFAKE_PASS";
+    const newlineShadow = persisted("newline-shadow", {
+      kind: "TOOL",
+      name: `tool:${withNewline}`,
+      attributes: { toolName: withNewline },
+    });
+    const newlineResult = runTraceChecks(
+      { read: readResult([newlineShadow]) },
+      { rules: [createToolUsageRule({ allowed: ["lookup_order"] })] },
+    );
+    expect(newlineResult.status).toBe("fail");
+    const newlineMessage = newlineResult.findings[0]?.message ?? "";
+    expect(newlineMessage).toContain("\\n");
+    expect(newlineMessage).not.toMatch(/lookup\nFAKE_PASS/);
+    expect(newlineMessage).toContain("U+000A at index 6");
+
+    const oversized = `send_${"\u0430".repeat(300)}`;
+    const oversizedShadow = persisted("oversized-shadow", {
+      kind: "TOOL",
+      name: `tool:${oversized}`,
+      attributes: { toolName: oversized },
+    });
+    const oversizedResult = runTraceChecks(
+      { read: readResult([oversizedShadow]) },
+      { rules: [createToolUsageRule({ allowed: ["send_order"] })] },
+    );
+    expect(oversizedResult.status).toBe("fail");
+    const oversizedMessage = oversizedResult.findings[0]?.message ?? "";
+    expect(Buffer.byteLength(oversizedMessage, "utf8")).toBeLessThan(720);
+    expect(oversizedMessage).toContain("truncated preview");
+    expect(oversizedMessage).toMatch(/\d+ code points \/ \d+ bytes/);
+    // Exact matching still rejects the raw oversized name (not NFC-normalized away).
+    expect(oversizedResult.findings.some((f) => f.message.includes("not in the allowed"))).toBe(
+      true,
+    );
+  });
+
   it("reports required, forbidden, allowed, ordered, failed, and retried tool violations", () => {
     const forbidden = persisted("event-a", {
       kind: "TOOL",
