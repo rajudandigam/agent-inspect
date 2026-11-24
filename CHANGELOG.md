@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.44
+
+### Patch Changes
+
+- 8cb672f: Harden saved-evidence verifiers for Gary cohort packets (manifest, contained refs, header-only/foreign sidecar), Uduak Nest consumption joins (required resultRefs, successful consumption, commitment tenant content), Roy #437 nonblank identity/scope, and Om attempt-bound wait reopen (N4).
+
 ## 6.31.43
 
 ### Patch Changes
