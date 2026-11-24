@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.31.43
+
+### Patch Changes
+
+- 3992b94: Fail tool/step ordering when an unfinished after starts during a before interval even if a later finished after peer exists (R1). Recipe-local refund rules join by order/operation identity, require approval completed before the action, and inspect attempted refund amounts (N3 / Frank).
+
 ## 6.31.42
 
 ### Patch Changes

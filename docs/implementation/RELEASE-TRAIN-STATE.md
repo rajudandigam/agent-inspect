@@ -5,8 +5,8 @@
 > **Canonical roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ```yaml
-baselineVersion: "6.31.42"
-publishedVersion: "6.31.42"
+baselineVersion: "6.31.43"
+publishedVersion: "6.31.43"
 pendingPublishVersion: "6.31.43"
 currentTrain: "n3-ordering-refund-parity"
 trainStatus: "N3 local — unfinished-after ordering + refund identity/approval; awaiting gate/publish"
