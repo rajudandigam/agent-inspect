@@ -1,6 +1,6 @@
 {
   "name": "@agent-inspect/eval",
-  "version": "6.31.43",
+  "version": "6.31.44",
   "license": "MIT",
   "type": "module",
   "description": "Deterministic local eval utilities for AgentInspect traces",
