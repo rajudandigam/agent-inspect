@@ -27,6 +27,20 @@ export interface SavedVerdict {
   args: "match" | "mismatch" | "unknown";
   faultProvenance: "injected" | "none" | "unknown";
   keyScope: "ok" | "violation" | "undeclared";
+  /**
+   * Correlated effect read-back external state (separate from observation
+   * execution status). Absent when the recipe did not record request/read-back.
+   */
+  readback:
+    | "absent"
+    | "landed"
+    | "did_not_land"
+    | "stale"
+    | "foreign"
+    | "conflicting"
+    | "unknown";
+  /** Whether the read-back observation itself completed (`status` on the outcome). */
+  readbackObservation: "passed" | "failed" | "absent" | "unknown";
   attemptCount: number;
   /** Distinct handler-attempt `markerId`s — not observer-reported IDs. */
   distinctMarkers: number;
@@ -130,6 +144,80 @@ function markerIdsFor(attempts: Attempt[], operationId: string): Set<string> {
   );
 }
 
+function readbackAxes(rows: Row[]): {
+  readback: SavedVerdict["readback"];
+  readbackObservation: SavedVerdict["readbackObservation"];
+  readbackFail: boolean;
+} {
+  const intents = rows.filter(
+    (row) => row.event === "outcome_observed" && row.name === "request-intent",
+  );
+  const readbacks = rows.filter(
+    (row) => row.event === "outcome_observed" && row.name === "effect-readback",
+  );
+  if (intents.length === 0 && readbacks.length === 0) {
+    return { readback: "absent", readbackObservation: "absent", readbackFail: false };
+  }
+
+  const knownRequestIds = new Set(
+    intents
+      .map((row) => text(row.evidence?.requestId))
+      .filter((id): id is string => id !== undefined),
+  );
+  const knownIdempotency = new Set(
+    intents
+      .map((row) => text(row.evidence?.idempotencyKey))
+      .filter((id): id is string => id !== undefined),
+  );
+
+  if (readbacks.length === 0) {
+    return { readback: "unknown", readbackObservation: "absent", readbackFail: false };
+  }
+
+  let readbackObservation: SavedVerdict["readbackObservation"] = "passed";
+  if (readbacks.some((row) => row.status === "failed")) readbackObservation = "failed";
+  else if (readbacks.some((row) => row.status !== "passed")) readbackObservation = "unknown";
+
+  const states = new Set<string>();
+  let foreign = false;
+  let stale = false;
+  for (const row of readbacks) {
+    const evidence = row.evidence;
+    const requestId = text(evidence?.requestId);
+    const idempotencyKey = text(evidence?.idempotencyKey);
+    const externalState = text(evidence?.externalState);
+    if (requestId && knownRequestIds.size > 0 && !knownRequestIds.has(requestId)) {
+      foreign = true;
+    }
+    if (
+      idempotencyKey &&
+      knownIdempotency.size > 0 &&
+      !knownIdempotency.has(idempotencyKey)
+    ) {
+      foreign = true;
+    }
+    if (evidence?.stale === true || externalState === "stale") stale = true;
+    if (externalState) states.add(externalState);
+  }
+
+  if (foreign) {
+    return { readback: "foreign", readbackObservation, readbackFail: true };
+  }
+  if (stale || states.has("stale")) {
+    return { readback: "stale", readbackObservation, readbackFail: true };
+  }
+  if (states.has("conflicting") || states.size > 1) {
+    return { readback: "conflicting", readbackObservation, readbackFail: true };
+  }
+  if (states.has("landed")) {
+    return { readback: "landed", readbackObservation, readbackFail: false };
+  }
+  if (states.has("did_not_land")) {
+    return { readback: "did_not_land", readbackObservation, readbackFail: false };
+  }
+  return { readback: "unknown", readbackObservation, readbackFail: false };
+}
+
 export function verifySaved(traceDir: string): SavedVerdict {
   const rows = readRows(traceDir);
   const attempts = attemptsFrom(rows);
@@ -143,6 +231,7 @@ export function verifySaved(traceDir: string): SavedVerdict {
   const policy = rows.find(
     (row) => row.event === "outcome_observed" && row.name === "key-scope-policy",
   );
+  const { readback, readbackObservation, readbackFail } = readbackAxes(rows);
 
   const distinctMarkers = new Set(
     attempts.map((attempt) => attempt.markerId).filter((id): id is string => id !== undefined),
@@ -284,17 +373,28 @@ export function verifySaved(traceDir: string): SavedVerdict {
     claim === "fail" ||
     join === "invalid" ||
     args === "mismatch" ||
-    keyScope === "violation"
+    keyScope === "violation" ||
+    readbackFail
   ) {
     verdict = "fail";
-  } else if (failedClaim && effect === "pass" && args === "match" && observation === "passed") {
+  } else if (
+    (failedClaim || readback === "did_not_land") &&
+    effect === "pass" &&
+    args === "match" &&
+    observation === "passed" &&
+    !readbackFail
+  ) {
     verdict = "task-fail-safe";
   } else if (
     observation !== "passed" ||
     join !== "valid" ||
     claim !== "pass" ||
     args !== "match" ||
-    effect !== "pass"
+    effect !== "pass" ||
+    readback === "unknown" ||
+    (readback !== "absent" &&
+      readback !== "landed" &&
+      readback !== "did_not_land")
   ) {
     verdict = "unknown";
   }
@@ -308,6 +408,8 @@ export function verifySaved(traceDir: string): SavedVerdict {
     args,
     faultProvenance,
     keyScope,
+    readback,
+    readbackObservation,
     attemptCount: attempts.length,
     distinctMarkers,
     operations,

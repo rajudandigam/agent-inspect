@@ -1,19 +1,27 @@
 timeout-ledger-effects:
-  T01-dedupe-ok: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared
-  T02-duplicate-markers: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=fail claim=unknown join=valid args=match fault=injected keyScope=undeclared
-  T03-incomplete-window: expected=unknown observed=unknown attempts=1 handlerMarkers=1 windowCheck=absent effect=pass claim=unknown join=unknown args=match fault=injected keyScope=undeclared
-  T04-contradictory-claim: expected=fail observed=fail attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=fail join=valid args=match fault=none keyScope=undeclared
-  T05-wrong-join: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=fail claim=unknown join=invalid args=mismatch fault=injected keyScope=undeclared
-  T06-honest-no-effect: expected=task-fail-safe observed=task-fail-safe attempts=1 handlerMarkers=0 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared
-  TE-amount-mismatch: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=fail claim=fail join=valid args=mismatch fault=injected keyScope=undeclared
-  TF-wrong-operation-join: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=invalid args=match fault=none keyScope=undeclared
-  TG-independent-keys: expected=pass observed=pass attempts=2 handlerMarkers=2 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=undeclared
-  TG-no-reuse-policy: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=violation
-  TH-missing-report: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=fail claim=unknown join=valid args=match fault=injected keyScope=undeclared
-  TJ-timeout-text-only: expected=unknown observed=unknown attempts=1 handlerMarkers=0 windowCheck=passed effect=pass claim=unknown join=valid args=match fault=unknown keyScope=undeclared
-  TK-tampered-claim: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=fail join=valid args=match fault=injected keyScope=undeclared
-  TL-fresh-process: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared
-classes: T01:pass,T02:fail,T03:unknown,T04:fail,T05:fail,T06:task-fail-safe,TE:fail,TF:fail,TG:pass,TG:fail,TH:fail,TJ:unknown,TK:fail,TL:pass
+  T01-dedupe-ok: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  T02-duplicate-markers: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=fail claim=unknown join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  T03-incomplete-window: expected=unknown observed=unknown attempts=1 handlerMarkers=1 windowCheck=absent effect=pass claim=unknown join=unknown args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  T04-contradictory-claim: expected=fail observed=fail attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=fail join=valid args=match fault=none keyScope=undeclared readback=absent readbackObs=absent
+  T05-wrong-join: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=fail claim=unknown join=invalid args=mismatch fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  T06-honest-no-effect: expected=task-fail-safe observed=task-fail-safe attempts=1 handlerMarkers=0 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  TE-amount-mismatch: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=fail claim=fail join=valid args=mismatch fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  TF-wrong-operation-join: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=invalid args=match fault=none keyScope=undeclared readback=absent readbackObs=absent
+  TG-independent-keys: expected=pass observed=pass attempts=2 handlerMarkers=2 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=undeclared readback=absent readbackObs=absent
+  TG-no-reuse-policy: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=violation readback=absent readbackObs=absent
+  TH-missing-report: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=fail claim=unknown join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  TJ-timeout-text-only: expected=unknown observed=unknown attempts=1 handlerMarkers=0 windowCheck=passed effect=pass claim=unknown join=valid args=match fault=unknown keyScope=undeclared readback=absent readbackObs=absent
+  TK-tampered-claim: expected=fail observed=fail attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=fail join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  TL-fresh-process: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent
+  K01-timeout-no-readback: expected=unknown observed=unknown attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=unknown readbackObs=absent
+  K02-landed: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=landed readbackObs=passed
+  K03-did-not-land: expected=task-fail-safe observed=task-fail-safe attempts=1 handlerMarkers=0 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=did_not_land readbackObs=passed
+  K04-stale-readback: expected=fail observed=fail attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=undeclared readback=stale readbackObs=passed
+  K05-foreign-readback: expected=fail observed=fail attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=undeclared readback=foreign readbackObs=passed
+  K06-conflicting-readback: expected=fail observed=fail attempts=1 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=conflicting readbackObs=passed
+  K07-retry-reuse: expected=pass observed=pass attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=landed readbackObs=passed
+  K08-approval-reuse: expected=fail observed=fail attempts=2 handlerMarkers=2 windowCheck=passed effect=pass claim=pass join=valid args=match fault=none keyScope=violation readback=landed readbackObs=passed
+classes: T01:pass,T02:fail,T03:unknown,T04:fail,T05:fail,T06:task-fail-safe,TE:fail,TF:fail,TG:pass,TG:fail,TH:fail,TJ:unknown,TK:fail,TL:pass,K01:unknown,K02:pass,K03:task-fail-safe,K04:fail,K05:fail,K06:fail,K07:pass,K08:fail
   probe-healthy: expected=pass observed=pass OK
   probe-changed-amount: expected=fail observed=fail OK
   probe-claim-contradiction: expected=fail observed=fail OK

@@ -7,16 +7,16 @@
 ```yaml
 baselineVersion: "6.31.44"
 publishedVersion: "6.31.44"
-pendingPublishVersion: "6.31.44"
-currentTrain: "n4-saved-evidence-repairs"
-trainStatus: "N4 gated — commit/push for Version Packages → Trusted Publish"
+pendingPublishVersion: "6.31.45"
+currentTrain: "n5-kyle-timeout-readback"
+trainStatus: "N4 published 6.31.44; N5 local — Kyle read-back; awaiting gate/publish"
 executionMode: "maintainer-reviewed"
-namedTrain: "n4-saved-evidence-repairs"
+namedTrain: "n5-kyle-timeout-readback"
 branch: "main"
-currentChunk: "N4 commit/push/Version Packages"
-lastConfirmedCommit: "3379f0a6a8ec2dce8457c7abaf540ef30a1d72a4"
-lastValidationLevel: "build+typecheck+test+size+recipes+fixtures+pack:smoke green"
-nextAction: "Push N4; merge Version Packages; verify npm 6.31.44; then N5–N7; leave #496/#506 red"
+currentChunk: "N5 Kyle timeout correlated read-back"
+lastConfirmedCommit: "f4a0076ab3dc1508706de3fb1362840b69cdbb0c"
+lastValidationLevel: "N4 Trusted Publish 45300605347; npm 6.31.44"
+nextAction: "Gate+publish N5 as 6.31.45; then N6 design + N7 docs; leave #496/#506 red"
 pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
@@ -75,9 +75,9 @@ completedChunks:
   - "N1 malformed token-budget fail-closed (6.31.41 Publish 45112687091)"
   - "N2 eval/check logical-call token-budget parity (6.31.42 Publish 45259714561)"
   - "N3 ordering/refund + Frank cases (6.31.43 Publish 45294868131)"
-  - "N4 Gary/Uduak/Roy/Om saved-evidence repairs (gated; pending 6.31.44 publish)"
+  - "N4 Gary/Uduak/Roy/Om saved-evidence repairs (6.31.44 Publish 45300605347)"
 queuedChunks:
-  - "N5 Kyle timeout correlated read-back"
+  - "N5 Kyle timeout correlated read-back (pending 6.31.45)"
   - "N6 Frank acceptance design (manual)"
   - "N7 docs; keep #496/#506 red"
   - "W04/#484 partner acceptance of -003 packet"
@@ -89,36 +89,21 @@ blockedTrains:
   - "6.32.0 until EVIDENCE_GATE approved"
 amendments:
   - "Adoption freeze excluded"
-  - "2026-10-07 6.31.17 published; W02 merged; W11 skip empty patch"
-  - "2026-10-12 6.31.21 published (Trusted Publish 38204663903)"
-  - "2026-10-14 6.31.22 published (Trusted Publish 38649811477)"
-  - "2026-10-15 6.31.23 published (Trusted Publish 38810913852)"
-  - "2026-10-24 6.31.24 published (Trusted Publish 40165917348)"
-  - "2026-10-25 6.31.25 published (Trusted Publish 40215892935)"
-  - "2026-10-25 6.31.26 published (Trusted Publish 40219491873)"
-  - "2026-10-25 6.31.27 published (Trusted Publish 40222772749)"
-  - "2026-10-29 6.31.28 published (Trusted Publish 40939596146)"
-  - "2026-10-29 6.31.29 published (Trusted Publish 40943406555)"
-  - "2026-10-29 6.31.30 published (Trusted Publish 40965172063)"
-  - "2026-10-31 6.31.31 published (Trusted Publish 41174039799)"
-  - "2026-10-31 6.31.32 published (Trusted Publish 41220820360)"
-  - "2026-10-31 6.31.33 published (Trusted Publish 41226295704)"
-  - "2026-11-19 6.31.39 published (Trusted Publish 44652555068)"
   - "2026-11-21 6.31.40 published (Trusted Publish 44942237531); #548 superseded; leave #496/#506 red"
   - "2026-11-22 6.31.41 published (Trusted Publish 45112687091); N1 malformed budget fail-closed"
   - "2026-11-23 6.31.42 published (Trusted Publish 45259714561); N2 eval/check logical-call token-budget parity"
   - "2026-11-23 6.31.43 published (Trusted Publish 45294868131); N3 unfinished-after order + refund identity joins"
+  - "2026-11-24 6.31.44 published (Trusted Publish 45300605347); N4 Gary/Uduak/Roy/Om saved-evidence repairs"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
-  LAST_PUBLISHED_RELEASE: 6.31.43
-  PENDING_PUBLISH: 6.31.44
-  ACTIVE: N4 gated — push → Version Packages → Trusted Publish; leave #496/#506 red
-  NEXT: N5 after 6.31.44; no 6.32 without EVIDENCE_GATE
+  LAST_PUBLISHED_RELEASE: 6.31.44
+  PENDING_PUBLISH: 6.31.45
+  ACTIVE: N5 Kyle read-back; then N6/N7; leave #496/#506 red
+  NEXT: no 6.32 without EVIDENCE_GATE
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-11-23"
+updatedAt: "2026-11-24"
 ```
-

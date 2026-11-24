@@ -239,6 +239,52 @@ async function recordClaim(operationId: string, claim: "effect_present" | "no_ef
   });
 }
 
+/** Pre-call request / idempotency identity (Kyle N5). */
+async function recordRequestIntent(input: {
+  operationId: string;
+  requestId: string;
+  idempotencyKey: string;
+}): Promise<void> {
+  await observeOutcome("request-intent", {
+    expectation: "Pre-call request identity recorded before the handler attempt",
+    status: "passed",
+    method: "custom",
+    evidence: {
+      source: "caller",
+      operationId: input.operationId,
+      requestId: input.requestId,
+      idempotencyKey: input.idempotencyKey,
+    },
+  });
+}
+
+/**
+ * Separately recorded correlated read-back. Outcome `status` is observation
+ * execution only; `externalState` is the observed ledger/effect state.
+ */
+async function recordEffectReadback(input: {
+  requestId: string;
+  idempotencyKey: string;
+  operationId: string;
+  externalState: "landed" | "did_not_land" | "stale" | "foreign" | "conflicting" | "unknown";
+  observationStatus?: "passed" | "failed" | "unknown";
+  stale?: boolean;
+}): Promise<void> {
+  await observeOutcome("effect-readback", {
+    expectation: "Correlated post-attempt read-back of external effect state",
+    status: input.observationStatus ?? "passed",
+    method: "database",
+    evidence: {
+      source: "readback",
+      requestId: input.requestId,
+      idempotencyKey: input.idempotencyKey,
+      operationId: input.operationId,
+      externalState: input.externalState,
+      ...(input.stale ? { stale: true } : {}),
+    },
+  });
+}
+
 const results: Array<{ id: string; expected: Class; observed: Class }> = [];
 
 async function runCase(id: string, expected: Class, fn: () => Promise<void>): Promise<string> {
@@ -249,7 +295,7 @@ async function runCase(id: string, expected: Class, fn: () => Promise<void>): Pr
   const verdict = verifySaved(traceDir);
   results.push({ id, expected, observed: verdict.class });
   console.log(
-    `  ${id}: expected=${expected} observed=${verdict.class} attempts=${verdict.attemptCount} handlerMarkers=${verdict.distinctMarkers} windowCheck=${verdict.observation} effect=${verdict.effect} claim=${verdict.claim} join=${verdict.join} args=${verdict.args} fault=${verdict.faultProvenance} keyScope=${verdict.keyScope}`,
+    `  ${id}: expected=${expected} observed=${verdict.class} attempts=${verdict.attemptCount} handlerMarkers=${verdict.distinctMarkers} windowCheck=${verdict.observation} effect=${verdict.effect} claim=${verdict.claim} join=${verdict.join} args=${verdict.args} fault=${verdict.faultProvenance} keyScope=${verdict.keyScope} readback=${verdict.readback} readbackObs=${verdict.readbackObservation}`,
   );
   return traceDir;
 }
@@ -524,7 +570,7 @@ const tampered = verifySaved(tamperDir);
 const tamperOk = tampered.class !== "pass";
 results.push({ id: "TK-tampered-claim", expected: "fail", observed: tamperOk ? "fail" : "pass" });
 console.log(
-  `  TK-tampered-claim: expected=fail observed=${tamperOk ? "fail" : tampered.class} attempts=${tampered.attemptCount} handlerMarkers=${tampered.distinctMarkers} windowCheck=${tampered.observation} effect=${tampered.effect} claim=${tampered.claim} join=${tampered.join} args=${tampered.args} fault=${tampered.faultProvenance} keyScope=${tampered.keyScope}`,
+  `  TK-tampered-claim: expected=fail observed=${tamperOk ? "fail" : tampered.class} attempts=${tampered.attemptCount} handlerMarkers=${tampered.distinctMarkers} windowCheck=${tampered.observation} effect=${tampered.effect} claim=${tampered.claim} join=${tampered.join} args=${tampered.args} fault=${tampered.faultProvenance} keyScope=${tampered.keyScope} readback=${tampered.readback} readbackObs=${tampered.readbackObservation}`,
 );
 
 const child = spawnSync(
@@ -546,8 +592,282 @@ results.push({
   observed: reproOk ? "pass" : "fail",
 });
 console.log(
-  `  TL-fresh-process: expected=pass observed=${reproOk ? "pass" : "fail"} attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared`,
+  `  TL-fresh-process: expected=pass observed=${reproOk ? "pass" : "fail"} attempts=2 handlerMarkers=1 windowCheck=passed effect=pass claim=pass join=valid args=match fault=injected keyScope=undeclared readback=absent readbackObs=absent`,
 );
+
+// --- Kyle N5: pre-call identity + correlated read-back (existing matrix intact) ---
+
+await runCase("K01-timeout-no-readback", "unknown", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-kyle" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k01",
+    idempotencyKey: "idem-k01",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "timeout-after-commit",
+    dedupeKey: "k-kyle",
+  }).catch(() => undefined);
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  // Intentionally no effect-readback — timeout with missing external confirmation.
+});
+
+await runCase("K02-landed", "pass", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-kyle" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k02",
+    idempotencyKey: "idem-k02",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "timeout-after-commit",
+    dedupeKey: "k-kyle",
+  }).catch(() => undefined);
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a2",
+    attemptNumber: 2,
+    args,
+    fault: "none",
+    dedupeKey: "k-kyle",
+    retryOf: "a1",
+  });
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  await recordEffectReadback({
+    requestId: "req-k02",
+    idempotencyKey: "idem-k02",
+    operationId: "op1",
+    externalState: "landed",
+    observationStatus: "passed",
+  });
+});
+
+await runCase("K03-did-not-land", "task-fail-safe", async () => {
+  const ledger = createLedger();
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k03",
+    idempotencyKey: "idem-k03",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args: { amount: "10" },
+    fault: "fail-before-commit",
+  }).catch(() => undefined);
+  await recordClaim("op1", "failed");
+  await recordWindow({ operationId: "op1", markerIds: [], complete: true });
+  await recordEffectReadback({
+    requestId: "req-k03",
+    idempotencyKey: "idem-k03",
+    operationId: "op1",
+    externalState: "did_not_land",
+    observationStatus: "passed",
+  });
+});
+
+await runCase("K04-stale-readback", "fail", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-kyle" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k04",
+    idempotencyKey: "idem-k04",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "none",
+    dedupeKey: "k-kyle",
+  });
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  await recordEffectReadback({
+    requestId: "req-k04",
+    idempotencyKey: "idem-k04",
+    operationId: "op1",
+    externalState: "stale",
+    observationStatus: "passed",
+    stale: true,
+  });
+});
+
+await runCase("K05-foreign-readback", "fail", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-kyle" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k05",
+    idempotencyKey: "idem-k05",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "none",
+    dedupeKey: "k-kyle",
+  });
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  await recordEffectReadback({
+    requestId: "req-OTHER",
+    idempotencyKey: "idem-OTHER",
+    operationId: "op1",
+    externalState: "landed",
+    observationStatus: "passed",
+  });
+});
+
+await runCase("K06-conflicting-readback", "fail", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-kyle" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k06",
+    idempotencyKey: "idem-k06",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "timeout-after-commit",
+    dedupeKey: "k-kyle",
+  }).catch(() => undefined);
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  await recordEffectReadback({
+    requestId: "req-k06",
+    idempotencyKey: "idem-k06",
+    operationId: "op1",
+    externalState: "landed",
+    observationStatus: "passed",
+  });
+  await recordEffectReadback({
+    requestId: "req-k06",
+    idempotencyKey: "idem-k06",
+    operationId: "op1",
+    externalState: "did_not_land",
+    observationStatus: "passed",
+  });
+});
+
+await runCase("K07-retry-reuse", "pass", async () => {
+  const ledger = createLedger();
+  const args = { amount: "10", dedupeKey: "k-retry" };
+  await recordRequestIntent({
+    operationId: "op1",
+    requestId: "req-k07",
+    idempotencyKey: "idem-k07",
+  });
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a1",
+    attemptNumber: 1,
+    args,
+    fault: "timeout-after-commit",
+    dedupeKey: "k-retry",
+  }).catch(() => undefined);
+  await recordAttempt(ledger, {
+    operationId: "op1",
+    attemptId: "a2",
+    attemptNumber: 2,
+    args,
+    fault: "none",
+    dedupeKey: "k-retry",
+    retryOf: "a1",
+  });
+  await recordClaim("op1", "effect_present");
+  await recordWindow({
+    operationId: "op1",
+    markerIds: ledger.markers.map((m) => m.markerId),
+    complete: true,
+  });
+  await recordEffectReadback({
+    requestId: "req-k07",
+    idempotencyKey: "idem-k07",
+    operationId: "op1",
+    externalState: "landed",
+    observationStatus: "passed",
+  });
+});
+
+await runCase("K08-approval-reuse", "fail", async () => {
+  const ledger = createLedger();
+  await observeOutcome("key-scope-policy", {
+    expectation: "Fixture declares same-scope key reuse is a separate violation",
+    status: "passed",
+    method: "custom",
+    evidence: { policy: "no-reuse", scope: "fixture" },
+  });
+  for (const [operationId, requestId] of [
+    ["op1", "req-k08a"],
+    ["op2", "req-k08b"],
+  ] as const) {
+    await recordRequestIntent({
+      operationId,
+      requestId,
+      idempotencyKey: "idem-shared",
+    });
+    await recordAttempt(ledger, {
+      operationId,
+      attemptId: "a1",
+      attemptNumber: 1,
+      args: { amount: "10", dedupeKey: "shared" },
+      fault: "none",
+      dedupeKey: "shared",
+    });
+    await recordClaim(operationId, "effect_present");
+    await recordWindow({
+      operationId,
+      markerIds: ledger.markers.filter((m) => m.operationId === operationId).map((m) => m.markerId),
+      complete: true,
+    });
+    await recordEffectReadback({
+      requestId,
+      idempotencyKey: "idem-shared",
+      operationId,
+      externalState: "landed",
+      observationStatus: "passed",
+    });
+  }
+});
 
 console.log(
   `classes: ${results.map((result) => `${result.id.split("-")[0]}:${result.observed}`).join(",")}`,
