@@ -61,6 +61,20 @@ AgentInspect is **local-first** and **CLI-first**. These behaviors are intention
 
 - Log-derived trees carry **confidence** (`explicit`, `correlated`, `heuristic`, `unknown`). Labels explain **how** relationships were inferred—they are not semantic proof.
 
+## Deferred P2 recipe-verifier limitations
+
+These are reproducible **P2 defects in synthetic example verifiers**, not demonstrated default-runtime exploits. Local PASS values must **not** be treated as qualification that the broader guarantee holds. N1–N7 shipped code does **not** clear these holds. F1–F5 remain open for ordinary maintainer selection; they are not required for every patch release.
+
+| ID | Recipe | What still fails qualification | Hold claim |
+| --- | --- | --- | --- |
+| **F1** | [`timeout-ledger-effects`](../examples/recipes/timeout-ledger-effects/) (Kyle) | Missing request/intent/action identity, foreign run/operation, failed observation, or pre-action read-back can still produce `pass`/`landed` | Not proof an external action landed |
+| **F2** | [`refund-value-entity-checks`](../examples/recipes/refund-value-entity-checks/) (Frank) | Attribute-level operation conflicts and some lookup/approval ordering cases can pass; a running refund can bypass the recipe approval rule; consistent repeated lookups can fail unnecessarily | Illustrative only — not a validated authorization control (core ordering remains separately verified) |
+| **F3** | [`comparable-cohort-runs`](../examples/recipes/comparable-cohort-runs/) (Gary) | Incomplete or unrecognized trace rows and a symlink outside the packet can pass; a null row can throw | Recipe packet verifier — not the core Evidence ZIP reader |
+| **F4** | [`nestjs-tenant-incident`](../examples/recipes/nestjs-tenant-incident/) (Uduak) | Empty, malformed, or tenant-inconsistent commitment content can pass when producer strings match | Matching producer strings ≠ tenant-content verification |
+| **F5** | [`browser-mcp-observed-outcomes`](../examples/recipes/browser-mcp-observed-outcomes/) (Om) | Wrong attempt identity/run, negative timing, or summary-only records can pass saved verification | Synthetic diagnostics ≠ accepted saved-attempt proof or native browser support |
+
+Partner owes that remain open but deferred: #484 / #437 / #450, Indu v3 artifact recovery, Roy C7b receipt-counting (ADR-0013). Frank’s repeated-run acceptance stays design-only ([PROPOSED-527](./implementation/active/PROPOSED-527-repeated-run-acceptance.md)).
+
 When in doubt, treat AgentInspect as a **debugging aid**, not a compliance or billing system of record.
 
 ## Common install/runtime compatibility checks

@@ -1,15 +1,16 @@
 # AgentInspect Canonical Roadmap (permanent)
 
 **Baseline:** `agent-inspect@6.31.46` (published)
-**Roadmap horizon:** **6.31.46** published (N1–N7 residuals complete); partner acceptance; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
-**Status:** **6.31.46 published**; residual plan N1–N7 done; next = partner acceptance (#484/#437/#450; Jan Windows PENDING); leave #496/#506 red; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
+**Roadmap horizon:** **6.31.46** published; routine maintenance continues; partner acceptance; F1–F5 recipe-verifier P2 limits deferred; **6.32.0 BLOCKED_ON_EXTERNAL_EVIDENCE**; **V7_DECISION: NO-GO**
+**Status:** **6.31.46 published**; next = partner acceptance (#484/#437/#450) and selected residuals; Jan Windows measurement is **historical** (completed; #209 untested cells remain); leave #496/#506 red while CI fails; **6.32.0 never published** (reserved); **V7_DECISION: NO-GO**
 **Primary objective:** Finish verifier/SDK/timing/transport correctness and consumer evidence milestones—without schema 1.1, hosted SaaS, or fabricated external evidence
 **Persisted trace schema:** remains `1.0`
 **Package policy:** no new public packages before the conditional v7 decision
 **Network policy:** no new default network behavior
 **Product boundary:** local-first and customer-owned; no maintainer-hosted SaaS
-**Named train:** `stability-after-63111`
+**Named train:** `residual-after-63146`
 **Active plan:** [active/NEXT-RELEASES.md](./active/NEXT-RELEASES.md)
+**Deferred limits:** [KNOWN-ISSUES — F1–F5](../KNOWN-ISSUES.md#deferred-p2-recipe-verifier-limitations)
 
 ---
 
@@ -263,7 +264,7 @@ Fail-closed deterministic gate hardening:
 | **6.31.43** | N3 unfinished-after order + refund identity | published | Done |
 | **6.31.44** | N4 Gary/Uduak/Roy/Om saved-evidence | published | Done |
 | **6.31.45** | N5 Kyle timeout correlated read-back | published | Done |
-| **6.31.46** | N6 Frank design + N7 docs/diagnostics | published | Leave #496/#506 red |
+| **6.31.46** | N6 Frank design + N7 docs/diagnostics | published | Leave #496/#506 red while CI fails; F1–F5 deferred |
 | **6.31.x** | Conditional public defect only | omit if empty | Skip unless defect reproduces |
 | **6.32.0** | External conformance + compact review | conditional | **BLOCKED_ON_EXTERNAL_EVIDENCE** |
 | **6.33.0** | Additive usability when justified | recipes / APIs | Conditional minor |

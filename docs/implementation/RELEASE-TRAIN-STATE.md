@@ -8,28 +8,29 @@
 baselineVersion: "6.31.46"
 publishedVersion: "6.31.46"
 pendingPublishVersion: null
-currentTrain: "residual-n1-n7-complete"
-trainStatus: "N1–N7 complete — published through 6.31.46; #496/#506 left red"
+currentTrain: "residual-after-63146"
+trainStatus: "Published 6.31.46; routine maintenance continues; F1–F5 recipe limits deferred; #496/#506 left red"
 executionMode: "maintainer-reviewed"
-namedTrain: "residual-n1-n7-complete"
+namedTrain: "residual-after-63146"
 branch: "main"
-currentChunk: "none"
-lastConfirmedCommit: "be071c57665dffc7563c2fb098aef59f519b5170"
-lastValidationLevel: "N7 Trusted Publish 45307089586; npm 6.31.46"
-nextAction: "Partner acceptance; no 6.32 without EVIDENCE_GATE; leave #496/#506 red"
-pendingManualGate: "EVIDENCE_GATE not approved; Indu v3 artifact missing; #484/#437 partner fields"
+currentChunk: "docs/state reconcile"
+lastConfirmedCommit: "ed49f5266169dd1ccd55f570e2c5bd53716bef9b"
+lastValidationLevel: "main CI 45309545289 success; Trusted Publish 45307089586; npm 6.31.46 (all 18)"
+nextAction: "Continue maintainer patches as needed; partner acceptance; leave #496/#506 red while CI fails; no 6.32 without EVIDENCE_GATE"
+pendingManualGate: "EVIDENCE_GATE not approved; Indu v3; #484/#437 partner fields; Frank PROPOSED-527 before public acceptance API"
+deferredLimitations: "docs/KNOWN-ISSUES.md#deferred-p2-recipe-verifier-limitations"
 githubIssues:
   "481": "closed — W01 Promptfoo identity"
   "482": "closed — W01 OTLP AnyValues"
   "483": "closed — W01 kit resolved pin"
   "490": "closed — W23A ROADMAP/COMPARE sync"
-  "209": "open — packed OS/Node matrix; keep open; 6.31.17 includes #473"
+  "209": "open — packed OS/Node matrix; keep open; 6.31.17 includes #473; untested cells remain"
   "484": "open — W04; Prompt A + residuals shipped in 6.31.23; partner packet remains"
   "485": "open — W05; synthetic browser-mcp-observed-outcomes covers binding/forged-label/ablation; webmcp-native-evidence recipe now asserts outcomes+Evidence; packed-main gen_ai.tool.name probe OK; native Trip proof still host-blocked — do not close on maintainer-only synthetic runs"
   "486": "closed — W06 one-pass verifier + recipe shipped in 6.31.29"
   "487": "open — W27 private Promptfoo deps"
-  "488": "closed — satisfied by scripts/packed-mcp-sdk-e2e.mjs; do not merge #494"
-  "494": "open — packed harness PR; canonical script is packed-mcp-sdk-e2e; do not merge a second harness"
+  "488": "closed — satisfied by scripts/packed-mcp-sdk-e2e.mjs; do not merge a second harness"
+  "494": "closed — packed harness PR closed; canonical script is packed-mcp-sdk-e2e; Jan Windows historical measurement completed (not PENDING); #209 untested cells remain"
   "489": "open — W28 effect-label fixture"
   "491": "closed — valid-variable-paths recipe verified + indexed"
   "492": "closed — timeout-ledger recipe + saved probes shipped 6.31.27–6.31.29"
@@ -63,7 +64,7 @@ completedChunks:
   - "chunk 04 HTML lifecycle presentation join + CLI steps.orderRelations docs"
   - "chunk 05 Om wait/readiness diagnostics"
   - "chunk 06 timeout-ledger terminology"
-  - "chunk 07 #494 packed-mcp-sdk reconcile note (do not merge #494)"
+  - "chunk 07 #494 packed-mcp-sdk reconcile note (canonical packed-mcp-sdk-e2e; #494 closed)"
   - "chunk 08 Roy -003 OTLP identity packet"
   - "chunk 09 PROPOSED #437 receipt contract (awaiting maintainer fields)"
   - "chunk 10 Indu v3 BLOCKED — exact artifact missing"
@@ -83,6 +84,7 @@ queuedChunks:
   - "W04/#484 partner acceptance of -003 packet"
   - "W05/#485 residual if any after Om diagnostics"
   - "W22 C10 Elastic / Collector Docker when credentials"
+  - "F1–F5 recipe-verifier P2 qualification when selected"
   - "6.32.0 external-evidence gate (BLOCKED)"
 blockedTrains:
   - "v7.0.0 (assessment only — V7_DECISION: NO-GO)"
@@ -96,16 +98,17 @@ amendments:
   - "2026-11-24 6.31.44 published (Trusted Publish 45300605347); N4 Gary/Uduak/Roy/Om saved-evidence repairs"
   - "2026-11-24 6.31.45 published (Trusted Publish 45304159487); N5 Kyle timeout correlated read-back"
   - "2026-11-24 6.31.46 published (Trusted Publish 45307089586); N6 design + N7 docs/diagnostics"
+  - "2026-11-25 docs reconcile: #494 closed; Jan Windows historical; F1–F5 documented in KNOWN-ISSUES"
 worktreeIgnoreOnly:
   - ".redstamp/"
   - "redstamp-proposal-issue-body.md"
 stopMarker: |
   LAST_PUBLISHED_RELEASE: 6.31.46
   PENDING_PUBLISH: none
-  ACTIVE: residual partner acceptance; leave #496/#506 red
-  NEXT: no 6.32 without EVIDENCE_GATE
+  ACTIVE: residual maintenance + partner acceptance; leave #496/#506 red while CI fails
+  NEXT: no 6.32 without EVIDENCE_GATE; F1–F5 when selected
   V7_DECISION: NO-GO
   EVIDENCE_GATE: not approved
   ADOPTION_FREEZE: excluded
-updatedAt: "2026-11-24"
+updatedAt: "2026-11-25"
 ```
